@@ -65,7 +65,7 @@ Things to do:
     [statusItem setAlternateImage:[NSImage imageNamed:@"selected_image"]];
     [statusItem setMenu:menu];
     // Below line of code is for creating builds for Beta Testers
-    // [statusItem setToolTip:@"This Nontransferable Beta (Built on __DATE__) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com)."];
+    // [statusItem setToolTip:@"This Nontransferable Beta (Built on XXX) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com)."];
 }
 
 
