@@ -32,6 +32,9 @@
 - (void)_IT {}
 - (void)_YOU {}
 - (void)_TIGHTWAD {}
+- (void)_HAHAHA {}
+- (void)_LOLOL {}
+- (void)_FIVERSKATES {}
 
 - (id)init
 {

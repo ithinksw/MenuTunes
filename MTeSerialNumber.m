@@ -134,7 +134,7 @@
             NSEnumerator *deadEnum = [_deadSerials objectEnumerator];
             id            aDeadSerial;
             
-            while ( aDeadSerial = [deadEnum nextObject] ) {
+            while ( (aDeadSerial = [deadEnum nextObject]) ) {
                 if ( [aDeadSerial isEqualToString:_serialNumber] ) {
                     dead = YES;
             	}

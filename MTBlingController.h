@@ -28,6 +28,5 @@
 - (int)checkKeyFile;
 - (int)checkDone;
 
-- (void)test:(id)sender;
 
 @end
