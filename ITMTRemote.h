@@ -29,11 +29,17 @@
 #import <Cocoa/Cocoa.h>
 
 typedef enum {
-    stopped = -1,
-    paused,
-    playing,
-    rewinding,
-    forwarding
+    ITMTRemotePlayerNotRunning = -1,
+    ITMTRemotePlayerLaunching,
+    ITMTRemotePlayerRunning
+} ITMTRemotePlayerRunningStatus;
+
+typedef enum {
+    ITMTRemotePlayerStopped = -1,
+    ITMTRemotePlayerPaused,
+    ITMTRemotePlayerPlaying,
+    ITMTRemotePlayerRewinding,
+    ITMTRemotePlayerForwarding
 } ITMTRemotePlayerState;
 
 /*! @protocol ITMTRemote
@@ -55,23 +61,23 @@ typedef enum {
  */
 + (id)remote;
 
-/*! @method title:
+/*! @method pluginTitle:
  *  @abstract Returns the title of the plugin, which should be player name.
  *  @result An NSString containing the title.
  */
-- (NSString *)title;
+- (NSString *)pluginTitle;
 
-/*! @method description:
+/*! @method pluginInformation:
  *  @abstract Returns a description of the remote.
  *  @result An NSString containing the description.
  */
-- (NSString *)information;
+- (NSString *)pluginInformation;
 
-/*! @method icon:
+/*! @method pluginIcon:
  *  @abstract Returns a icon for the remote.
  *  @result An NSImage containing the icon.
  */
-- (NSImage *)icon;
+- (NSImage *)pluginIcon;
 
 /*! @method begin:
  *  @abstract Sent when the plugin should begin operation.
@@ -85,11 +91,15 @@ typedef enum {
  */
 - (BOOL)halt;
 
-/*! @method isAppRunning:
+- (NSString *)playerFullName;
+
+- (NSString *)playerSimpleName;
+
+/*! @method playerRunningStatus:
  *  @abstract Returns controlled application's running status (is or isn't running).
  *  @result BOOL of the controlled application's running status.
  */
-- (BOOL)isAppRunning;
+- (ITMTRemotePlayerRunningStatus)playerRunningStatus;
 
 /*! @method playerState:
  *  @abstract Returns controlled application's playing state.
@@ -125,7 +135,7 @@ typedef enum {
 - (BOOL)pause;
 - (BOOL)goToNextSong;
 - (BOOL)goToPreviousSong;
-- (BOOL)fastForward;
+- (BOOL)forward;
 - (BOOL)rewind;
 
 - (BOOL)switchToPlaylistAtIndex:(int)index;

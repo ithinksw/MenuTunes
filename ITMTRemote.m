@@ -33,14 +33,14 @@
     return NO;
 }
 
-- (BOOL)isAppRunning
+- (ITMTRemotePlayerRunningStatus)playerRunningStatus
 {
-    return NO;
+    return ITMTRemotePlayerNotRunning;
 }
 
 - (ITMTRemotePlayerState)playerState
 {
-    return stopped;
+    return ITMTRemotePlayerStopped;
 }
 
 - (NSArray *)playlists

@@ -44,7 +44,7 @@
     
     menu = [[NSMenu alloc] initWithTitle:@""];
     
-    if ([currentRemote isAppRunning]) {
+    if ( ( [currentRemote remotePlayerStatus] == ITMTRemotePlayerRunning ) ) {
         [self remotePlayerLaunched:nil];
     } else {
         [self remotePlayerTerminated:nil];
@@ -322,7 +322,7 @@
     NSMenuItem *menuItem;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if (!isAppRunning) {
+    if ( ( isAppRunning = ITMTRemotePlayerNotRunning ) ) {
         return;
     }
     
@@ -698,7 +698,7 @@
 
 - (void)remotePlayerLaunched:(NSNotification *)note
 {
-    isAppRunning = YES;
+    isAppRunning = ITMTRemotePlayerRunning;
     
     //Restart the timer
     refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
@@ -715,7 +715,7 @@
 
 - (void)remotePlayerTerminated:(NSNotification *)note
 {
-    isAppRunning = NO;
+    isAppRunning = ITMTRemotePlayerNotRunning;
     
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
@@ -832,7 +832,7 @@
 
 - (void)closePreferences
 {
-    if (isAppRunning) {
+    if ( ( isAppRunning == ITMTRemotePlayerRunning) ) {
         [self setupHotKeys];
     }
     [prefsController release];

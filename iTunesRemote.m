@@ -43,7 +43,7 @@
     return YES;
 }
 
-- (BOOL)isAppRunning
+- (ITMTRemotePlayerRunningStatus)playerRunningStatus
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
     int i;
@@ -52,10 +52,10 @@
     for (i = 0; i < count; i++) {
         if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
                 isEqualToString:@"iTunes"]) {
-            return YES;
+            return ITMTRemotePlayerRunning;
         }
     }
-    return NO;
+    return ITMTRemotePlayerNotRunning;
 }
 
 - (ITMTRemotePlayerState)playerState
@@ -66,15 +66,15 @@
     {
         default:
         case 'kPSS':
-            return stopped;
+            return ITMTRemotePlayerStopped;
         case 'kPSP':
-            return playing;
+            return ITMTRemotePlayerPlaying;
         case 'kPSp':
-            return paused;
+            return ITMTRemotePlayerPaused;
         case 'kPSR':
-            return rewinding;
+            return ITMTRemotePlayerRewinding;
         case 'kPSF':
-            return forwarding;
+            return ITMTRemotePlayerForwarding;
     }
     
     return stopped;

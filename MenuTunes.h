@@ -36,7 +36,7 @@
     int      lastPlaylistIndex;
     BOOL     isPlayingRadio;
     
-    BOOL isAppRunning;
+    ITMTRemotePlayerRunningStatus isAppRunning;
     BOOL didHaveAlbumName;
     BOOL didHaveArtistName; //Helper variable for creating the menu
     
