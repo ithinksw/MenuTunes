@@ -340,7 +340,7 @@
                         [[MainController sharedController] networkError:localException];
                     NS_ENDHANDLER
                     
-                    if ([tempItem respondsToSelector:@selector(setAttributedTitle:)] && [defaults boolForKey:@"showAlbumArtwork"] && ![[NetworkController sharedController] isConnectedToServer]) {
+                    /*if ([tempItem respondsToSelector:@selector(setAttributedTitle:)] && [defaults boolForKey:@"showAlbumArtwork"] && ![[NetworkController sharedController] isConnectedToServer]) {
                         NSImage *image = [[[MainController sharedController] currentRemote] currentSongAlbumArt];
                         if (image) {
                             NSSize oldSize, newSize;
@@ -355,7 +355,7 @@
                             NSAttributedString *attrString = [NSAttributedString attributedStringWithAttachment:attachment];
                             [tempItem setAttributedTitle:attrString];
                         }
-                    }
+                    }*/
                 }
             } else {
                 ITDebugLog(@"No Track is Playing, Add \"No Song\" menu item.");
