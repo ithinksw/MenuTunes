@@ -424,6 +424,11 @@ er's process managment.
  */
 - (BOOL)switchToEQAtIndex:(int)index;
 
+/*!
+ * @method makePlaylistWithTerm:ofType:
+ */
+- (BOOL)makePlaylistWithTerm:(NSString *)term ofType:(int)type;
+
 @end
 
 /*!

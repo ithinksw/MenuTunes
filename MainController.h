@@ -68,6 +68,7 @@
 - (void)selectSongAtIndex:(int)index;
 - (void)selectSongRating:(int)rating;
 - (void)selectEQPresetAtIndex:(int)index;
+- (void)makePlaylistWithTerm:(NSString *)term ofType:(int)type;
 - (void)showPlayer;
 - (void)showPreferences;
 - (void)showTestWindow;

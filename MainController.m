@@ -557,6 +557,17 @@ static MainController *sharedController;
     [self timerUpdate];
 }
 
+- (void)makePlaylistWithTerm:(NSString *)term ofType:(int)type
+{
+    ITDebugLog(@"Making playlist with term %@, type %i", term, type);
+    NS_DURING
+        [[self currentRemote] makePlaylistWithTerm:term ofType:type];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    ITDebugLog(@"Done making playlist");
+}
+
 - (void)showPlayer
 {
     ITDebugLog(@"Beginning show player.");

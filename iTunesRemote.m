@@ -770,6 +770,38 @@
     return YES;
 }
 
+- (BOOL)makePlaylistWithTerm:(NSString *)term ofType:(int)type
+{
+    int i;
+    
+    //Get fixed indexing status
+    BOOL fixed = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pFix'), from:'null'() }", 'core', 'getd', &savedPSN) booleanValue];
+    
+    //Enabled fixed indexing
+    ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pFix'), from:'null'() }", 'core', 'setd', &savedPSN);
+    
+    //Search for the term
+    NSAppleEventDescriptor *searchResults = ITSendAEWithString([NSString stringWithFormat:@"pTrm:\"%@\", pAre:'%@', '----':obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:'null'() } }", term, ((type == 1) ? @"kSrR" : @"kSrL")], 'hook', 'Srch', &savedPSN);
+    
+    //Delete old MenuTunes playlist
+    ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'core', 'delo', &savedPSN);
+    
+    //Create MenuTunes playlist
+    ITSendAEWithString(@"prdt:{ pnam:\"MenuTunes\" }, kocl:type('cPly'), &subj:()", 'core', 'crel', &savedPSN);
+    
+    //Duplicate search results to playlist
+    for (i = 1; i <= [searchResults numberOfItems]; i++) {
+        ITSendAEWithStringAndObject(@"insh:obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", [[searchResults descriptorAtIndex:i] aeDesc], 'core', 'clon', &savedPSN);
+    }
+    //Reset fixed indexing
+    ITSendAEWithString([NSString stringWithFormat:@"data:long(%i), '----':obj { form:'prop', want:type('prop'), seld:type('pFix'), from:'null'() }", fixed], 'core', 'setd', &savedPSN);
+    
+    //Play MenuTunes playlist
+    ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'hook', 'Play', &savedPSN);
+    
+    return YES;
+}
+
 - (ProcessSerialNumber)iTunesPSN
 {
     /*NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];

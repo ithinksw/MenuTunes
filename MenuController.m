@@ -854,7 +854,7 @@
     ** 2 - Album
     ** 3 - Genre?
     */
-    //[[MainController sharedController] createAndPlayPlaylistWithTerm:[sender representedObject] ofType:1];
+    [[MainController sharedController] makePlaylistWithTerm:[sender representedObject] ofType:1];
 }
 
 - (void)updateMenu

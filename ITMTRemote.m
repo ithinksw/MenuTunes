@@ -304,4 +304,9 @@
     return NO;
 }
 
+- (BOOL)makePlaylistWithTerm:(NSString *)term ofType:(int)type
+{
+    return NO;
+}
+
 @end
