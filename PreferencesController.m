@@ -1,6 +1,7 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 #import "StatusWindow.h"
+#import "MyTableView.h"
 
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
@@ -102,9 +103,8 @@ static PreferencesController *prefs = nil;
         [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
     }
     
-//  [window setLevel:NSStatusWindowLevel];
+    [window setLevel:NSStatusWindowLevel];
     [window center];
-    [NSApp activateIgnoringOtherApps:YES];
     [window makeKeyAndOrderFront:self];
 }
 
@@ -423,6 +423,20 @@ static PreferencesController *prefs = nil;
     [self cancelHotKey:sender];
 }
 
+- (void)deletePressedInTableView:(NSTableView *)tableView
+{
+    if (tableView == menuTableView) {
+        int selRow = [tableView selectedRow];
+        if (selRow != - 1) {
+            NSString *object = [myItems objectAtIndex:selRow];
+            if (![object isEqualToString:@"separator"])
+                [availableItems addObject:object];
+            [myItems removeObjectAtIndex:selRow];
+            [menuTableView reloadData];
+            [allTableView reloadData];
+        }
+    }
+}
 
 
 /*************************************************************************/
@@ -497,6 +511,7 @@ static PreferencesController *prefs = nil;
     id            anItem;
     // Set the list of items you can have.
     availableItems = [[NSMutableArray alloc] initWithObjects:
+        @"separator",
         @"trackInfo",
         @"upcomingSongs",
         @"playlists",
@@ -508,7 +523,6 @@ static PreferencesController *prefs = nil;
         @"fastForward",
         @"rewind",
         @"showPlayer",
-        @"separator",
         @"quit",
         nil];
     

@@ -14,7 +14,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class MainController, ITKeyCombo;
+@class MyTableView, MainController, ITKeyCombo;
 
 @interface PreferencesController : NSObject
 {
@@ -25,7 +25,7 @@
     IBOutlet NSPanel *keyComboPanel;
     IBOutlet NSButton *launchAtLoginCheckbox;
     IBOutlet NSButton *launchPlayerAtLaunchCheckbox;
-    IBOutlet NSTableView *menuTableView;
+    IBOutlet MyTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSButton *nextTrackButton;
     IBOutlet NSButton *playPauseButton;
@@ -75,4 +75,7 @@
 
 - (void)setCurrentHotKey:(NSString *)key;
 - (void)setKeyCombo:(ITKeyCombo *)newCombo;
+
+- (void)deletePressedInTableView:(NSTableView *)tableView;
+
 @end
