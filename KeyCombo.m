@@ -185,7 +185,7 @@
     KeyCombo *combo;
     
     if (data) {
-        combo = [[NSUnarchiver unarchiveObjectWithData:data] retain];
+        combo = [NSUnarchiver unarchiveObjectWithData:data];
     } else {
         combo = nil;
     }
