@@ -189,16 +189,12 @@ Things to do:
 //Updates the menu with current player state, song, and upcoming songs
 - (void)updateMenu
 {
-    NSString *curSongName, *curAlbumName;
+    NSString *curAlbumName = [self runScriptAndReturnResult:@"return album of current track"];
     NSMenuItem *menuItem;
     
     if ((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)) {
         return;
     }
-    
-    //Get the current track name and album.
-    curSongName = [self runScriptAndReturnResult:@"return name of current track"];
-    curAlbumName = [self runScriptAndReturnResult:@"return album of current track"];
     
     if (upcomingSongsItem) {
         [self rebuildUpcomingSongsMenu];
@@ -210,51 +206,55 @@ Things to do:
         [self rebuildEQPresetsMenu];
     }
     
-    if ([curSongName length] > 0) {
-        int index = [menu indexOfItemWithTitle:@"Now Playing"];
-        
-        if (index > -1) {
-            [menu removeItemAtIndex:index + 1];
+    if (trackInfoIndex > -1)
+    {
+        NSString *curSongName;
+        curSongName = [self runScriptAndReturnResult:@"return name of current track"];
+        if ([curSongName length] > 0) {
+            int index = [menu indexOfItemWithTitle:@"Now Playing"];
             
-            if (didHaveAlbumName) {
+            if (index > -1) {
                 [menu removeItemAtIndex:index + 1];
+                
+                if (didHaveAlbumName) {
+                    [menu removeItemAtIndex:index + 1];
+                }
             }
-        }
-        
-        if ([curAlbumName length] > 0) {
-            menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName]
-                                                  action:nil
-                                                  keyEquivalent:@""];
+            
+            if ([curAlbumName length] > 0) {
+                menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName]
+                                                    action:nil
+                                                    keyEquivalent:@""];
+                [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
+                [menuItem release];
+            }
+            
+            menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
+                                                action:nil
+                                                keyEquivalent:@""];
             [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
             [menuItem release];
-        }
-        
-        menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
-                                              action:nil
-                                              keyEquivalent:@""];
-        [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
-        [menuItem release];
-        
-        if (index == -1) {
-            menuItem = [[NSMenuItem alloc] initWithTitle:@"Now Playing" action:nil keyEquivalent:@""];
-            [menu removeItemAtIndex:[menu indexOfItemWithTitle:@"No Song"]];
+            
+            if (index == -1) {
+                menuItem = [[NSMenuItem alloc] initWithTitle:@"Now Playing" action:nil keyEquivalent:@""];
+                [menu removeItemAtIndex:[menu indexOfItemWithTitle:@"No Song"]];
+                [menu insertItem:menuItem atIndex:trackInfoIndex];
+                [menuItem release];
+            }
+            
+        } else if ([menu indexOfItemWithTitle:@"No Song"] == -1) {
+            [menu removeItemAtIndex:trackInfoIndex];
+            [menu removeItemAtIndex:trackInfoIndex];
+            
+            if (didHaveAlbumName) {
+                [menu removeItemAtIndex:trackInfoIndex];
+            }
+            
+            menuItem = [[NSMenuItem alloc] initWithTitle:@"No Song" action:nil keyEquivalent:@""];
             [menu insertItem:menuItem atIndex:trackInfoIndex];
             [menuItem release];
         }
-        
-    } else if ([menu indexOfItemWithTitle:@"No Song"] == -1) {
-        [menu removeItemAtIndex:trackInfoIndex];
-        [menu removeItemAtIndex:trackInfoIndex];
-        
-        if (didHaveAlbumName) {
-            [menu removeItemAtIndex:trackInfoIndex];
-        }
-        
-        menuItem = [[NSMenuItem alloc] initWithTitle:@"No Song" action:nil keyEquivalent:@""];
-        [menu insertItem:menuItem atIndex:trackInfoIndex];
-        [menuItem release];
     }
-    
     didHaveAlbumName = (([curAlbumName length] > 0) ? YES : NO);
 }
 
@@ -516,6 +516,8 @@ andEventID:(AEEventID)eventID
 - (void)selectPlaylist:(id)sender
 {
     int playlist = [[sender representedObject] intValue];
+    int curPlaylist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+    [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
     [self runScriptAndReturnResult:[NSString stringWithFormat:@"play playlist %i", playlist]];
     [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
     [self updateMenu];
