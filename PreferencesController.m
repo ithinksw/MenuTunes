@@ -10,9 +10,9 @@
         int i;
         NSImageCell *imgCell = [[[NSImageCell alloc] init] autorelease];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        NSString *temp;
         
         mt = [tunes retain];
+        [mt registerDefaultsIfNeeded];
         
         //Load the nib
         [NSBundle loadNibNamed:@"Preferences" owner:self];
@@ -36,11 +36,6 @@
         
         //Get our preferred menu
         myItems = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"] mutableCopy];
-        if (myItems == nil)
-        {
-            myItems = [[NSMutableArray alloc] initWithObjects:@"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", @"Upcoming Songs", @"Playlists", @"EQ Presets", @"<separator>", @"Preferences…", @"Quit", @"<separator>", @"Current Track Info", nil];
-            [[NSUserDefaults standardUserDefaults] setObject:myItems forKey:@"menu"];
-        }
         
         //Delete items in the availableItems array that are already part of the menu
         for (i = 0; i < [myItems count]; i++) {
@@ -55,11 +50,7 @@
         submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", @"EQ Presets", nil];
         
         //Fill in the number of songs in advance to show field
-        if ([defaults integerForKey:@"SongsInAdvance"]) {
-            [songsInAdvance setIntValue:[defaults integerForKey:@"SongsInAdvance"]];
-        } else {
-            [songsInAdvance setIntValue:5];
-        }
+        [songsInAdvance setIntValue:[defaults integerForKey:@"SongsInAdvance"]];
         
         //Fill in hot key buttons
         if ([defaults objectForKey:@"PlayPause"]){
@@ -98,24 +89,8 @@
         }
         
         //Check current track info buttons
-        
-        //Album and name get special treatment because they are defaults
-        if ( (temp = [defaults stringForKey:@"showAlbum"]) ) {
-            if ((temp == nil) || [temp isEqualToString:@"1"]) {
-                [albumCheckbox setState:NSOnState];
-            } else {
-                [albumCheckbox setState:NSOffState];
-            }
-        }
-        
-        if ( (temp = [defaults stringForKey:@"showName"]) ) {
-            if ((temp == nil) || [temp isEqualToString:@"1"]) {
-                [nameCheckbox setState:NSOnState];
-            } else {
-                [nameCheckbox setState:NSOffState];
-            }
-        }
-        
+        [albumCheckbox setState:[defaults boolForKey:@"showAlbum"] ? NSOnState : NSOffState];
+        [nameCheckbox setState:[defaults boolForKey:@"showName"] ? NSOnState : NSOffState];
         [artistCheckbox setState:[defaults boolForKey:@"showArtist"] ? NSOnState : NSOffState];
         [trackTimeCheckbox setState:[defaults boolForKey:@"showTime"] ? NSOnState : NSOffState];
         
@@ -131,11 +106,7 @@
             
             for (i = 0; i < [loginarray count]; i++) {
                 NSDictionary *tempDict = [loginarray objectAtIndex:i];
-                
-                //Here we are seeing if our program is already in loginwindow.plist.
-                //See the problem below for this problem here. We will do the same thing.
-                
-                if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"]) {
+                if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
                     [launchAtLoginCheckbox setState:NSOnState];
                 }
             }
@@ -184,6 +155,7 @@
     if ([launchAtLoginCheckbox state] == NSOnState) {
         NSMutableDictionary *loginwindow;
         NSMutableArray *loginarray;
+        ComponentInstance temp = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);;
         int i;
         BOOL skip = NO;
         
@@ -193,20 +165,23 @@
         
         for (i = 0; i < [loginarray count]; i++) {
             NSDictionary *tempDict = [loginarray objectAtIndex:i];
-            
-            //Here we are seeing if our program is already in loginwindow.plist.
-            //See the problem below for this problem here. We will do the same thing.
-            
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"]) {
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
                 skip = YES;
             }
         }
         
         if (!skip) {
-            [loginarray addObject:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], @"Hide", [[NSBundle mainBundle] bundlePath], @"Path", nil]];
+            AEDesc scriptDesc, resultDesc;
+            NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
             
-            [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
-            [defaults synchronize];
+            AECreateDesc(typeChar, [script cString], [script cStringLength], 
+        &scriptDesc);
+            
+            OSADoScript(temp, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
+            
+            AEDisposeDesc(&scriptDesc);
+            AEDisposeDesc(&resultDesc);
+            CloseComponent(temp);
         }
     } else {
         NSMutableDictionary *loginwindow;
@@ -219,8 +194,7 @@
         
         for (i = 0; i < [loginarray count]; i++) {
             NSDictionary *tempDict = [loginarray objectAtIndex:i];
-            
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"]) {
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
                 [loginarray removeObjectAtIndex:i];
                 [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
                 [defaults synchronize];

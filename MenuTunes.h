@@ -51,7 +51,7 @@
     PreferencesController *prefsController;
     StatusWindowController *statusController; //Shows track info and upcoming songs.
 }
-
+- (void)registerDefaultsIfNeeded;
 - (void)rebuildMenu;
 - (void)clearHotKeys;
 - (ProcessSerialNumber)iTunesPSN;

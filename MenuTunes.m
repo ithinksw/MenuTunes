@@ -3,6 +3,7 @@ Things to do:
 ¥ Make preferences window pretty
 ¥ Optimize
 ¥ Apple Events! Apple Events! Apple Events!
+¥ Manual and webpage
 */
 
 #import "MenuTunes.h"
@@ -11,7 +12,6 @@ Things to do:
 #import "StatusWindowController.h"
 
 @interface MenuTunes(Private)
-- (void)registerDefaultsIfNeeded;
 - (void)updateMenu;
 - (void)rebuildUpcomingSongsMenu;
 - (void)rebuildPlaylistMenu;
@@ -43,10 +43,10 @@ Things to do:
     {
         [self rebuildMenu];
         refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5
-                                                        target:self
-                                                      selector:@selector(timerUpdate)
-                                                      userInfo:nil
-                                                       repeats:YES];
+                                                    target:self
+                                                    selector:@selector(timerUpdate)
+                                                    userInfo:nil
+                                                    repeats:YES];
     }
     else
     {
@@ -78,6 +78,11 @@ Things to do:
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults objectForKey:@"menu"]) {
+        bool found = NO;
+        NSMutableDictionary *loginwindow;
+        NSMutableArray *loginarray;
+        int i;
+        
         [defaults setObject:
             [NSArray arrayWithObjects:
                 @"Play/Pause",
@@ -94,6 +99,37 @@ Things to do:
                 @"<separator>",
                 @"Current Track Info",
                 nil] forKey:@"menu"];
+        
+        [defaults synchronize];
+        loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
+        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+        
+        for (i = 0; i < [loginarray count]; i++) {
+            NSDictionary *tempDict = [loginarray objectAtIndex:i];
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
+                found = YES;
+            }
+        }
+        
+        if (!found) {
+            if (NSRunInformationalAlertPanel(@"Auto-launch MenuTunes", @"Would you like MenuTunes to automatically launch at login?", @"Yes", @"No", nil) == NSOKButton) {
+                AEDesc scriptDesc, resultDesc;
+                NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
+                
+                AECreateDesc(typeChar, [script cString], [script cStringLength], 
+            &scriptDesc);
+                
+                OSADoScript(asComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
+                
+                AEDisposeDesc(&scriptDesc);
+                AEDisposeDesc(&resultDesc);
+            }
+        }
+    }
+    
+    if (![defaults integerForKey:@"SongsInAdvance"])
+    {
+        [defaults setInteger:5 forKey:@"SongsInAdvance"];
     }
     
     if (![defaults objectForKey:@"showName"]) {
@@ -224,17 +260,16 @@ Things to do:
         NSString *curSongName, *curAlbumName = @"", *curArtistName = @"";
         curSongName = [self runScriptAndReturnResult:@"return name of current track"];
         
-        if ([defaults boolForKey:@"showArtist"]) {
+        if ([defaults boolForKey:@"showAlbum"]) {
             curAlbumName = [self runScriptAndReturnResult:@"return album of current track"];
         }
         
-        if ([defaults boolForKey:@"showAlbum"]) {
+        if ([defaults boolForKey:@"showArtist"]) {
             curArtistName = [self runScriptAndReturnResult:@"return artist of current track"];
         }
         
         if ([curSongName length] > 0) {
             int index = [menu indexOfItemWithTitle:@"Now Playing"];
-            
             if (index > -1) {
                 if ([defaults boolForKey:@"showName"]) {
                     [menu removeItemAtIndex:index + 1];
@@ -274,11 +309,14 @@ Things to do:
                     [menuItem release];
                 }
             }
-            menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
-                                                action:nil
-                                                keyEquivalent:@""];
-            [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
-            [menuItem release];
+            
+            if ([defaults boolForKey:@"showName"]) {
+                menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
+                                                    action:nil
+                                                    keyEquivalent:@""];
+                [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
+                [menuItem release];
+            }
             
             if (index == -1) {
                 menuItem = [[NSMenuItem alloc] initWithTitle:@"Now Playing" action:nil keyEquivalent:@""];
@@ -286,7 +324,6 @@ Things to do:
                 [menu insertItem:menuItem atIndex:trackInfoIndex];
                 [menuItem release];
             }
-            
         } else if ([menu indexOfItemWithTitle:@"No Song"] == -1) {
             [menu removeItemAtIndex:trackInfoIndex];
             
@@ -312,12 +349,12 @@ Things to do:
         }
         
         if ([defaults boolForKey:@"showArtist"]) {
-                didHaveAlbumName = (([curAlbumName length] > 0) ? YES : NO);
-            }
+            didHaveAlbumName = (([curArtistName length] > 0) ? YES : NO);
+        }
             
-            if ([defaults boolForKey:@"showAlbum"]) {
-                didHaveArtistName = (([curArtistName length] > 0) ? YES : NO);
-            }
+        if ([defaults boolForKey:@"showAlbum"]) {
+            didHaveArtistName = (([curAlbumName length] > 0) ? YES : NO);
+        }
     }
 }
 
@@ -763,10 +800,10 @@ isEqualToString:@"rewinding"]) {
         statusController = [[StatusWindowController alloc] init];
         [statusController setTrackInfo:stringToShow lines:lines];
         [NSTimer scheduledTimerWithTimeInterval:3.0
-                                         target:self
-                                       selector:@selector(fadeAndCloseStatusWindow)
-                                       userInfo:nil
-                                        repeats:NO];
+                                    target:self
+                                    selector:@selector(fadeAndCloseStatusWindow)
+                                    userInfo:nil
+                                    repeats:NO];
     }
 }
 
