@@ -19,6 +19,8 @@
 #import <ITMTRemote/ITMTRemote.h>
 #import "MTBlingController.h"
 
+#define MT_CURRENT_VERSION 1300
+
 @class StatusWindowController, MenuController, NetworkController;
 
 @interface MainController : NSObject
@@ -53,6 +55,8 @@
 - (void)blingTime;
 - (void)blingNow;
 - (BOOL)blingBling;
+
+- (void)timerUpdate;
 
 - (void)playPause;
 - (void)nextSong;

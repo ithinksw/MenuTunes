@@ -536,7 +536,7 @@ static PreferencesController *prefs = nil;
         @"quit",
         nil] forKey:@"menu"];
 
-    [df setInteger:1200 forKey:@"appVersion"];
+    [df setInteger:MT_CURRENT_VERSION forKey:@"appVersion"];
     [df setInteger:5 forKey:@"SongsInAdvance"];
 //  [df setBool:YES forKey:@"showName"];  // Song info will always show song title.
     [df setBool:YES forKey:@"showArtist"];
@@ -769,6 +769,8 @@ static PreferencesController *prefs = nil;
     NSData         *colorData;
     int selectedBGStyle;
     id anItem;
+    
+    [df setInteger:MT_CURRENT_VERSION forKey:@"appVersion"];
     
     ITDebugLog(@"Setting up preferences UI.");
     // Fill in the number of songs in advance to show field

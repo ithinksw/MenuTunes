@@ -22,7 +22,7 @@
 - (NSMenu *)eqMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(id <NSMenuItem>)item;
-- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
+- (BOOL)iPodWithNameAutomaticallyUpdates:(NSString *)name;
 @end
 
 @implementation MenuController
@@ -438,6 +438,7 @@
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
+    ITDebugLog(@"Releasing old submenus.");
     [_ratingMenu release];
     [_upcomingSongsMenu release];
     [_playlistsMenu release];
@@ -574,9 +575,6 @@
     int i, j;
     NS_DURING
         playlists = [[[MainController sharedController] currentRemote] playlists];
-        /*playlists = [NSArray arrayWithObjects:
-                        [NSArray arrayWithObjects:@"Library", [NSNumber numberWithInt:-1], @"Library", @"Playlist", nil],
-                        [NSArray arrayWithObjects:@"Radio", [NSNumber numberWithInt:1], @"Radio", nil], nil];*/
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
@@ -606,7 +604,14 @@
         NSMenu *submenu = [[NSMenu alloc] init];
         ITDebugLog(@"Adding source: %@", name);
         
-        if ( ([[curPlaylist objectAtIndex:i] intValue] == ITMTRemoteiPodSource) && [self iPodAtPathAutomaticallyUpdates:[curPlaylist objectAtIndex:j]] ) {
+        if ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) {
+            NSLog(@"We have an iPod!");
+            NSLog(@"This iPod is named %@!", name);
+            NSLog(@"Does it update automagically?");
+            NSLog(@"Result: %i", [self iPodWithNameAutomaticallyUpdates:name]);
+        }
+        
+        if ( ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
             ITDebugLog(@"Invalid iPod source.");
         } else {
             for (j = 2; j < [curPlaylist count]; j++) {
@@ -981,7 +986,7 @@
     ITDebugLog(@"Done setting key equivalent on menu item: %@", [item title]);
 }
 
-- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name
+- (BOOL)iPodWithNameAutomaticallyUpdates:(NSString *)name
 {
     NSArray *volumes = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
     NSEnumerator *volEnum = [volumes objectEnumerator];

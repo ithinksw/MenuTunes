@@ -36,7 +36,6 @@
 
 @interface MainController(Private)
 - (ITMTRemote *)loadRemote;
-- (void)timerUpdate;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
@@ -214,7 +213,7 @@ static MainController *sharedController;
     globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
     if (date) {
         [globalPrefs setObject:date forKey:@"ITMTTrialStart"];
-        [globalPrefs setObject:[NSNumber numberWithInt:1200] forKey:@"ITMTTrialVers"];
+        [globalPrefs setObject:[NSNumber numberWithInt:MT_CURRENT_VERSION] forKey:@"ITMTTrialVers"];
     } else {
         [globalPrefs removeObjectForKey:@"ITMTTrialStart"];
         [globalPrefs removeObjectForKey:@"ITMTTrialVers"];
@@ -236,14 +235,14 @@ static MainController *sharedController;
     if (![self blingBling]) {
         if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
             [self setBlingTime:now];
-        } else if ([[[df persistentDomainForName:@".GlobalPreferences"] objectForKey:@"ITMTTrialVers"] intValue] < 1200) {
+        } else if ([[[df persistentDomainForName:@".GlobalPreferences"] objectForKey:@"ITMTTrialVers"] intValue] < MT_CURRENT_VERSION) {
             if ([now timeIntervalSinceDate:[self getBlingTime]] >= 345600) {
                 [self setBlingTime:[now addTimeInterval:-259200]];
             } else {
                 NSMutableDictionary *globalPrefs;
                 [df synchronize];
                 globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
-                [globalPrefs setObject:[NSNumber numberWithInt:1200] forKey:@"ITMTTrialVers"];
+                [globalPrefs setObject:[NSNumber numberWithInt:MT_CURRENT_VERSION] forKey:@"ITMTTrialVers"];
                 [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
                 [df synchronize];
                 [globalPrefs release];
