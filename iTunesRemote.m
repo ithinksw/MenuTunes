@@ -14,7 +14,7 @@
 
 - (NSString *)information;
 {
-    return @"Default MenuTunes plugin to control iTunes.";
+    return @"Default MenuTunes plugin to control iTunes. Written by iThink Software.";
 }
 
 - (NSImage *)icon
@@ -25,19 +25,22 @@
 - (BOOL)begin
 {
     iTunesPSN = [self iTunesPSN];
+    
+    //We won't need this once we're pure AEs
     asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
     
     //Register for application termination in NSWorkspace
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
     
-    NSLog(@"iTunes Plugin loaded");
     return YES;
 }
 
 - (BOOL)halt
 {
     iTunesPSN.highLongOfPSN = kNoProcess;
+    
+    //We won't need this once we're pure AEs
     CloseComponent(asComponent);
     
     //Unregister for application termination in NSWorkspace
@@ -46,26 +49,18 @@
     return YES;
 }
 
-- (void)applicationLaunched:(NSNotification *)note
+- (BOOL)isAppRunning
 {
-    NSDictionary *info = [note userInfo];
+    NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
+    int i;
     
-    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
-        iTunesPSN.highLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberHigh"] longValue];
-        iTunesPSN.lowLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberLow"] longValue];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidLaunchNotification" object:nil];
+    for (i = 0; i < [apps count]; i++) {
+        if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
+                isEqualToString:@"iTunes"]) {
+            return YES;
+        }
     }
-}
-
-- (void)applicationTerminated:(NSNotification *)note
-{
-    NSDictionary *info = [note userInfo];
-    
-    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
-        iTunesPSN.highLongOfPSN = kNoProcess;
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidTerminateNotification" object:nil];
-    }
+    return NO;
 }
 
 - (PlayerState)playerState
@@ -92,8 +87,7 @@
     int i;
     int numPresets = [[self runScriptAndReturnResult:@"get number of playlists"] intValue];
     NSMutableArray *presets = [[NSMutableArray alloc] init];
-    
-    for (i = 0; i < numPresets; i++) {
+    for (i = 1; i <= numPresets; i++) {
         [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of playlist %i", i]]];
     }
     
@@ -199,7 +193,7 @@
     int numPresets = [[self runScriptAndReturnResult:@"get number of EQ presets"] intValue];
     NSMutableArray *presets = [[NSMutableArray alloc] init];
     
-    for (i = 0; i < numPresets; i++) {
+    for (i = 1; i <= numPresets; i++) {
         [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of EQ preset %i", i]]];
     }
     
@@ -302,6 +296,29 @@
     return number;
 }
 
+- (void)applicationLaunched:(NSNotification *)note
+{
+    NSDictionary *info = [note userInfo];
+    
+    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
+        iTunesPSN.highLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberHigh"] longValue];
+        iTunesPSN.lowLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberLow"] longValue];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidLaunchNotification" object:nil];
+    }
+}
+
+- (void)applicationTerminated:(NSNotification *)note
+{
+    NSDictionary *info = [note userInfo];
+    
+    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
+        iTunesPSN.highLongOfPSN = kNoProcess;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidTerminateNotification" object:nil];
+    }
+}
+
+//This is just temporary
 - (NSString *)runScriptAndReturnResult:(NSString *)script
 {
     AEDesc scriptDesc, resultDesc;

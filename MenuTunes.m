@@ -19,9 +19,7 @@ Things to do:
 - (void)rebuildPlaylistMenu;
 - (void)rebuildEQPresetsMenu;
 - (void)setupHotKeys;
-- (NSString *)runScriptAndReturnResult:(NSString *)script;
 - (void)timerUpdate;
-- (void)sendAEWithEventClass:(AEEventClass)eventClass andEventID:(AEEventID)eventID;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(NSMenuItem *)item;
 
@@ -50,14 +48,12 @@ Things to do:
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesTerminated:) name:@"ITMTRemoteAppDidTerminateNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesLaunched:) name:@"ITMTRemoteAppDidLaunchNotification" object:nil];
     
-    asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
-    
     [self registerDefaultsIfNeeded];
     
     menu = [[NSMenu alloc] initWithTitle:@""];
-    iTunesPSN = [self iTunesPSN]; //Get PSN of iTunes if it's running
     
-    if (!((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)))
+    isAppRunning = [currentRemote isAppRunning];
+    if (isAppRunning)
     {
         [self rebuildMenu];
         refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5
@@ -163,10 +159,14 @@ Things to do:
             }
         }
         
+        //
+        //This is teh sux
+        //We must fix it so it is no longer suxy
         if (!found) {
             if (NSRunInformationalAlertPanel(@"Auto-launch MenuTunes", @"Would you like MenuTunes to automatically launch at login?", @"Yes", @"No", nil) == NSOKButton) {
                 AEDesc scriptDesc, resultDesc;
                 NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
+                ComponentInstance asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
                 
                 AECreateDesc(typeChar, [script cString], [script cStringLength], 
             &scriptDesc);
@@ -175,6 +175,8 @@ Things to do:
                 
                 AEDisposeDesc(&scriptDesc);
                 AEDisposeDesc(&resultDesc);
+                
+                CloseComponent(asComponent);
             }
         }
     }
@@ -316,7 +318,7 @@ Things to do:
     NSMenuItem *menuItem;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if ((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)) {
+    if (!isAppRunning) {
         return;
     }
     
@@ -481,14 +483,13 @@ Things to do:
     {
         curPlaylist = 0;
     }
-    
     if (playlistMenu && ([playlists count] == [playlistMenu numberOfItems]))
         return;
     
     [playlistMenu release];
     playlistMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    for (i = 1; i < [playlists count]; i++) {
+    for (i = 0; i < [playlists count]; i++) {
         NSString *playlistName = [playlists objectAtIndex:i];
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:playlistName action:@selector(selectPlaylist:) keyEquivalent:@""];
@@ -574,38 +575,6 @@ Things to do:
     }
 }
 
-//Runs an AppleScript and returns the result as an NSString after stripping quotes, if needed. It takes in script and automatically adds the tell iTunes and end tell statements.
-- (NSString *)runScriptAndReturnResult:(NSString *)script
-{
-    AEDesc scriptDesc, resultDesc;
-    Size length;
-    NSString *result;
-    Ptr buffer;
-    
-    script = [NSString stringWithFormat:@"tell application \"iTunes\"\n%@\nend tell", script];
-    
-    AECreateDesc(typeChar, [script cString], [script cStringLength], 
-&scriptDesc);
-    
-    OSADoScript(asComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
-    
-    length = AEGetDescDataSize(&resultDesc);
-    buffer = malloc(length);
-    
-    AEGetDescData(&resultDesc, buffer, length);
-    AEDisposeDesc(&scriptDesc);
-    AEDisposeDesc(&resultDesc);
-    result = [NSString stringWithCString:buffer length:length];
-    if ( (! [result isEqualToString:@""])      &&
-         ([result characterAtIndex:0] == '\"') &&
-         ([result characterAtIndex:[result length] - 1] == '\"') ) {
-        result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
-    }
-    free(buffer);
-    buffer = nil;
-    return result;
-}
-
 //Called when the timer fires.
 - (void)timerUpdate
 {
@@ -665,10 +634,7 @@ Things to do:
 
 - (void)iTunesLaunched:(NSNotification *)note
 {
-    NSDictionary *info = [note userInfo];
-    
-    iTunesPSN.highLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberHigh"] longValue];
-    iTunesPSN.lowLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberLow"] longValue];
+    isAppRunning = YES;
     
     //Restart the timer
     refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
@@ -679,6 +645,8 @@ Things to do:
 
 - (void)iTunesTerminated:(NSNotification *)note
 {
+    isAppRunning = NO;
+    
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
     [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
@@ -689,42 +657,6 @@ Things to do:
     [refreshTimer invalidate];
     refreshTimer = nil;
     [self clearHotKeys];
-}
-
-//Return the PSN of iTunes, if it's running
-- (ProcessSerialNumber)iTunesPSN
-{
-    NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
-    ProcessSerialNumber number;
-    int i;
-    
-    number.highLongOfPSN = kNoProcess;
-    
-    for (i = 0; i < [apps count]; i++)
-    {
-        NSDictionary *curApp = [apps objectAtIndex:i];
-        
-        if ([[curApp objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"])
-        {
-            number.highLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberHigh"] intValue];
-            number.lowLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberLow"] intValue];
-        }
-    }
-    return number;
-}
-
-//Send an AppleEvent with a given event ID
-- (void)sendAEWithEventClass:(AEEventClass)eventClass 
-andEventID:(AEEventID)eventID
-{
-    OSType iTunesType = 'hook';
-    AppleEvent event, reply;
-    
-    AEBuildAppleEvent(eventClass, eventID, typeApplSignature, &iTunesType, sizeof(iTunesType), kAutoGenerateReturnID, kAnyTransactionID, &event, nil, "");
-    
-    AESend(&event, &reply, kAENoReply, kAENormalPriority, kAEDefaultTimeout, nil, nil);
-    AEDisposeDesc(&event);
-    AEDisposeDesc(&reply);
 }
 
 //
@@ -824,7 +756,7 @@ andEventID:(AEEventID)eventID
 
 - (void)closePreferences
 {
-    if (!((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0))) {
+    if (isAppRunning) {
         [self setupHotKeys];
     }
     [prefsController release];
@@ -1128,7 +1060,6 @@ andEventID:(AEEventID)eventID
         [refreshTimer invalidate];
         refreshTimer = nil;
     }
-    CloseComponent(asComponent);
     [currentRemote halt];
     [statusItem release];
     [menu release];

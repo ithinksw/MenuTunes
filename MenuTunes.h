@@ -26,7 +26,6 @@
 {
     ITStatusItem *statusItem;
     NSMenu *menu;
-    ComponentInstance asComponent;
     ITMTRemote *currentRemote;
     NSMutableArray *remoteArray;
     
@@ -35,7 +34,7 @@
     int trackInfoIndex, lastSongIndex;
     bool isPlayingRadio;
     
-    ProcessSerialNumber iTunesPSN;
+    bool isAppRunning;
     bool didHaveAlbumName, didHaveArtistName; //Helper variable for creating the menu
     
     //For upcoming songs
@@ -58,7 +57,6 @@
 - (void)registerDefaultsIfNeeded;
 - (void)rebuildMenu;
 - (void)clearHotKeys;
-- (ProcessSerialNumber)iTunesPSN;
 - (void)closePreferences;
 
 @end

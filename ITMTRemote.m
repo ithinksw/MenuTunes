@@ -33,6 +33,11 @@
     return NO;
 }
 
+- (BOOL)isAppRunning
+{
+    return NO;
+}
+
 - (PlayerState)playerState
 {
     return stopped;

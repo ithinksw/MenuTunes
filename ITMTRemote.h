@@ -79,6 +79,7 @@ typedef enum {stopped = -1, paused, playing, rewinding, forwarding} PlayerState;
  */
 - (BOOL)halt;
 
+- (BOOL)isAppRunning;
 - (PlayerState)playerState;
 
 - (NSArray *)playlists;

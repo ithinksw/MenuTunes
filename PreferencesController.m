@@ -134,7 +134,6 @@
 
 - (IBAction)apply:(id)sender
 {
-    ProcessSerialNumber psn;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:myItems forKey:@"menu"];
     
@@ -210,9 +209,16 @@
         [defaults setInteger:5 forKey:@"SongsInAdvance"];
     }
     
-    psn = [mt iTunesPSN];
-    if (!((psn.highLongOfPSN == kNoProcess) && (psn.lowLongOfPSN == 0))) {
-        [mt rebuildMenu];
+    {
+        NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
+        int i;
+        
+        for (i = 0; i < [apps count]; i++) {
+            if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
+                    isEqualToString:@"iTunes"]) {
+                [mt rebuildMenu];
+            }
+        }
     }
     [mt clearHotKeys];
 }
