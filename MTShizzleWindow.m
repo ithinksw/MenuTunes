@@ -144,6 +144,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     
     regLater = [[NSButton alloc] initWithFrame:NSMakeRect(138, 16, 116, 25)];
     [regLater setTitle:@"Register Later"];
+    [regLater setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
     [regLater setTarget:_sender];
     [regLater setAction:@selector(registerLater:)];
     [regLater setBezelStyle:NSRoundedBezelStyle];
@@ -151,6 +152,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     
     verifyKey = [[NSButton alloc] initWithFrame:NSMakeRect(255, 16, 116, 25)];
     [verifyKey setTitle:@"Verify Key"];
+    [verifyKey setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
     [verifyKey setTarget:_sender];
     [verifyKey setAction:@selector(verifyKey:)];
     [verifyKey setBezelStyle:NSRoundedBezelStyle];

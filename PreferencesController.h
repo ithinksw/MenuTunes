@@ -44,7 +44,13 @@
     IBOutlet NSButton *volumeDecrementButton;
     IBOutlet NSButton *volumeIncrementButton;
     IBOutlet NSWindow *window;
-    
+    IBOutlet NSPopUpButton *appearanceEffectPopup;
+    IBOutlet NSPopUpButton *vanishEffectPopup;
+    IBOutlet NSSlider *appearanceSpeedSlider;
+    IBOutlet NSSlider *vanishSpeedSlider;
+    IBOutlet NSSlider *vanishDelaySlider;
+    IBOutlet NSButton *showOnChangeCheckbox;
+
     MainController *controller;
     NSUserDefaults *df;
     NSMutableArray *availableItems;

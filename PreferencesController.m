@@ -272,22 +272,17 @@ static PreferencesController *prefs = nil;
     id anItem;
     ITDebugLog(@"Registering defaults.");
     [df setObject:[NSArray arrayWithObjects:
+        @"trackInfo",
+        @"separator",
         @"playPause",
         @"prevTrack",
         @"nextTrack",
-        @"fastForward",
-        @"rewind",
-        @"showPlayer",
         @"separator",
-        @"songRating",
-        @"eqPresets",
         @"playlists",
         @"upcomingSongs",
         @"separator",
         @"preferences",
         @"quit",
-        @"separator",
-        @"trackInfo",
         nil] forKey:@"menu"];
 
     [df setInteger:5 forKey:@"SongsInAdvance"];
@@ -295,6 +290,13 @@ static PreferencesController *prefs = nil;
     [df setBool:YES forKey:@"showArtist"];
     [df setBool:NO forKey:@"showAlbum"];
     [df setBool:NO forKey:@"showTime"];
+
+    [df setInteger:2100 forKey:@"statusWindowAppearanceEffect"];
+    [df setInteger:2101 forKey:@"statusWindowVanishEffect"];
+    [df setFloat:0.8 forKey:@"statusWindowAppearanceSpeed"];
+    [df setFloat:0.8 forKey:@"statusWindowVanishSpeed"];
+    [df setFloat:4.0 forKey:@"statusWindowVanishDelay"];
+    [df setBool:YES forKey:@"showSongInfoOnChange"];
 
     [df synchronize];
     
@@ -723,6 +725,16 @@ static PreferencesController *prefs = nil;
             [launchAtLoginCheckbox setState:NSOnState];
         }
     }
+    
+    // Setup the positioning controls
+    
+    // Setup effects controls
+    [appearanceEffectPopup selectItem:[appearanceEffectPopup itemAtIndex:[appearanceEffectPopup indexOfItemWithTag:[df integerForKey:@"statusWindowAppearanceEffect"]]]];
+    [vanishEffectPopup     selectItem:[vanishEffectPopup     itemAtIndex:[vanishEffectPopup     indexOfItemWithTag:[df integerForKey:@"statusWindowVanishEffect"]]]];
+    [appearanceSpeedSlider setFloatValue:-([df floatForKey:@"statusWindowAppearanceSpeed"])];
+    [vanishSpeedSlider     setFloatValue:-([df floatForKey:@"statusWindowVanishSpeed"])];
+    [vanishDelaySlider     setFloatValue:[df floatForKey:@"statusWindowVanishDelay"]];
+    [showOnChangeCheckbox  setState:([df boolForKey:@"showSongInfoOnChange"] ? NSOnState : NSOffState)];
 }
 
 - (IBAction)changeMenus:(id)sender

@@ -18,12 +18,14 @@
             OUTLETS = {
                 albumCheckbox = NSButton; 
                 allTableView = NSTableView; 
+                appearanceEffectPopup = NSPopUpButton; 
+                appearanceSpeedSlider = NSSlider; 
                 artistCheckbox = NSButton; 
                 keyComboField = NSTextField; 
                 keyComboPanel = NSPanel; 
                 launchAtLoginCheckbox = NSButton; 
                 launchPlayerAtLaunchCheckbox = NSButton; 
-                menuTableView = NSTableView; 
+                menuTableView = CustomMenuTableView; 
                 nameCheckbox = NSButton; 
                 nextTrackButton = NSButton; 
                 playPauseButton = NSButton; 
@@ -31,6 +33,7 @@
                 ratingCheckbox = NSButton; 
                 ratingDecrementButton = NSButton; 
                 ratingIncrementButton = NSButton; 
+                showOnChangeCheckbox = NSButton; 
                 showPlayerButton = NSButton; 
                 songsInAdvance = NSTextField; 
                 toggleLoopButton = NSButton; 
@@ -39,6 +42,9 @@
                 trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
                 upcomingSongsButton = NSButton; 
+                vanishDelaySlider = NSSlider; 
+                vanishEffectPopup = NSPopUpButton; 
+                vanishSpeedSlider = NSSlider; 
                 volumeDecrementButton = NSButton; 
                 volumeIncrementButton = NSButton; 
                 window = NSWindow; 

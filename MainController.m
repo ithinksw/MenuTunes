@@ -695,6 +695,25 @@ static MainController *sharedController;
     [statusWindowController showShuffleWindow:newShuffleEnabled];
 }
 
+- (void)registerNowOK
+{
+    [[StatusWindow sharedWindow] setLocked:NO];
+    [[StatusWindow sharedWindow] vanish:self];
+    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
+
+    [self blingNow];
+}
+
+- (void)registerNowCancel
+{
+    [[StatusWindow sharedWindow] setLocked:NO];
+    [[StatusWindow sharedWindow] vanish:self];
+    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
+
+    [NSApp terminate];
+}
+
+
 /*************************************************************************/
 #pragma mark -
 #pragma mark WORKSPACE NOTIFICATION HANDLERS

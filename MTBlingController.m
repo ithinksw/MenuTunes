@@ -49,7 +49,7 @@
 
     [window center];
     [window makeKeyAndOrderFront:nil];
-    [window setLevel:NSStatusWindowLevel];
+//  [window setLevel:NSStatusWindowLevel];
 }
 
 - (void)showPanelIfNeeded

@@ -228,7 +228,7 @@ static StatusWindowController *sharedController;
 
 - (void)showRegistrationQueryWindow
 {
-    NSString *message = @"xxjghsdkfj\nHAHA";
+    NSString *message = @"Your 7-day unlimited trial period has elapsed.\nYou must register to continue using MenuTunes.";
 
     [_window setImage:[NSImage imageNamed:@"Register"]];
     [_window buildDialogWindowWithMessage:message
