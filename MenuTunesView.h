@@ -1,7 +1,7 @@
 /*
  *	MenuTunes
  *  MenuTunesView
- *    NSStatusItem Menu View
+ *    App Controller Class
  *
  *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
  *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
@@ -17,7 +17,9 @@
 
 @interface MenuTunesView : NSView
 {
-    NSDictionary *images;
+    NSImage *image;
+    NSImage *altImage;
+    NSImage *curImage;
 }
 
 @end

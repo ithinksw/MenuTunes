@@ -7,17 +7,15 @@
 {
     if ( (self = [super initWithFrame:frame]) )
     {
-        images = [[NSDictionary alloc] initWithObjectsAndKeys:
-            [NSImage imageNamed:@"menu"], @"normal",
-            [NSImage imageNamed:@"selected_image"],	@"selected",
-            nil];
+        image = [NSImage imageNamed:@"menu"];
+        altImage = [NSImage imageNamed:@"selected_image"];
+        curImage = image;
     }
     return self;
 }
 
 - (void)drawRect:(NSRect)rect
 {
-    NSImage *image
     [curImage compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
 }
 
