@@ -803,7 +803,7 @@
     ITSendAEWithString([NSString stringWithFormat:@"data:long(%i), '----':obj { form:'prop', want:type('prop'), seld:type('pFix'), from:'null'() }", fixed], 'core', 'setd', &savedPSN);
     
     //Play MenuTunes playlist
-    //ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'hook', 'Play', &savedPSN);
+    ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'hook', 'Play', &savedPSN);
     
     return YES;
 }
