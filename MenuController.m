@@ -606,7 +606,7 @@
         NSMenu *submenu = [[NSMenu alloc] init];
         ITDebugLog(@"Adding source: %@", name);
         
-        if ( ([[curPlaylist objectAtIndex:i] intValue] == ITMTRemoteiPodSource) && (![self iPodAtPathAutomaticallyUpdates:[curPlaylist objectAtIndex:j]]) ) {
+        if ( ([[curPlaylist objectAtIndex:i] intValue] == ITMTRemoteiPodSource) && [self iPodAtPathAutomaticallyUpdates:[curPlaylist objectAtIndex:j]]) ) {
             ITDebugLog(@"Invalid iPod source.");
         } else {
             for (j = 2; j < [curPlaylist count]; j++) {
