@@ -66,6 +66,7 @@
 
 - (void)rebuildMenu;
 
+- (ITMTRemote *)currentRemote;
 - (void)clearHotKeys;
 - (void)closePreferences;
 

@@ -778,7 +778,11 @@ static PreferencesController *prefs = nil;
 {
     if (aTableView == menuTableView) {
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
-            return [myItems objectAtIndex:rowIndex];
+            NSString *object = [myItems objectAtIndex:rowIndex];
+            if ([object isEqualToString:@"Show Player"]) {
+                return [NSString stringWithFormat:@"Show %@", [[controller currentRemote] playerSimpleName]];
+            }
+            return object;
         } else {
             if ([submenuItems containsObject:[myItems objectAtIndex:rowIndex]])
             {
