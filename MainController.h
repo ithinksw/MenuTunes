@@ -77,6 +77,7 @@
 - (void)setServerStatus:(BOOL)newStatus;
 - (int)connectToServer;
 - (BOOL)disconnectFromServer;
+- (void)checkForRemoteServer;
 - (void)networkError:(NSException *)exception;
 
 //

@@ -308,6 +308,9 @@ static NetworkController *sharedController;
 {
     ITDebugLog(@"Resolved service named %@.", [sender name]);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"useSharedPlayer"] && !connectedToServer) {
+        [[MainController sharedController] checkForRemoteServer];
+    }
     [sender stop];
 }
 

@@ -33,7 +33,6 @@
 @interface MainController(Private)
 - (ITMTRemote *)loadRemote;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
-- (void)checkForRemoteServer;
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
 @end
