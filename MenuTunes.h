@@ -54,6 +54,7 @@
     NSMenuItem *eqItem;
     NSMenu     *eqMenu;
     
+    NSMenuItem *songRatingMenuItem; //Song Rating submenu item
     NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
     
     PreferencesController *prefsController;

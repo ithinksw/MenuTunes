@@ -201,6 +201,7 @@
     
     playPauseMenuItem = nil;
     upcomingSongsItem = nil;
+    songRatingMenuItem = nil;
     playlistItem = nil;
     [playlistMenu release];
     playlistMenu = nil;
@@ -280,35 +281,9 @@
                     action:nil
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Song Rating"]) {
-            /*NSMenu *ratingSubmenu = [[NSMenu alloc] initWithTitle:@""];
-            unichar whiteStarChar = 2606;
-            unichar blackStarChar = 2605;
-            NSString *whiteStar = [NSString stringWithCharacters:&whiteStarChar
-                                            length:1];
-            NSString *blackStar = [NSString stringWithCharacters:&blackStarChar
-                                            length:1];
-            NSData *whiteStarData = [whiteStar dataUsingEncoding:NSUTF8StringEncoding];
-            NSData *blackStarData = [blackStar dataUsingEncoding:NSUTF8StringEncoding];
-            NSString *string = @"";
-            int i;
-            
-            whiteStar = [[NSString alloc] initWithData:whiteStarData encoding:NSUTF8StringEncoding];
-            
-            for (i = 0; i < 5; i++) {
-                string = [string stringByAppendingString:whiteStar];
-            }
-            for (i = 0; i < 6; i++) {
-                NSMenuItem *ratingItem;
-                ratingItem = [ratingSubmenu addItemWithTitle:string action:@selector(setSongRating:) keyEquivalent:@""];
-                [ratingItem setTarget:self];
-                [ratingItem setTag:i * 20];
-                string = [string substringToIndex:4];
-                string = [blackStar stringByAppendingString:string];
-            }
-            [ratingSubmenu autorelease];*/
-            [[menu addItemWithTitle:@"Song Rating"
+            songRatingMenuItem = [menu addItemWithTitle:@"Song Rating"
                     action:nil
-                    keyEquivalent:@""] setSubmenu:ratingMenu];
+                    keyEquivalent:@""];
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         }
@@ -394,6 +369,36 @@
                     [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
                     [menuItem release];
                 }
+                
+                if (songRatingMenuItem) {
+                    int rating = (int)[currentRemote currentSongRating] * 10;
+                    int i;
+                    
+                    for (i = 0; i < 5; i++) {
+                        [[ratingMenu itemAtIndex:i] setState:NSOffState];
+                    }
+                    
+                    switch (rating) {
+                        case 0:
+                            [[ratingMenu itemAtIndex:5] setState:NSOnState];
+                        break;
+                        case 2:
+                            [[ratingMenu itemAtIndex:4] setState:NSOnState];
+                        break;
+                        case 4:
+                            [[ratingMenu itemAtIndex:3] setState:NSOnState];
+                        break;
+                        case 6:
+                            [[ratingMenu itemAtIndex:2] setState:NSOnState];
+                        break;
+                        case 8:
+                            [[ratingMenu itemAtIndex:1] setState:NSOnState];
+                        break;
+                        case 10:
+                            [[ratingMenu itemAtIndex:0] setState:NSOnState];
+                        break;
+                    }
+                }
             }
             
             if ([defaults boolForKey:@"showName"]) {
@@ -409,6 +414,9 @@
                 [menu removeItemAtIndex:[menu indexOfItemWithTitle:@"No Song"]];
                 [menu insertItem:menuItem atIndex:trackInfoIndex];
                 [menuItem release];
+                
+                [songRatingMenuItem setSubmenu:ratingMenu];
+                [songRatingMenuItem setEnabled:YES];
             }
         } else if ([menu indexOfItemWithTitle:@"No Song"] == -1) {
             [menu removeItemAtIndex:trackInfoIndex];
@@ -525,9 +533,14 @@
     [eqMenu release];
     eqMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    enabledItem = [eqMenu addItemWithTitle:@"EQ Enabled"
-                          action:NULL
+    enabledItem = [eqMenu addItemWithTitle:@"Disabled"
+                          action:@selector(toggleEqualizer)
                           keyEquivalent:@""];
+    
+    if ([currentRemote equalizerEnabled] == NO) {
+        [enabledItem setState:NSOnState];
+    }
+    
     [eqMenu addItem:[NSMenuItem separatorItem]];
     
     for (i = 0; i < [eqPresets count]; i++) {
@@ -693,6 +706,9 @@
         [upcomingSongsItem setSubmenu:nil];
         [upcomingSongsItem setEnabled:NO];
         
+        [songRatingMenuItem setSubmenu:nil];
+        [songRatingMenuItem setEnabled:NO];
+        
         menuItem = [[NSMenuItem alloc] initWithTitle:@"No Song" action:nil keyEquivalent:@""];
         [menu insertItem:menuItem atIndex:trackInfoIndex];
         [menuItem release];
@@ -819,8 +835,14 @@
     [playPauseMenuItem setTitle:@"Play"];
 }
 
+- (void)toggleEqualizer
+{
+    [currentRemote setEqualizerEnabled:![currentRemote equalizerEnabled]];
+}
+
 - (IBAction)setSongRating:(id)sender
 {
+    NSLog(@"%f", [currentRemote currentSongRating]);
     NSLog(@"%f", (float)[sender tag] / 100.0);
     [currentRemote setCurrentSongRating:(float)[sender tag] / 100.0];
 }
