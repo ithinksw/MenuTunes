@@ -285,6 +285,11 @@ er's process managment.
 - (NSString *)currentSongElapsed;
 
 /*!
+ * @method currentSongAlbumArt
+ */
+- (NSImage *)currentSongAlbumArt;
+
+/*!
  * @method currentSongRating
  */
 - (float)currentSongRating;

@@ -358,6 +358,11 @@
     return finalString;
 }
 
+- (NSImage *)currentSongAlbumArt
+{
+    return nil;
+}
+
 - (float)currentSongRating
 {
     float temp1;

@@ -159,6 +159,11 @@
     return nil;
 }
 
+- (NSImage *)currentSongAlbumArt
+{
+    return nil;
+}
+
 - (float)currentSongRating
 {
     return nil;
