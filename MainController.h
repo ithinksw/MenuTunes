@@ -43,7 +43,7 @@
     
     MTBlingController *bling;
     NSTimer *registerTimer;
-    BOOL timerUpdating, _checkingForServer;
+    BOOL timerUpdating, _checkingForServer, _popped;
     BOOL blinged;
     NSLock *_serverCheckLock;
 }

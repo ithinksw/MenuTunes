@@ -342,7 +342,12 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current unique identifier.");
-    temp1 = [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN]];
+    int cls = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (cls == 'cURT') ) {
+        temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKey:@"pStT" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    } else {
+        temp1 = [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN]];
+    }
     ITDebugLog(@"Getting current unique identifier done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }

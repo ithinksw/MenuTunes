@@ -930,7 +930,7 @@ static MainController *sharedController;
             }
         }
         
-        if ( [df boolForKey:@"showPlayCount"] ) {
+        if ( [df boolForKey:@"showPlayCount"] && ![self radioIsPlaying] ) {
             NS_DURING
                 playCount = [[self currentRemote] currentSongPlayCount];
             NS_HANDLER
@@ -991,8 +991,12 @@ static MainController *sharedController;
 
 - (void)popupMenu
 {
-    NSMenu *menu = [menuController menu];
-    [(NSCarbonMenuImpl *)[menu _menuImpl] popUpMenu:menu atLocation:[NSEvent mouseLocation] width:1 forView:nil withSelectedItem:-30 withFont:[NSFont menuFontOfSize:32]];
+    if (!_popped) {
+        NSMenu *menu = [menuController menu];
+        _popped = YES;
+        [(NSCarbonMenuImpl *)[menu _menuImpl] popUpMenu:menu atLocation:[NSEvent mouseLocation] width:1 forView:nil withSelectedItem:-30 withFont:[NSFont menuFontOfSize:32]];
+        _popped = NO;
+    }
 }
 
 - (void)incrementVolume
