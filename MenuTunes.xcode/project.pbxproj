@@ -298,6 +298,12 @@
 //372
 //373
 //374
+		3713879D065F83FB006A543D = {
+			fileRef = 3740714D05ACE0B500CC2142;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		3740714D05ACE0B500CC2142 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -307,12 +313,6 @@
 			sourceTree = SOURCE_ROOT;
 		};
 		3740714E05ACE0B500CC2142 = {
-			fileRef = 3740714D05ACE0B500CC2142;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		3740714F05ACE0B500CC2142 = {
 			fileRef = 3740714D05ACE0B500CC2142;
 			isa = PBXBuildFile;
 			settings = {
@@ -428,7 +428,7 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = "/Volumes/Data/Desktop/ITFoundation/build /Volumes/Data/Desktop/ITKit/build";
+				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
@@ -1651,8 +1651,8 @@
 				7C95A03805A928A300B4F576,
 				7C95A0E905A92B0700B4F576,
 				7C95A0F005A92B4800B4F576,
-				3740714F05ACE0B500CC2142,
 				3740716D05ACE20500CC2142,
+				3713879D065F83FB006A543D,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1093,7 +1093,8 @@ static MainController *sharedController;
         currentRemote = [[[networkController networkObject] remote] retain];
         
         [self setupHotKeys];
-        playerRunningState = ITMTRemotePlayerRunning;
+        //playerRunningState = ITMTRemotePlayerRunning;
+        playerRunningState = [[self currentRemote] playerRunningState];
         
         [refreshTimer invalidate];
         refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
@@ -1186,7 +1187,7 @@ static MainController *sharedController;
 - (void)applicationLaunched:(NSNotification *)note
 {
     NS_DURING
-        if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]]) {
+        if (!note || ([[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]] && ![[NetworkController sharedController] isConnectedToServer])) {
             ITDebugLog(@"Remote application launched.");
             playerRunningState = ITMTRemotePlayerRunning;
             [[self currentRemote] begin];

@@ -13,7 +13,7 @@
 #import <sys/types.h>
 #import <sys/stat.h>
 
-#import <ITFoundation/ITFoundation.h>
+#import <ITFoundation/ITLoginItem.h>
 
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
@@ -48,7 +48,6 @@
 - (void)repopulateEffectPopupsForVerticalPosition:(ITVerticalWindowPosition)vPos horizontalPosition:(ITHorizontalWindowPosition)hPos;
 - (BOOL)effect:(Class)effectClass supportsVerticalPosition:(ITVerticalWindowPosition)vPos withHorizontalPosition:(ITHorizontalWindowPosition)hPos;
 - (IBAction)changeMenus:(id)sender;
-- (void)setLaunchesAtLogin:(BOOL)flag;
 @end
 
 
@@ -211,7 +210,7 @@ static PreferencesController *prefs = nil;
 {
     ITDebugLog(@"Changing general setting of tag %i.", [sender tag]);
     if ( [sender tag] == 1010) {
-        [self setLaunchesAtLogin:SENDER_STATE];
+        //ITSetApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath], SENDER_STATE);
     } else if ( [sender tag] == 1020) {
         [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
     } else if ( [sender tag] == 1030) {
@@ -519,11 +518,6 @@ static PreferencesController *prefs = nil;
 
 - (void)registerDefaults
 {
-    BOOL found = NO;
-    NSMutableDictionary *loginWindow;
-    NSMutableArray *loginArray;
-    NSEnumerator *loginEnum;
-    id anItem;
     ITDebugLog(@"Registering defaults.");
     [df setObject:[NSArray arrayWithObjects:
         @"trackInfo",
@@ -564,20 +558,9 @@ static PreferencesController *prefs = nil;
     
     [df synchronize];
     
-    loginWindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-    loginArray = [loginWindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-    loginEnum = [loginArray objectEnumerator];
-
-    while ( (anItem = [loginEnum nextObject]) ) {
-        if ( [[[anItem objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]] ) {
-            found = YES;
-        }
-    }
-    [loginWindow release];
-    
-    if (!found) {
+    /*if (ITDoesApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath])) {
         [[StatusWindowController sharedController] showSetupQueryWindow];
-    }
+    }*/
 }
 
 - (void)autoLaunchOK
@@ -586,7 +569,7 @@ static PreferencesController *prefs = nil;
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
     
-    [self setLaunchesAtLogin:YES];
+    //ITSetApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath], YES);
 }
 
 - (void)autoLaunchCancel
@@ -766,9 +749,6 @@ static PreferencesController *prefs = nil;
 
 - (void)setupUI
 {
-    NSMutableDictionary *loginwindow;
-    NSMutableArray      *loginarray;
-    NSEnumerator   *loginEnum;
     NSEnumerator   *keyArrayEnum;
     NSString       *serverName;
     NSData         *colorData;
@@ -814,16 +794,9 @@ static PreferencesController *prefs = nil;
     
     // Set the launch at login checkbox state
     ITDebugLog(@"Setting launch at login state.");
-    [df synchronize];
-    loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-    loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-    
-    loginEnum = [loginarray objectEnumerator];
-    while ( (anItem = [loginEnum nextObject]) ) {
-        if ([[[anItem objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
-            [launchAtLoginCheckbox setState:NSOnState];
-        }
-    }
+    /*if (ITDoesApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath])) {
+        [launchAtLoginCheckbox setState:NSOnState];
+    }*/
     
     // Set the launch player checkbox state
     ITDebugLog(@"Setting launch player with MenuTunes state.");
@@ -1023,36 +996,6 @@ static PreferencesController *prefs = nil;
     if ([[NetworkController sharedController] isConnectedToServer]) {
         [controller timerUpdate];
     }
-}
-
-- (void)setLaunchesAtLogin:(BOOL)flag
-{
-    NSMutableDictionary *loginwindow;
-    NSMutableArray *loginarray;
-    ITDebugLog(@"Setting launches at login: %i", flag);
-    [df synchronize];
-    loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-    loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-    
-    if (flag) {
-        NSDictionary *itemDict = [NSDictionary dictionaryWithObjectsAndKeys:
-        [[NSBundle mainBundle] bundlePath], @"Path",
-        [NSNumber numberWithInt:0], @"Hide", nil];
-        [loginarray addObject:itemDict];
-    } else {
-        int i;
-        for (i = 0; i < [loginarray count]; i++) {
-            NSDictionary *tempDict = [loginarray objectAtIndex:i];
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
-                [loginarray removeObjectAtIndex:i];
-                break;
-            }
-        }
-    }
-    [df setPersistentDomain:loginwindow forName:@"loginwindow"];
-    [df synchronize];
-    [loginwindow release];
-    ITDebugLog(@"Finished setting launches at login.");
 }
 
 
