@@ -42,6 +42,25 @@
     return YES;
 }
 
+- (PlayerState)playerState
+{
+    NSString *result = [self runScriptAndReturnResult:@"get player state"];
+    
+    if ([result isEqualToString:@"playing"]) {
+        return playing;
+    } else if ([result isEqualToString:@"paused"]) {
+        return paused;
+    } else if ([result isEqualToString:@"stopped"]) {
+        return stopped;
+    } else if ([result isEqualToString:@"rewinding"]) {
+        return rewinding;
+    } else if ([result isEqualToString:@"fast forwarding"]) {
+        return forwarding;
+    }
+    
+    return stopped;
+}
+
 - (NSArray *)playlists
 {
     int i;
@@ -198,6 +217,21 @@
             appPSN:[self iTunesPSN]];
     return YES;
 }
+
+- (BOOL)fastForward
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Fast"
+            appPSN:[self iTunesPSN]];
+    return YES;
+}
+
+- (BOOL)rewind
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Rwnd"
+            appPSN:[self iTunesPSN]];
+    return YES;
+}
+
 
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {

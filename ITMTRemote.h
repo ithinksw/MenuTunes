@@ -28,6 +28,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+typedef enum {stopped = -1, paused, playing, rewinding, forwarding} PlayerState;
+
 /*! @protocol ITMTRemote
  *  @abstract Declares what a MenuTunes Remote must be able to do.
  *  @discussion A MenuTunes Remote must be able to return and change state information.
@@ -77,6 +79,8 @@
  */
 - (BOOL)halt;
 
+- (PlayerState)playerState;
+
 - (NSArray *)playlists;
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;
 - (NSString *)classOfPlaylistAtIndex:(int)index;
@@ -99,6 +103,8 @@
 - (BOOL)pause;
 - (BOOL)goToNextSong;
 - (BOOL)goToPreviousSong;
+- (BOOL)fastForward;
+- (BOOL)rewind;
 
 - (BOOL)switchToPlaylistAtIndex:(int)index;
 - (BOOL)switchToSongAtIndex:(int)index;

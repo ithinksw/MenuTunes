@@ -33,6 +33,11 @@
     return NO;
 }
 
+- (PlayerState)playerState
+{
+    return stopped;
+}
+
 - (NSArray *)playlists
 {
     return nil;
@@ -119,6 +124,16 @@
 }
 
 - (BOOL)goToPreviousSong
+{
+    return NO;
+}
+
+- (BOOL)fastForward
+{
+    return NO;
+}
+
+- (BOOL)rewind
 {
     return NO;
 }

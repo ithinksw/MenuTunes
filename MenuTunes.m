@@ -770,6 +770,7 @@ andEventID:(AEEventID)eventID
 - (void)playPause:(id)sender
 {
     NSString *state = [self runScriptAndReturnResult:@"return player state"];
+    NSLog(@"%i", [currentRemote playerState]);
     if ([state isEqualToString:@"playing"]) {
         [currentRemote play];
         [playPauseMenuItem setTitle:@"Play"];
@@ -795,21 +796,25 @@ isEqualToString:@"rewinding"]) {
 
 - (void)fastForward:(id)sender
 {
-    [self sendAEWithEventClass:'hook' andEventID:'Fast'];
+    [currentRemote fastForward];
 }
 
 - (void)rewind:(id)sender
 {
-    [self sendAEWithEventClass:'hook' andEventID:'Rwnd'];
+    [currentRemote rewind];
 }
 
+//
+//
 // Plugin independent selectors
-
+//
+//
 - (void)quitMenuTunes:(id)sender
 {
     [NSApp terminate:self];
 }
 
+//How is this going to work, now that we're pluginized?
 - (void)openiTunes:(id)sender
 {
     [[NSWorkspace sharedWorkspace] launchApplication:@"iTunes"];
@@ -957,25 +962,39 @@ isEqualToString:@"rewinding"]) {
     switch (code)
     {
         case 36:
+            charcode = '\r';
         break;
         
         case 48:
+            charcode = '\t';
         break;
         
+        //Space -- ARGH!
         case 49:
+        {
+            /*MenuRef menuRef = _NSGetCarbonMenu([item menu]);
+            NSLog(@"%@", menuRef);
+            SetMenuItemCommandKey(menuRef, 0, NO, 49);
+            SetMenuItemModifiers(menuRef, 0, kMenuNoCommandModifier);
+            SetMenuItemKeyGlyph(menuRef, 0, kMenuBlankGlyph);
+            charcode = 'b';*/
+        }
         break;
         
         case 51:
             charcode = NSDeleteFunctionKey;
         break;
-                
+        
         case 53:
+            charcode = '\e';
         break;
-                
+        
         case 71:
+            charcode = '\e';
         break;
         
         case 76:
+            charcode = '\r';
         break;
         
         case 96:
@@ -1031,6 +1050,7 @@ isEqualToString:@"rewinding"]) {
         break;
         
         case 115:
+            charcode = NSHomeFunctionKey;
         break;
         
         case 116:
@@ -1088,7 +1108,7 @@ isEqualToString:@"rewinding"]) {
         keyTrans = KeyTranslate(kchr, code, &state);
         charCode = keyTrans;
         [item setKeyEquivalent:[NSString stringWithCString:&charCode length:1]];
-    } else {
+    } else if (charcode != 'b') {
         [item setKeyEquivalent:[NSString stringWithCharacters:&charcode length:1]];
     }
 }
