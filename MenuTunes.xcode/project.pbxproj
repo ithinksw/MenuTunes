@@ -301,9 +301,10 @@
 		3740714D05ACE0B500CC2142 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
-			path = ITFoundation.framework;
-			refType = 4;
-			sourceTree = "<group>";
+			name = ITFoundation.framework;
+			path = ../ITFoundation/build/ITFoundation.framework;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		3740714E05ACE0B500CC2142 = {
 			fileRef = 3740714D05ACE0B500CC2142;
