@@ -518,6 +518,10 @@
                 }
             }
         }
+        
+        if ([upcomingSongsMenu numberOfItems] == 0) {
+            [upcomingSongsMenu addItemWithTitle:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.") action:NULL keyEquivalent:@""];
+        }
     }
     ITDebugLog(@"Done Building \"Upcoming Songs\" menu.");
     return upcomingSongsMenu;

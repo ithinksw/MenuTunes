@@ -741,7 +741,6 @@ static MainController *sharedController;
 - (void)showUpcomingSongs
 {
     int numSongs;
-    
     NS_DURING
         numSongs = [[self currentRemote] numberOfSongsInPlaylistAtIndex:[[self currentRemote] currentPlaylistIndex]];
     NS_HANDLER
@@ -751,8 +750,8 @@ static MainController *sharedController;
     ITDebugLog(@"Showing upcoming songs status window.");
     NS_DURING
         if (numSongs > 0) {
-            NSMutableArray *songList = [NSMutableArray arrayWithCapacity:5];
             int numSongsInAdvance = [df integerForKey:@"SongsInAdvance"];
+            NSMutableArray *songList = [NSMutableArray arrayWithCapacity:numSongsInAdvance];
             int curTrack = [[self currentRemote] currentSongIndex];
             int i;
     
@@ -760,6 +759,10 @@ static MainController *sharedController;
                 if (i <= numSongs) {
                     [songList addObject:[[self currentRemote] songTitleAtIndex:i]];
                 }
+            }
+            
+            if ([songList count] == 0) {
+                [songList addObject:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.")];
             }
             
             [statusWindowController showUpcomingSongsWindowWithTitles:songList];
