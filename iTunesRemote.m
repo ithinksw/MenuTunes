@@ -77,7 +77,7 @@
             return ITMTRemotePlayerForwarding;
     }
     
-    return stopped;
+    return ITMTRemotePlayerStopped;
 }
 
 - (NSArray *)playlists
@@ -91,7 +91,7 @@
 		  const long j = i;
 		  NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
 		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-		  NSLog(@"sent event cur %d max %d",i,numPlaylists);
+		  //NSLog(@"sent event cur %d max %d",i,numPlaylists);
 		  [playlists addObject:theObj];
 	   }
 	   return [playlists autorelease];

@@ -44,7 +44,7 @@
     
     menu = [[NSMenu alloc] initWithTitle:@""];
     
-    if ( ( [currentRemote remotePlayerStatus] == ITMTRemotePlayerRunning ) ) {
+    if ( ( [currentRemote playerRunningStatus] == ITMTRemotePlayerRunning ) ) {
         [self remotePlayerLaunched:nil];
     } else {
         [self remotePlayerTerminated:nil];
@@ -322,7 +322,7 @@
     NSMenuItem *menuItem;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if ( ( isAppRunning = ITMTRemotePlayerNotRunning ) ) {
+    if ( ( isAppRunning == ITMTRemotePlayerNotRunning ) ) {
         return;
     }
     
@@ -337,7 +337,6 @@
     if (eqItem) {
         [self rebuildEQPresetsMenu];
     }
-    
     if (trackInfoIndex > -1) {
         NSString *curSongName, *curAlbumName = @"", *curArtistName = @"";
         curSongName = [currentRemote currentSongTitle];
@@ -593,7 +592,7 @@
     int playlist = [currentRemote currentPlaylistIndex];
     ITMTRemotePlayerState playerState = [currentRemote playerState];
     
-    if ((playlist > 0) || playerState != stopped) {
+    if ((playlist > 0) || playerState != ITMTRemotePlayerStopped) {
         int trackPlayingIndex = [currentRemote currentSongIndex];
         
         if (trackPlayingIndex != lastSongIndex) {
@@ -652,7 +651,7 @@
         }
         //Update Play/Pause menu item
         if (playPauseMenuItem){
-            if (playerState == playing) {
+            if (playerState == ITMTRemotePlayerPlaying) {
                 [playPauseMenuItem setTitle:@"Pause"];
             } else {
                 [playPauseMenuItem setTitle:@"Play"];
@@ -701,7 +700,7 @@
     isAppRunning = ITMTRemotePlayerRunning;
     
     //Restart the timer
-    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
+    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
     
     [self rebuildMenu]; //Rebuild the menu since no songs will be playing
     if (playlistItem) {
@@ -772,10 +771,10 @@
 {
     ITMTRemotePlayerState state = [currentRemote playerState];
     
-    if (state == playing) {
+    if (state == ITMTRemotePlayerPlaying) {
         [currentRemote pause];
         [playPauseMenuItem setTitle:@"Play"];
-    } else if ((state == forwarding) || (state == rewinding)) {
+    } else if ((state == ITMTRemotePlayerForwarding) || (state == ITMTRemotePlayerRewinding)) {
         [currentRemote pause];
         [currentRemote play];
     } else {
@@ -796,7 +795,7 @@
 
 - (void)fastForward:(id)sender
 {
-    [currentRemote fastForward];
+    [currentRemote forward];
     [playPauseMenuItem setTitle:@"Play"];
 }
 
