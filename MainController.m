@@ -326,9 +326,10 @@ static MainController *sharedController;
 
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier
 {
-    ITDebugLog(@"Setting latest song identifier to %@", newIdentifier);
+    ITDebugLog(@"Setting latest song identifier:");
+    ITDebugLog(@"   - Identifier: %@", newIdentifier);
     [_latestSongIdentifier autorelease];
-    _latestSongIdentifier = [newIdentifier copy];
+    _latestSongIdentifier = [newIdentifier retain];
 }
 
 - (void)timerUpdate
@@ -766,14 +767,14 @@ static MainController *sharedController;
     NSImage                *art         = nil;
     int                     rating      = -1;
     
+    ITDebugLog(@"Showing track info status window.");
+    
     NS_DURING
         source      = [[self currentRemote] currentSource];
         title       = [[self currentRemote] currentSongTitle];
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    
-    ITDebugLog(@"Showing track info status window.");
     
     if ( title ) {
 
@@ -859,6 +860,7 @@ static MainController *sharedController;
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
     }
+    ITDebugLog(@"Showing current track info status window.");
     [statusWindowController showSongInfoWindowWithSource:source
                                                    title:title
                                                    album:album
