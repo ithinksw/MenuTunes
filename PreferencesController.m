@@ -208,8 +208,8 @@ static PreferencesController *prefs = nil;
 
     [df setObject:[NSArray arrayWithObjects:
         @"playPause",
-        @"nextTrack",
         @"prevTrack",
+        @"nextTrack",
         @"fastForward",
         @"rewind",
         @"showPlayer",
@@ -762,17 +762,17 @@ static PreferencesController *prefs = nil;
         dragData = [pb stringForType:@"MenuTableViewPboardType"];
         dragRow = [dragData intValue];
         temp = [myItems objectAtIndex:dragRow];
-        [myItems removeObjectAtIndex:dragRow];
-        
         if (tableView == menuTableView) {
+            [myItems insertObject:temp atIndex:row];
             if (row > dragRow) {
-                [myItems insertObject:temp atIndex:row - 1];
+                [myItems removeObjectAtIndex:dragRow];
             } else {
-                [myItems insertObject:temp atIndex:row];
+                [myItems removeObjectAtIndex:dragRow + 1];
             }
         } else {
             if (![temp isEqualToString:@"separator"]) {
                 [availableItems addObject:temp];
+                [myItems removeObjectAtIndex:dragRow];
             }
         }
     } else if ([[pb types] containsObject:@"AllTableViewPboardType"]) {
@@ -780,10 +780,11 @@ static PreferencesController *prefs = nil;
         dragRow = [dragData intValue];
         temp = [availableItems objectAtIndex:dragRow];
         
+        [myItems insertObject:temp atIndex:row];
+        
         if (![temp isEqualToString:@"separator"]) {
             [availableItems removeObjectAtIndex:dragRow];
         }
-        [myItems insertObject:temp atIndex:row];
     }
     
     [menuTableView reloadData];
