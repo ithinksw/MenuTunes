@@ -89,9 +89,10 @@ static MainController *sharedController;
     if ([df boolForKey:@"enableSharing"]) {
         [self setServerStatus:YES];
     } else if ([df boolForKey:@"useSharedPlayer"]) {
-        if ([self connectToServer] == 0) {
+        [self checkForRemoteServer:nil];
+        /*if ([self connectToServer] == 0) {
             [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
-        }
+        }*/
     }
     
     //Setup for notification of the remote player launching or quitting
@@ -107,7 +108,7 @@ static MainController *sharedController;
             name:NSWorkspaceDidLaunchApplicationNotification
             object:nil];
     
-    if ( ! [df objectForKey:@"menu"] ) {  // If this is nil, defaults have never been registered.
+    if (![df objectForKey:@"menu"]) {  // If this is nil, defaults have never been registered.
         [[PreferencesController sharedPrefs] registerDefaults];
     }
     
@@ -546,7 +547,7 @@ static MainController *sharedController;
             NSString *path;
             if ( (path = [df stringForKey:@"CustomPlayerPath"]) ) {
             } else {
-                path = [[self currentRemote] playerFullName];
+                pathITDebugLog(@"Showing player interface."); = [[self currentRemote] playerFullName];
             }
             if (![[NSWorkspace sharedWorkspace] launchApplication:path]) {
                 ITDebugLog(@"Error Launching Player");
@@ -1137,7 +1138,13 @@ static MainController *sharedController;
 - (void)checkForRemoteServer:(NSTimer *)timer
 {
     ITDebugLog(@"Checking for remote server.");
-    if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
+    
+    //New code
+    [NSThread detachNewThreadSelector:@selector(runRemoteServerCheck:) toTarget:self withObject:nil];
+    //[timer invalidate];
+    //
+    
+    /*if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
         ITDebugLog(@"Remote server found.");
         [timer invalidate];
         if (![networkController isServerOn] && ![networkController isConnectedToServer]) {
@@ -1145,7 +1152,33 @@ static MainController *sharedController;
         }
     } else {
         ITDebugLog(@"Remote server not found.");
+    }*/
+}
+
+- (void)runRemoteServerCheck:(id)sender
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    ITDebugLog(@"Remote server check running.");
+    if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
+        ITDebugLog(@"Remote server found.");
+        [self performSelectorOnMainThread:@selector(remoteServerFound:) withObject:nil waitUntilDone:NO];
+    } else {
+        ITDebugLog(@"Remote server not found.");
+        [self performSelectorOnMainThread:@selector(remoteServerNotFound:) withObject:nil waitUntilDone:NO];
     }
+    [pool release];
+}
+
+- (void)remoteServerFound:(id)sender
+{
+    if (![networkController isServerOn] && ![networkController isConnectedToServer]) {
+        [[StatusWindowController sharedController] showReconnectQueryWindow];
+    }
+}
+
+- (void)remoteServerNotFound:(id)sender
+{
+    [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:NO];
 }
 
 - (void)networkError:(NSException *)exception
