@@ -540,6 +540,7 @@ static PreferencesController *prefs = nil;
     [df setInteger:5 forKey:@"SongsInAdvance"];
 //  [df setBool:YES forKey:@"showName"];  // Song info will always show song title.
     [df setBool:YES forKey:@"showArtist"];
+    [df setBool:YES forKey:@"showAlbumArtwork"];
     [df setBool:NO forKey:@"showAlbum"];
     [df setBool:NO forKey:@"showTime"];
 
