@@ -65,6 +65,10 @@
 - (BOOL)showPrimaryInterface
 {
     ITDebugLog(@"Showing player primary interface.");
+    
+    //If the window is closed
+    _winClosed = YES;
+    
     //If not minimized and visible
     if ( ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) &&
          ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] != 0) &&
@@ -147,43 +151,49 @@
 
 //Full source awareness
 - (NSArray *)playlists
-{   unsigned long i,k;
+{
+    unsigned long i, k;
     const signed long numSources = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cSrc'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
     NSMutableArray *allSources = [[NSMutableArray alloc] init];
     
     ITDebugLog(@"Getting playlists.");
+    if (numSources == 0) {
+        ITDebugLog(@"No sources.");
+        return nil;
+    }
+    
     for (k = 1; k <= numSources ; k++) {
         const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cPly'), '----':obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() }",k] eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
         unsigned long fourcc = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
         NSString *sourceName = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-        NSNumber *sourceClass;
+        unsigned long class;
         NSMutableArray *aSource = [[NSMutableArray alloc] init];
         [aSource addObject:sourceName];
         switch (fourcc) {
             case 'kTun':
-                sourceClass = [NSNumber numberWithInt:ITMTRemoteRadioSource];
+                class = ITMTRemoteRadioSource;
                 break;
             case 'kDev':
-                sourceClass = [NSNumber numberWithInt:ITMTRemoteGenericDeviceSource];
+                class = ITMTRemoteGenericDeviceSource;
                 break;
             case 'kPod':
-                sourceClass = [NSNumber numberWithInt:ITMTRemoteiPodSource];
+                class = ITMTRemoteiPodSource;
                 break;
             case 'kMCD':
             case 'kACD':
-                sourceClass = [NSNumber numberWithInt:ITMTRemoteCDSource];
+                class = ITMTRemoteCDSource;
                 break;
             case 'kShd':
-                sourceClass = [NSNumber numberWithInt:ITMTRemoteSharedLibrarySource];
+                class = ITMTRemoteSharedLibrarySource;
                 break;
             case 'kUnk':
             case 'kLib':
             default:
-                sourceClass = [NSNumber numberWithInt:ITMTRemoteLibrarySource];
+                class = ITMTRemoteLibrarySource;
                 break;
         }
-        ITDebugLog(@"Adding source %@ of type %i", sourceName, [sourceClass intValue]);
-        [aSource addObject:sourceClass];
+        ITDebugLog(@"Adding source %@ of type %i", sourceName, class);
+        [aSource addObject:[NSNumber numberWithInt:class]];
         for (i = 1; i <= numPlaylists; i++) {
             NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%u), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } } }",i,k];
             NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
@@ -322,9 +332,6 @@
 {
     int temp1;
     ITDebugLog(@"Getting current song index.");
-    
-    if ([self currentSource] == ITMTRemoteRadioSource)
-    
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting current song index done.");
     return temp1;

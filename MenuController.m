@@ -497,7 +497,6 @@
     if (_currentPlaylist && !_playingRadio) {
         if (numSongs > 0) {
             int i;
-
             for (i = _currentTrack + 1; i <= _currentTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
                     NSString *curSong;
@@ -575,6 +574,9 @@
     int i, j;
     NS_DURING
         playlists = [[[MainController sharedController] currentRemote] playlists];
+        /*playlists = [NSArray arrayWithObjects:
+                        [NSArray arrayWithObjects:@"Library", [NSNumber numberWithInt:-1], @"Library", @"Playlist", nil],
+                        [NSArray arrayWithObjects:@"Radio", [NSNumber numberWithInt:1], @"Radio", nil], nil];*/
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER

@@ -14,6 +14,7 @@
 
 @interface iTunesRemote : ITMTRemote <ITMTRemote>
 {
+    BOOL _winClosed;
     ProcessSerialNumber savedPSN;
 }
 - (ProcessSerialNumber)iTunesPSN;
