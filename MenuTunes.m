@@ -13,6 +13,7 @@ Things to do:
 #import "StatusWindowController.h"
 
 @interface MenuTunes(Private)
+- (ITMTRemote *)loadRemote;
 - (void)updateMenu;
 - (void)rebuildUpcomingSongsMenu;
 - (void)rebuildPlaylistMenu;
@@ -33,8 +34,17 @@ Things to do:
 #pragma mark INITIALIZATION METHODS
 /*************************************************************************/
 
+- (id)init
+{
+    if ( ( self = [super init] ) ) {
+        remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
+    }
+    return self;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)note
 {
+    currentRemote = [self loadRemote];
     asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
 
     [self registerDefaultsIfNeeded];
@@ -69,6 +79,41 @@ Things to do:
     [statusItem setMenu:menu];
     // Below line of code is for creating builds for Beta Testers
     // [statusItem setToolTip:@[NSString stringWithFormat:@"This Nontransferable Beta (Built on %s) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com).",__DATE__]];
+}
+
+- (ITMTRemote *)loadRemote
+{
+    NSString *folderPath = [[NSBundle mainBundle] builtInPlugInsPath];
+
+    if (folderPath) {
+        NSArray      *bundlePathList = [NSBundle pathsForResourcesOfType:@"remote" inDirectory:folderPath];
+        NSEnumerator *enumerator     = [bundlePathList objectEnumerator];
+        NSString     *bundlePath;
+
+        while ( (bundlePath = [enumerator nextObject]) ) {
+            NSBundle* remoteBundle = [NSBundle bundleWithPath:bundlePath];
+
+            if (remoteBundle) {
+                Class remoteClass = [remoteBundle principalClass];
+
+                if ([remoteClass conformsToProtocol:@protocol(ITMTRemote)] &&
+                    [remoteClass isKindOfClass:[NSObject class]]) {
+
+                    id remote = [remoteClass remote];
+                    [remoteArray addObject:remote];
+                }
+            }
+        }
+
+//      if ( [remoteArray count] > 0 ) {
+//          if ( [remoteArray count] > 1 ) {
+//              [remoteArray sortUsingSelector:@selector(sortAlpha:)];
+//          }
+//          [self loadModuleAccessUI]; //Comment out this line to disable remote visibility
+//      }
+    }
+    NSLog(@"%@", [remoteArray objectAtIndex:0]);
+    return [remoteArray objectAtIndex:0];
 }
 
 

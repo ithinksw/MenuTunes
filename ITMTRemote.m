@@ -13,7 +13,7 @@
     return nil;
 }
 
-- (NSString *)description
+- (NSString *)information;
 {
     return nil;
 }
@@ -23,7 +23,22 @@
     return nil;
 }
 
+- (BOOL)begin
+{
+    return NO;
+}
+
+- (BOOL)halt
+{
+    return NO;
+}
+
 - (NSArray *)sources
+{
+    return nil;
+}
+
+- (int)currentSourceIndex
 {
     return nil;
 }
@@ -33,8 +48,17 @@
     return nil;
 }
 
+- (int)currentPlaylistIndex
+{
+    return nil;
+}
 
-- (NSArray *)songsForCurrentPlaylist
+- (NSString *)songTitleAtIndex
+{
+    return nil;
+}
+
+- (int)currentSongIndex
 {
     return nil;
 }

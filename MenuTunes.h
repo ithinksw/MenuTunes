@@ -15,6 +15,9 @@
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 #import <ITKit/ITKit.h>
+#import <ITFoundation/ITFoundation.h>
+#import <ITMTRemote/ITMTRemote.h>
+
 
 //@class MenuTunesView;
 @class PreferencesController, StatusWindowController;
@@ -24,6 +27,8 @@
     ITStatusItem *statusItem;
     NSMenu *menu;
     ComponentInstance asComponent;
+    ITMTRemote *currentRemote;
+    NSMutableArray *remoteArray;
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;

@@ -32,8 +32,9 @@
  *  @abstract Declares what a MenuTunes Remote must be able to do.
  *  @discussion A MenuTunes Remote must be able to return and change state information.
  */
-
 @protocol ITMTRemote
+
+
 /*! @method remote
  *  @abstract Returns an autoreleased instance of the remote.
  *  @discussion Should be very quick and compact.
@@ -56,7 +57,7 @@
  *  @abstract Returns a description of the remote.
  *  @result An NSString containing the description.
  */
-- (NSString *)description;
+- (NSString *)information;
 
 /*! @method icon:
  *  @abstract Returns a icon for the remote.
