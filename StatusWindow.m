@@ -9,6 +9,19 @@
 #import "StatusWindow.h"
 
 
+#define SW_PAD            24.00
+#define SW_SPACE          24.00
+#define SW_MINW          211.00
+#define SW_BORDER         32.00
+#define SW_METER_PAD       4.00
+#define SW_BUTTON_PAD_R   30.00
+#define SW_BUTTON_PAD_B   24.00
+#define SW_BUTTON_DIV     12.00
+#define SW_BUTTON_EXTRA_W  8.00
+#define SW_SHADOW_SAT      1.25
+#define SMALL_DIVISOR      1.33333
+#define MINI_DIVISOR       1.66667
+
 @interface StatusWindow (Private)
 - (NSRect)setupWindowWithDataSize:(NSSize)dataSize;
 @end
@@ -30,8 +43,9 @@
                                exitMode:exitMode
                          backgroundType:backgroundType] ) ) {
      // Set default values.
-        _image       = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
-        _locked      = NO;
+        _image  = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
+        _locked = NO;
+        _sizing = StatusWindowRegular;
     }
     
     return self;
@@ -61,6 +75,11 @@
     [self setExitMode:(flag ? ITTransientStatusWindowExitOnCommand : ITTransientStatusWindowExitAfterDelay)];
 }
 
+- (void)setSizing:(StatusWindowSizing)newSizing
+{
+    _sizing = newSizing;
+}
+
 
 /*************************************************************************/
 #pragma mark -
@@ -83,6 +102,7 @@
 
 - (NSRect)setupWindowWithDataSize:(NSSize)dataSize
 {
+    float        divisor       = 1.0;
     NSRect       imageRect;
     float        imageWidth    = 0.0;
     float        imageHeight   = 0.0;
@@ -91,35 +111,41 @@
     float        contentHeight = 0.0;
     float        windowWidth   = 0.0;
     float        windowHeight  = 0.0;
-    NSImageView *imageView;
+    ITImageView *imageView;
 
-//  Get image width and height.
-    imageWidth  = [_image size].width;
-    imageHeight = [_image size].height;
+    if ( _sizing == StatusWindowSmall ) {
+        divisor = SMALL_DIVISOR;
+    } else if ( _sizing == StatusWindowMini ) {
+        divisor = MINI_DIVISOR;
+    }
+
+    //  Get image width and height.
+    imageWidth  = ( [_image size].width  / divisor );
+    imageHeight = ( [_image size].height / divisor );
     
 //  Set the content height to the greater of the text and image heights.
     contentHeight = ( ( imageHeight > dataHeight ) ? imageHeight : dataHeight );
 
 //  Setup the Window, and remove all its contentview's subviews.
-    windowWidth  = ( SW_PAD + imageWidth + SW_SPACE + dataWidth + SW_PAD );
-    windowHeight = ( SW_PAD + contentHeight + SW_PAD );
+    windowWidth  = ( (SW_PAD / divisor) + imageWidth + (SW_SPACE / divisor) + dataWidth + (SW_PAD / divisor) );
+    windowHeight = ( (SW_PAD / divisor) + contentHeight + (SW_PAD / divisor) );
     [self setFrame:NSMakeRect( (SW_BORDER + [[self screen] visibleFrame].origin.x),
                                (SW_BORDER + [[self screen] visibleFrame].origin.y),
                                windowWidth,
-                               windowHeight) display:YES];
+                               windowHeight) display:YES animate:YES];
     [[[self contentView] subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
 
 //  Setup, position, fill, and add the image view to the content view.
-    imageRect = NSMakeRect( SW_PAD,
-                            (SW_PAD + ((contentHeight - imageHeight) / 2)),
+    imageRect = NSMakeRect( (SW_PAD / divisor),
+                            ((SW_PAD / divisor) + ((contentHeight - imageHeight) / 2)),
                             imageWidth,
                             imageHeight );
     imageView = [[[NSImageView alloc] initWithFrame:imageRect] autorelease];
     [imageView setImage:_image];
     [[self contentView] addSubview:imageView];
 
-    return NSMakeRect( (SW_PAD + imageWidth + SW_SPACE),
-                       (SW_PAD + ((contentHeight - dataHeight) / 2)),
+    return NSMakeRect( ((SW_PAD / divisor) + imageWidth + (SW_SPACE / divisor)),
+                       ((SW_PAD / divisor) + ((contentHeight - dataHeight) / 2)),
                        dataWidth,
                        dataHeight);
 }
@@ -128,15 +154,26 @@
 {
     if ( ! _locked ) {
 
+        float         divisor       = 1.0;
         float         dataWidth     = 0.0;
         float         dataHeight    = 0.0;
         NSRect        dataRect;
         NSArray      *lines         = [text componentsSeparatedByString:@"\n"];
         id			  oneLine       = nil;
         NSEnumerator *lineEnum      = [lines objectEnumerator];
-        NSFont       *font          = [NSFont fontWithName:@"Lucida Grande Bold" size:18];
-        NSDictionary *attr          = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+        float         baseFontSize  = 18.0;
         ITTextField  *textField;
+        NSFont       *font;
+        NSDictionary *attr;
+
+        if ( _sizing == StatusWindowSmall ) {
+            divisor = SMALL_DIVISOR;
+        } else if ( _sizing == StatusWindowMini ) {
+            divisor = MINI_DIVISOR;
+        }
+
+        font = [NSFont fontWithName:@"Lucida Grande Bold" size:(baseFontSize / divisor)];
+        attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
         
 //      Iterate over each line to get text width and height
         while ( (oneLine = [lineEnum nextObject]) ) {
@@ -179,24 +216,40 @@
 {
     if ( ! _locked ) {
 
-        NSFont       *font        = [NSFont fontWithName:@"Lucida Grande Bold" size:size];
-        NSDictionary *attr        = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-        NSSize        charSize    = [character sizeWithAttributes:attr];
-        float         cellHeight  = ( charSize.height + 4.0 );                 // Add 4.0 for shadow
-        float         cellWidth   = ( (charSize.width) + SW_METER_PAD ); // Add 8.0 for Apple suck
-        float         dataWidth   = ( cellWidth * count );
-        NSRect        dataRect    = [self setupWindowWithDataSize:NSMakeSize(dataWidth, cellHeight)];
+        float         divisor     = 1.0;
+        NSFont       *font;
+        NSDictionary *attr;
+        NSSize        charSize;
+        float         cellHeight;
+        float         cellWidth;
+        float         dataWidth;
+        NSRect        dataRect;
         NSEnumerator *cellEnum    = nil;
         id            aCell       = nil;
         int           activeCount = 0;
         NSColor      *onColor     = [NSColor whiteColor];
         NSColor      *offColor    = [NSColor colorWithCalibratedWhite:0.15 alpha:0.50];
-        NSMatrix     *volMatrix   = [[[NSMatrix alloc] initWithFrame:dataRect
-                                                                mode:NSHighlightModeMatrix
-                                                           cellClass:NSClassFromString(@"ITTextFieldCell")
-                                                        numberOfRows:1
-                                                     numberOfColumns:count] autorelease];
-
+        NSMatrix     *volMatrix;
+        
+        if ( _sizing == StatusWindowSmall ) {
+            divisor = SMALL_DIVISOR;
+        } else if ( _sizing == StatusWindowMini ) {
+            divisor = MINI_DIVISOR;
+        }
+        
+        font        = [NSFont fontWithName:@"Lucida Grande Bold" size:( size / divisor )];
+        attr        = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+        charSize    = [character sizeWithAttributes:attr];
+        cellHeight  = ( charSize.height + 4.0 );  // Add 4.0 for shadow
+        cellWidth   = ( (charSize.width) + (SW_METER_PAD / divisor) );
+        dataWidth   = ( cellWidth * count );
+        dataRect    = [self setupWindowWithDataSize:NSMakeSize(dataWidth, cellHeight)];
+        volMatrix   = [[[NSMatrix alloc] initWithFrame:dataRect
+                                                  mode:NSHighlightModeMatrix
+                                             cellClass:NSClassFromString(@"ITTextFieldCell")
+                                          numberOfRows:1
+                                       numberOfColumns:count] autorelease];
+        
         [volMatrix setCellSize:NSMakeSize(cellWidth, cellHeight)];
         [volMatrix setIntercellSpacing:NSMakeSize(0, 0)];
 

@@ -39,10 +39,10 @@ static MainController *sharedController;
         sharedController = self;
         
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
+        [[PreferencesController sharedPrefs] setController:self];
         statusWindowController = [StatusWindowController sharedController];
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
-        [[PreferencesController sharedPrefs] setController:self];
         timerUpdating = NO;
         blinged = NO;
     }

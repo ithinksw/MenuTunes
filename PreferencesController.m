@@ -469,6 +469,9 @@ static PreferencesController *prefs = nil;
             [self setCustomColor:[NSColor colorWithCalibratedWhite:0.15 alpha:0.70] updateWell:YES];
         }
 
+    } else if ( [sender tag] == 2095) {
+        [sw vanish:self];
+        [df setInteger:[sender indexOfSelectedItem] forKey:@"statusWindowSizing"];
     }
     
     [df synchronize];
@@ -517,8 +520,12 @@ static PreferencesController *prefs = nil;
     [df setFloat:0.8 forKey:@"statusWindowAppearanceSpeed"];
     [df setFloat:0.8 forKey:@"statusWindowVanishSpeed"];
     [df setFloat:4.0 forKey:@"statusWindowVanishDelay"];
+    [df setInteger:(int)ITWindowPositionBottom forKey:@"statusWindowVerticalPosition"];
+    [df setInteger:(int)ITWindowPositionLeft forKey:@"statusWindowHorizontalPosition"];
     [df setBool:YES forKey:@"showSongInfoOnChange"];
-
+    
+    [df setObject:[NSArchiver archivedDataWithRootObject:[NSColor blueColor]] forKey:@"statusWindowBackgroundColor"];
+    
     [df synchronize];
     
     loginWindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
@@ -727,6 +734,7 @@ static PreferencesController *prefs = nil;
     NSMutableArray *loginarray;
     NSEnumerator *loginEnum, *keyArrayEnum;
     NSString *serverName;
+    NSData *colorData;
     int selectedBGStyle;
     id anItem;
     
@@ -795,8 +803,17 @@ static PreferencesController *prefs = nil;
         [backgroundColorPopup setEnabled:NO];
     }
 
-    [backgroundColorWell setColor:(NSColor *)[NSUnarchiver unarchiveObjectWithData:[df dataForKey:@"statusWindowBackgroundColor"]]];
+    colorData = [df dataForKey:@"statusWindowBackgroundColor"];
+
+    if ( colorData ) {
+        [backgroundColorWell setColor:(NSColor *)[NSUnarchiver unarchiveObjectWithData:colorData]];
+    } else {
+        [backgroundColorWell setColor:[NSColor blueColor]];
+    }
+    
     [showOnChangeCheckbox setState:([df boolForKey:@"showSongInfoOnChange"] ? NSOnState : NSOffState)];
+    
+    [windowSizingPopup selectItem:[windowSizingPopup itemAtIndex:[windowSizingPopup indexOfItemWithTag:[df integerForKey:@"statusWindowSizing"]]]];
 
     // Setup the sharing controls
     if ([df boolForKey:@"enableSharing"]) {

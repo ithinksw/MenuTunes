@@ -60,6 +60,7 @@
     IBOutlet NSPopUpButton *vanishEffectPopup;
     IBOutlet NSSlider *vanishSpeedSlider;
     IBOutlet NSWindow *window;
+    IBOutlet NSPopUpButton *windowSizingPopup;
     IBOutlet NSView *zeroConfView;
 
     MainController *controller;

@@ -58,6 +58,7 @@
                 vanishEffectPopup = NSPopUpButton; 
                 vanishSpeedSlider = NSSlider; 
                 window = NSWindow; 
+                windowSizingPopup = NSPopUpButton; 
                 zeroConfView = NSView; 
             }; 
             SUPERCLASS = NSObject; 

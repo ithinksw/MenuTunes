@@ -14,9 +14,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "ITMTRemote.h"
-
-
-@class StatusWindow;
+#import "StatusWindow.h"
 
 
 typedef enum {
