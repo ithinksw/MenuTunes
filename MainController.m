@@ -71,7 +71,14 @@ static MainController *sharedController;
     if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
         [self applicationLaunched:nil];
     } else {
-        [self applicationTerminated:nil];
+        if ([df boolForKey:@"LaunchPlayerWithMT"])
+        {
+            [self showPlayer];
+        }
+        else
+        {
+            [self applicationTerminated:nil];
+        }
     }
     
     [statusItem setImage:[NSImage imageNamed:@"menu"]];
