@@ -79,7 +79,22 @@
     return nil;
 }
 
+- (NSArray *)artists
+{
+    return nil;
+}
+
+- (NSArray *)albums
+{
+    return nil;
+}
+
 - (int)numberOfSources
+{
+    return nil;
+}
+
+- (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
     return nil;
 }

@@ -42,7 +42,7 @@ typedef enum {
 {
     NSMutableArray *_menuLayout;
     NSMenu *_currentMenu;
-    NSMenu *_ratingMenu, *_upcomingSongsMenu, *_eqMenu, *_playlistsMenu; //Submenus
+    NSMenu *_ratingMenu, *_upcomingSongsMenu, *_eqMenu, *_playlistsMenu, *_artistsMenu; //Submenus
     
     int _currentPlaylist, _currentTrack;
     BOOL _playingRadio;

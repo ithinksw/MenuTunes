@@ -739,6 +739,7 @@ static PreferencesController *prefs = nil;
         @"trackInfo",
         @"upcomingSongs",
         @"playlists",
+        @"artists",
         @"eqPresets",
         @"songRating",
         @"playPause",
@@ -765,6 +766,7 @@ static PreferencesController *prefs = nil;
     submenuItems = [[NSArray alloc] initWithObjects:
         @"upcomingSongs",
         @"playlists",
+        @"artists",
         @"eqPresets",
         @"songRating",
         nil];
@@ -1015,6 +1017,8 @@ static PreferencesController *prefs = nil;
     ITDebugLog(@"Synchronizing menus");
     [df setObject:myItems forKey:@"menu"];
     [df synchronize];
+    
+    [[controller menuController] performSelector:@selector(rebuildSubmenus) withObject:nil afterDelay:0.0];
     
     //If we're connected over a network, refresh the menu immediately
     if ([[NetworkController sharedController] isConnectedToServer]) {

@@ -226,6 +226,42 @@
     return [allSources autorelease];
 }
 
+- (NSArray *)artists
+{
+    NSAppleEventDescriptor *rawr = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pArt'), from:obj { form:'indx', want:type('cTrk'), seld:abso($616C6C20$), from:obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:() } } } }", 'core', 'getd', &savedPSN);
+    int i;
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSArray *returnArray;
+    for (i = 1; i <= [rawr numberOfItems]; i++) {
+        NSString *artist = [[rawr descriptorAtIndex:i] stringValue];
+        if (artist && [artist length] && ![array containsObject:artist]) {
+            [array addObject:artist];
+        }
+    }
+    [array sortUsingSelector:@selector(caseInsensitiveCompare:)];
+    returnArray = [NSArray arrayWithArray:array];
+    [array release];
+    return returnArray;
+}
+
+- (NSArray *)albums
+{
+    NSAppleEventDescriptor *rawr = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pAlb'), from:obj { form:'indx', want:type('cTrk'), seld:abso($616C6C20$), from:obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:() } } } }", 'core', 'getd', &savedPSN);
+    int i;
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSArray *returnArray;
+    for (i = 1; i <= [rawr numberOfItems]; i++) {
+        NSString *album = [[rawr descriptorAtIndex:i] stringValue];
+        if (album && [album length] && ![array containsObject:album]) {
+            [array addObject:album];
+        }
+    }
+    [array sortUsingSelector:@selector(caseInsensitiveCompare:)];
+    returnArray = [NSArray arrayWithArray:array];
+    [array release];
+    return returnArray;
+}
+
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
     int temp1;

@@ -205,6 +205,16 @@ er's process managment.
 - (NSArray *)playlists;
 
 /*!
+ * @method artists
+ */
+- (NSArray *)artists;
+
+/*!
+ * @method albums
+ */
+- (NSArray *)albums;
+
+/*!
  * @method numberOfSongsInPlaylistAtIndex:
  */
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;

@@ -21,6 +21,7 @@
 - (NSMenu *)upcomingSongsMenu;
 - (NSMenu *)playlistsMenu;
 - (NSMenu *)eqMenu;
+- (NSMenu *)artistsMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(id <NSMenuItem>)item;
 - (BOOL)iPodWithNameAutomaticallyUpdates:(NSString *)name;
@@ -79,6 +80,11 @@
     
     if ( (tempItem = [_currentMenu itemWithTag:4]) ) {
         ITDebugLog(@"Removing \"EQ Presets\" submenu.");
+        [tempItem setSubmenu:nil];
+    }
+    
+    if ( (tempItem = [_currentMenu itemWithTag:5]) ) {
+        ITDebugLog(@"Removing \"Artists\" submenu.");
         [tempItem setSubmenu:nil];
     }
     
@@ -396,38 +402,50 @@
                 [[MainController sharedController] networkError:localException];
             NS_ENDHANDLER
         } else if ([nextObject isEqualToString:@"songRating"] && currentSongRating) {
-                ITDebugLog(@"Add \"Song Rating\" submenu.");
-                tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
-                        action:nil
-                        keyEquivalent:@""];
-                [tempItem setSubmenu:_ratingMenu];
-                [tempItem setTag:1];
-                if (_playingRadio || !_currentPlaylist) {
-                    [tempItem setEnabled:NO];
-                }
-                
-                itemEnum = [[_ratingMenu itemArray] objectEnumerator];
-                while ( (tempItem = [itemEnum nextObject]) ) {
-                    [tempItem setState:NSOffState];
-                }
-                
-                NS_DURING
-                    [[_ratingMenu itemAtIndex:([mtr currentSongRating] * 5)] setState:NSOnState];
-                NS_HANDLER
-                    [[MainController sharedController] networkError:localException];
-                NS_ENDHANDLER
-            } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
-                ITDebugLog(@"Add \"Upcoming Songs\" submenu.");
-                tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
-                        action:nil
-                        keyEquivalent:@""];
-                [tempItem setSubmenu:_upcomingSongsMenu];
-                [tempItem setTag:2];
-                if (_playingRadio || !_currentPlaylist) {
-                    [tempItem setEnabled:NO];
-                }
+            ITDebugLog(@"Add \"Song Rating\" submenu.");
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
+                    action:nil
+                    keyEquivalent:@""];
+            [tempItem setSubmenu:_ratingMenu];
+            [tempItem setTag:1];
+            if (_playingRadio || !_currentPlaylist) {
+                [tempItem setEnabled:NO];
+            }
+            
+            itemEnum = [[_ratingMenu itemArray] objectEnumerator];
+            while ( (tempItem = [itemEnum nextObject]) ) {
+                [tempItem setState:NSOffState];
+            }
+            
+            NS_DURING
+                [[_ratingMenu itemAtIndex:([mtr currentSongRating] * 5)] setState:NSOnState];
+            NS_HANDLER
+                [[MainController sharedController] networkError:localException];
+            NS_ENDHANDLER
+        } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
+            ITDebugLog(@"Add \"Upcoming Songs\" submenu.");
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
+                    action:nil
+                    keyEquivalent:@""];
+            [tempItem setSubmenu:_upcomingSongsMenu];
+            [tempItem setTag:2];
+            if (_playingRadio || !_currentPlaylist) {
+                [tempItem setEnabled:NO];
+            }
+        } else if ([nextObject isEqualToString:@"artists"]) {
+            ITDebugLog(@"Add \"Artists\" submenu.");
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"artists", @"Artists")
+                    action:nil
+                    keyEquivalent:@""];
+            [tempItem setSubmenu:_artistsMenu];
+            [tempItem setTag:5];
+            
+            itemEnum = [[_eqMenu itemArray] objectEnumerator];
+            while ( (tempItem = [itemEnum nextObject]) ) {
+                [tempItem setState:NSOffState];
             }
         }
+    }
     ITDebugLog(@"Finished building menu.");
     [_currentMenu release];
     _currentMenu = menu;
@@ -468,6 +486,7 @@
 
 - (void)rebuildSubmenus
 {
+    NSArray *menu = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
     ITDebugLog(@"Rebuilding all of the submenus.");
     NS_DURING
         _currentPlaylist = [[[MainController sharedController] currentRemote] currentPlaylistIndex];
@@ -485,6 +504,7 @@
     [_playlistsMenu release];
     ITDebugLog(@" - EQ menu");
     [_eqMenu release];
+    
     ITDebugLog(@"Beginning Rebuild of \"Song Rating\" submenu.");
     _ratingMenu = [self ratingMenu];
     ITDebugLog(@"Beginning Rebuild of \"Upcoming Songs\" submenu.");
@@ -493,6 +513,13 @@
     _playlistsMenu = [self playlistsMenu];
     ITDebugLog(@"Beginning Rebuild of \"EQ Presets\" submenu.");
     _eqMenu = [self eqMenu];
+    
+    if ([menu containsObject:@"artists"]) {
+        ITDebugLog(@"Releasing artists menu");
+        [_artistsMenu release];
+        ITDebugLog(@"Beginning Rebuild of \"Artists\" submenu.");
+        _artistsMenu = [self artistsMenu];
+    }
     ITDebugLog(@"Done rebuilding all of the submenus.");
 }
 
@@ -728,6 +755,27 @@
     return eqMenu;
 }
 
+- (NSMenu *)artistsMenu
+{
+    NSMenu *artistsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSEnumerator *artistsEnumerator;
+    NSString *nextArtist;
+    id <NSMenuItem> tempItem;
+    ITDebugLog(@"Building \"Artists\" menu.");
+    NS_DURING
+        artistsEnumerator = [[[[MainController sharedController] currentRemote] artists] objectEnumerator];
+        while ( (nextArtist = [artistsEnumerator nextObject]) ) {
+            tempItem = [artistsMenu addItemWithTitle:nextArtist action:@selector(performArtistsMenuAction:) keyEquivalent:@""];
+            [tempItem setRepresentedObject:nextArtist];
+            [tempItem setTarget:self];
+        }
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
+    ITDebugLog(@"Done Building \"Artists\" menu");
+    return artistsMenu;
+}
+
 - (void)performMainMenuAction:(id)sender
 {
     switch ( [sender tag] )
@@ -796,6 +844,17 @@
 {
     ITDebugLog(@"Song action selected on item with tag %i", [sender tag]);
     [[MainController sharedController] selectSongAtIndex:[sender tag]];
+}
+
+- (void)performArtistsMenuAction:(id)sender
+{
+    ITDebugLog(@"Artist action selected on item with object %i", [sender representedObject]);
+    /*
+    ** 1 - Artist
+    ** 2 - Album
+    ** 3 - Genre?
+    */
+    //[[MainController sharedController] createAndPlayPlaylistWithTerm:[sender representedObject] ofType:1];
 }
 
 - (void)updateMenu
