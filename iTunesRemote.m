@@ -550,6 +550,7 @@
 {
     ITDebugLog(@"Switching to EQ preset at index %i", index);
     // index should count from 0, but itunes counts from 1, so let's add 1.
+    [self setEqualizerEnabled:YES];
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }",(index+1)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     ITDebugLog(@"Done switching to EQ preset at index %i", index);
     return YES;
