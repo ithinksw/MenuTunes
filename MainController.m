@@ -33,6 +33,7 @@
 @interface MainController(Private)
 - (ITMTRemote *)loadRemote;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
+- (void)checkForRemoteServer;
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
 @end
@@ -89,10 +90,7 @@ static MainController *sharedController;
     if ([df boolForKey:@"enableSharing"]) {
         [self setServerStatus:YES];
     } else if ([df boolForKey:@"useSharedPlayer"]) {
-        [self checkForRemoteServer:nil];
-        /*if ([self connectToServer] == 0) {
-            [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
-        }*/
+        [self checkForRemoteServer];
     }
     
     //Setup for notification of the remote player launching or quitting
@@ -165,7 +163,7 @@ static MainController *sharedController;
                 Class remoteClass = [remoteBundle principalClass];
 
                 if ([remoteClass conformsToProtocol:@protocol(ITMTRemote)] &&
-                    [remoteClass isKindOfClass:[NSObject class]]) {
+                    [(NSObject *)remoteClass isKindOfClass:[NSObject class]]) {
                     id remote = [remoteClass remote];
                     ITDebugLog(@"Adding remote at path %@", bundlePath);
                     [remoteArray addObject:remote];
@@ -1135,24 +1133,10 @@ static MainController *sharedController;
     return YES;
 }
 
-- (void)checkForRemoteServer:(NSTimer *)timer
+- (void)checkForRemoteServer
 {
     ITDebugLog(@"Checking for remote server.");
-    
-    //New code
     [NSThread detachNewThreadSelector:@selector(runRemoteServerCheck:) toTarget:self withObject:nil];
-    //[timer invalidate];
-    //
-    
-    /*if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
-        ITDebugLog(@"Remote server found.");
-        [timer invalidate];
-        if (![networkController isServerOn] && ![networkController isConnectedToServer]) {
-            [[StatusWindowController sharedController] showReconnectQueryWindow];
-        }
-    } else {
-        ITDebugLog(@"Remote server not found.");
-    }*/
 }
 
 - (void)runRemoteServerCheck:(id)sender
@@ -1178,7 +1162,7 @@ static MainController *sharedController;
 
 - (void)remoteServerNotFound:(id)sender
 {
-    [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
 }
 
 - (void)networkError:(NSException *)exception
@@ -1188,7 +1172,7 @@ static MainController *sharedController;
         NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
         if ([self disconnectFromServer]) {
             [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
-            [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
+            [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:YES];
         } else {
             ITDebugLog(@"CRITICAL ERROR, DISCONNECTING!");
         }
@@ -1198,7 +1182,7 @@ static MainController *sharedController;
 - (void)reconnect
 {
     if ([self connectToServer] == 0) {
-        [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:YES];
     }
     [[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];

@@ -1527,7 +1527,7 @@
 				LIBRARY_SEARCH_PATHS = .;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-bind_at_load";
 				PRODUCT_NAME = MenuTunes;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
