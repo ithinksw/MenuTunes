@@ -726,6 +726,10 @@ static PreferencesController *prefs = nil;
         }
     }
     
+    // Set the launch player checkbox state
+    ITDebugLog(@"Setting launch player with MenuTunes state.");
+    [launchPlayerAtLaunchCheckbox setState:[df boolForKey:@"LaunchPlayerWithMT"] ? NSOnState : NSOffState];
+    
     // Setup the positioning controls
     
     // Setup effects controls
