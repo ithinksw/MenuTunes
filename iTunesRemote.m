@@ -721,7 +721,7 @@
 - (BOOL)goToPreviousSong
 {
     ITDebugLog(@"Go to previous track");
-    ITSendAE('hook', 'Prev', &savedPSN);
+    ITSendAE('hook', 'Back', &savedPSN);
     ITDebugLog(@"Go to previous track done");
     return YES;
 }
