@@ -11,6 +11,7 @@
 #import <Carbon/Carbon.h>
 #import <ITMTRemote/ITMTRemote.h>
 #import <ITFoundation/ITFoundation.h>
+#import <ITMac/ITMac.h>
 
 @interface iTunesRemote : ITMTRemote <ITMTRemote>
 {

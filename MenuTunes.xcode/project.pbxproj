@@ -75,8 +75,6 @@
 			children = (
 				1058C7A1FEA54F0111CA2CBB,
 				7C95A0EF05A92B4800B4F576,
-				7C95A03705A928A300B4F576,
-				3740714D05ACE0B500CC2142,
 				3740716C05ACE20500CC2142,
 				7C95A0E805A92B0700B4F576,
 			);
@@ -147,6 +145,20 @@
 			isa = PBXProject;
 			mainGroup = 29B97314FDCFA39411CA2CEA;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7C505D350801F0F000017AF9;
+					ProjectRef = 7C505D290801F0C700017AF9;
+				},
+				{
+					ProductGroup = 7C505D330801F0F000017AF9;
+					ProjectRef = 7C505D2D0801F0D100017AF9;
+				},
+				{
+					ProductGroup = 7C505D370801F0F000017AF9;
+					ProjectRef = 7C505D250801F0BE00017AF9;
+				},
+			);
 			targets = (
 				8D1107260486CEB800E47090,
 				7C331F6705A918EC0088905B,
@@ -243,6 +255,9 @@
 		};
 		29B97323FDCFA39411CA2CEA = {
 			children = (
+				7C505D2D0801F0D100017AF9,
+				7C505D290801F0C700017AF9,
+				7C505D250801F0BE00017AF9,
 				1058C7A0FEA54F0111CA2CBB,
 				1058C7A2FEA54F0111CA2CBB,
 			);
@@ -296,32 +311,6 @@
 //372
 //373
 //374
-		3713879D065F83FB006A543D = {
-			fileRef = 3740714D05ACE0B500CC2142;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		3740714D05ACE0B500CC2142 = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.framework;
-			name = ITFoundation.framework;
-			path = ../ITFoundation/build/ITFoundation.framework;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
-		3740714E05ACE0B500CC2142 = {
-			fileRef = 3740714D05ACE0B500CC2142;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		3740716B05ACE14D00CC2142 = {
-			fileRef = 3740714D05ACE0B500CC2142;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		3740716C05ACE20500CC2142 = {
 			isa = PBXFileReference;
 			lastKnownFileType = archive.ar;
@@ -442,7 +431,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build";
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
@@ -455,7 +443,6 @@
 				OTHER_LDFLAGS = "-seg1addr 0x10000000";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ITMTRemote;
-				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost";
 			};
 			dependencies = (
@@ -532,9 +519,10 @@
 		7C331F6D05A918FB0088905B = {
 			buildActionMask = 2147483647;
 			files = (
+				7C505D440801F1E300017AF9,
+				7C505D450801F1E300017AF9,
 				7C33202105A925BC0088905B,
 				7C33202005A925BA0088905B,
-				3740714E05ACE0B500CC2142,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -549,7 +537,6 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build /Users/kent/Programming/iThink/MenuTunes";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
@@ -558,14 +545,14 @@
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "-framework Foundation -framework AppKit";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = iTunes;
-				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost";
 				WRAPPER_EXTENSION = remote;
 			};
 			dependencies = (
+				7C505D470801F1F000017AF9,
+				7C505D490801F1F400017AF9,
 				7C331FF305A9253F0088905B,
 			);
 			isa = PBXNativeTarget;
@@ -1373,19 +1360,238 @@
 			settings = {
 			};
 		};
-		7C95A03705A928A300B4F576 = {
+		7C505D250801F0BE00017AF9 = {
 			isa = PBXFileReference;
-			lastKnownFileType = wrapper.framework;
-			name = ITKit.framework;
-			path = ../ITKit/build/ITKit.framework;
+			lastKnownFileType = "wrapper.pb-project";
+			name = ITKit.xcode;
+			path = ../ITKit/ITKit.xcode;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
-		7C95A03805A928A300B4F576 = {
-			fileRef = 7C95A03705A928A300B4F576;
+		7C505D290801F0C700017AF9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = "wrapper.pb-project";
+			name = ITMac.xcode;
+			path = ../ITMac/ITMac.xcode;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		7C505D2D0801F0D100017AF9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = "wrapper.pb-project";
+			name = ITFoundation.xcode;
+			path = ../ITFoundation/ITFoundation.xcode;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		7C505D330801F0F000017AF9 = {
+			children = (
+				7C505D340801F0F000017AF9,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		7C505D340801F0F000017AF9 = {
+			fileType = wrapper.framework;
+			isa = PBXReferenceProxy;
+			path = ITFoundation.framework;
+			refType = 3;
+			remoteRef = 7C505D3C0801F0F300017AF9;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D350801F0F000017AF9 = {
+			children = (
+				7C505D360801F0F000017AF9,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		7C505D360801F0F000017AF9 = {
+			fileType = wrapper.framework;
+			isa = PBXReferenceProxy;
+			path = ITMac.framework;
+			refType = 3;
+			remoteRef = 7C505D3D0801F0F300017AF9;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D370801F0F000017AF9 = {
+			children = (
+				7C505D380801F0F000017AF9,
+				7C505D390801F0F000017AF9,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		7C505D380801F0F000017AF9 = {
+			fileType = wrapper.framework;
+			isa = PBXReferenceProxy;
+			path = ITKit.framework;
+			refType = 3;
+			remoteRef = 7C505D3A0801F0F300017AF9;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D390801F0F000017AF9 = {
+			fileType = wrapper.application;
+			isa = PBXReferenceProxy;
+			path = ITKitShowcase.app;
+			refType = 3;
+			remoteRef = 7C505D3B0801F0F300017AF9;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D3A0801F0F300017AF9 = {
+			containerPortal = 7C505D250801F0BE00017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ITKit;
+		};
+		7C505D3B0801F0F300017AF9 = {
+			containerPortal = 7C505D250801F0BE00017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = 7C992F87054F5389000B93EA;
+			remoteInfo = ITKitShowcase;
+		};
+		7C505D3C0801F0F300017AF9 = {
+			containerPortal = 7C505D2D0801F0D100017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ITFoundation;
+		};
+		7C505D3D0801F0F300017AF9 = {
+			containerPortal = 7C505D290801F0C700017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ITMac;
+		};
+		7C505D3E0801F1D300017AF9 = {
+			fileRef = 7C505D340801F0F000017AF9;
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		7C505D3F0801F1D300017AF9 = {
+			fileRef = 7C505D360801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D400801F1D300017AF9 = {
+			fileRef = 7C505D380801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D410801F1D500017AF9 = {
+			fileRef = 7C505D340801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D420801F1D500017AF9 = {
+			fileRef = 7C505D360801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D430801F1D500017AF9 = {
+			fileRef = 7C505D380801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D440801F1E300017AF9 = {
+			fileRef = 7C505D340801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D450801F1E300017AF9 = {
+			fileRef = 7C505D360801F0F000017AF9;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7C505D460801F1F000017AF9 = {
+			containerPortal = 7C505D2D0801F0D100017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITFoundation;
+		};
+		7C505D470801F1F000017AF9 = {
+			isa = PBXTargetDependency;
+			name = "ITFoundation (from ITFoundation.xcode)";
+			targetProxy = 7C505D460801F1F000017AF9;
+		};
+		7C505D480801F1F400017AF9 = {
+			containerPortal = 7C505D290801F0C700017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITMac;
+		};
+		7C505D490801F1F400017AF9 = {
+			isa = PBXTargetDependency;
+			name = "ITMac (from ITMac.xcode)";
+			targetProxy = 7C505D480801F1F400017AF9;
+		};
+		7C505D4A0801F20200017AF9 = {
+			containerPortal = 7C505D290801F0C700017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITMac;
+		};
+		7C505D4B0801F20200017AF9 = {
+			isa = PBXTargetDependency;
+			name = "ITMac (from ITMac.xcode)";
+			targetProxy = 7C505D4A0801F20200017AF9;
+		};
+		7C505D4C0801F20500017AF9 = {
+			containerPortal = 7C505D2D0801F0D100017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITFoundation;
+		};
+		7C505D4D0801F20500017AF9 = {
+			isa = PBXTargetDependency;
+			name = "ITFoundation (from ITFoundation.xcode)";
+			targetProxy = 7C505D4C0801F20500017AF9;
+		};
+		7C505D4E0801F20D00017AF9 = {
+			containerPortal = 7C505D250801F0BE00017AF9;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITKit;
+		};
+		7C505D4F0801F20D00017AF9 = {
+			isa = PBXTargetDependency;
+			name = "ITKit (from ITKit.xcode)";
+			targetProxy = 7C505D4E0801F20D00017AF9;
+		};
+		7C505D860801F49F00017AF9 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			isa = PBXShellScriptBuildPhase;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ranlib libValidate.a";
 		};
 		7C95A0CE05A9299E00B4F576 = {
 			fileEncoding = 4;
@@ -1462,18 +1668,13 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3740716B05ACE14D00CC2142,
+				7C505D3E0801F1D300017AF9,
+				7C505D3F0801F1D300017AF9,
+				7C505D400801F1D300017AF9,
 				7C95A18A05A92B9700B4F576,
-				7C95A18905A92B9500B4F576,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7C95A18905A92B9500B4F576 = {
-			fileRef = 7C95A03705A928A300B4F576;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		7C95A18A05A92B9700B4F576 = {
 			fileRef = 7C331F6805A918EC0088905B;
@@ -1509,6 +1710,7 @@
 //8D4
 		8D1107260486CEB800E47090 = {
 			buildPhases = (
+				7C505D860801F49F00017AF9,
 				8D1107270486CEB800E47090,
 				8D1107290486CEB800E47090,
 				8D11072C0486CEB800E47090,
@@ -1520,7 +1722,6 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build";
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1528,7 +1729,6 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				HEADER_SEARCH_PATHS = "../ITKit/build/ITKit.framework/PrivateHeaders ../ITFoundation/build/ITFoundation.framework/PrivateHeaders";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = .;
@@ -1536,11 +1736,13 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bind_at_load";
 				PRODUCT_NAME = MenuTunes;
-				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
 			};
 			dependencies = (
+				7C505D4D0801F20500017AF9,
+				7C505D4B0801F20200017AF9,
+				7C505D4F0801F20D00017AF9,
 				7C331FF505A925550088905B,
 				7C331FF705A9255A0088905B,
 			);
@@ -1654,13 +1856,14 @@
 		8D11072E0486CEB800E47090 = {
 			buildActionMask = 2147483647;
 			files = (
+				7C505D410801F1D500017AF9,
+				7C505D420801F1D500017AF9,
+				7C505D430801F1D500017AF9,
 				7C33201F05A925AF0088905B,
 				8D11072F0486CEB800E47090,
-				7C95A03805A928A300B4F576,
 				7C95A0E905A92B0700B4F576,
 				7C95A0F005A92B4800B4F576,
 				3740716D05ACE20500CC2142,
-				3713879D065F83FB006A543D,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -13,7 +13,7 @@
 #import <sys/types.h>
 #import <sys/stat.h>
 
-#import <ITFoundation/ITLoginItem.h>
+#import <ITKit/ITLoginItem.h>
 
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
