@@ -384,7 +384,7 @@
 
 - (ProcessSerialNumber)iTunesPSN
 {
-    NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
+    /*NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
     ProcessSerialNumber number;
     int i;
     int count = [apps count];
@@ -401,6 +401,23 @@
                 @"NSApplicationProcessSerialNumberHigh"] intValue];
             number.lowLongOfPSN = [[curApp objectForKey:
                 @"NSApplicationProcessSerialNumberLow"] intValue];
+        }
+    }
+    return number;*/
+    ProcessSerialNumber number;
+    number.highLongOfPSN = kNoProcess;
+    number.lowLongOfPSN = 0;
+    
+    while ( (GetNextProcess(&number) == noErr) ) 
+    {
+        CFStringRef name;
+        if ( (CopyProcessName(&number, &name) == noErr) )
+        {
+            if ([(NSString *)name isEqualToString:@"iTunes"])
+            {
+                return number;
+            }
+            [(NSString *)name release];
         }
     }
     return number;
