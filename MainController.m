@@ -1070,6 +1070,17 @@ static MainController *sharedController;
             refreshTimer = nil;
             [self clearHotKeys];
             playerRunningState = ITMTRemotePlayerNotRunning;
+            
+            if ([df objectForKey:@"ShowPlayer"] != nil) {
+                ITHotKey *hotKey;
+                ITDebugLog(@"Setting up show player hot key.");
+                hotKey = [[ITHotKey alloc] init];
+                [hotKey setName:@"ShowPlayer"];
+                [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ShowPlayer"]]];
+                [hotKey setTarget:self];
+                [hotKey setAction:@selector(showPlayer)];
+                [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+            }
         }
     NS_HANDLER
         [self networkError:localException];

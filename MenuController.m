@@ -532,6 +532,7 @@
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
     NSMenuItem *tempItem;
+    ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
     int i;
     
     NS_DURING
@@ -550,7 +551,17 @@
         [tempItem setTarget:self];
     }
     
-    if (!_playingRadio && _currentPlaylist) {
+    if (source == ITMTRemoteRadioSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteGenericDeviceSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"genericDevice", @"Generic Device") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteiPodSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"iPod", @"iPod") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteCDSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"cd", @"CD") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteSharedLibrarySource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"sharedLibrary", @"Shared Library") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
     ITDebugLog(@"Done Building \"Playlists\" menu");
