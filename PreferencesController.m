@@ -9,6 +9,8 @@
 #import <netinet/in.h>
 #import <arpa/inet.h>
 #import <openssl/sha.h>
+#import <sys/types.h>
+#import <sys/stat.h>
 
 #import <ITFoundation/ITFoundation.h>
 
@@ -147,10 +149,10 @@ static PreferencesController *prefs = nil;
     [passwordPanelTitle setStringValue:@"Password Required"];
     [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"Please enter a password for access to the MenuTunes player named %@ at %@.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
     [passwordPanel setLevel:NSStatusWindowLevel];
-    [NSApp activateIgnoringOtherApps: YES];
-    [window center];
-    [window orderFrontRegardless];
-    [window makeKeyWindow];
+    [NSApp activateIgnoringOtherApps:YES];
+    [passwordPanel center];
+    [passwordPanel orderFrontRegardless];
+    [passwordPanel makeKeyWindow];
     if ([NSApp runModalForWindow:passwordPanel]) {
         return YES;
     } else {
@@ -165,10 +167,10 @@ static PreferencesController *prefs = nil;
     [passwordPanelTitle setStringValue:@"Invalid Password"];
     [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"The password entered for access to the MenuTunes player named %@ at %@ is invalid.  Please provide a new password.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
     [passwordPanel setLevel:NSStatusWindowLevel];
-    [NSApp activateIgnoringOtherApps: YES];
-    [window center];
-    [window orderFrontRegardless];
-    [window makeKeyWindow];
+    [NSApp activateIgnoringOtherApps:YES];
+    [passwordPanel center];
+    [passwordPanel orderFrontRegardless];
+    [passwordPanel makeKeyWindow];
     if ([NSApp runModalForWindow:passwordPanel]) {
         return YES;
     } else {
@@ -197,11 +199,11 @@ static PreferencesController *prefs = nil;
     }
 
     [self resetRemotePlayerTextFields];
-    [NSApp activateIgnoringOtherApps: YES];
+    [launchAtLoginCheckbox becomeFirstResponder];
+    [NSApp activateIgnoringOtherApps:YES];
     [window center];
     [window orderFrontRegardless];
     [window makeKeyWindow];
-    [window performSelector:@selector(makeKeyAndOrderFront:) withObject:self afterDelay:0.0];
 }
 
 - (IBAction)showTestWindow:(id)sender
@@ -234,6 +236,17 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
     } else if ( [sender tag] == 1100) {
         [df setBool:SENDER_STATE forKey:@"showAlbumArtwork"];
+    } else if ( [sender tag] == 1110) {
+        [df setBool:SENDER_STATE forKey:@"runScripts"];
+        if (SENDER_STATE) {
+            [runScriptsCheckbox setState:NSOnState];
+            [showScriptsButton setEnabled:YES];
+        } else {
+            [showScriptsButton setEnabled:NO];
+        }
+    } else if ( [sender tag] == 1120) {
+        mkdir([[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] cString], 0744);
+        [[NSWorkspace sharedWorkspace] openFile:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
     }
     [df synchronize];
 }
@@ -782,6 +795,13 @@ static PreferencesController *prefs = nil;
     [trackNumberCheckbox setState:[df boolForKey:@"showTrackNumber"] ? NSOnState : NSOffState];
     [ratingCheckbox setState:[df boolForKey:@"showTrackRating"] ? NSOnState : NSOffState];
     [albumArtworkCheckbox setState:[df boolForKey:@"showAlbumArtwork"] ? NSOnState : NSOffState];
+    
+    if ([df boolForKey:@"runScripts"]) {
+        [runScriptsCheckbox setState:NSOnState];
+        [showScriptsButton setEnabled:YES];
+    } else {
+        [showScriptsButton setEnabled:NO];
+    }
     
     // Set the launch at login checkbox state
     ITDebugLog(@"Setting launch at login state.");

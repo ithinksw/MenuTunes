@@ -92,10 +92,14 @@ static MainController *sharedController;
         [[PreferencesController sharedPrefs] registerDefaults];
     }
     
-    [StatusItemHack install];
-    statusItem = [[ITStatusItem alloc]
-            initWithStatusBar:[NSStatusBar systemStatusBar]
-            withLength:NSSquareStatusItemLength];
+    if ([df boolForKey:@"ITMTNoStatusItem"]) {
+        statusItem = nil;
+    } else {
+        [StatusItemHack install];
+        statusItem = [[ITStatusItem alloc]
+                initWithStatusBar:[NSStatusBar systemStatusBar]
+                withLength:NSSquareStatusItemLength];
+    }
     
     bling = [[MTBlingController alloc] init];
     [self blingTime];

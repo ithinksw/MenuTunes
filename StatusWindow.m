@@ -180,7 +180,7 @@
     [[[self contentView] subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
 //  Setup, position, fill, and add the image view to the content view.
-    imageRect = NSMakeRect( (SW_PAD / divisor),
+    imageRect = NSMakeRect( (SW_PAD / divisor) + 4,
                             ((SW_PAD / divisor) + ((contentHeight - imageHeight) / 2)),
                             imageWidth,
                             imageHeight );

@@ -45,6 +45,7 @@
     IBOutlet NSTextField *passwordTextField;
     IBOutlet NSMatrix *positionMatrix;
     IBOutlet NSButton *ratingCheckbox;
+    IBOutlet NSButton *runScriptsCheckbox;
     IBOutlet NSTextField *selectedPlayerTextField;
     IBOutlet NSBox *selectPlayerBox;
     IBOutlet NSPanel *selectPlayerSheet;
@@ -53,6 +54,7 @@
     IBOutlet NSButton *sharingPanelOKButton;
     IBOutlet NSTableView *sharingTableView;
     IBOutlet NSButton *showOnChangeCheckbox;
+    IBOutlet NSButton *showScriptsButton;
     IBOutlet NSTextField *songsInAdvance;
     IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
