@@ -654,7 +654,7 @@
             SetMenuItemKeyGlyph(menuRef, 0, kMenuBlankGlyph);
             charcode = 'b';*/
             unichar buffer;
-            [[NSString stringWithString:@"_"] getCharacters:&buffer]; // this will have to do for now :(
+            [[NSString stringWithString:@" "] getCharacters:&buffer]; // this will have to do for now :(
             charcode = buffer;
         }
         break;

@@ -891,7 +891,7 @@ static PreferencesController *prefs = nil;
         
         if ([[[info draggingPasteboard] types] containsObject:@"MenuTableViewPboardType"]) {
             NSString *item = [myItems objectAtIndex:[[[info draggingPasteboard] stringForType:@"MenuTableViewPboardType"] intValue]];
-            if ([item isEqualToString:@"preferences"]) {
+            if ([item isEqualToString:@"preferences"] || [item isEqualToString:@"quit"]) {
                 return NSDragOperationNone;
             }
         }
