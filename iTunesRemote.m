@@ -334,9 +334,10 @@
 
 - (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode
 {
-    char *m00f = NULL;
+    char *m00f;
     switch (repeatMode)
 	   {
+	default:
 	   case ITMTRemotePlayerRepeatOff:
 		  m00f = "kRp0";
 		  break;
@@ -348,7 +349,7 @@
 		  break;
 	   }
 
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s'), '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
