@@ -17,10 +17,8 @@
 #import <ITKit/ITKit.h>
 #import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
-#import <StatusWindow.h>
-
-//@class MenuTunesView;
-@class PreferencesController, StatusWindow;
+#import "PreferencesController.h"
+#import "StatusWindow.h"
 
 @interface MainController : NSObject
 {
@@ -32,8 +30,8 @@
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
     int      trackInfoIndex;
-    int      lastSongIndex;
     int      lastPlaylistIndex;
+    NSString *lastSongIdentifier;
     BOOL     isPlayingRadio;
     
     ITMTRemotePlayerRunningState isAppRunning;
@@ -53,10 +51,10 @@
     NSMenu     *eqMenu;
     
     //For song ratings
-    NSMenuItem *songRatingMenuItem;
+    NSMenuItem *ratingItem;
     NSMenu *ratingMenu;
     
-    NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
+    NSMenuItem *playPauseItem; //Toggle between 'Play' and 'Pause'
     
     PreferencesController *prefsController;
     StatusWindow *statusWindow; //Shows track info and upcoming songs.
