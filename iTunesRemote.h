@@ -17,4 +17,6 @@
     ProcessSerialNumber iTunesPSN;
 }
 - (ProcessSerialNumber)iTunesPSN;
+- (void)applicationLaunched:(NSNotification *)note;
+- (void)applicationTerminated:(NSNotification *)note;
 @end

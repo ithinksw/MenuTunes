@@ -7,17 +7,17 @@
     return [[[iTunesRemote alloc] init] autorelease];
 }
 
-- (NSString *)title
+- (NSString *)remoteTitle
 {
-    return @"iTunes";
+    return @"iTunes Remote";
 }
 
-- (NSString *)information;
+- (NSString *)remoteInformation
 {
-    return @"Default MenuTunes plugin to control iTunes. Written by iThink Software.";
+    return @"Default MenuTunes plugin to control iTunes, by iThink Software.";
 }
 
-- (NSImage *)icon
+- (NSImage *)remoteIcon
 {
     return nil;
 }
@@ -25,11 +25,10 @@
 - (BOOL)begin
 {
     iTunesPSN = [self iTunesPSN];
-
-    //Register for application termination in NSWorkspace
+    
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
-
+    
     return YES;
 }
 
@@ -43,22 +42,36 @@
     return YES;
 }
 
-- (ITMTRemotePlayerRunningStatus)playerRunningStatus
+- (NSString *)playerFullName
+{
+    return @"iTunes";
+}
+
+- (NSString *)playerSimpleName
+{
+    return @"iTunes";
+}
+
+- (NSDictionary *)capabilities
+{
+    return nil;
+}
+
+- (ITMTRemotePlayerRunningStatus)playerRunningState
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
     int i;
     int count = [apps count];
-
+    
     for (i = 0; i < count; i++) {
-        if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
-                isEqualToString:@"iTunes"]) {
+        if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
             return ITMTRemotePlayerRunning;
         }
     }
     return ITMTRemotePlayerNotRunning;
 }
 
-- (ITMTRemotePlayerState)playerState
+- (ITMTRemotePlayerPlayingState)playerPlayingState
 {
     long result = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     
@@ -85,16 +98,14 @@
     long i = 0;
     const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
     NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:numPlaylists];
-
-
-	   for (i = 1; i <= numPlaylists; i++) {
-		  const long j = i;
-		  NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
-		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-		  //NSLog(@"sent event cur %d max %d",i,numPlaylists);
-		  [playlists addObject:theObj];
-	   }
-	   return [playlists autorelease];
+    
+    for (i = 1; i <= numPlaylists; i++) {
+        const long j = i;
+        NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
+        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+        [playlists addObject:theObj];
+    }
+    return [playlists autorelease];
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
@@ -104,18 +115,19 @@
 
 - (NSString *)classOfPlaylistAtIndex:(int)index
 {
-    int realResult = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-
-    if (realResult == 'cRTP') return @"radio tuner playlist";
-    else return @"playlist";
+    int realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    
+    if (realResult == 'cRTP') {
+        return @"radio tuner playlist";
+    } else {
+        return @"playlist";
+    }
 }
 
 - (int)currentPlaylistIndex
 {
     int result;
-    result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     return result;
 }
 
@@ -190,6 +202,29 @@
     return NO;
 }
 
+- (NSArray *)eqPresets
+{
+    int i;
+    long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
+    NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
+    
+    for (i = 1; i <= numPresets; i++) {
+        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+        if (theObj) {
+            [presets addObject:theObj];
+        }
+    }
+    return [presets autorelease];
+}
+
+- (int)currentEQPresetIndex
+{
+    int result;
+    result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    return result;
+}
+
 - (float)volume
 {
     long vol = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pVol" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
@@ -200,27 +235,6 @@
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)volume*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return NO;
-}
-
-- (NSArray *)eqPresets;
-{
-    int i;
-    long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
-    NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
-
-	   for (i = 1; i <= numPresets; i++) {
-		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-		  if (theObj) [presets addObject:theObj];
-	   }
-	   return [presets autorelease];
-}
-
-- (int)currentEQPresetIndex
-{
-    int result;
-    result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd"appPSN:iTunesPSN];
-    return result;
 }
 
 - (BOOL)play
@@ -247,7 +261,7 @@
     return YES;
 }
 
-- (BOOL)fastForward
+- (BOOL)forward
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Fast" appPSN:iTunesPSN];
     return YES;
@@ -258,7 +272,6 @@
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Rwnd" appPSN:iTunesPSN];
     return YES;
 }
-
 
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
