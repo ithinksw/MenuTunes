@@ -72,11 +72,13 @@
 - (BOOL)showPrimaryInterface
 {
     // Make this into AppleEvents... shouldn't be too hard, I'm just too tired to do it right now.
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }",YES] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     // Still have to convert these to AEs:
     //	set visible of browser window 1 to true
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:true($$), ----:obj { form:'prop', want:'prop', seld:'pvis', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     //	set minimized of browser window 1 to false
-    //	set view of browser window 1 to (playlist (index of current playlist))
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:fals($$), ----:obj { form:'prop', want:'prop', seld:'pMin', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+
     return NO;
 }
 
