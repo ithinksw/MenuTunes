@@ -630,8 +630,8 @@
         [indices addObject:[curPlaylist objectAtIndex:2]];
     }
     ITDebugLog(@"Checking the current source.");
-    if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ){
-        tempItem = [playlistsMenu itemAtIndex:[indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] + [playlistsMenu numberOfItems] - 3];
+    if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ) {
+        tempItem = [playlistsMenu itemAtIndex:[playlistsMenu numberOfItems] + [indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] - [indices count]];
         [tempItem setState:NSOnState];
         [[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {

@@ -170,7 +170,7 @@
         unsigned long class;
         if (sourceName) {
             NSMutableArray *aSource = [[NSMutableArray alloc] init];
-            [aSource addObject:[[sourceName copy] autorelease]];
+            [aSource addObject:sourceName];
             switch (fourcc) {
                 case 'kTun':
                     class = ITMTRemoteRadioSource;
@@ -202,7 +202,7 @@
                 NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
                 ITDebugLog(@" - Adding playlist %@", theObj);
                 if (theObj) {
-                    [aSource addObject:[[theObj copy] autorelease]];
+                    [aSource addObject:theObj];
                 }
             }
             [allSources addObject:[aSource autorelease]];
