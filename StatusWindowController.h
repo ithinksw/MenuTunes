@@ -21,7 +21,7 @@
     IBOutlet NSTextField *statusField;
     IBOutlet StatusWindow *statusWindow;
 }
-- (void)setUpcomingSongs:(NSString *)string numSongs:(int)songs;
-- (void)setTrackInfo:(NSString *)string lines:(int)lines;
+- (void)setUpcomingSongs:(NSString *)string;
+- (void)setTrackInfo:(NSString *)string;
 - (void)fadeWindowOut;
 @end

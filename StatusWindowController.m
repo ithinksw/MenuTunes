@@ -12,18 +12,48 @@
     return self;
 }
 
-- (void)setUpcomingSongs:(NSString *)string numSongs:(int)songs
+- (void)setUpcomingSongs:(NSString *)string
 {
+    int size = 0, i;
+    NSArray *lines = [string componentsSeparatedByString:@"\n"];
+    
+    for (i = 0; i < [lines count]; i++) {
+        int temp = [[lines objectAtIndex:i] sizeWithAttributes:[NSDictionary dictionaryWithObject:[NSFont fontWithName:@"Lucida Grande" size:12] forKey:NSFontAttributeName]].width;
+        
+        if (temp > size) {
+            size = temp;
+        }
+    }
+    
+    if (size < 255) {
+        size = 255;
+    }
+    
     [statusField setStringValue:string];
-    [statusWindow setFrame:NSMakeRect(0, 0, 300, 40 + (songs * 17)) display:NO];
+    [statusWindow setFrame:NSMakeRect(0, 0, size + 45, 40 + ([lines count] * 17)) display:NO];
     [statusWindow center];
     [statusWindow makeKeyAndOrderFront:nil];
 }
 
-- (void)setTrackInfo:(NSString *)string lines:(int)lines
+- (void)setTrackInfo:(NSString *)string
 {
+    int size = 0, i;
+    NSArray *lines = [string componentsSeparatedByString:@"\n"];
+    
+    for (i = 0; i < [lines count]; i++) {
+        int temp = [[lines objectAtIndex:i] sizeWithAttributes:[NSDictionary dictionaryWithObject:[NSFont fontWithName:@"Lucida Grande" size:12] forKey:NSFontAttributeName]].width;
+        
+        if (temp > size) {
+            size = temp;
+        }
+    }
+    
+    if (size < 285) {
+        size = 285;
+    }
+    
     [statusField setStringValue:string];
-    [statusWindow setFrame:NSMakeRect(0, 0, 316, 40 + (lines * 17)) display:NO];
+    [statusWindow setFrame:NSMakeRect(0, 0, size + 45, 40 + ([lines count] * 17)) display:NO];
     [statusWindow center];
     [statusWindow makeKeyAndOrderFront:nil];
 }

@@ -275,16 +275,17 @@ Things to do:
                 if ([defaults boolForKey:@"showName"]) {
                     [menu removeItemAtIndex:index + 1];
                 }
-                if (didHaveAlbumName) {
+                if (didHaveAlbumName && [defaults boolForKey:@"showAlbum"]) {
                     [menu removeItemAtIndex:index + 1];
                 }
-                if (didHaveArtistName) {
+                if (didHaveArtistName && [defaults boolForKey:@"showArtist"]) {
                     [menu removeItemAtIndex:index + 1];
                 }
                 if ([defaults boolForKey:@"showTime"]) {
                     [menu removeItemAtIndex:index + 1];
                 }
             }
+            
             if (!isPlayingRadio) {
                 if ([defaults boolForKey:@"showTime"]) {
                     menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", [self runScriptAndReturnResult:@"return time of current track"]]
@@ -350,11 +351,11 @@ Things to do:
         }
         
         if ([defaults boolForKey:@"showArtist"]) {
-            didHaveAlbumName = (([curArtistName length] > 0) ? YES : NO);
+            didHaveArtistName = (([curArtistName length] > 0) ? YES : NO);
         }
             
         if ([defaults boolForKey:@"showAlbum"]) {
-            didHaveArtistName = (([curAlbumName length] > 0) ? YES : NO);
+            didHaveAlbumName = (([curAlbumName length] > 0) ? YES : NO);
         }
     }
 }
@@ -754,7 +755,6 @@ isEqualToString:@"rewinding"]) {
     if (!statusController && [trackName length]) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *stringToShow = @"";
-        int lines = 1;
         
         if ([defaults boolForKey:@"showName"]) {
             if ([defaults boolForKey:@"showArtist"]) {
@@ -763,10 +763,6 @@ isEqualToString:@"rewinding"]) {
             }
             stringToShow = [stringToShow stringByAppendingString:trackName];
             stringToShow = [stringToShow stringByAppendingString:@"\n"];
-            if ([trackName length] > 38) {
-                lines++;
-            }
-            lines++;
         }
         
         if ([defaults boolForKey:@"showAlbum"]) {
@@ -774,7 +770,6 @@ isEqualToString:@"rewinding"]) {
             if ([trackAlbum length]) {
                 stringToShow = [stringToShow stringByAppendingString:trackAlbum];
                 stringToShow = [stringToShow stringByAppendingString:@"\n"];
-                lines++;
             }
         }
         
@@ -782,7 +777,6 @@ isEqualToString:@"rewinding"]) {
             NSString *trackTime = [self runScriptAndReturnResult:@"return time of current track"];
             if ([trackTime length]) {
                 stringToShow = [NSString stringWithFormat:@"%@Total Time: %@\n", stringToShow, trackTime];
-                lines++;
             }
         }
         
@@ -799,7 +793,7 @@ isEqualToString:@"rewinding"]) {
         }
         
         statusController = [[StatusWindowController alloc] init];
-        [statusController setTrackInfo:stringToShow lines:lines];
+        [statusController setTrackInfo:stringToShow];
         [NSTimer scheduledTimerWithTimeInterval:3.0
                                     target:self
                                     selector:@selector(fadeAndCloseStatusWindow)
@@ -828,7 +822,7 @@ isEqualToString:@"rewinding"]) {
                     songs = [songs stringByAppendingString:@"\n"];
                 }
             }
-            [statusController setUpcomingSongs:songs numSongs:numSongsInAdvance];
+            [statusController setUpcomingSongs:songs];
             [NSTimer scheduledTimerWithTimeInterval:3.0
                                              target:self
                                            selector:@selector(fadeAndCloseStatusWindow)
