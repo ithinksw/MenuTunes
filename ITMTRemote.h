@@ -34,32 +34,47 @@
  */
 
 @protocol ITMTRemote
-/*! @method remote:
- *  @abstract Return an autoreleased instance of the remote.
+/*! @method remote
+ *  @abstract Returns an autoreleased instance of the remote.
  *  @discussion Should be very quick and compact.
- * EXAMPLE:
- *   + (id)remote
- *   {
- *       return [[[MyRemote alloc] init] autorelease];
- *   }
- * @result The instance.
+ *  EXAMPLE:
+ *    + (id)remote
+ *    {
+ *        return [[[MyRemote alloc] init] autorelease];
+ *    }
+ *  @result The instance.
  */
 + (id)remote;
 
+/*! @method title:
+ *  @abstract Returns an autoreleased instance of the remote.
+ *  @result An NSString containing the title.
+ */
 - (NSString *)title;
-// Return the title of the remote.
 
+/*! @method description:
+ *  @abstract Returns a description of the remote.
+ *  @result An NSString containing the description.
+ */
 - (NSString *)description;
-// Return a short description of the remote.
 
+/*! @method icon:
+ *  @abstract Returns a icon for the remote.
+ *  @result An NSImage containing the icon.
+ */
 - (NSImage *)icon;
-// Return a 16x16 icon representation for the remote.
 
+/*! @method begin:
+ *  @abstract Sent when the plugin should begin operation.
+ *  @result A result code signifying success.
+ */
 - (BOOL)begin;
-// Sent to the plugin when it should begin operation.
 
+/*! @method halt:
+ *  @abstract Sent when the plugin should cease operation.
+ *  @result A result code signifying success.
+ */
 - (BOOL)halt;
-// Sent to the plugin when it should cease operation.
 
 - (NSArray *)sources;
 - (int)currentSourceIndex;
