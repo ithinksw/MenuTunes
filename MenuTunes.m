@@ -59,7 +59,7 @@ Things to do:
     }
 
     statusItem = [[ITStatusItem alloc] initWithStatusBar:[NSStatusBar systemStatusBar]
-                                              withLength:NSVariableStatusItemLength];
+                                              withLength:NSSquareStatusItemLength];
     
     [statusItem setImage:[NSImage imageNamed:@"menu"]];
     [statusItem setAlternateImage:[NSImage imageNamed:@"selected_image"]];

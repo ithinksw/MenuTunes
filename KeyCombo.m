@@ -54,11 +54,8 @@
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
-{	
-    self = [self init];
-    
-    if( self )
-    {
+{
+    if ( (self = [super init]) ) {
         [aDecoder decodeValueOfObjCType: @encode(short) at: &mKeyCode];
         [aDecoder decodeValueOfObjCType: @encode(long) at: &mModifiers];
     }
@@ -74,9 +71,9 @@
 
 - (BOOL)isEqual:(KeyCombo *)object
 {
-    return ([object isKindOfClass:[KeyCombo class]]) &&
-           ([object keyCode] == [self keyCode]) &&
-           ([object modifiers] == [self modifiers]);
+    return ( ([object isKindOfClass:[KeyCombo class]]) &&
+             ([object keyCode] == [self keyCode])      &&
+             ([object modifiers] == [self modifiers]) );
 }
 
 - (NSString *)description
@@ -101,12 +98,9 @@
 
 - (NSString *)userDisplayRep
 {
-    if ([self isValid] == NO)
-    {
+    if ( ! [self isValid] ) {
         return @"None";
-    }
-    else
-    {
+    } else {
         return [NSString stringWithFormat: @"%@%@",
             [KeyCombo _stringForModifiers: mModifiers],
             [KeyCombo _stringForKeyCode: mKeyCode]];
@@ -115,8 +109,7 @@
 
 + (NSString *)_stringForModifiers: (long)modifiers
 {
-    static long modToChar[4][2] =
-    {
+    static long modToChar[4][2] = {
             { cmdKey, 	0x23180000 },
             { optionKey,	0x23250000 },
             { controlKey,	0x005E0000 },
@@ -127,10 +120,8 @@
     NSString *charStr;
     long i;
     
-    for (i = 0; i < 4; i++)
-    {
-        if (modifiers & modToChar[i][0])
-        {
+    for (i = 0; i < 4; i++) {
+        if (modifiers & modToChar[i][0]) {
             charStr = [NSString stringWithCharacters:(const unichar *)&modToChar[i][1] length:1];
             str = [str stringByAppendingString:charStr];
         }
@@ -148,9 +139,10 @@
 	dict = [self keyCodesDictionary];
 	key = [NSString stringWithFormat: @"%d", keyCode];
 	str = [dict objectForKey: key];
-	
-	if( !str )
+
+    if( !str ) {
 		str = [NSString stringWithFormat: @"%X", keyCode];
+    }
 	
 	return str;
 }
@@ -159,8 +151,7 @@
 {
     static NSDictionary *keyCodes = nil;
     
-    if (keyCodes == nil)
-    {
+    if (keyCodes == nil) {
         NSString *path;
         NSString *contents;
         
@@ -180,12 +171,9 @@
 - (void)setKeyCombo:(KeyCombo *)combo forKey:(NSString *)key
 {
     NSData *data;
-    if (combo)
-    {
+    if (combo) {
         data = [NSArchiver archivedDataWithRootObject:combo];
-    }
-    else
-    {
+    } else {
         data = nil;
     }
     [self setObject:data forKey:key];
@@ -195,15 +183,13 @@
 {
     NSData *data = [self objectForKey:key];
     KeyCombo *combo;
-    if (data)
-    {
-        combo =  [[NSUnarchiver unarchiveObjectWithData:data] retain];
-    }
     
-    if (combo == nil)
-    {
+    if (data) {
+        combo = [[NSUnarchiver unarchiveObjectWithData:data] retain];
+    } else {
         combo = [[KeyCombo alloc] init];
     }
+    
     return combo;
 }
 
