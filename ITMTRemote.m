@@ -154,6 +154,11 @@
     return nil;
 }
 
+- (NSString *)currentSongElapsed
+{
+    return nil;
+}
+
 - (float)currentSongRating
 {
     return nil;

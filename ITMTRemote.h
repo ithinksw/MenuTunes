@@ -280,6 +280,11 @@ er's process managment.
 - (NSString *)currentSongRemaining;
 
 /*!
+ * @method currentSongElapsed
+ */
+- (NSString *)currentSongElapsed;
+
+/*!
  * @method currentSongRating
  */
 - (float)currentSongRating;

@@ -157,7 +157,11 @@
 
     ITDebugLog(@"Getting current source.");   
     
+    
+    fourcc = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber :[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('cntr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    
     fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pKnd" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    
     switch (fourcc) {
         case 'kTun':
             ITDebugLog(@"Getting current source done. Source: Radio.");
@@ -320,6 +324,18 @@
     return [[NSNumber numberWithLong:duration - current] stringValue];
 }
 
+- (NSString *)currentSongElapsed
+{
+    long current;
+    
+    ITDebugLog(@"Getting current song elapsed time.");
+    
+    current = [[ITAppleEventCenter sharedCenter]
+                        sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    ITDebugLog(@"Getting current song elapsed time done.");
+    return [[NSNumber numberWithLong:current] stringValue];
+}
+
 - (float)currentSongRating
 {
     float temp1;
@@ -399,10 +415,17 @@
 - (BOOL)shuffleEnabled
 {
     ITDebugLog(@"Getting shuffle enabled status.");
+    BOOL final;
     int result = [[ITAppleEventCenter sharedCenter]
                 sendTwoTierAEWithRequestedKeyForNumber:@"pShf" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if (result != 0) {
+        final = YES;
+    } else {
+        final = NO;
+    }
+    NSLog(@"shuffleEnabled: final = %i", final);
     ITDebugLog(@"Getting shuffle enabled status done.");
-    return result;
+    return final;
 }
 
 - (BOOL)setShuffleEnabled:(BOOL)enabled
