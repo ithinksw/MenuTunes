@@ -945,18 +945,25 @@ static MainController *sharedController;
 
 - (BOOL)connectToServer
 {
+    int result;
     ITDebugLog(@"Attempting to connect to shared remote.");
+    result = [networkController connectToHost:[df stringForKey:@"sharedPlayerHost"]];
     //Connect
-    if ([networkController connectToHost:[df stringForKey:@"sharedPlayerHost"]]) {
+    if (result == 1) {
         currentRemote = [[[networkController networkObject] remote] retain];
         [self timerUpdate];
         //[refreshTimer invalidate];
         ITDebugLog(@"Connection successful.");
         return YES;
-    } else {
+    } else if (result == 0) {
         ITDebugLog(@"Connection failed.");
         currentRemote = [remoteArray objectAtIndex:0];
         return NO;
+    } else if (result == -1) {
+        ITDebugLog(@"Connection failed.");
+        currentRemote = [remoteArray objectAtIndex:0];
+        return NO;
+        //Do something about the password being invalid
     }
 }
 
@@ -977,7 +984,9 @@ static MainController *sharedController;
     if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
         ITDebugLog(@"Remote server found.");
         [timer invalidate];
-        [[StatusWindowController sharedController] showReconnectQueryWindow];
+        if (![networkController isConnectedToServer]) {
+            [[StatusWindowController sharedController] showReconnectQueryWindow];
+        }
     } else {
         ITDebugLog(@"Remote server not found.");
     }
@@ -986,9 +995,10 @@ static MainController *sharedController;
 - (void)networkError:(NSException *)exception
 {
     ITDebugLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
-    if ([[exception name] isEqualToString:NSPortTimeoutException]) {
+    NSLog(@"%@", [exception reason]);
+    if ([[exception name] isEqualToString:NSPortTimeoutException] && [networkController isConnectedToServer]) {
         NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
-        if ([networkController isConnectedToServer] && [self disconnectFromServer]) {
+        if ([self disconnectFromServer]) {
             [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
         } else {
             ITDebugLog(@"CRITICAL ERROR, DISCONNECTING!");

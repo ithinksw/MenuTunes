@@ -220,9 +220,14 @@ static PreferencesController *prefs = nil;
         [selectSharedPlayerButton setEnabled:state];
         
         if (state) {
+            [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
+            [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
             [controller connectToServer];
         } else {
+            [selectedPlayerTextField setStringValue:@"No shared player selected."];
+            [locationTextField setStringValue:@"-"];
             [controller disconnectFromServer];
+            
         }
     } else if ( [sender tag] == 5050 ) {
         //Do nothing on table view click
@@ -266,11 +271,13 @@ static PreferencesController *prefs = nil;
         [NSApp endSheet:selectPlayerSheet];
         [selectPlayerSheet orderOut:nil];
         
+        [self changeSharingSetting:clientPasswordTextField];
+        
         if ([selectPlayerBox contentView] == manualView) {
             [df setObject:[hostTextField stringValue] forKey:@"sharedPlayerHost"];
         } else {
             if ([sharingTableView selectedRow] > -1) {
-                [df setObject:[NSString stringWithCString:inet_ntoa((*(struct sockaddr_in*)[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sharingTableView selectedRow]] bytes]).sin_addr)] forKey:@"sharedPlayerHost"];
+                [df setObject:[NSString stringWithCString:inet_ntoa((*(struct sockaddr_in*)[[[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sharingTableView selectedRow]] addresses] objectAtIndex:0] bytes]).sin_addr)] forKey:@"sharedPlayerHost"];
             }
         }
         

@@ -23,6 +23,7 @@
     IBOutlet NSPopUpButton *appearanceEffectPopup;
     IBOutlet NSSlider *appearanceSpeedSlider;
     IBOutlet NSButton *artistCheckbox;
+    IBOutlet NSTextField *clientPasswordTextField;
     IBOutlet NSTextField *hostTextField;
     IBOutlet NSTableView *hotKeysTableView;
     IBOutlet NSButton *launchAtLoginCheckbox;

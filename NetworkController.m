@@ -112,7 +112,7 @@ static NetworkController *sharedController;
     }
 }
 
-- (BOOL)connectToHost:(NSString *)host
+- (int)connectToHost:(NSString *)host
 {
     NSData *fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"];
     unsigned char buffer;
@@ -150,18 +150,14 @@ static NetworkController *sharedController;
         if (![clientProxy sendPassword:[[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"]]) {
             ITDebugLog(@"Invalid password!");
             [self disconnect];
-            if ( NSRunCriticalAlertPanel(@"Invalid Password", @"The MenuTunes server you attempted to connect to rejected your password. Would you like to try to reconnect?.", @"Yes", @"No", nil) == NSOKButton ) {
-                return [self connectToHost:host];
-            } else {
-                return NO;
-            }
+            return -1;
         }
     }
     
     ITDebugLog(@"Connected to host: %@", host);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnect) name:NSConnectionDidDieNotification object:clientConnection];
-    connectedToServer = YES;
-    return YES;
+    connectedToServer = 1;
+    return 1;
 }
 
 - (BOOL)disconnect

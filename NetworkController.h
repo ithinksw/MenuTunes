@@ -36,7 +36,7 @@
 - (void)stopRemoteServerSearch;
 
 - (void)setServerStatus:(BOOL)status;
-- (BOOL)connectToHost:(NSString *)host;
+- (int)connectToHost:(NSString *)host;
 - (BOOL)checkForServerAtHost:(NSString *)host;
 - (BOOL)disconnect;
 - (BOOL)isServerOn;
