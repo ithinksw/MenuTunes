@@ -94,25 +94,42 @@ static PreferencesController *prefs = nil;
 
 - (IBAction)changeGeneralSetting:(id)sender
 {
+    BOOL rebuildRequired = NO;
+
     if ( [sender tag] == 1010) {
         [self setLaunchesAtLogin:SENDER_STATE];
     } else if ( [sender tag] == 1020) {
         [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
     } else if ( [sender tag] == 1030) {
         [df setInteger:[sender intValue] forKey:@"SongsInAdvance"];
+        rebuildRequired = YES;
     } else if ( [sender tag] == 1040) {
-        [df setBool:SENDER_STATE forKey:@"showAlbum"];
+        // This will not be executed.  Song info always shows the title of the song.
+        // [df setBool:SENDER_STATE forKey:@"showName"];
+        // rebuildRequired = YES;
     } else if ( [sender tag] == 1050) {
-        [df setBool:SENDER_STATE forKey:@"showName"];
-    } else if ( [sender tag] == 1060) {
         [df setBool:SENDER_STATE forKey:@"showArtist"];
+        rebuildRequired = YES;
+    } else if ( [sender tag] == 1060) {
+        [df setBool:SENDER_STATE forKey:@"showAlbum"];
+        rebuildRequired = YES;
     } else if ( [sender tag] == 1070) {
         [df setBool:SENDER_STATE forKey:@"showTime"];
+        rebuildRequired = YES;
     } else if ( [sender tag] == 1080) {
         [df setBool:SENDER_STATE forKey:@"showTrackNumber"];
+        rebuildRequired = YES;
     } else if ( [sender tag] == 1090) {
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
+        rebuildRequired = YES;
     }
+
+    if ( rebuildRequired ) {
+        [controller rebuildMenu];
+        // redraw song info status window, or upcoming songs here
+    }
+
+    [df synchronize];
 }
 
 - (IBAction)changeStatusWindowSetting:(id)sender
@@ -216,7 +233,7 @@ static PreferencesController *prefs = nil;
         nil] forKey:@"menu"];
 
     [df setInteger:5 forKey:@"SongsInAdvance"];
-    [df setBool:YES forKey:@"showName"];
+    // [df setBool:YES forKey:@"showName"];  // Song info will always show song title.
     [df setBool:YES forKey:@"showArtist"];
     [df setBool:NO forKey:@"showAlbum"];
     [df setBool:NO forKey:@"showTime"];
@@ -651,7 +668,8 @@ static PreferencesController *prefs = nil;
     
     // Check current track info buttons
     [albumCheckbox setState:[df boolForKey:@"showAlbum"] ? NSOnState : NSOffState];
-    [nameCheckbox setState:[df boolForKey:@"showName"] ? NSOnState : NSOffState];
+    [nameCheckbox setState:NSOnState];  // Song info will ALWAYS show song title.
+    [nameCheckbox setEnabled:NO];  // Song info will ALWAYS show song title.
     [artistCheckbox setState:[df boolForKey:@"showArtist"] ? NSOnState : NSOffState];
     [trackTimeCheckbox setState:[df boolForKey:@"showTime"] ? NSOnState : NSOffState];
     
