@@ -31,7 +31,7 @@
     bool isPlayingRadio;
     
     ProcessSerialNumber iTunesPSN;
-    bool didHaveAlbumName; //Helper variable for creating the menu
+    bool didHaveAlbumName, didHaveArtistName; //Helper variable for creating the menu
     
     //For upcoming songs
     NSMenuItem *upcomingSongsItem;
