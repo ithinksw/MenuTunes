@@ -67,6 +67,7 @@ Things to do:
     [statusItem setMenu:menu];
     // Below line of code is for creating builds for Beta Testers
     // [statusItem setToolTip:@[NSString stringWithFormat:@"This Nontransferable Beta (Built on %s) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com).",__DATE__]];
+    [statusWindow orderFront:self]; //DEBUG
 }
 
 - (ITMTRemote *)loadRemote
@@ -93,14 +94,14 @@ Things to do:
             }
         }
 
-//      if ( [remoteArray count] > 0 ) {
+//      if ( [remoteArray count] > 0 ) {  // UNCOMMENT WHEN WE HAVE > 1 PLUGIN
 //          if ( [remoteArray count] > 1 ) {
 //              [remoteArray sortUsingSelector:@selector(sortAlpha:)];
 //          }
 //          [self loadModuleAccessUI]; //Comment out this line to disable remote visibility
 //      }
     }
-    NSLog(@"%@", [remoteArray objectAtIndex:0]);
+//  NSLog(@"%@", [remoteArray objectAtIndex:0]);  //DEBUG
     return [remoteArray objectAtIndex:0];
 }
 

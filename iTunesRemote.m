@@ -46,7 +46,8 @@
 - (BOOL)isAppRunning
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
-    int i,count = [apps count];
+    int i;
+    int count = [apps count];
 
     for (i = 0; i < count; i++) {
         if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
@@ -248,7 +249,8 @@
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
     ProcessSerialNumber number;
-    int i, count = [apps count];
+    int i;
+    int count = [apps count];
     
     number.highLongOfPSN = kNoProcess;
     

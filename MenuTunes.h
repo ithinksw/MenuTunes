@@ -24,30 +24,33 @@
 
 @interface MenuTunes : NSObject
 {
-    ITStatusItem *statusItem;
-    NSMenu *menu;
-    ITMTRemote *currentRemote;
+    ITStatusItem   *statusItem;
+    NSMenu         *menu;
+    ITMTRemote     *currentRemote;
     NSMutableArray *remoteArray;
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
-    int trackInfoIndex, lastSongIndex, lastPlaylistIndex;
-    BOOL isPlayingRadio;
+    int      trackInfoIndex;
+    int      lastSongIndex;
+    int      lastPlaylistIndex;
+    BOOL     isPlayingRadio;
     
     BOOL isAppRunning;
-    BOOL didHaveAlbumName, didHaveArtistName; //Helper variable for creating the menu
+    BOOL didHaveAlbumName;
+    BOOL didHaveArtistName; //Helper variable for creating the menu
     
     //For upcoming songs
     NSMenuItem *upcomingSongsItem;
-    NSMenu *upcomingSongsMenu;
+    NSMenu     *upcomingSongsMenu;
     
     //For playlist selection
     NSMenuItem *playlistItem;
-    NSMenu *playlistMenu;
+    NSMenu     *playlistMenu;
     
     //For EQ sets
     NSMenuItem *eqItem;
-    NSMenu *eqMenu;
+    NSMenu     *eqMenu;
     
     NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
     
