@@ -506,6 +506,11 @@
     NSString *currentIdentifier = [currentRemote currentSongUniqueIdentifier];
     if (![lastSongIdentifier isEqualToString:currentIdentifier] ||
        (!isPlayingRadio && ([currentRemote classOfPlaylistAtIndex:[currentRemote currentPlaylistIndex]] == ITMTRemotePlayerRadioPlaylist))) {
+        //
+        //
+        // If we want to show the new track floater, do it here!
+        //
+        //
         [self rebuildMenu];
     }
     
@@ -513,6 +518,11 @@
     
     //Update Play/Pause menu item
     if (playPauseItem){
+        //
+        //
+        // If we want to show the song played/paused, show it here!
+        //
+        //
         if ([currentRemote playerPlayingState] == ITMTRemotePlayerPlaying) {
             [playPauseItem setTitle:@"Pause"];
         } else {
@@ -644,6 +654,12 @@
     [[HotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleShuffle"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"IncrementVolume"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"DecrementVolume"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"IncrementRating"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"DecrementRating"];
 }
 
 - (void)setupHotKeys
@@ -678,6 +694,42 @@
         [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
                combo:[defaults keyComboForKey:@"UpcomingSongs"]
                target:self action:@selector(showUpcomingSongs)];
+    }
+    
+    if ([defaults objectForKey:@"ToggleLoop"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
+               combo:[defaults keyComboForKey:@"ToggleLoop"]
+               target:self action:NULL/*Set this to something*/];
+    }
+    
+    if ([defaults objectForKey:@"ToggleShuffle"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
+               combo:[defaults keyComboForKey:@"ToggleShuffle"]
+               target:self action:NULL/*Set this to something*/];
+    }
+    
+    if ([defaults objectForKey:@"IncrementVolume"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
+               combo:[defaults keyComboForKey:@"IncrementVolume"]
+               target:self action:NULL/*Set this to something*/];
+    }
+    
+    if ([defaults objectForKey:@"DecrementVolume"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
+               combo:[defaults keyComboForKey:@"DecrementVolume"]
+               target:self action:NULL/*Set this to something*/];
+    }
+    
+    if ([defaults objectForKey:@"IncrementRating"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
+               combo:[defaults keyComboForKey:@"IncrementRating"]
+               target:self action:NULL/*Set this to something*/];
+    }
+    
+    if ([defaults objectForKey:@"DecrementRating"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
+               combo:[defaults keyComboForKey:@"DecrementRating"]
+               target:self action:NULL/*Set this to something*/];
     }
 }
 
