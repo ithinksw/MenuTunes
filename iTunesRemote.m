@@ -66,9 +66,9 @@
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     // Still have to convert these to AEs:
     //	set visible of browser window 1 to true
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:true($$), ----:obj { form:'prop', want:'prop', seld:'pvis', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), ----:obj { form:'prop', want:'prop', seld:'pvis', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     //	set minimized of browser window 1 to false
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:fals($$), ----:obj { form:'prop', want:'prop', seld:'pMin', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), ----:obj { form:'prop', want:'prop', seld:'pMin', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
 
     return NO;
 }
@@ -112,7 +112,7 @@
 - (NSArray *)playlists
 {
     long i = 0;
-    const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
     NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:numPlaylists];
     
     for (i = 1; i <= numPlaylists; i++) {
@@ -280,7 +280,7 @@
 
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigned long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
@@ -309,21 +309,21 @@
 
 - (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode
 {
-    FourCharCode m00f = 0;
+    char *m00f = NULL;
     switch (repeatMode)
 	   {
 	   case ITMTRemotePlayerRepeatOff:
-		  m00f = 'kRp0';
+		  m00f = "kRp0";
 		  break;
 	   case ITMTRemotePlayerRepeatOne:
-		  m00f = 'kRp1';
+		  m00f = "kRp1";
 		  break;
 	   case ITMTRemotePlayerRepeatAll:
-		  m00f = 'kRpA';
+		  m00f = "kRpA";
 		  break;
 	   }
 
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s') ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
