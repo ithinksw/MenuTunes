@@ -536,7 +536,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "/Volumes/Data/Desktop/ITFoundation/build /Volumes/Data/Desktop/ITKit/build /Users/kent/Programming/iThink/MenuTunes";
+				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build /Users/kent/Programming/iThink/MenuTunes";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
@@ -1524,7 +1524,7 @@
 				HEADER_SEARCH_PATHS = "../ITKit/build/ITKit.framework/PrivateHeaders ../ITFoundation/build/ITFoundation.framework/PrivateHeaders ";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = "/Volumes/Data/Desktop/MenuTunes /Users/kent/Programming/iThink/MenuTunes";
+				LIBRARY_SEARCH_PATHS = .;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
