@@ -50,9 +50,10 @@
     if ( ! window ) {
         window = [MTShizzleWindow sharedWindowForSender:self];
     }
-
+    [NSApp activateIgnoringOtherApps:YES];
     [window center];
-    [window makeKeyAndOrderFront:nil];
+    [window orderFrontRegardless];
+    [window makeKeyWindow];
 //  [window setLevel:NSStatusWindowLevel];
 }
 

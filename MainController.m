@@ -214,8 +214,10 @@ static MainController *sharedController;
     globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
     if (date) {
         [globalPrefs setObject:date forKey:@"ITMTTrialStart"];
+        [globalPrefs setObject:[NSNumber numberWithInt:1200] forKey:@"ITMTTrialVers"];
     } else {
         [globalPrefs removeObjectForKey:@"ITMTTrialStart"];
+        [globalPrefs removeObjectForKey:@"ITMTTrialVers"];
     }
     [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
     [df synchronize];
@@ -234,7 +236,20 @@ static MainController *sharedController;
     if (![self blingBling]) {
         if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
             [self setBlingTime:now];
+        } else if ([[[df persistentDomainForName:@".GlobalPreferences"] objectForKey:@"ITMTTrialVers"] intValue] < 1200) {
+            if ([now timeIntervalSinceDate:[self getBlingTime]] >= 345600) {
+                [self setBlingTime:[now addTimeInterval:-259200]];
+            } else {
+                NSMutableDictionary *globalPrefs;
+                [df synchronize];
+                globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
+                [globalPrefs setObject:[NSNumber numberWithInt:1200] forKey:@"ITMTTrialVers"];
+                [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
+                [df synchronize];
+                [globalPrefs release];
+            }
         }
+        
         if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) && (blinged != YES) ) {
             blinged = YES;
             [statusItem setEnabled:NO];

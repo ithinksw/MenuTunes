@@ -341,6 +341,7 @@
 {
     if ( ! _locked ) {
 
+        float         divisor       = 1.0;
         float         textWidth     = 0.0;
         float         textHeight    = 0.0;
         float         okWidth       = 0.0;
@@ -358,14 +359,26 @@
         NSArray      *lines         = [message componentsSeparatedByString:@"\n"];
         id			  oneLine       = nil;
         NSEnumerator *lineEnum      = [lines objectEnumerator];
+        float         baseFontSize  = 18.0;
         ITTextField  *textField;
         ITButton     *okButton;
         ITButton     *cancelButton;
         NSColor      *textColor     = [NSColor whiteColor];
-        NSFont       *font          = [NSFont fontWithName:@"Lucida Grande Bold" size:18];
-        NSDictionary *attr          = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-        NSFont       *buttonFont    = [NSFont fontWithName:@"Lucida Grande Bold" size:14];
-        NSDictionary *buttonAttr    = [NSDictionary dictionaryWithObjectsAndKeys:
+        NSFont       *font;
+        NSDictionary *attr;
+        NSFont       *buttonFont;
+        NSDictionary *buttonAttr;
+        
+        if ( _sizing == ITTransientStatusWindowSmall ) {
+            divisor = SMALL_DIVISOR;
+        } else if ( _sizing == ITTransientStatusWindowMini ) {
+            divisor = MINI_DIVISOR;
+        }
+        
+        font = [NSFont fontWithName:@"Lucida Grande Bold" size:(baseFontSize / divisor)];
+        attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+        buttonFont = [NSFont fontWithName:@"Lucida Grande Bold" size:(14 / divisor)];
+        buttonAttr = [NSDictionary dictionaryWithObjectsAndKeys:
             buttonFont , NSFontAttributeName,
             textColor  , NSForegroundColorAttributeName, 
             nil];
