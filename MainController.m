@@ -960,6 +960,12 @@ static MainController *sharedController;
     if (result == 1) {
         [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
         currentRemote = [[[networkController networkObject] remote] retain];
+        [refreshTimer invalidate];
+        refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
+                                target:self
+                                selector:@selector(timerUpdate)
+                                userInfo:nil
+                                repeats:YES] retain];
         [self timerUpdate];
         ITDebugLog(@"Connection successful.");
         return 1;

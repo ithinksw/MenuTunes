@@ -83,6 +83,7 @@ static NetworkController *sharedController;
             [serverConnection release];
             [serverPort release];
             ITDebugLog(@"Error starting server!");
+            return;
         NS_ENDHANDLER
         ITDebugLog(@"Started server.");
         if (!name) {
@@ -102,6 +103,7 @@ static NetworkController *sharedController;
         }
         [service publish];
         serverOn = YES;
+        ITDebugLog(@"Server service published.");
     } else if (serverOn && !status && [serverConnection isValid]) {
         //Turn off
         [service stop];
@@ -133,11 +135,12 @@ static NetworkController *sharedController;
         clientConnection = [[NSConnection connectionWithReceivePort:nil sendPort:clientPort] retain];
         [clientConnection setReplyTimeout:5];
         clientProxy = [[clientConnection rootProxy] retain];
+        connectedToServer = YES;
     NS_HANDLER
         [clientConnection release];
         [clientPort release];
         ITDebugLog(@"Connection to host failed: %@", host);
-        return NO;
+        return 0;
     NS_ENDHANDLER
     
     if (!clientProxy) {
@@ -172,7 +175,6 @@ static NetworkController *sharedController;
     
     ITDebugLog(@"Connected to host: %@", host);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnect) name:NSConnectionDidDieNotification object:clientConnection];
-    connectedToServer = YES;
     return 1;
 }
 
@@ -282,7 +284,6 @@ static NetworkController *sharedController;
 - (void)netServiceDidResolveAddress:(NSNetService *)sender
 {
     ITDebugLog(@"Resolved service named %@.", [sender name]);
-//  NSLog(@"Resolved service named %@.", [sender name]);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
     [sender stop];
 }
