@@ -139,7 +139,7 @@
 
             lightCount ++;
 
-            NSLog(@"%f, %i, %i", volumeLevel, lights, lightCount);
+         // NSLog(@"%f, %i, %i", volumeLevel, lights, lightCount);
 
             if ( lights >= lightCount ) {
                 [aCell setCastsShadow:YES];
