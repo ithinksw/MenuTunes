@@ -234,13 +234,13 @@ static StatusWindowController *sharedController;
 
 - (void)showSetupQueryWindow
 {
-    NSString *message = @"Would you like MenuTunes to launch\nautomatically at startup?";
+    NSString *message = NSLocalizedString(@"autolaunch_msg", @"Would you like MenuTunes to launch\nautomatically at startup?");
 
     [_window setImage:[NSImage imageNamed:@"Setup"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
-                            defaultButton:@"Launch at Startup"
-                          alternateButton:@"Launch Manually"
+                            defaultButton:NSLocalizedString(@"launch_at_startup", @"Launch at Startup")
+                          alternateButton:NSLocalizedString(@"launch_manually", @"Launch Manually")
                                    target:[PreferencesController sharedPrefs]
                             defaultAction:@selector(autoLaunchOK)
                           alternateAction:@selector(autoLaunchCancel)];
@@ -252,13 +252,13 @@ static StatusWindowController *sharedController;
 
 - (void)showRegistrationQueryWindow
 {
-    NSString *message = @"Your 7-day unlimited trial period has elapsed.\nYou must register to continue using MenuTunes.";
+    NSString *message = NSLocalizedString(@"trialexpired_msg", @"Your 7-day unlimited trial period has elapsed.\nYou must register to continue using MenuTunes.");
 
     [_window setImage:[NSImage imageNamed:@"Register"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
-                            defaultButton:@"Register Now"
-                          alternateButton:@"Quit MenuTunes"
+                            defaultButton:NSLocalizedString(@"registernow", @"Register Now")
+                          alternateButton:NSLocalizedString(@"quitmenutunes", @"Quit MenuTunes")
                                    target:[MainController sharedController]
                             defaultAction:@selector(registerNowOK)
                           alternateAction:@selector(registerNowCancel)];
@@ -269,13 +269,13 @@ static StatusWindowController *sharedController;
 
 - (void)showReconnectQueryWindow
 {
-    NSString *message = @"The selected shared player is available again.\nWould you like to reconnect to it?";
+    NSString *message = NSLocalizedString(@"sharedplayeravailable_msg", @"The selected shared player is available again.\nWould you like to reconnect to it?");
     [_window setLocked:NO];
     [_window setImage:[NSImage imageNamed:@"Setup"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
-                            defaultButton:@"Reconnect"
-                          alternateButton:@"Ignore"
+                            defaultButton:NSLocalizedString(@"reconnect", @"Reconnect")
+                          alternateButton:NSLocalizedString(@"ignore", @"Ignore")
                                    target:[MainController sharedController]
                             defaultAction:@selector(reconnect)
                           alternateAction:@selector(cancelReconnect)];
@@ -286,7 +286,7 @@ static StatusWindowController *sharedController;
 
 - (void)showNetworkErrorQueryWindow
 {
-    NSString *message = @"The remote MenuTunes server is unreachable.\nMenuTunes will revert back to the local player.";
+    NSString *message = NSLocalizedString(@"sharedplayerunreachable_msg", @"The remote MenuTunes server is unreachable.\nMenuTunes will revert back to the local player.");
 
     [_window setImage:[NSImage imageNamed:@"Setup"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
@@ -303,12 +303,12 @@ static StatusWindowController *sharedController;
 
 - (void)showPreferencesUpdateWindow
 {
-    NSString *message = @"The new features in this version of MenuTunes\nrequire you to reconfigure your preferences.";
+    NSString *message = NSLocalizedString(@"reconfigureprefs_msg", @"The new features in this version of MenuTunes\nrequire you to reconfigure your preferences.");
 
     [_window setImage:[NSImage imageNamed:@"Setup"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
-                            defaultButton:@"Show Preferences"
+                            defaultButton:NSLocalizedString(@"showpreferences", @"Show Preferences")
                           alternateButton:@"OK"
                                    target:[MainController sharedController]
                             defaultAction:@selector(showPreferencesAndClose)

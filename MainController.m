@@ -891,7 +891,7 @@ static MainController *sharedController;
         if ( [df boolForKey:@"showTime"] ) {
             NS_DURING
                 time = [NSString stringWithFormat:@"%@: %@ / %@",
-                @"Time",
+                NSLocalizedString(@"time", @"Time"),
                 [[self currentRemote] currentSongElapsed],
                 [[self currentRemote] currentSongLength]];
             NS_HANDLER

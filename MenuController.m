@@ -682,7 +682,7 @@
     }
     [indices release];
     [playlistsMenu addItem:[NSMenuItem separatorItem]];
-    [[playlistsMenu addItemWithTitle:@"Refresh" action:@selector(rebuildSubmenus) keyEquivalent:@""] setTarget:self];
+    [[playlistsMenu addItemWithTitle:NSLocalizedString(@"refresh", @"Refresh") action:@selector(rebuildSubmenus) keyEquivalent:@""] setTarget:self];
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
 }
