@@ -28,7 +28,6 @@
                          backgroundType:backgroundType] ) ) {
      // Set default values.
         _image       = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
-        _groupNoun   = [@"Playlist" retain];
         _locked      = NO;
     }
     
@@ -38,7 +37,6 @@
 - (void)dealloc
 {
     [_image     release];
-    [_groupNoun release];
     [super dealloc];
 }
 
@@ -52,12 +50,6 @@
 {
     [_image autorelease];
     _image = [newImage copy];
-}
-
-- (void)setGroupNoun:(NSString *)newNoun;
-{
-    [_groupNoun autorelease];
-    _groupNoun = [newNoun copy];
 }
 
 - (void)setLocked:(BOOL)flag
@@ -168,6 +160,8 @@
     NSEnumerator *cellEnum    = nil;
     id            aCell       = nil;
     int           activeCount = 0;
+    NSColor      *onColor     = [NSColor whiteColor];
+    NSColor      *offColor    = [NSColor colorWithCalibratedWhite:0.0 alpha:0.50];
     NSMatrix     *volMatrix   = [[[NSMatrix alloc] initWithFrame:dataRect
                                                             mode:NSHighlightModeMatrix
                                                        cellClass:NSClassFromString(@"ITTextFieldCell")
@@ -192,10 +186,10 @@
         
         if ( active >= activeCount ) {
             [aCell setCastsShadow:YES];
-            [aCell setTextColor:[NSColor whiteColor]];
+            [aCell setTextColor:onColor];
         } else {
             [aCell setCastsShadow:NO];
-            [aCell setTextColor:[NSColor darkGrayColor]];
+            [aCell setTextColor:offColor];
         }
         
     }
