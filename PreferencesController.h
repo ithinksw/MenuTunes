@@ -11,19 +11,17 @@
     IBOutlet NSButton *artistCheckbox;
     IBOutlet NSTextField *keyComboField;
     IBOutlet NSPanel *keyComboPanel;
+    IBOutlet NSButton *launchAtLoginCheckbox;
     IBOutlet NSTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSButton *nextTrackButton;
     IBOutlet NSButton *playPauseButton;
     IBOutlet NSButton *previousTrackButton;
-    IBOutlet NSButton *songRatingCheckbox;
     IBOutlet NSTextField *songsInAdvance;
     IBOutlet NSButton *trackInfoButton;
-    IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
     IBOutlet NSButton *upcomingSongsButton;
     IBOutlet NSWindow *window;
-    IBOutlet NSButton *yearCheckbox;
     
     MenuTunes *mt;
     NSMutableArray *availableItems, *myItems;

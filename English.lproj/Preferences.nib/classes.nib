@@ -22,22 +22,19 @@
                 albumCheckbox = NSButton; 
                 allTableView = NSTableView; 
                 artistCheckbox = NSButton; 
-                genreCheckbox = NSButton; 
                 keyComboField = NSTextField; 
                 keyComboPanel = NSPanel; 
+                launchAtLoginCheckbox = NSButton; 
                 menuTableView = NSTableView; 
                 nameCheckbox = NSButton; 
                 nextTrackButton = NSButton; 
                 playPauseButton = NSButton; 
                 previousTrackButton = NSButton; 
-                songRatingCheckbox = NSButton; 
                 songsInAdvance = NSTextField; 
                 trackInfoButton = NSButton; 
-                trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
                 upcomingSongsButton = NSButton; 
                 window = NSWindow; 
-                yearCheckbox = NSButton; 
             }; 
             SUPERCLASS = NSObject; 
         }

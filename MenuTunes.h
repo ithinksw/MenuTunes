@@ -14,7 +14,6 @@
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
     int curTrackIndex;
-    NSString *curPlaylist;
     int trackInfoIndex;
     
     ProcessSerialNumber iTunesPSN;
@@ -28,6 +27,10 @@
     NSMenuItem *playlistItem;
     NSMenu *playlistMenu;
     
+    //For EQ sets
+    NSMenuItem *eqItem;
+    NSMenu *eqMenu;
+    
     NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
     
     PreferencesController *prefsController;
@@ -38,6 +41,7 @@
 - (void)updateMenu;
 - (void)rebuildUpcomingSongsMenu;
 - (void)rebuildPlaylistMenu;
+- (void)rebuildEQPresetsMenu;
 
 - (void)clearHotKeys;
 - (void)setupHotKeys;

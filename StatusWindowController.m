@@ -32,7 +32,6 @@
 - (void)fadeWindowOut
 {
     [NSThread detachNewThreadSelector:@selector(fadeOutAux) toTarget:self withObject:nil];
-    
 }
 
 - (void)fadeOutAux

@@ -33,13 +33,13 @@
         [allTableView registerForDraggedTypes:[NSArray arrayWithObjects:@"MenuTableViewPboardType", @"AllTableViewPboardType", nil]];
         
         //Set the list of items you can have.
-        availableItems = [[NSMutableArray alloc] initWithObjects:@"Current Track Info",  @"Upcoming Songs", @"Playlists", @"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", nil];
+        availableItems = [[NSMutableArray alloc] initWithObjects:@"Current Track Info",  @"Upcoming Songs", @"Playlists", @"EQ Presets", @"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", nil];
         
         //Get our preferred menu
         myItems = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"] mutableCopy];
         if (myItems == nil)
         {
-            myItems = [[NSMutableArray alloc] initWithObjects:@"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", @"Upcoming Songs", @"Playlists", @"<separator>", @"Preferences…", @"Quit", @"<separator>", @"Current Track Info", nil];
+            myItems = [[NSMutableArray alloc] initWithObjects:@"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", @"Upcoming Songs", @"Playlists", @"EQ Presets", @"<separator>", @"Preferences…", @"Quit", @"<separator>", @"Current Track Info", nil];
             [[NSUserDefaults standardUserDefaults] setObject:myItems forKey:@"menu"];
         }
         
@@ -54,7 +54,7 @@
         }
         
         //Items that show should a submenu image
-        submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", nil];
+        submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", @"EQ Presets", nil];
         
         //Fill in the number of songs in advance to show field
         if ([defaults integerForKey:@"SongsInAdvance"])
@@ -145,10 +145,31 @@
         }
         
         [artistCheckbox setState:[defaults boolForKey:@"showArtist"] ? NSOnState : NSOffState];
-        [songRatingCheckbox setState:[defaults boolForKey:@"showRating"] ? NSOnState : NSOffState];
-        [trackNumberCheckbox setState:[defaults boolForKey:@"showTrackNum"] ? NSOnState : NSOffState];
         [trackTimeCheckbox setState:[defaults boolForKey:@"showTime"] ? NSOnState : NSOffState];
-        [yearCheckbox setState:[defaults boolForKey:@"showYear"] ? NSOnState : NSOffState];
+        
+        //Set the launch at login checkbox state
+        {
+            NSMutableDictionary *loginwindow;
+            NSMutableArray *loginarray;
+            int i;
+            
+            [defaults synchronize];
+            loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
+            loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+            
+            for (i = 0; i < [loginarray count]; i++)
+            {
+                NSDictionary *tempDict = [loginarray objectAtIndex:i];
+                
+                //Here we are seeing if our program is already in loginwindow.plist.
+                //See the problem below for this problem here. We will do the same thing.
+                
+                if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"])
+                {
+                    [launchAtLoginCheckbox setState:NSOnState];
+                }
+            }
+        }
     }
     return self;
 }
@@ -172,6 +193,7 @@
 
 - (IBAction)apply:(id)sender
 {
+    ProcessSerialNumber psn;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:myItems forKey:@"menu"];
     
@@ -186,10 +208,64 @@
     [defaults setBool:[albumCheckbox state] forKey:@"showAlbum"];
     [defaults setBool:[nameCheckbox state] forKey:@"showName"];
     [defaults setBool:[artistCheckbox state] forKey:@"showArtist"];
-    [defaults setBool:[songRatingCheckbox state] forKey:@"showRating"];
-    [defaults setBool:[trackNumberCheckbox state] forKey:@"showTrackNum"];
     [defaults setBool:[trackTimeCheckbox state] forKey:@"showTime"];
-    [defaults setBool:[yearCheckbox state] forKey:@"showYear"];
+    
+    //Here we set whether we will launch at login by modifying loginwindow.plist
+    if ([launchAtLoginCheckbox state] == NSOnState)
+    {
+        NSMutableDictionary *loginwindow;
+        NSMutableArray *loginarray;
+        int i;
+        BOOL skip = NO;
+        
+        [defaults synchronize];
+        loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
+        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+        
+        for (i = 0; i < [loginarray count]; i++)
+        {
+            NSDictionary *tempDict = [loginarray objectAtIndex:i];
+            
+            //Here we are seeing if our program is already in loginwindow.plist.
+            //See the problem below for this problem here. We will do the same thing.
+            
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"])
+            {
+                skip = YES;
+            }
+        }
+        
+        if (!skip)
+        {
+            [loginarray addObject:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], @"Hide", [[NSBundle mainBundle] bundlePath], @"Path", nil]];
+            
+            [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
+            [defaults synchronize];
+        }
+    }
+    else
+    {
+        NSMutableDictionary *loginwindow;
+        NSMutableArray *loginarray;
+        int i;
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        loginwindow = [[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"loginwindow"] mutableCopy];
+        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+        
+        for (i = 0; i < [loginarray count]; i++)
+        {
+            NSDictionary *tempDict = [loginarray objectAtIndex:i];
+            
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"])
+            {
+                [loginarray removeObjectAtIndex:i];
+                [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
+                [defaults synchronize];
+                break;
+            }
+        }
+    }
     
     //Set songs in advance
     if ([songsInAdvance intValue])
@@ -201,7 +277,11 @@
         [defaults setInteger:5 forKey:@"SongsInAdvance"];
     }
     
-    [mt rebuildMenu];
+    psn = [mt iTunesPSN];
+    if (!((psn.highLongOfPSN == kNoProcess) && (psn.lowLongOfPSN == 0)))
+    {
+        [mt rebuildMenu];
+    }
     [mt clearHotKeys];
 }
 
