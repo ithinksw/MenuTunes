@@ -44,7 +44,19 @@
 
 - (NSDictionary *)capabilities
 {
-    return nil;
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+                [NSNumber numberWithBool: NO], @"Remote", // Set this to YES for a valid remote, otherwise the remote will be unusable.
+                [NSNumber numberWithBool: NO], @"Basic Track Control",
+                [NSNumber numberWithBool: NO], @"Track Information",
+                [NSNumber numberWithBool: NO], @"Track Navigation",
+                [NSNumber numberWithBool: NO], @"Upcoming Songs",
+                [NSNumber numberWithBool: NO], @"Playlists",
+                [NSNumber numberWithBool: NO], @"Volume",
+                [NSNumber numberWithBool: NO], @"Shuffle",
+                [NSNumber numberWithBool: NO], @"Repeat Modes",
+                [NSNumber numberWithBool: NO], @"Equalizer",
+                [NSNumber numberWithBool: NO], @"Track Rating",
+                nil];
 }
 
 - (ITMTRemotePlayerRunningState)playerRunningState
