@@ -337,7 +337,12 @@
     
     //If we're listening to the radio.
     if ([[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 'cURT') {
-        temp1 = [[[ITAppleEventCenter sharedCenter] sendAEWithRequestedKey:@"pStT" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] stringByAppendingString:@" (Stream)"];
+        NSString *bad = [NSString stringWithUTF8String:"浳湧"];
+        temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKey:@"pStT" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        if ([temp1 isEqualToString:bad]) {
+            temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        }
+        temp1 = [temp1 stringByAppendingString:@" (Stream)"];
     } else {
         temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     }
