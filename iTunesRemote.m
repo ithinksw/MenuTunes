@@ -133,7 +133,7 @@
     switch (realResult)
 	   {
 	   case 'cLiP':
-		  return ITRemotePlayerLibraryPlaylist;
+		  return ITMTRemotePlayerLibraryPlaylist;
 	   case 'cRTP':
 		  return ITMTRemotePlayerRadioPlaylist;
 		  break;
