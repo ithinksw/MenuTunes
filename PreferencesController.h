@@ -55,6 +55,7 @@
     IBOutlet NSTableView *sharingTableView;
     IBOutlet NSButton *showOnChangeCheckbox;
     IBOutlet NSButton *showScriptsButton;
+    IBOutlet NSButton *showToolTipCheckbox;
     IBOutlet NSTextField *songsInAdvance;
     IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;

@@ -236,6 +236,8 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
     } else if ( [sender tag] == 1100) {
         [df setBool:SENDER_STATE forKey:@"showAlbumArtwork"];
+    } else if ( [sender tag] == 1105) {
+        [df setBool:SENDER_STATE forKey:@"showToolTip"];
     } else if ( [sender tag] == 1110) {
         [df setBool:SENDER_STATE forKey:@"runScripts"];
         if (SENDER_STATE) {
@@ -798,6 +800,8 @@ static PreferencesController *prefs = nil;
     [trackNumberCheckbox setState:[df boolForKey:@"showTrackNumber"] ? NSOnState : NSOffState];
     [ratingCheckbox setState:[df boolForKey:@"showTrackRating"] ? NSOnState : NSOffState];
     [albumArtworkCheckbox setState:[df boolForKey:@"showAlbumArtwork"] ? NSOnState : NSOffState];
+    
+    [showToolTipCheckbox setState:[df boolForKey:@"showToolTip"] ? NSOnState : NSOffState];
     
     if ([df boolForKey:@"runScripts"]) {
         [runScriptsCheckbox setState:NSOnState];

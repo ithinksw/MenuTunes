@@ -372,17 +372,23 @@ static MainController *sharedController;
             
             [self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
             
-            NSString *artist = [[self currentRemote] currentSongArtist];
-            NSString *title = [[self currentRemote] currentSongTitle];
-            NSString *toolTip;
-            if (artist) {
-                toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
-            } else if (title) {
-                toolTip = title;
+            //Create the tooltip for the status item
+            if ( [df boolForKey:@"showToolTip"] ) {
+                NSString *artist = [[self currentRemote] currentSongArtist];
+                NSString *title = [[self currentRemote] currentSongTitle];
+                NSString *toolTip;
+                ITDebugLog(@"Creating status item tooltip.");
+                if (artist) {
+                    toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
+                } else if (title) {
+                    toolTip = title;
+                } else {
+                    toolTip = @"No Song Playing";
+                }
+                [statusItem setToolTip:toolTip];
             } else {
-                toolTip = @"No Song Playing";
+                [statusItem setToolTip:nil];
             }
-            [statusItem setToolTip:toolTip];
         NS_HANDLER
             [self networkError:localException];
         NS_ENDHANDLER
