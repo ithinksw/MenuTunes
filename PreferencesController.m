@@ -39,7 +39,6 @@
 - (void)setupCustomizationTables;
 - (void)setupMenuItems;
 - (void)setupUI;
-- (NSArray *)effectNamesFromDictionary:(NSDictionary *)infoDict;
 - (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update;
 - (IBAction)changeMenus:(id)sender;
 - (void)setLaunchesAtLogin:(BOOL)flag;
@@ -382,42 +381,19 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 2020) {
         // update screen selection
     } else if ( [sender tag] == 2030) {
-        int effectTag = [[sender selectedItem] tag];
+        Class selectedClass = [[sender selectedItem] representedObject];
         float time = ([df floatForKey:@"statusWindowAppearanceSpeed"] ? [df floatForKey:@"statusWindowAppearanceSpeed"] : 0.8);
-        [df setInteger:effectTag forKey:@"statusWindowAppearanceEffect"];
+        [df setObject:NSStringFromClass(selectedClass) forKey:@"statusWindowAppearanceEffect"];
 
-        if ( effectTag == 2100 ) {
-            [sw setEntryEffect:[[[ITCutWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2101 ) {
-            [sw setEntryEffect:[[[ITDissolveWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2102 ) {
-            [sw setEntryEffect:[[[ITSlideVerticallyWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2103 ) {
-            [sw setEntryEffect:[[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2104 ) {
-            [sw setEntryEffect:[[[ITPivotWindowEffect alloc] initWithWindow:sw] autorelease]];
-        }
-
+        [sw setEntryEffect:[[[selectedClass alloc] initWithWindow:sw] autorelease]];
         [[sw entryEffect] setEffectTime:time];
         
     } else if ( [sender tag] == 2040) {
-        int effectTag = [[sender selectedItem] tag];
+        Class selectedClass = [[sender selectedItem] representedObject];
         float time = ([df floatForKey:@"statusWindowVanishSpeed"] ? [df floatForKey:@"statusWindowVanishSpeed"] : 0.8);
+        [df setObject:NSStringFromClass(selectedClass) forKey:@"statusWindowVanishEffect"];
         
-        [df setInteger:[[sender selectedItem] tag] forKey:@"statusWindowVanishEffect"];
-        
-        if ( effectTag == 2100 ) {
-            [sw setExitEffect:[[[ITCutWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2101 ) {
-            [sw setExitEffect:[[[ITDissolveWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2102 ) {
-            [sw setExitEffect:[[[ITSlideVerticallyWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2103 ) {
-            [sw setExitEffect:[[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:sw] autorelease]];
-        } else if ( effectTag == 2104 ) {
-            [sw setExitEffect:[[[ITPivotWindowEffect alloc] initWithWindow:sw] autorelease]];
-        }
-
+        [sw setExitEffect:[[[selectedClass alloc] initWithWindow:sw] autorelease]];
         [[sw exitEffect] setEffectTime:time];
 
     } else if ( [sender tag] == 2050) {
@@ -735,13 +711,13 @@ static PreferencesController *prefs = nil;
 - (void)setupUI
 {
     NSMutableDictionary *loginwindow;
-    NSMutableArray *loginarray;
+    NSMutableArray      *loginarray;
     NSEnumerator   *loginEnum;
     NSEnumerator   *keyArrayEnum;
     NSString       *serverName;
     NSData         *colorData;
     NSArray        *effectClasses = [ITWindowEffect effectClasses];
-//  NSEnumerator   *effectEnum = [effectList objectEnumerator];
+    NSEnumerator   *effectEnum = [effectClasses objectEnumerator];
     int selectedBGStyle;
     id anItem;
     
@@ -794,15 +770,28 @@ static PreferencesController *prefs = nil;
     // Populate the effects popups
     [appearanceEffectPopup removeItemAtIndex:0];
     [vanishEffectPopup     removeItemAtIndex:0];
-    [appearanceEffectPopup addItemsWithTitles:[[effectList allValues] objectsForKey:@"Name"]];  // category method
-    [vanishEffectPopup     addItemsWithTitles:[[effectList allValues] objectsForKey:@"Name"]];  // category method
+    
+    while ( (anItem = [effectEnum nextObject]) ) {
+        [appearanceEffectPopup addItemWithTitle:[anItem effectName]];
+        [vanishEffectPopup     addItemWithTitle:[anItem effectName]];
+        [[appearanceEffectPopup lastItem] setRepresentedObject:anItem];
+        [[vanishEffectPopup     lastItem] setRepresentedObject:anItem];
+    }
     
     // Attempt to find the pref'd effect in the list.
     // If it's not there, use cut/dissolve.
-
+    if ( [effectClasses containsObject:NSClassFromString([df stringForKey:@"statusWindowAppearanceEffect"])] ) {
+        [appearanceEffectPopup selectItemAtIndex:[effectClasses indexOfObject:NSClassFromString([df stringForKey:@"statusWindowAppearanceEffect"])]];
+    } else {
+        [appearanceEffectPopup selectItemAtIndex:[effectClasses indexOfObject:NSClassFromString(@"ITCutWindowEffect")]];
+    }
     
-    [appearanceEffectPopup selectItem:[appearanceEffectPopup itemAtIndex:[appearanceEffectPopup indexOfItemWithTag:[df integerForKey:@"statusWindowAppearanceEffect"]]]];
-    [vanishEffectPopup     selectItem:[vanishEffectPopup     itemAtIndex:[vanishEffectPopup     indexOfItemWithTag:[df integerForKey:@"statusWindowVanishEffect"]]]];
+    if ( [effectClasses containsObject:NSClassFromString([df stringForKey:@"statusWindowVanishEffect"])] ) {
+        [vanishEffectPopup selectItemAtIndex:[effectClasses indexOfObject:NSClassFromString([df stringForKey:@"statusWindowVanishEffect"])]];
+    } else {
+        [vanishEffectPopup selectItemAtIndex:[effectClasses indexOfObject:NSClassFromString(@"ITCutWindowEffect")]];
+    }
+    
     [appearanceSpeedSlider setFloatValue:-([df floatForKey:@"statusWindowAppearanceSpeed"])];
     [vanishSpeedSlider     setFloatValue:-([df floatForKey:@"statusWindowVanishSpeed"])];
     [vanishDelaySlider     setFloatValue:[df floatForKey:@"statusWindowVanishDelay"]];
@@ -869,11 +858,6 @@ static PreferencesController *prefs = nil;
         [selectedPlayerTextField setStringValue:@"No shared player selected."];
         [locationTextField setStringValue:@"-"];
     }
-}
-
-- (NSArray *)effectNamesFromDictionary:(NSDictionary *)infoDict
-{
-    
 }
 
 - (IBAction)changeMenus:(id)sender

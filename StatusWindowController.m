@@ -33,8 +33,9 @@ static StatusWindowController *sharedController;
     if ( ( self = [super init] ) ) {
         
         float exitDelay;
-        int entryTag;
-        int exitTag;
+        NSString *entryClass;
+        NSString *exitClass;
+        NSArray  *classList = [ITWindowEffect effectClasses];
         float entrySpeed;
         float exitSpeed;
         
@@ -47,8 +48,8 @@ static StatusWindowController *sharedController;
         df = [[NSUserDefaults standardUserDefaults] retain];
         
         exitDelay  = [df floatForKey:@"statusWindowVanishDelay"];
-        entryTag   = [df integerForKey:@"statusWindowAppearanceEffect"];
-        exitTag    = [df integerForKey:@"statusWindowVanishEffect"];
+        entryClass = [df stringForKey:@"statusWindowAppearanceEffect"];
+        exitClass  = [df stringForKey:@"statusWindowVanishEffect"];
         entrySpeed = [df floatForKey:@"statusWindowAppearanceSpeed"];
         exitSpeed  = [df floatForKey:@"statusWindowVanishSpeed"];
         
@@ -60,32 +61,19 @@ static StatusWindowController *sharedController;
         
         [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
         
-        if ( entryTag == 2101 ) {
-            entryEffect = [[[ITDissolveWindowEffect alloc] initWithWindow:_window] autorelease];
-        } else if ( entryTag == 2102 ) {
-            entryEffect = [[[ITSlideVerticallyWindowEffect alloc] initWithWindow:_window] autorelease];
-        } else if ( entryTag == 2103 ) {
-            entryEffect = [[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:_window] autorelease];
-        } else if ( entryTag == 2104 ) {
-            entryEffect = [[[ITPivotWindowEffect alloc] initWithWindow:_window] autorelease];
+        if ( [classList containsObject:NSClassFromString(entryClass)] ) {
+            entryEffect = [[[NSClassFromString(entryClass) alloc] initWithWindow:_window] autorelease];
         } else {
             entryEffect = [[[ITCutWindowEffect alloc] initWithWindow:_window] autorelease];
         }
         
-        [_window setEntryEffect:entryEffect];
-        
-        if ( exitTag == 2100 ) {
-            exitEffect = [[[ITCutWindowEffect alloc] initWithWindow:_window] autorelease];
-        } else if ( exitTag == 2102 ) {
-            exitEffect = [[[ITSlideVerticallyWindowEffect alloc] initWithWindow:_window] autorelease];
-        } else if ( exitTag == 2103 ) {
-            exitEffect = [[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:_window] autorelease];
-        } else if ( exitTag == 2104 ) {
-            exitEffect = [[[ITPivotWindowEffect alloc] initWithWindow:_window] autorelease];
+        if ( [classList containsObject:NSClassFromString(exitClass)] ) {
+            exitEffect = [[[NSClassFromString(exitClass) alloc] initWithWindow:_window] autorelease];
         } else {
             exitEffect = [[[ITDissolveWindowEffect alloc] initWithWindow:_window] autorelease];
         }
         
+        [_window setEntryEffect:entryEffect];
         [_window setExitEffect:exitEffect];
         
         [[_window entryEffect] setEffectTime:(entrySpeed ? entrySpeed : 0.8)];

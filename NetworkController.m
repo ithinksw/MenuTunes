@@ -282,7 +282,7 @@ static NetworkController *sharedController;
 - (void)netServiceDidResolveAddress:(NSNetService *)sender
 {
     ITDebugLog(@"Resolved service named %@.", [sender name]);
-    NSLog(@"Resolved service named %@.", [sender name]);
+//  NSLog(@"Resolved service named %@.", [sender name]);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
     [sender stop];
 }
