@@ -24,11 +24,11 @@
     NSMutableArray *remoteServices;
     
     NSConnection *serverConnection, *clientConnection;
-    NSSocketPort *clientPort;
+    NSSocketPort *clientPort, *serverPort;
     NSString *remoteHost;
     BOOL serverOn, clientConnected, connectedToServer;
     NSData *serverPass, *clientPass;
-    NetworkObject *clientProxy;
+    NetworkObject *rootObject, *clientProxy;
 }
 + (NetworkController *)sharedController;
 

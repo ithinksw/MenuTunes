@@ -33,6 +33,8 @@ static NetworkController *sharedController;
         sharedController = self;
         browser = [[NSNetServiceBrowser alloc] init];
         [browser setDelegate:self];
+        rootObject = [[NetworkObject alloc] init];
+        serverPort = [[NSSocketPort alloc] initWithTCPPort:SERVER_PORT];
     }
     return self;
 }
@@ -45,6 +47,8 @@ static NetworkController *sharedController;
     }
     [serverPass release];
     [clientPass release];
+    [serverPort release];
+    [rootObject release];
     [clientProxy release];
     [remoteServices release];
     [browser release];
@@ -69,19 +73,16 @@ static NetworkController *sharedController;
 {
     if (!serverOn && status) {
         NSString *name = [[NSUserDefaults standardUserDefaults] stringForKey:@"sharedPlayerName"];
-        NSPort *serverPort;
         unsigned char buffer;
         NSData *fullPass;
         //Turn on
         NS_DURING
-            serverPort = [[[NSSocketPort alloc] initWithTCPPort:SERVER_PORT] autorelease];
             serverConnection = [[NSConnection alloc] initWithReceivePort:serverPort
                                                      sendPort:serverPort];
-            clientProxy = [[NetworkObject alloc] init];
-            [serverConnection setRootObject:clientProxy];
+            [serverConnection setRootObject:rootObject];
+            [rootObject makeValid];
             [serverConnection registerName:@"ITMTPlayerHost"];
         NS_HANDLER
-            [clientProxy release];
             [serverConnection setRootObject:nil];
             [serverConnection release];
             [serverPort release];
@@ -110,9 +111,11 @@ static NetworkController *sharedController;
     } else if (serverOn && !status && [serverConnection isValid]) {
         //Turn off
         [service stop];
-        [clientProxy invalidate];
+        [rootObject invalidate];
         [serverConnection registerName:nil];
-        [serverConnection setRootObject:nil];
+        [serverConnection invalidate];
+        //[serverConnection setRootObject:nil];
+        //[[serverConnection sendPort] autorelease];
         [serverConnection release];
         ITDebugLog(@"Stopped server.");
         serverOn = NO;

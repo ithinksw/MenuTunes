@@ -276,5 +276,4 @@ static StatusWindowController *sharedController;
     [_window setLocked:YES];
 }
 
-
 @end

@@ -72,6 +72,11 @@
     _valid = NO;
 }
 
+- (void)makeValid
+{
+    _valid = YES;
+}
+
 - (BOOL)isValid
 {
     return _valid;

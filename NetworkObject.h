@@ -30,5 +30,6 @@
 - (BOOL)sendPassword:(NSData *)password;
 
 - (void)invalidate;
+- (void)makeValid;
 - (BOOL)isValid;
 @end
