@@ -449,6 +449,7 @@
             didHaveAlbumName = (([curAlbumName length] > 0) ? YES : NO);
         }
     }
+    [menu update];
 }
 
 //Rebuild the upcoming songs submenu. Can be improved a lot.
