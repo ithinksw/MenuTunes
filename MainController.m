@@ -175,6 +175,11 @@ static MainController *sharedController;
     [NSApp deactivate];
 }
 
+- (void)applicationDidBecomeActive:(NSNotification *)note
+{
+	[[MainController sharedController] showPreferences];
+}
+
 - (ITMTRemote *)loadRemote
 {
     NSString *folderPath = [[NSBundle mainBundle] builtInPlugInsPath];
