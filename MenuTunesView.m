@@ -1,7 +1,6 @@
 #import "MenuTunesView.h"
 
 extern NSColor* _NSGetThemePartColorPattern(int, int, int);
-// extern NSColor* _NSGetThemePartColorPattern(int imageID, _NSThemeState state, int color);
 
 @implementation MenuTunesView
 

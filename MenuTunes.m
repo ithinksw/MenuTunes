@@ -66,7 +66,7 @@ Things to do:
     }
     
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
-    [[[statusItem _button] cell] setType:0];
+    [[[statusItem _button] cell] setType:NSNullCellType];
     [statusItem setImage:[NSImage imageNamed:@"menu"]];
     [[statusItem _button] setAlternateImage:[NSImage imageNamed:@"selected_image"]];
     [statusItem setHighlightMode:YES];
