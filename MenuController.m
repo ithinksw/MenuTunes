@@ -247,12 +247,14 @@
                                 [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %i", NSLocalizedString(@"track", @"Track"), track] action:nil keyEquivalent:@""]];
                         }
                     }
-                    
-                    if ([defaults boolForKey:@"showTime"] && ( ([currentRemote currentSongElapsed] != nil) || ([currentRemote currentSongLength] != nil) )) {
-                        ITDebugLog(@"Add Track Elapsed (\"%@/%@\") menu item.", [currentRemote currentSongElapsed], [currentRemote currentSongLength]);
-                        [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", [currentRemote currentSongElapsed], [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
-                    }
-                    
+                }
+                
+                if ([defaults boolForKey:@"showTime"] && ( ([currentRemote currentSongElapsed] != nil) || ([currentRemote currentSongLength] != nil) )) {
+                    ITDebugLog(@"Add Track Elapsed (\"%@/%@\") menu item.", [currentRemote currentSongElapsed], [currentRemote currentSongLength]);
+                    [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", [currentRemote currentSongElapsed], [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
+                }
+                
+                if (!_playingRadio) {
                     if ([defaults boolForKey:@"showTrackRating"] && ( [currentRemote currentSongRating] != -1.0 )) {
                         NSString *string = nil;
                         switch ((int)([currentRemote currentSongRating] * 5)) {
