@@ -1099,9 +1099,9 @@ static MainController *sharedController;
 
 - (void)setRating:(ITHotKey *)sender
 {
-    float rating = ([[sender name] characterAtIndex:9] - 48) / 5.0;
-    [self selectSongRating:rating];
-    [statusWindowController showRatingWindowWithRating:rating];
+    int stars = [[sender name] characterAtIndex:9] - 48;
+    [self selectSongRating:stars * 20];
+    [statusWindowController showRatingWindowWithRating:(float)stars / 5.0];
 }
 
 - (void)toggleLoop
