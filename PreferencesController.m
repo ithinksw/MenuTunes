@@ -515,6 +515,7 @@ static PreferencesController *prefs = nil;
         @"quit",
         nil] forKey:@"menu"];
 
+    [df setInteger:1200 forKey:@"appVersion"];
     [df setInteger:5 forKey:@"SongsInAdvance"];
 //  [df setBool:YES forKey:@"showName"];  // Song info will always show song title.
     [df setBool:YES forKey:@"showArtist"];
@@ -528,6 +529,8 @@ static PreferencesController *prefs = nil;
     [df setFloat:4.0 forKey:@"statusWindowVanishDelay"];
     [df setInteger:(int)ITWindowPositionBottom forKey:@"statusWindowVerticalPosition"];
     [df setInteger:(int)ITWindowPositionLeft forKey:@"statusWindowHorizontalPosition"];
+    [[StatusWindow sharedWindow] setVerticalPosition:(int)ITWindowPositionBottom];
+    [[StatusWindow sharedWindow] setHorizontalPosition:(int)ITWindowPositionLeft];
     [df setBool:YES forKey:@"showSongInfoOnChange"];
     
     [df setObject:[NSArchiver archivedDataWithRootObject:[NSColor blueColor]] forKey:@"statusWindowBackgroundColor"];

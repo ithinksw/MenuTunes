@@ -55,9 +55,10 @@ static MainController *sharedController;
         SetITDebugMode(YES);
     }
     
-    if (![df stringForKey:@"appVersion"]) {
+    if (([df integerForKey:@"appVersion"] < 1200) && ([df integerForKey:@"SongsInAdvance"] > 0)) {
         [df removePersistentDomainForName:@"com.ithinksw.menutunes"];
-        [df setObject:@"1.2" forKey:@"appVersion"];
+        [df synchronize];
+        [[PreferencesController sharedPrefs] registerDefaults];
         [[StatusWindowController sharedController] showPreferencesUpdateWindow];
     }
     
