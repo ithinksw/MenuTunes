@@ -78,6 +78,7 @@
     //	set minimized of browser window 1 to false
     //	set view of browser window 1 to (playlist (index of current playlist))
     //end tell
+    //Someone do this plz kthx
     return NO;
 }
 
