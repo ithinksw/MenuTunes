@@ -1003,8 +1003,9 @@ static MainController *sharedController;
 - (void)popupMenu
 {
     if (!_popped) {
-        NSMenu *menu = [menuController menu];
         _popped = YES;
+        [self menuClicked];
+        NSMenu *menu = [statusItem menu];
         [(NSCarbonMenuImpl *)[menu _menuImpl] popUpMenu:menu atLocation:[NSEvent mouseLocation] width:1 forView:nil withSelectedItem:-30 withFont:[NSFont menuFontOfSize:32]];
         _popped = NO;
     }
