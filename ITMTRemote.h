@@ -77,6 +77,12 @@ typedef enum {
     ITMTTrackRewinding
 } ITMTTrackState;
 
+typedef enum {
+    ITMTRepeatNoneMode,
+    ITMTRepeatOneMode,
+    ITMTRepeatAllMode
+} ITMTRepeatMode;
+
 @class ITMTRemote, ITMTPlayer, ITMTPlaylist, ITMTTrack, ITMTEqualizer;
 
 @protocol ITMTRemote
@@ -128,6 +134,12 @@ typedef enum {
 - (ITMTPlaylist *)libraryPlaylist;
 
 - (NSArray *)equalizers;
+
+- (ITMTRepeatMode)repeatMode;
+- (BOOL)setRepeatMode:(ITMTRepeatMode)repeatMode;
+
+- (BOOL)shuffleEnabled;
+- (BOOL)enableShuffle:(BOOL)shuffle;
 @end
 
 @interface ITMTPlayer : NSObject <ITMTPlayer>
