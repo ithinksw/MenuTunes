@@ -225,8 +225,8 @@
 
 - (BOOL)equalizerEnabled
 {
-    return [[ITAppleEventCenter sharedCenter]
-                        sendAEWithRequestedKeyForNumber:@"pEQ " eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:type('prop'), want:type('prop'), seld:type('pEQ '), from:() }" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    
 }
 
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
