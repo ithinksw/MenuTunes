@@ -27,6 +27,7 @@
                 nextTrackButton = NSButton; 
                 playPauseButton = NSButton; 
                 previousTrackButton = NSButton; 
+                ratingCheckbox = NSButton; 
                 ratingDecrementButton = NSButton; 
                 ratingIncrementButton = NSButton; 
                 showPlayerButton = NSButton; 

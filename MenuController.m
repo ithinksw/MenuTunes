@@ -228,6 +228,34 @@
                             action:nil
                             keyEquivalent:@""];
                 }
+                
+                if ([defaults boolForKey:@"showTrackRating"]) {
+                    NSString *string;
+                    switch ((int)([currentRemote currentSongRating] * 5)) {
+                        case 0:
+                            string = [NSString stringWithUTF8String:"☆☆☆☆☆"];
+                        break;
+                        case 1:
+                            string = [NSString stringWithUTF8String:"★☆☆☆☆"];
+                        break;
+                        case 2:
+                            string = [NSString stringWithUTF8String:"★★☆☆☆"];
+                        break;
+                        case 3:
+                            string = [NSString stringWithUTF8String:"★★★☆☆"];
+                        break;
+                        case 4:
+                            string = [NSString stringWithUTF8String:"★★★★☆"];
+                        break;
+                        case 5:
+                            string = [NSString stringWithUTF8String:"★★★★★"];
+                        break;
+                    }
+                    [menu addItemWithTitle:
+                        [@"	" stringByAppendingString:string]
+                          action:nil
+                          keyEquivalent:@""];
+                }
             } else {
                 [menu addItemWithTitle:NSLocalizedString(@"noSong", @"No Song") action:NULL keyEquivalent:@""];
             }

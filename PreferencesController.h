@@ -30,6 +30,7 @@
     IBOutlet NSButton *nextTrackButton;
     IBOutlet NSButton *playPauseButton;
     IBOutlet NSButton *previousTrackButton;
+    IBOutlet NSButton *ratingCheckbox;
     IBOutlet NSButton *ratingDecrementButton;
     IBOutlet NSButton *ratingIncrementButton;
     IBOutlet NSTextField *songsInAdvance;

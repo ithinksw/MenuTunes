@@ -509,6 +509,7 @@ static PreferencesController *prefs = nil;
         @"rewind",
         @"showPlayer",
         @"separator",
+        @"quit",
         nil];
     
     // Get our preferred menu
@@ -657,6 +658,7 @@ static PreferencesController *prefs = nil;
     [artistCheckbox setState:[df boolForKey:@"showArtist"] ? NSOnState : NSOffState];
     [trackTimeCheckbox setState:[df boolForKey:@"showTime"] ? NSOnState : NSOffState];
     [trackNumberCheckbox setState:[df boolForKey:@"showTrackNumber"] ? NSOnState : NSOffState];
+    [ratingCheckbox setState:[df boolForKey:@"showTrackRating"] ? NSOnState : NSOffState];
     
     // Set the launch at login checkbox state
     [df synchronize];
@@ -679,57 +681,31 @@ static PreferencesController *prefs = nil;
 
 - (void)setLaunchesAtLogin:(BOOL)flag
 {
-    if ( flag ) {
-        NSMutableDictionary *loginwindow;
-        NSMutableArray *loginarray;
-        ComponentInstance temp = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
-        int i;
-        BOOL skip = NO;
-
-        [df synchronize];
-        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-
-        for (i = 0; i < [loginarray count]; i++) {
-            NSDictionary *tempDict = [loginarray objectAtIndex:i];
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
-                skip = YES;
-            }
-        }
-
-        if (!skip) {
-            AEDesc scriptDesc, resultDesc;
-            NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
-
-            AECreateDesc(typeChar, [script cString], [script cStringLength],
-                         &scriptDesc);
-
-            OSADoScript(temp, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
-
-            AEDisposeDesc(&scriptDesc);
-            AEDisposeDesc(&resultDesc);
-            CloseComponent(temp);
-        }
-
+    NSMutableDictionary *loginwindow;
+    NSMutableArray *loginarray;
+    
+    [df synchronize];
+    loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
+    loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+    
+    if (flag) {
+        NSDictionary *itemDict = [NSDictionary dictionaryWithObjectsAndKeys:
+        [[NSBundle mainBundle] bundlePath], @"Path",
+        [NSNumber numberWithInt:0], @"Hide", nil];
+        [loginarray addObject:itemDict];
     } else {
-        NSMutableDictionary *loginwindow;
-        NSMutableArray *loginarray;
         int i;
-
-        [df synchronize];
-        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-
         for (i = 0; i < [loginarray count]; i++) {
             NSDictionary *tempDict = [loginarray objectAtIndex:i];
             if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
                 [loginarray removeObjectAtIndex:i];
-                [df setPersistentDomain:loginwindow forName:@"loginwindow"];
-                [df synchronize];
                 break;
             }
         }
     }
+    [df setPersistentDomain:loginwindow forName:@"loginwindow"];
+    [df synchronize];
+    [loginwindow release];
 }
 
 
@@ -857,7 +833,7 @@ static PreferencesController *prefs = nil;
         
         if ([[[info draggingPasteboard] types] containsObject:@"MenuTableViewPboardType"]) {
             NSString *item = [myItems objectAtIndex:[[[info draggingPasteboard] stringForType:@"MenuTableViewPboardType"] intValue]];
-            if ([item isEqualToString:@"Preferences"] || [item isEqualToString:@"Quit"]) {
+            if ([item isEqualToString:@"preferences"]) {
                 return NSDragOperationNone;
             }
         }
