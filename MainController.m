@@ -10,6 +10,30 @@
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
 
+@interface NSCarbonMenuImpl:NSObject
+{
+    NSMenu *_menu;
+}
+
++ (void)initialize;
++ (void)setupForNoMenuBar;
+- (void)dealloc;
+- (void)setMenu:fp8;
+- menu;
+- (void)itemChanged:fp8;
+- (void)itemAdded:fp8;
+- (void)itemRemoved:fp8;
+- (void)performActionWithHighlightingForItemAtIndex:(int)fp8;
+- (void)performMenuAction:(SEL)fp8 withTarget:fp12;
+- (void)setupCarbonMenuBar;
+- (void)setAsMainCarbonMenuBar;
+- (void)clearAsMainCarbonMenuBar;
+- (void)popUpMenu:fp8 atLocation:(NSPoint)fp12 width:(float)fp20 forView:fp24 withSelectedItem:(int)fp28 withFont:fp32;
+- (void)_popUpContextMenu:fp8 withEvent:fp12 forView:fp16 withFont:fp20;
+- (void)_popUpContextMenu:fp8 withEvent:fp12 forView:fp16;
+- window;
+@end
+
 @implementation NSImage (SmoothAdditions)
 
 - (NSImage *)imageScaledSmoothlyToSize:(NSSize)scaledSize
@@ -521,7 +545,11 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Selecting EQ preset %i", index);
     NS_DURING
-        [[self currentRemote] switchToEQAtIndex:index];
+        if (index == -1) {
+            [[self currentRemote] setEqualizerEnabled:![[self currentRemote] equalizerEnabled]];
+        } else {
+            [[self currentRemote] switchToEQAtIndex:index];
+        }
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
@@ -663,6 +691,26 @@ static MainController *sharedController;
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
     
+    if ([df objectForKey:@"FastForward"] != nil) {
+        ITDebugLog(@"Setting up fast forward hot key.");
+        hotKey = [[ITHotKey alloc] init];
+        [hotKey setName:@"FastForward"];
+        [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"FastForward"]]];
+        [hotKey setTarget:self];
+        [hotKey setAction:@selector(fastForward)];
+        [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+    }
+    
+    if ([df objectForKey:@"Rewind"] != nil) {
+        ITDebugLog(@"Setting up rewind hot key.");
+        hotKey = [[ITHotKey alloc] init];
+        [hotKey setName:@"Rewind"];
+        [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"Rewind"]]];
+        [hotKey setTarget:self];
+        [hotKey setAction:@selector(rewind)];
+        [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+    }
+    
     if ([df objectForKey:@"ShowPlayer"] != nil) {
         ITDebugLog(@"Setting up show player hot key.");
         hotKey = [[ITHotKey alloc] init];
@@ -752,6 +800,16 @@ static MainController *sharedController;
         [hotKey setAction:@selector(decrementRating)];
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
+    
+    if ([df objectForKey:@"PopupMenu"] != nil) {
+        ITDebugLog(@"Setting up popup menu hot key.");
+        hotKey = [[ITHotKey alloc] init];
+        [hotKey setName:@"PopupMenu"];
+        [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PopupMenu"]]];
+        [hotKey setTarget:self];
+        [hotKey setAction:@selector(popupMenu)];
+        [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+    }
     ITDebugLog(@"Finished setting up hot keys.");
 }
 
@@ -766,6 +824,7 @@ static MainController *sharedController;
     NSString               *track       = nil;
     NSImage                *art         = nil;
     int                     rating      = -1;
+    int                     playCount   = -1;
     
     ITDebugLog(@"Showing track info status window.");
     
@@ -855,6 +914,14 @@ static MainController *sharedController;
                 rating = ( currentRating * 5 );
             }
         }
+        
+        if ( [df boolForKey:@"showPlayCount"] ) {
+            NS_DURING
+                playCount = [[self currentRemote] currentSongPlayCount];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
+        }
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
     }
@@ -867,6 +934,7 @@ static MainController *sharedController;
                                                     time:time
                                                    track:track
                                                   rating:rating
+                                               playCount:playCount
                                                    image:art];
 }
 
@@ -904,6 +972,12 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
+}
+
+- (void)popupMenu
+{
+    NSMenu *menu = [menuController menu];
+    [(NSCarbonMenuImpl *)[menu _menuImpl] popUpMenu:menu atLocation:[NSEvent mouseLocation] width:1 forView:nil withSelectedItem:-30 withFont:[NSFont menuFontOfSize:32]];
 }
 
 - (void)incrementVolume

@@ -300,6 +300,11 @@ er's process managment.
 - (NSImage *)currentSongAlbumArt;
 
 /*!
+ * @method currentSongPlayCount
+ */
+- (int)currentSongPlayCount;
+
+/*!
  * @method currentSongRating
  */
 - (float)currentSongRating;
@@ -308,6 +313,16 @@ er's process managment.
  * @method setCurrentSongRating:
  */
 - (BOOL)setCurrentSongRating:(float)rating;
+
+/*!
+ * @method equalizerEnabled
+ */
+- (BOOL)equalizerEnabled;
+
+/*!
+ * @method setEqualizerEnabled:
+ */
+- (BOOL)setEqualizerEnabled:(BOOL)enabled;
 
 /*!
  * @method eqPresets

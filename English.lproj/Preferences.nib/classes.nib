@@ -41,6 +41,7 @@
                 passwordPanelTextField = NSTextField; 
                 passwordPanelTitle = NSTextField; 
                 passwordTextField = NSTextField; 
+                playCountCheckbox = NSButton; 
                 positionMatrix = NSMatrix; 
                 ratingCheckbox = NSButton; 
                 runScriptsCheckbox = NSButton; 

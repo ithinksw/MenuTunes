@@ -107,6 +107,7 @@ static StatusWindowController *sharedController;
                                 time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
                                track:            (NSString *)track
                               rating:                   (int)rating
+                           playCount:                   (int)playCount
                                image:             (NSImage *)art
 {
     NSImage  *image = nil;
@@ -145,6 +146,9 @@ static StatusWindowController *sharedController;
     if ( track ) {
         text = [text stringByAppendingString:[@"\n" stringByAppendingString:track]];
     }
+    if (playCount > -1) {
+        text = [text stringByAppendingString:[NSString stringWithFormat:@"\nPlay Count: %i", playCount]];
+    }
     if ( rating > -1 ) {
 
         NSString *ratingString = [NSString string];
@@ -163,7 +167,6 @@ static StatusWindowController *sharedController;
     
         text = [text stringByAppendingString:[@"\n" stringByAppendingString:ratingString]];
     }
-    
     
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:text];

@@ -44,6 +44,7 @@
     IBOutlet NSTextField *passwordPanelTextField;
     IBOutlet NSTextField *passwordPanelTitle;
     IBOutlet NSTextField *passwordTextField;
+    IBOutlet NSButton *playCountCheckbox;
     IBOutlet NSMatrix *positionMatrix;
     IBOutlet NSButton *ratingCheckbox;
     IBOutlet NSButton *runScriptsCheckbox;

@@ -487,6 +487,15 @@
     }
 }
 
+- (int)currentSongPlayCount
+{
+    int count;
+    ITDebugLog(@"Getting current song play count.");
+    count = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pPlC" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    ITDebugLog(@"Getting current song play count done.");
+    return count;
+}
+
 - (float)currentSongRating
 {
     float temp1;
@@ -510,7 +519,7 @@
 - (BOOL)equalizerEnabled
 {
     ITDebugLog(@"Getting equalizer enabled status.");
-    int thingy = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:type('prop'), want:type('prop'), seld:type('pEQ '), from:() }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    int thingy = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pEQ " eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Done getting equalizer enabled status.");
     return (thingy != 0) ? YES : NO;
 }

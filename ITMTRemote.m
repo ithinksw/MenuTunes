@@ -174,6 +174,11 @@
     return nil;
 }
 
+- (int)currentSongPlayCount
+{
+    return nil;
+}
+
 - (float)currentSongRating
 {
     return nil;
@@ -184,7 +189,7 @@
     return NO;
 }
 
-/* - (BOOL)equalizerEnabled
+- (BOOL)equalizerEnabled
 {
     return NO;
 }
@@ -192,7 +197,7 @@
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
     return NO;
-} */
+}
 
 - (NSArray *)eqPresets
 {

@@ -312,6 +312,9 @@
                 
                 if (!_playingRadio) {
                     NS_DURING
+                        if ([defaults boolForKey:@"showPlayCount"]) {
+                            [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"Play Count: %i", [mtr currentSongPlayCount]] action:nil keyEquivalent:@""]];
+                        }
                         if ([defaults boolForKey:@"showTrackRating"] && ( [mtr currentSongRating] != -1.0 )) {
                             NSString *string = nil;
                             switch ((int)([mtr currentSongRating] * 5)) {
@@ -386,6 +389,8 @@
                 [tempItem setState:NSOffState];
             }
             NS_DURING
+                [[_eqMenu itemAtIndex:0] setState:[mtr equalizerEnabled] ? NSOnState : NSOffState];
+                [[_eqMenu itemAtIndex:([mtr currentEQPresetIndex] + 1)] setState:NSOnState];
                 [[_eqMenu itemAtIndex:([mtr currentEQPresetIndex] - 1)] setState:NSOnState];
             NS_HANDLER
                 [[MainController sharedController] networkError:localException];
@@ -694,6 +699,16 @@
     NS_ENDHANDLER
     
     ITDebugLog(@"Building \"EQ Presets\" menu.");
+    
+    tempItem = [eqMenu addItemWithTitle:@"Enabled" action:@selector(performEqualizerMenuAction:) keyEquivalent:@""];
+    [tempItem setTag:-1];
+    [tempItem setTarget:self];
+    NS_DURING
+        [tempItem setState:[[[MainController sharedController] currentRemote] equalizerEnabled] ? NSOnState : NSOffState];
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
+    [eqMenu addItem:[NSMenuItem separatorItem]];
     
     for (i = 0; i < [eqPresets count]; i++) {
         NSString *name;

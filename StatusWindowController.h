@@ -51,6 +51,7 @@ typedef enum {
                                 time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
                                track:            (NSString *)track
                               rating:                   (int)rating
+                           playCount:                   (int)playCount
                                image:             (NSImage *)art;
 
 

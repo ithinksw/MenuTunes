@@ -86,6 +86,8 @@ static PreferencesController *prefs = nil;
         hotKeysArray = [[NSArray alloc] initWithObjects:@"PlayPause",
                                                        @"NextTrack",
                                                        @"PrevTrack",
+                                                       @"FastForward",
+                                                       @"Rewind",
                                                        @"ShowPlayer",
                                                        @"TrackInfo",
                                                        @"UpcomingSongs",
@@ -95,11 +97,14 @@ static PreferencesController *prefs = nil;
                                                        @"DecrementRating",
                                                        @"ToggleShuffle",
                                                        @"ToggleLoop",
+                                                       @"PopupMenu",
                                                        nil];
         
         hotKeyNamesArray = [[NSArray alloc] initWithObjects:@"Play/Pause",
                                                        @"Next Track",
                                                        @"Previous Track",
+                                                       @"Fast Forward",
+                                                       @"Rewind",
                                                        @"Show Player",
                                                        @"Track Info",
                                                        @"Upcoming Songs",
@@ -109,6 +114,7 @@ static PreferencesController *prefs = nil;
                                                        @"Decrement Rating",
                                                        @"Toggle Shuffle",
                                                        @"Toggle Loop",
+                                                       @"Pop-up status menu",
                                                        nil];
         hotKeysDictionary = [[NSMutableDictionary alloc] init];
         controller = nil;
@@ -216,7 +222,7 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 1030) {
         [df setInteger:[sender intValue] forKey:@"SongsInAdvance"];
         if ([[controller currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
-            [[controller menuController] rebuildSubmenus];
+            [[controller menuController] performSelector:@selector(rebuildSubmenus) withObject:nil afterDelay:0];
         }
     } else if ( [sender tag] == 1040) {
         // This will not be executed.  Song info always shows the title of the song.
@@ -231,6 +237,8 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"showTime"];
     } else if ( [sender tag] == 1080) {
         [df setBool:SENDER_STATE forKey:@"showTrackNumber"];
+    } else if ( [sender tag] == 1085) {
+        [df setBool:SENDER_STATE forKey:@"showPlayCount"];
     } else if ( [sender tag] == 1090) {
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
     } else if ( [sender tag] == 1100) {
@@ -784,6 +792,7 @@ static PreferencesController *prefs = nil;
     [composerCheckbox setState:[df boolForKey:@"showComposer"] ? NSOnState : NSOffState];
     [trackTimeCheckbox setState:[df boolForKey:@"showTime"] ? NSOnState : NSOffState];
     [trackNumberCheckbox setState:[df boolForKey:@"showTrackNumber"] ? NSOnState : NSOffState];
+    [playCountCheckbox setState:[df boolForKey:@"showPlayCount"] ? NSOnState : NSOffState];
     [ratingCheckbox setState:[df boolForKey:@"showTrackRating"] ? NSOnState : NSOffState];
     [albumArtworkCheckbox setState:[df boolForKey:@"showAlbumArtwork"] ? NSOnState : NSOffState];
     
