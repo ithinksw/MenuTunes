@@ -47,8 +47,11 @@ Things to do:
     currentRemote = [self loadRemote];
     [currentRemote begin];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesTerminated:) name:@"ITMTRemoteAppDidTerminateNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesLaunched:) name:@"ITMTRemoteAppDidLaunchNotification" object:nil];
+    
     asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
-
+    
     [self registerDefaultsIfNeeded];
     
     menu = [[NSMenu alloc] initWithTitle:@""];
@@ -62,8 +65,6 @@ Things to do:
                             selector:@selector(timerUpdate)
                             userInfo:nil
                             repeats:YES];
-        
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
     }
     else
     {
@@ -71,7 +72,6 @@ Things to do:
         [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
         [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
         [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
         refreshTimer = nil;
     }
 
@@ -609,30 +609,11 @@ Things to do:
 //Called when the timer fires.
 - (void)timerUpdate
 {
-    int trackPlayingIndex = [currentRemote currentSongIndex];
-    int playlist = [currentRemote currentPlaylistIndex];
-    
-    if (trackPlayingIndex != lastSongIndex) {
-        bool wasPlayingRadio = isPlayingRadio;
-        isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
-        if (isPlayingRadio && !wasPlayingRadio) {
-            int i;
-            for (i = 0; i < [playlistMenu numberOfItems]; i++)
-            {
-                [[playlistMenu itemAtIndex:i] setState:NSOffState];
-            }
-        }
-        if (wasPlayingRadio) {
-            NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
-            [menu insertItem:temp atIndex:trackInfoIndex + 1];
-            [temp release];
-        }
-        [self updateMenu];
-        lastSongIndex = trackPlayingIndex;
-    }
-    else
-    {
-        if (playlist != [currentRemote currentPlaylistIndex]) {
+    if ([currentRemote playerState] != stopped) {
+        int trackPlayingIndex = [currentRemote currentSongIndex];
+        int playlist = [currentRemote currentPlaylistIndex];
+        
+        if (trackPlayingIndex != lastSongIndex) {
             bool wasPlayingRadio = isPlayingRadio;
             isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
             if (isPlayingRadio && !wasPlayingRadio) {
@@ -650,13 +631,34 @@ Things to do:
             [self updateMenu];
             lastSongIndex = trackPlayingIndex;
         }
-    }
-    //Update Play/Pause menu item
-    if (playPauseMenuItem){
-        if ([currentRemote playerState] == playing) {
-            [playPauseMenuItem setTitle:@"Pause"];
-        } else {
-            [playPauseMenuItem setTitle:@"Play"];
+        else
+        {
+            if (playlist != [currentRemote currentPlaylistIndex]) {
+                bool wasPlayingRadio = isPlayingRadio;
+                isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
+                if (isPlayingRadio && !wasPlayingRadio) {
+                    int i;
+                    for (i = 0; i < [playlistMenu numberOfItems]; i++)
+                    {
+                        [[playlistMenu itemAtIndex:i] setState:NSOffState];
+                    }
+                }
+                if (wasPlayingRadio) {
+                    NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
+                    [menu insertItem:temp atIndex:trackInfoIndex + 1];
+                    [temp release];
+                }
+                [self updateMenu];
+                lastSongIndex = trackPlayingIndex;
+            }
+        }
+        //Update Play/Pause menu item
+        if (playPauseMenuItem){
+            if ([currentRemote playerState] == playing) {
+                [playPauseMenuItem setTitle:@"Pause"];
+            } else {
+                [playPauseMenuItem setTitle:@"Play"];
+            }
         }
     }
 }
@@ -673,15 +675,10 @@ Things to do:
     
     [self rebuildMenu]; //Rebuild the menu since no songs will be playing
     [statusItem setMenu:menu]; //Set the menu back to the main one
-    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-    
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
 }
 
 - (void)iTunesTerminated:(NSNotification *)note
 {
-    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-    
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
     [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
@@ -689,7 +686,6 @@ Things to do:
     [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
     [statusItem setMenu:menu];
     
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
     [refreshTimer invalidate];
     refreshTimer = nil;
     [self clearHotKeys];
@@ -867,7 +863,6 @@ andEventID:(AEEventID)eventID
         
         if ([defaults boolForKey:@"showTime"]) {
             NSString *trackTime = [currentRemote currentSongLength];
-            NSLog(@"%@", trackTime);
             if ([trackTime length]) {
                 stringToShow = [NSString stringWithFormat:@"%@Total Time: %@\n", stringToShow, trackTime];
             }

@@ -28,6 +28,8 @@
     asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
     
     //Register for application termination in NSWorkspace
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
     
     NSLog(@"iTunes Plugin loaded");
     return YES;
@@ -39,7 +41,31 @@
     CloseComponent(asComponent);
     
     //Unregister for application termination in NSWorkspace
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+    
     return YES;
+}
+
+- (void)applicationLaunched:(NSNotification *)note
+{
+    NSDictionary *info = [note userInfo];
+    
+    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
+        iTunesPSN.highLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberHigh"] longValue];
+        iTunesPSN.lowLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberLow"] longValue];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidLaunchNotification" object:nil];
+    }
+}
+
+- (void)applicationTerminated:(NSNotification *)note
+{
+    NSDictionary *info = [note userInfo];
+    
+    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
+        iTunesPSN.highLongOfPSN = kNoProcess;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidTerminateNotification" object:nil];
+    }
 }
 
 - (PlayerState)playerState
