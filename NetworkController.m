@@ -98,7 +98,7 @@ static NetworkController *sharedController;
                                         name:name
                                         port:SERVER_PORT];
         fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"sharedPlayerPassword"];
-        if (fullPass) {
+        if ([fullPass length]) {
             [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
             [serverPass release];
             serverPass = [[NSData alloc] initWithBytes:&buffer length:strlen(&buffer)];

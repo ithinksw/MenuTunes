@@ -55,7 +55,6 @@
     IBOutlet NSTextField *songsInAdvance;
     IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
-    IBOutlet NSButton *usePasswordCheckbox;
     IBOutlet NSButton *useSharedMenuTunesCheckbox;
     IBOutlet NSSlider *vanishDelaySlider;
     IBOutlet NSPopUpButton *vanishEffectPopup;

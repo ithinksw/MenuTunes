@@ -53,7 +53,6 @@
                 songsInAdvance = NSTextField; 
                 trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
-                usePasswordCheckbox = NSButton; 
                 useSharedMenuTunesCheckbox = NSButton; 
                 vanishDelaySlider = NSSlider; 
                 vanishEffectPopup = NSPopUpButton; 

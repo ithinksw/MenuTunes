@@ -53,7 +53,7 @@
 
 - (BOOL)requiresPassword
 {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableSharingPassword"];
+    return [[[NSUserDefaults standardUserDefaults] dataForKey:@"sharedPlayerPassword"] length];
 }
 
 - (BOOL)sendPassword:(NSData *)password

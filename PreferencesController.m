@@ -238,7 +238,6 @@ static PreferencesController *prefs = nil;
         [df setBool:state forKey:@"enableSharing"];
         //Disable/enable the use of shared player options
         [useSharedMenuTunesCheckbox setEnabled:!state];
-        [usePasswordCheckbox setEnabled:state];
         [passwordTextField setEnabled:state];
         [nameTextField setEnabled:state];
         [selectSharedPlayerButton setEnabled:NO];
@@ -246,28 +245,29 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 5015 ) {
         [df setObject:[sender stringValue] forKey:@"sharedPlayerName"];
         [[NetworkController sharedController] resetServerName];
-    } else if ( [sender tag] == 5020 ) {
-        [df setBool:SENDER_STATE forKey:@"enableSharingPassword"];
     } else if ( [sender tag] == 5030 ) {
         //Set the server password
         const char *instring = [[sender stringValue] UTF8String];
-        const char *password = "password";
+        const char *password = "p4s5w0rdMT1.2";
         unsigned char *result;
         NSData *hashedPass, *passwordStringHash;
+        if ([[sender stringValue] length] == 0) {
+            [df setObject:[NSData data] forKey:@"sharedPlayerPassword"];
+            return;
+        }
         result = SHA1(instring, strlen(instring), NULL);
         hashedPass = [NSData dataWithBytes:result length:strlen(result)];
         result = SHA1(password, strlen(password), NULL);
         passwordStringHash = [NSData dataWithBytes:result length:strlen(result)];
         if (![hashedPass isEqualToData:passwordStringHash]) {
             [df setObject:hashedPass forKey:@"sharedPlayerPassword"];
-            [sender setStringValue:@"password"];
+            [sender setStringValue:@"p4s5w0rdMT1.2"];
         }
     } else if ( [sender tag] == 5040 ) {
         BOOL state = SENDER_STATE;
         [df setBool:state forKey:@"useSharedPlayer"];
         //Disable/enable the use of sharing options
         [shareMenuTunesCheckbox setEnabled:!state];
-        [usePasswordCheckbox setEnabled:NO];
         [passwordTextField setEnabled:NO];
         [nameTextField setEnabled:NO];
         [selectSharedPlayerButton setEnabled:state];
@@ -847,7 +847,6 @@ static PreferencesController *prefs = nil;
         [useSharedMenuTunesCheckbox setEnabled:NO];
         [selectSharedPlayerButton setEnabled:NO];
         [passwordTextField setEnabled:YES];
-        [usePasswordCheckbox setEnabled:YES];
         [nameTextField setEnabled:YES];
     } else if ([df boolForKey:@"useSharedPlayer"]) {
         [useSharedMenuTunesCheckbox setState:NSOnState];
@@ -864,9 +863,10 @@ static PreferencesController *prefs = nil;
     [nameTextField setStringValue:serverName];
     
     [selectPlayerBox setContentView:zeroConfView];
-    [usePasswordCheckbox setState:([df boolForKey:@"enableSharingPassword"] ? NSOnState : NSOffState)];
-    if ([df dataForKey:@"sharedPlayerPassword"]) {
-        [passwordTextField setStringValue:@"password"];
+    if ([[df dataForKey:@"sharedPlayerPassword"] length]) {
+        [passwordTextField setStringValue:@"p4s5w0rdMT1.2"];
+    } else {
+        [passwordTextField setStringValue:@""];
     }
     if ([df stringForKey:@"sharedPlayerHost"]) {
         [hostTextField setStringValue:[df stringForKey:@"sharedPlayerHost"]];
