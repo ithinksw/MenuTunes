@@ -60,22 +60,22 @@
 - (PlayerState)playerState
 {
     long result = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
-
+    
     switch (result)
-	   {
-	   default:
-	   case 'kPSS':
-		  return stopped;
-	   case 'kPSP':
-		  return paused;
-	   case 'kPSp':
-		  return playing;
-	   case 'kPSR':
-		  return rewinding;
-	   case 'kPSF':
-		  return forwarding;
-	   }
-
+    {
+        default:
+        case 'kPSS':
+            return stopped;
+        case 'kPSP':
+            return paused;
+        case 'kPSp':
+            return playing;
+        case 'kPSR':
+            return rewinding;
+        case 'kPSF':
+            return forwarding;
+    }
+    
     return stopped;
 }
 

@@ -444,6 +444,7 @@ Things to do:
     int curIndex = [currentRemote currentPlaylistIndex];
     int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:curIndex];
     int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
+    
     if (!isPlayingRadio) {
         if (numSongs > 0) {
             int curTrack = [currentRemote currentSongIndex];
@@ -578,6 +579,7 @@ Things to do:
 //Called when the timer fires.
 - (void)timerUpdate
 {
+    NSLog(@"%i", [currentRemote playerState]);
     if ([currentRemote playerState] != stopped) {
         int trackPlayingIndex = [currentRemote currentSongIndex];
         int playlist = [currentRemote currentPlaylistIndex];
@@ -597,6 +599,7 @@ Things to do:
                 [menu insertItem:temp atIndex:trackInfoIndex + 1];
                 [temp release];
             }
+            
             [self updateMenu];
             lastSongIndex = trackPlayingIndex;
         }
