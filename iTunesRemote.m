@@ -354,7 +354,6 @@
                         sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
                         
     finalString = [self formatTimeInSeconds:final];
-    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { finalString = nil; }
     ITDebugLog(@"Getting current song elapsed time done.");
     return finalString;
 }
