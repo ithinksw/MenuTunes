@@ -49,7 +49,6 @@
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     currentRemote = [self loadRemote];
-    [currentRemote begin];
     
     //Setup for notification of the remote player launching or quitting
     [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -132,21 +131,10 @@
 - (void)applicationLaunched:(NSNotification *)note
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
-        unichar fullstar = 0x2605;
-        unichar emptystar = 0x2606;
-        NSString *fullStarChar = [NSString stringWithCharacters:&fullstar length:1];
-        NSString *emptyStarChar = [NSString stringWithCharacters:&emptystar length:1];
-        //Build the song rating menu
-        ratingMenu = [[NSMenu alloc] initWithTitle:@""];
-        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:0];
-        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:20];
-        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:40];
-        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:60];
-        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:80];
-        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, fullStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:100];
+        [currentRemote begin];
+        [self timerUpdate];
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
         [self setupHotKeys];
-        [self rebuildMenu];
         isAppRunning = ITMTRemotePlayerRunning;
     }
 }
@@ -157,18 +145,16 @@
         NSMenu *notRunningMenu = [[NSMenu alloc] initWithTitle:@""];
         [notRunningMenu addItemWithTitle:[NSString stringWithFormat:@"Open %@", [currentRemote playerSimpleName]] action:@selector(showPlayer:) keyEquivalent:@""];
         [notRunningMenu addItem:[NSMenuItem separatorItem]];
-        [notRunningMenu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""];
+        [notRunningMenu addItemWithTitle:@"Preferences..." action:@selector(showPreferences:) keyEquivalent:@""];
         [notRunningMenu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""];
+        [statusItem setMenu:[notRunningMenu autorelease]];
         
+        [currentRemote halt];
         [refreshTimer invalidate];
         [refreshTimer release];
         refreshTimer = nil;
         [self clearHotKeys];
         isAppRunning = ITMTRemotePlayerNotRunning;
-        
-        [ratingMenu release];
-        
-        [statusItem setMenu:[notRunningMenu autorelease]];
     }
 }
 
@@ -193,14 +179,24 @@
 //Recreate the status item menu
 - (void)rebuildMenu
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSArray *myMenu = [defaults arrayForKey:@"menu"];
-    int playlist = [currentRemote currentPlaylistIndex];
+    NSUserDefaults *defaults;
+    NSArray *myMenu;
+    int playlist;
     int i;
+    unichar fullstar = 0x2605;
+    unichar emptystar = 0x2606;
+    NSString *fullStarChar;
+    NSString *emptyStarChar;
     
     if ([currentRemote playerRunningState] == ITMTRemotePlayerNotRunning) {
         return;
     }
+    
+    defaults = [NSUserDefaults standardUserDefaults];
+    myMenu = [defaults arrayForKey:@"menu"];
+    playlist = [currentRemote currentPlaylistIndex];
+    fullStarChar = [NSString stringWithCharacters:&fullstar length:1];
+    emptyStarChar = [NSString stringWithCharacters:&emptystar length:1];
     
     trackInfoIndex = -1;
     lastPlaylistIndex = -1;
@@ -208,23 +204,32 @@
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
     
+    //Release the old submenus
     playPauseItem = nil;
-    
     upcomingSongsItem = nil;
     [upcomingSongsMenu release];
     upcomingSongsMenu = nil;
-    
-    if (ratingItem) {
-        [ratingItem setSubmenu:nil];
-    }
-    
     playlistItem = nil;
     [playlistMenu release];
     playlistMenu = nil;
-    
     eqItem = nil;
     [eqMenu release];
     eqMenu = nil;
+    if (ratingItem) {
+        [ratingItem setSubmenu:nil];
+        [ratingItem release];
+        ratingItem = nil;
+    }
+    
+    //Build the rating menu
+    [ratingMenu release];
+    ratingMenu = [[NSMenu alloc] initWithTitle:@""];
+    [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:0];
+    [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:20];
+    [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:40];
+    [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:60];
+    [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:80];
+    [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, fullStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:100];
     
     //Build the custom menu
     for (i = 0; i < [myMenu count]; i++) {
@@ -303,9 +308,9 @@
                     action:nil
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Song Rating"]) {
-            ratingItem = [menu addItemWithTitle:@"Song Rating"
+            ratingItem = [[menu addItemWithTitle:@"Song Rating"
                     action:nil
-                    keyEquivalent:@""];
+                    keyEquivalent:@""] retain];
             [ratingItem setSubmenu:ratingMenu];
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
@@ -320,7 +325,7 @@
         [self rebuildEQPresetsMenu];
     }
     
-    isPlayingRadio = ([currentRemote classOfPlaylistAtIndex:playlist] == ITMTRemotePlayerRadioPlaylist);
+    isPlayingRadio = ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
     
     if (upcomingSongsItem) {
         [self rebuildUpcomingSongsMenu];
@@ -331,7 +336,6 @@
             [ratingItem setEnabled:NO];
         } else {
             int currentSongRating = ([currentRemote currentSongRating] * 5);
-            [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
             lastSongRating = currentSongRating;
             [[ratingMenu itemAtIndex:lastSongRating] setState:NSOnState];
             [ratingItem setEnabled:YES];
@@ -393,7 +397,7 @@
         }
         
         if ([title length] > 0) {
-            [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", title] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+            [menu insertItemWithTitle:[NSString stringWithFormat:@"	 %@", title] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
         }
     }
     
@@ -492,7 +496,7 @@
 {
     int currentSongRating = ([currentRemote currentSongRating] * 5);
     if ([currentRemote currentPlaylistIndex] && (currentSongRating != lastSongRating)) {
-        if ([currentRemote classOfPlaylistAtIndex:[currentRemote currentPlaylistIndex]] == ITMTRemotePlayerRadioPlaylist) {
+        if ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) {
             return;
         }
         [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
@@ -505,10 +509,11 @@
 {
     NSString *currentIdentifier = [currentRemote currentSongUniqueIdentifier];
     if (![lastSongIdentifier isEqualToString:currentIdentifier] ||
-       (!isPlayingRadio && ([currentRemote classOfPlaylistAtIndex:[currentRemote currentPlaylistIndex]] == ITMTRemotePlayerRadioPlaylist))) {
+       (!isPlayingRadio && ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist))) {
         //
         //
         // If we want to show the new track floater, do it here!
+        //[self showCurrentTrackInfo];
         //
         //
         [self rebuildMenu];
@@ -699,43 +704,43 @@
     if ([defaults objectForKey:@"ToggleLoop"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
                combo:[defaults keyComboForKey:@"ToggleLoop"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:@selector(showToggleLoopStatusWindow)];
     }
     
     if ([defaults objectForKey:@"ToggleShuffle"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
                combo:[defaults keyComboForKey:@"ToggleShuffle"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:@selector(showToggleShuffleStatusWindow)];
     }
     
     if ([defaults objectForKey:@"IncrementVolume"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
                combo:[defaults keyComboForKey:@"IncrementVolume"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:@selector(showVolumeIncrementStatusWindow)];
     }
     
     if ([defaults objectForKey:@"DecrementVolume"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
                combo:[defaults keyComboForKey:@"DecrementVolume"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:@selector(showVolumeDecrementStatusWindow)];
     }
     
     if ([defaults objectForKey:@"IncrementRating"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
                combo:[defaults keyComboForKey:@"IncrementRating"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:@selector(showRatingIncrementStatusWindow)];
     }
     
     if ([defaults objectForKey:@"DecrementRating"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
                combo:[defaults keyComboForKey:@"DecrementRating"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:@selector(showRatingDecrementStatusWindow)];
     }
 }
 
 //
 //
-// Show Current Track Info And Show Upcoming Songs Floaters
+// Status Window Methods
 //
 //
 
@@ -829,6 +834,30 @@
     }
 }
 
+- (void)showVolumeIncrementStatusWindow
+{
+}
+
+- (void)showVolumeDecrementStatusWindow
+{
+}
+
+- (void)showRatingIncrementStatusWindow
+{
+}
+
+- (void)showRatingDecrementStatusWindow
+{
+}
+
+- (void)showToggleLoopStatusWindow
+{
+}
+
+- (void)showToggleShuffleStatusWindow
+{
+}
+
 - (void)fadeAndCloseStatusWindow
 {
     [statusWindow orderOut:self];
@@ -870,6 +899,7 @@
         case 49:
         {
             // Haven't tested this, though it should work.
+            //Doesn't work :(
             unichar buffer;
             [[NSString stringWithString:@"Space"] getCharacters:&buffer];
             charcode = buffer;
