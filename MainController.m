@@ -773,6 +773,7 @@ static MainController *sharedController;
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
         ITDebugLog(@"Remote application launched.");
+        playerRunningState = ITMTRemotePlayerRunning;
         [currentRemote begin];
         [self setLatestSongIdentifier:@""];
         [self timerUpdate];
@@ -783,7 +784,6 @@ static MainController *sharedController;
                              repeats:YES] retain];
         //[NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
         [self setupHotKeys];
-        playerRunningState = ITMTRemotePlayerRunning;
     }
 }
 
