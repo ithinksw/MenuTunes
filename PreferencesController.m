@@ -244,6 +244,7 @@ static PreferencesController *prefs = nil;
         [controller setServerStatus:state]; //Set server status
     } else if ( [sender tag] == 5015 ) {
         [df setObject:[sender stringValue] forKey:@"sharedPlayerName"];
+        [[NetworkController sharedController] resetServerName];
     } else if ( [sender tag] == 5020 ) {
         [df setBool:SENDER_STATE forKey:@"enableSharingPassword"];
     } else if ( [sender tag] == 5030 ) {

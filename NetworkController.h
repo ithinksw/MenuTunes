@@ -39,6 +39,7 @@
 - (int)connectToHost:(NSString *)host;
 - (BOOL)checkForServerAtHost:(NSString *)host;
 - (BOOL)disconnect;
+- (void)resetServerName;
 - (BOOL)isServerOn;
 - (BOOL)isClientConnected;
 - (BOOL)isConnectedToServer;

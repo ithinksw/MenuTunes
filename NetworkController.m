@@ -111,6 +111,7 @@ static NetworkController *sharedController;
     } else if (serverOn && !status && [serverConnection isValid]) {
         //Turn off
         [service stop];
+        [service release];
         [rootObject invalidate];
         [serverConnection registerName:nil];
         [serverConnection invalidate];
@@ -238,6 +239,18 @@ static NetworkController *sharedController;
     [testConnection release];
     [testPort release];
     return valid;
+}
+
+- (void)resetServerName
+{
+    if ([self isServerOn]) {
+        [service stop];
+        [service release];
+        service = [[NSNetService alloc] initWithDomain:@""
+                                        type:@"_mttp._tcp."
+                                        name:[[NSUserDefaults standardUserDefaults] stringForKey:@"sharedPlayerName"]
+                                        port:SERVER_PORT];
+    }
 }
 
 - (BOOL)isServerOn

@@ -290,9 +290,6 @@ static MainController *sharedController;
 {
     if ([networkController isConnectedToServer]) {
         [statusItem setMenu:[menuController menu]];
-        if ([[networkController networkObject] remote] == nil) {
-            [self networkError:nil];
-        }
     }
     
     if ( [self songChanged] && (timerUpdating != YES) ) {
@@ -502,6 +499,10 @@ static MainController *sharedController;
 
 - (ITMTRemote *)currentRemote
 {
+    if ([networkController isConnectedToServer] && ![[networkController networkObject] isValid]) {
+        [self networkError:nil];
+        return nil;
+    }
     return currentRemote;
 }
 
