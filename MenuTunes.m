@@ -521,11 +521,13 @@ Things to do:
     for (i = 0; i < [eqPresets count]; i++) {
         NSString *setName = [eqPresets objectAtIndex:i];
         NSMenuItem *tempItem;
+	if (setName) {
         tempItem = [[NSMenuItem alloc] initWithTitle:setName action:@selector(selectEQPreset:) keyEquivalent:@""];
         [tempItem setTarget:self];
         [tempItem setRepresentedObject:[NSNumber numberWithInt:i]];
         [eqMenu addItem:tempItem];
         [tempItem release];
+	}
     }
     [eqItem setSubmenu:eqMenu];
     
