@@ -7,7 +7,7 @@
 //
 
 #import "MenuController.h"
-#import "NewMainController.h"
+#import "MainController.h"
 #import "HotKeyCenter.h"
 #import "KeyCombo.h"
 

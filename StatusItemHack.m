@@ -1,5 +1,5 @@
 #import "StatusItemHack.h"
-#import "NewMainController.h"
+#import "MainController.h"
 
 @implementation StatusItemHack
 

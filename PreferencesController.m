@@ -1,5 +1,5 @@
 #import "PreferencesController.h"
-#import "NewMainController.h"
+#import "MainController.h"
 #import "HotKeyCenter.h"
 #import <ITKit/ITWindowPositioning.h>
 
