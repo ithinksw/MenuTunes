@@ -180,6 +180,9 @@ typedef enum {
 
 - (BOOL)selectTrack:(ITMTTrack *)track;
 - (BOOL)selectTrackAtIndex:(int)index;
+
+- (BOOL)selectNextTrack;
+- (BOOL)selectPreviousTrack;
 @end
 
 @interface ITMTPlaylist : NSObject <ITMTPlaylist>
