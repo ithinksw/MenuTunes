@@ -303,31 +303,32 @@ static PreferencesController *prefs = nil;
                 if ( NSRunAlertPanel(NSLocalizedString(@"duplicateCombo", @"Duplicate Key Combo") , NSLocalizedString(@"duplicateCombo_msg", @"The specified key combo is already in use..."), NSLocalizedString(@"replace", @"Replace"), NSLocalizedString(@"cancel", @"Cancel"), nil) ) {
                     [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:currentHotKey];
                     if ([enumKey isEqualToString:@"PlayPause"]) {
-                        [playPauseButton setTitle:@""];
+                        [playPauseButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"NextTrack"]) {
-                        [nextTrackButton setTitle:@""];
+                        [nextTrackButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"PrevTrack"]) {
-                        [previousTrackButton setTitle:@""];
+                        [previousTrackButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"ShowPlayer"]) {
-                        [showPlayerButton setTitle:@""];
+                        [showPlayerButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"TrackInfo"]) {
-                        [trackInfoButton setTitle:@""];
+                        [trackInfoButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"UpcomingSongs"]) {
-                        [upcomingSongsButton setTitle:@""];
+                        [upcomingSongsButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"IncrementVolume"]) {
-                        [volumeIncrementButton setTitle:@""];
+                        [volumeIncrementButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"DecrementVolume"]) {
-                        [volumeDecrementButton setTitle:@""];
+                        [volumeDecrementButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"IncrementRating"]) {
-                        [ratingIncrementButton setTitle:@""];
+                        [ratingIncrementButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"DecrementRating"]) {
-                        [ratingDecrementButton setTitle:@""];
+                        [ratingDecrementButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"ToggleShuffle"]) {
-                        [toggleShuffleButton setTitle:@""];
+                        [toggleShuffleButton setTitle:@"(None)"];
                     } else if ([enumKey isEqualToString:@"ToggleLoop"]) {
-                        [toggleLoopButton setTitle:@""];
+                        [toggleLoopButton setTitle:@"(None)"];
                     }
                     [df setObject:[[ITKeyCombo clearKeyCombo] plistRepresentation] forKey:enumKey];
+                    [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:enumKey];
                 } else {
                     return;
                 }
@@ -396,7 +397,7 @@ static PreferencesController *prefs = nil;
     
     string = [combo description];
     if (string == nil) {
-        string = @"";
+        string = @"(None)";
     }
     [keyComboField setStringValue:string];
 }
