@@ -343,7 +343,7 @@
     }
     
     //Set the new unique song identifier
-    lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
+    lastSongIdentifier = [[currentRemote playerStateUniqueIdentifier] retain];
     
     //If we're in a playlist or radio mode
     if ( ![lastSongIdentifier isEqualToString:@"0-0"] && (trackInfoIndex > -1) ) {
@@ -507,7 +507,7 @@
 
 - (void)timerUpdate
 {
-    NSString *currentIdentifier = [currentRemote currentSongUniqueIdentifier];
+    NSString *currentIdentifier = [currentRemote playerStateUniqueIdentifier];
     if (![lastSongIdentifier isEqualToString:currentIdentifier] ||
        (!isPlayingRadio && ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist))) {
         //

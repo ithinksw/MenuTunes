@@ -109,7 +109,7 @@
     return nil;
 }
 
-- (NSString *)currentSongUniqueIdentifier
+- (NSString *)playerStateUniqueIdentifier
 {
     return nil;
 }

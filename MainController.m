@@ -142,7 +142,7 @@ static MainController *sharedController;
 
 - (BOOL)songIsPlaying
 {
-    return ( ! ([[currentRemote currentSongUniqueIdentifier] isEqualToString:@"0-0"]) );
+    return ( ! ([[currentRemote playerStateUniqueIdentifier] isEqualToString:@"0-0"]) );
 }
 
 - (BOOL)radioIsPlaying
@@ -152,7 +152,7 @@ static MainController *sharedController;
 
 - (BOOL)songChanged
 {
-    return ( ! [[currentRemote currentSongUniqueIdentifier] isEqualToString:_latestSongIdentifier] );
+    return ( ! [[currentRemote playerStateUniqueIdentifier] isEqualToString:_latestSongIdentifier] );
 }
 
 - (NSString *)latestSongIdentifier
@@ -174,7 +174,7 @@ static MainController *sharedController;
          ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) )*/
     
     if ([self songChanged]) {
-        [self setLatestSongIdentifier:[currentRemote currentSongUniqueIdentifier]];
+        [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
         

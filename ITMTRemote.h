@@ -220,9 +220,9 @@ typedef enum {
 - (int)currentSongTrack;
 
 /*!
- * @method currentSongUniqueIdentifier:
+ * @method playerStateUniqueIdentifier:
  */
-- (NSString *)currentSongUniqueIdentifier;
+- (NSString *)playerStateUniqueIdentifier;
 
 /*!
  * @method currentSongIndex
