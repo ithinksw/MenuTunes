@@ -628,7 +628,7 @@ static MainController *sharedController;
     ITHotKey *hotKey;
     ITDebugLog(@"Setting up hot keys.");
     
-    if (playerRunningState == ITMTRemotePlayerNotRunning) {
+    if (playerRunningState == ITMTRemotePlayerNotRunning && ![[NetworkController sharedController] isConnectedToServer]) {
         return;
     }
     
