@@ -15,9 +15,6 @@ Things to do:
     - going to need a different way of defining key combos
 ¥ Optimize, this thing is big and slow :(
 ¥ Apple Events! Apple Events! Apple Events!
-
-¥ I think I found a slight memory leak:
-    425 MenuTunes    7.8%  8:29.87   1    56  4827   215M+ 3.14M   135M-  599M+
 */
 
 #import "MenuTunes.h"
@@ -392,13 +389,14 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     Size length;
     NSString *result;
     Ptr buffer;
+    ComponentInstance myComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
     
     script = [NSString stringWithFormat:@"tell application \"iTunes\"\n%@\nend tell", script];
     
     AECreateDesc(typeChar, [script cString], [script cStringLength], 
 &scriptDesc);
     
-    OSADoScript(OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype), &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
+    OSADoScript(myComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
     
     length = AEGetDescDataSize(&resultDesc);
     buffer = malloc(length);
@@ -406,6 +404,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     AEGetDescData(&resultDesc, buffer, length);
     AEDisposeDesc(&scriptDesc);
     AEDisposeDesc(&resultDesc);
+    CloseComponent(myComponent);
     result = [NSString stringWithCString:buffer length:length];
     if (![result isEqualToString:@""] &&
         ([result characterAtIndex:0] == '\"') &&
