@@ -4,8 +4,10 @@
 #import "StatusWindow.h"
 #import "StatusWindowController.h"
 #import "CustomMenuTableView.h"
-#import "netinet/in.h"
-#import "arpa/inet.h"
+
+#import <netinet/in.h>
+#import <arpa/inet.h>
+#import <openssl/sha.h>
 
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
@@ -193,7 +195,18 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 5020 ) {
         [df setBool:SENDER_STATE forKey:@"enableSharingPassword"];
     } else if ( [sender tag] == 5030 ) {
-        [df setObject:[sender stringValue] forKey:@"sharedPlayerPassword"];
+        //Set the server password
+        const char *instring = [[sender stringValue] UTF8String];
+        const char *password = "password";
+        unsigned char result;
+        NSData *hashedPass, *passwordStringHash;
+        SHA1(instring, strlen(instring), &result);
+        hashedPass = [NSData dataWithBytes:&result length:strlen(&result)];
+        SHA1(password, strlen(password), &result);
+        passwordStringHash = [NSData dataWithBytes:&result length:strlen(&result)];
+        if (![hashedPass isEqualToData:passwordStringHash]) {
+            [df setObject:hashedPass forKey:@"sharedPlayerPassword"];
+        }
     } else if ( [sender tag] == 5040 ) {
         BOOL state = SENDER_STATE;
         [df setBool:state forKey:@"useSharedPlayer"];
@@ -210,10 +223,9 @@ static PreferencesController *prefs = nil;
             [controller disconnectFromServer];
         }
     } else if ( [sender tag] == 5050 ) {
-        if ([sender clickedRow] > -1) {
-            //Set sharedPlayerHost
-            //[df setObject:[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sender clickedRow]] objectForKey:@"ip"] forKey:@"sharedPlayerHost"];
-        }
+        //Do nothing on table view click
+    } else if ( [sender tag] == 5051 ) {
+        [df setObject:[sender stringValue] forKey:@"sharedPlayerHost"];
     } else if ( [sender tag] == 5060 ) {
         //Show selection sheet
         [NSApp beginSheet:selectPlayerSheet modalForWindow:window modalDelegate:self didEndSelector:NULL contextInfo:nil];
@@ -225,13 +237,20 @@ static PreferencesController *prefs = nil;
             frame.size.height = 273;
             [selectPlayerBox setContentView:zeroConfView];
             [selectPlayerSheet setFrame:frame display:YES animate:YES];
-        } else if ([selectPlayerBox contentView] != manualView) {
+        } else if ( ([sender indexOfItem:[sender selectedItem]] == 1) && ([selectPlayerBox contentView] != manualView) ){
             NSRect frame = [selectPlayerSheet frame];
             frame.origin.y += 58;
             frame.size.height = 215;
+            //[window makeFirstResponder:hostTextField];
             [selectPlayerBox setContentView:manualView];
             [selectPlayerSheet setFrame:frame display:YES animate:YES];
+            [hostTextField selectText:nil];
         }
+    } else if ( [sender tag] == 5150 ) {
+        const char *instring = [[sender stringValue] UTF8String];
+        unsigned char result;
+        SHA1(instring, strlen(instring), &result);
+        [df setObject:[NSData dataWithBytes:&result length:strlen(&result)] forKey:@"connectPassword"];
     } else if ( [sender tag] == 5110 ) {
         //Cancel
         [NSApp endSheet:selectPlayerSheet];
@@ -253,10 +272,12 @@ static PreferencesController *prefs = nil;
             }
         }
         
-        if (![controller connectToServer]) {
-            NSRunAlertPanel(@"Connection error.", @"The MenuTunes server you attempted to connect to was not responding. MenuTunes will revert back to the local player.", @"OK", nil, nil);
-        } else {
+        if ([controller connectToServer]) {
             [useSharedMenuTunesCheckbox setState:NSOnState];
+            [selectedPlayerTextField setStringValue:[[[MainController sharedController] currentRemote] sharedRemoteName]];
+            [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
+        } else {
+            NSRunAlertPanel(@"Connection error.", @"The MenuTunes server you attempted to connect to was not responding. MenuTunes will revert back to the local player.", @"OK", nil, nil);
         }
     }
     [df synchronize];
@@ -627,6 +648,7 @@ static PreferencesController *prefs = nil;
     } else if ([df boolForKey:@"useSharedPlayer"]) {
         [useSharedMenuTunesCheckbox setState:NSOnState];
         [shareMenuTunesCheckbox setEnabled:NO];
+        [selectSharedPlayerButton setEnabled:YES];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:sharingTableView selector:@selector(reloadData) name:@"ITMTFoundNetService" object:nil];
@@ -639,11 +661,19 @@ static PreferencesController *prefs = nil;
     
     [selectPlayerBox setContentView:zeroConfView];
     [usePasswordCheckbox setState:([df boolForKey:@"enableSharingPassword"] ? NSOnState : NSOffState)];
-    if ([df stringForKey:@"sharedPlayerPassword"]) {
-        [passwordTextField setStringValue:@"*************"];
+    if ([df dataForKey:@"sharedPlayerPassword"]) {
+        [passwordTextField setStringValue:@"password"];
     }
     if ([df stringForKey:@"sharedPlayerHost"]) {
         [hostTextField setStringValue:[df stringForKey:@"sharedPlayerHost"]];
+    }
+    
+    if ([[NetworkController sharedController] isConnectedToServer]) {
+        [selectedPlayerTextField setStringValue:[[[MainController sharedController] currentRemote] sharedRemoteName]];
+        [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
+    } else {
+        [selectedPlayerTextField setStringValue:@"No shared player selected."];
+        [locationTextField setStringValue:@"-"];
     }
 }
 

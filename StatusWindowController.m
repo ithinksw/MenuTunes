@@ -242,5 +242,20 @@ static StatusWindowController *sharedController;
     [_window setLocked:YES];
 }
 
+- (void)showReconnectQueryWindow
+{
+    NSString *message = @"The selected shared player is available again.\nWould you like to reconnect to it?.";
+
+    [_window setImage:[NSImage imageNamed:@"Register"]];
+    [_window buildDialogWindowWithMessage:message
+                            defaultButton:@"Reconnect"
+                          alternateButton:@"Ignore"
+                                   target:[MainController sharedController]
+                            defaultAction:@selector(reconnect)
+                          alternateAction:@selector(cancelReconnect)];
+
+    [_window appear:self];
+    [_window setLocked:YES];
+}
 
 @end

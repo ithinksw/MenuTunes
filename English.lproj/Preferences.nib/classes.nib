@@ -24,6 +24,7 @@
                 hotKeysTableView = NSTableView; 
                 launchAtLoginCheckbox = NSButton; 
                 launchPlayerAtLaunchCheckbox = NSButton; 
+                locationTextField = NSTextField; 
                 manualView = NSView; 
                 menuTableView = CustomMenuTableView; 
                 nameCheckbox = NSButton; 
@@ -33,6 +34,7 @@
                 selectPlayerBox = NSBox; 
                 selectPlayerSheet = NSPanel; 
                 selectSharedPlayerButton = NSButton; 
+                selectedPlayerTextField = NSTextField; 
                 shareMenuTunesCheckbox = NSButton; 
                 sharingTableView = NSTableView; 
                 showOnChangeCheckbox = NSButton; 

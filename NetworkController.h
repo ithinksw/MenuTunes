@@ -25,7 +25,9 @@
     
     NSConnection *serverConnection, *clientConnection;
     NSSocketPort *serverPort, *clientPort;
+    NSString *remoteHost;
     BOOL serverOn, clientConnected, connectedToServer;
+    NSData *serverPass, *clientPass;
     ITMTRemote *clientProxy;
 }
 + (NetworkController *)sharedController;
@@ -35,10 +37,12 @@
 
 - (void)setServerStatus:(BOOL)status;
 - (BOOL)connectToHost:(NSString *)host;
+- (BOOL)checkForServerAtHost:(NSString *)host;
 - (BOOL)disconnect;
 - (BOOL)isServerOn;
 - (BOOL)isClientConnected;
 - (BOOL)isConnectedToServer;
+- (NSString *)remoteHost;
 
 - (ITMTRemote *)sharedRemote;
 - (NSArray *)remoteServices;

@@ -27,12 +27,14 @@
     IBOutlet NSTableView *hotKeysTableView;
     IBOutlet NSButton *launchAtLoginCheckbox;
     IBOutlet NSButton *launchPlayerAtLaunchCheckbox;
+    IBOutlet NSTextField *locationTextField;
     IBOutlet NSView *manualView;
     IBOutlet CustomMenuTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSTextField *nameTextField;
     IBOutlet NSTextField *passwordTextField;
     IBOutlet NSButton *ratingCheckbox;
+    IBOutlet NSTextField *selectedPlayerTextField;
     IBOutlet NSBox *selectPlayerBox;
     IBOutlet NSPanel *selectPlayerSheet;
     IBOutlet NSButton *selectSharedPlayerButton;

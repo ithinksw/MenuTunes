@@ -43,6 +43,8 @@ static NetworkController *sharedController;
         [serverConnection invalidate];
         [serverConnection release];
     }
+    [serverPass release];
+    [clientPass release];
     [clientProxy release];
     [remoteServices release];
     [browser release];
@@ -67,6 +69,8 @@ static NetworkController *sharedController;
 {
     if (!serverOn && status) {
         NSString *name = [[NSUserDefaults standardUserDefaults] stringForKey:@"sharedPlayerName"];
+        unsigned char buffer;
+        NSData *fullPass;
         //Turn on
         NS_DURING
             serverPort = [[NSSocketPort alloc] initWithTCPPort:SERVER_PORT];
@@ -76,6 +80,8 @@ static NetworkController *sharedController;
             [serverConnection registerName:@"ITMTPlayerHost"];
             [serverConnection setDelegate:self];
         NS_HANDLER
+            [serverConnection release];
+            [serverPort release];
             ITDebugLog(@"Error starting server!");
         NS_ENDHANDLER
         ITDebugLog(@"Started server.");
@@ -86,6 +92,14 @@ static NetworkController *sharedController;
                                         type:@"_mttp._tcp."
                                         name:name
                                         port:SERVER_PORT];
+        fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"sharedPlayerPassword"];
+        if (fullPass) {
+            [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
+            [serverPass release];
+            serverPass = [[NSData alloc] initWithBytes:&buffer length:strlen(&buffer)];
+        } else {
+            serverPass = nil;
+        }
         [service publish];
         serverOn = YES;
     } else if (serverOn && !status && [serverConnection isValid]) {
@@ -102,17 +116,30 @@ static NetworkController *sharedController;
 
 - (BOOL)connectToHost:(NSString *)host
 {
+    NSData *fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"];
+    unsigned char buffer;
     ITDebugLog(@"Connecting to host: %@", host);
+    remoteHost = [host copy];
+    if (fullPass) {
+        [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
+        [clientPass release];
+        clientPass = [[NSData alloc] initWithBytes:&buffer length:strlen(&buffer)];
+    } else {
+        clientPass = nil;
+    }
     NS_DURING
         clientPort = [[NSSocketPort alloc] initRemoteWithTCPPort:SERVER_PORT
                                            host:host];
         clientConnection = [[NSConnection connectionWithReceivePort:nil sendPort:clientPort] retain];
+        [clientConnection setDelegate:self];
+        [clientConnection setReplyTimeout:5];
         clientProxy = [[clientConnection rootProxy] retain];
     NS_HANDLER
+        [clientConnection release];
+        [clientPort release];
         ITDebugLog(@"Connection to host failed: %@", host);
         return NO;
     NS_ENDHANDLER
-    [clientConnection setReplyTimeout:5];
     ITDebugLog(@"Connected to host: %@", host);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnect) name:NSConnectionDidDieNotification object:clientConnection];
     connectedToServer = YES;
@@ -123,10 +150,49 @@ static NetworkController *sharedController;
 {
     ITDebugLog(@"Disconnecting from host.");
     connectedToServer = NO;
+    [remoteHost release];
+    remoteHost = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [clientProxy release];
     [clientConnection invalidate];
     [clientConnection release];
+    return YES;
+}
+
+- (BOOL)checkForServerAtHost:(NSString *)host
+{
+    NSData *fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"];
+    unsigned char buffer;
+    NSConnection *testConnection;
+    NSSocketPort *testPort;
+    NSDistantObject *tempProxy;
+    ITDebugLog(@"Checking for shared remote at %@.", host);
+    if (fullPass) {
+        [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
+        [clientPass release];
+        clientPass = [[NSData alloc] initWithBytes:&buffer length:strlen(&buffer)];
+    } else {
+        clientPass = nil;
+    }
+    
+    NS_DURING
+        testPort = [[NSSocketPort alloc] initRemoteWithTCPPort:SERVER_PORT
+                                           host:host];
+        testConnection = [[NSConnection connectionWithReceivePort:nil sendPort:testPort] retain];
+        [testConnection setReplyTimeout:2];
+        tempProxy = [testConnection rootProxy];
+        [testConnection setDelegate:self];
+        [tempProxy sharedRemoteName];
+    NS_HANDLER
+        ITDebugLog(@"Connection to host failed: %@", host);
+        [testConnection invalidate];
+        [testConnection release];
+        [testPort release];
+        return NO;
+    NS_ENDHANDLER
+    [testConnection invalidate];
+    [testConnection release];
+    [testPort release];
     return YES;
 }
 
@@ -145,6 +211,11 @@ static NetworkController *sharedController;
     return connectedToServer;
 }
 
+- (NSString *)remoteHost
+{
+    return remoteHost;
+}
+
 - (ITMTRemote *)sharedRemote
 {
     return (ITMTRemote *)clientProxy;
@@ -154,6 +225,21 @@ static NetworkController *sharedController;
 {
     return remoteServices;
 }
+
+/*- (BOOL)authenticateComponents:(NSArray*)components withData:(NSData *)authenticationData
+{
+    return YES;
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"enableSharingPassword"] || [authenticationData isEqualToData:serverPass]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (NSData *)authenticationDataForComponents:(NSArray *)components
+{
+    return clientPass;
+}*/
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing
 {
@@ -180,6 +266,7 @@ static NetworkController *sharedController;
     ITDebugLog(@"Resolved service named %@.", [sender name]);
     NSLog(@"Resolved service named %@.", [sender name]);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
+    [sender stop];
 }
 
 - (void)netServiceWillResolve:(NSNetService *)sender

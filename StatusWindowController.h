@@ -41,6 +41,7 @@ typedef enum {
 - (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode;
 - (void)showSetupQueryWindow;
 - (void)showRegistrationQueryWindow;
+- (void)showReconnectQueryWindow;
 
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
                                title:            (NSString *)title
