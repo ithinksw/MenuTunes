@@ -361,7 +361,7 @@
 
 - (void)rebuildSubmenus
 {
-    NSLog(@"Rebuilding all of the submenus.");
+    ITDebugLog(@"Rebuilding all of the submenus.");
     
     currentRemote = [[MainController sharedController] currentRemote];
     _currentPlaylist = [currentRemote currentPlaylistIndex];
@@ -372,15 +372,15 @@
     [_upcomingSongsMenu release];
     [_playlistsMenu release];
     [_eqMenu release];
-    NSLog(@"Beginning Rebuild of \"Song Rating\" submenu.");
+    ITDebugLog(@"Beginning Rebuild of \"Song Rating\" submenu.");
     _ratingMenu = [self ratingMenu];
-    NSLog(@"Beginning Rebuild of \"Upcoming Songs\" submenu.");
+    ITDebugLog(@"Beginning Rebuild of \"Upcoming Songs\" submenu.");
     _upcomingSongsMenu = [self upcomingSongsMenu];
-    NSLog(@"Beginning Rebuild of \"Playlists\" submenu.");
+    ITDebugLog(@"Beginning Rebuild of \"Playlists\" submenu.");
     _playlistsMenu = [self playlistsMenu];
-    NSLog(@"Beginning Rebuild of \"EQ Presets\" submenu.");
+    ITDebugLog(@"Beginning Rebuild of \"EQ Presets\" submenu.");
     _eqMenu = [self eqMenu];
-    NSLog(@"Done rebuilding all of the submenus.");
+    ITDebugLog(@"Done rebuilding all of the submenus.");
 }
 
 - (NSMenu *)ratingMenu
