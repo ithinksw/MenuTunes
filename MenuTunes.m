@@ -50,8 +50,7 @@
         [self remotePlayerTerminated:nil];
     }
     
-    statusItem = [[ITStatusItem alloc] initWithStatusBar:[NSStatusBar systemStatusBar]
-                                              withLength:NSSquareStatusItemLength];
+    statusItem = [[ITStatusItem alloc] initWithStatusBar:[NSStatusBar systemStatusBar] withLength:NSSquareStatusItemLength];
     
     [statusItem setImage:[NSImage imageNamed:@"menu"]];
     [statusItem setAlternateImage:[NSImage imageNamed:@"selected_image"]];

@@ -125,6 +125,9 @@ typedef enum {
 - (float)currentSongRating;
 - (BOOL)setCurrentSongRating:(float)rating;
 
+- (BOOL)equalizerEnabled;
+- (BOOL)setEqualizerEnabled:(BOOL)enabled;
+
 - (NSArray *)eqPresets;
 - (int)currentEQPresetIndex;
 
