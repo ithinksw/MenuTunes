@@ -222,7 +222,7 @@
     ITDebugLog(@"Getting song title at index %i.", index);
     temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting song title at index %i done.", index);
-    return temp1;
+    return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (int)currentAlbumTrackCount
@@ -249,7 +249,7 @@
     ITDebugLog(@"Getting current unique identifier.");
     temp1 = [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN]];
     ITDebugLog(@"Getting current unique identifier done.");
-    return temp1;
+    return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (int)currentSongIndex
@@ -267,7 +267,7 @@
     ITDebugLog(@"Getting current song title.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting current song title done.");
-    return temp1;
+    return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (NSString *)currentSongArtist
@@ -276,7 +276,7 @@
     ITDebugLog(@"Getting current song artist.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting current song artist done.");
-    return temp1;
+    return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (NSString *)currentSongAlbum
@@ -285,7 +285,7 @@
     ITDebugLog(@"Getting current song album.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting current song album done.");
-    return temp1;
+    return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (NSString *)currentSongGenre
@@ -294,7 +294,7 @@
     ITDebugLog(@"Getting current song genre.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pGen" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting current song genre done.");
-    return temp1;
+    return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (NSString *)currentSongLength

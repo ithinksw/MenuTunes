@@ -224,7 +224,7 @@
                     if ([defaults boolForKey:@"showAlbum"]) {
                         NSString *curAlbum = [currentRemote currentSongAlbum];
                         ITDebugLog(@"Add Track Album (\"%@\") menu item.", curAlbum);
-                        if ([curAlbum length]) {
+                        if ( curAlbum ) {
                             [menu indentItem:
                                 [menu addItemWithTitle:curAlbum action:nil keyEquivalent:@""]];
                         }
@@ -233,7 +233,7 @@
                     if ([defaults boolForKey:@"showArtist"]) {
                         NSString *curArtist = [currentRemote currentSongArtist];
                         ITDebugLog(@"Add Track Artist (\"%@\") menu item.", curArtist);
-                        if ([curArtist length]) {
+                        if ( curArtist ) {
                             [menu indentItem:
                                 [menu addItemWithTitle:curArtist action:nil keyEquivalent:@""]];
                         }
@@ -242,7 +242,7 @@
                     if ([defaults boolForKey:@"showTrackNumber"]) {
                         int track = [currentRemote currentSongTrack];
                         ITDebugLog(@"Add Track Number (\"Track %i\") menu item.", track);
-                        if (track) {
+                        if ( track ) {
                             [menu indentItem:
                                 [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %i", NSLocalizedString(@"track", @"Track"), track] action:nil keyEquivalent:@""]];
                         }

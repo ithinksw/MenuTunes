@@ -36,7 +36,7 @@ static MainController *sharedController;
         sharedController = self;
         
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
-        statusWindowController = [[StatusWindowController alloc] init];
+        statusWindowController = [StatusWindowController sharedController];
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
     }
@@ -89,6 +89,8 @@ static MainController *sharedController;
     
     [statusItem setImage:[NSImage imageNamed:@"MenuNormal"]];
     [statusItem setAlternateImage:[NSImage imageNamed:@"MenuInverted"]];
+
+    [NSApp deactivate];
 }
 
 - (ITMTRemote *)loadRemote
@@ -207,7 +209,7 @@ static MainController *sharedController;
         [menuController rebuildSubmenus];
 
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
-//            [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
+            [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
         }
     }
 }
@@ -493,10 +495,11 @@ static MainController *sharedController;
     NSString               *album       = nil;
     NSString               *artist      = nil;
     NSString               *time        = nil;
-    int                     trackNumber = 0;
-    int                     trackTotal  = 0;
+    NSString               *track       = nil;
     int                     rating      = -1;
+    
     ITDebugLog(@"Showing track info status window.");
+    
     if ( title ) {
 
         if ( [df boolForKey:@"showAlbum"] ) {
@@ -508,15 +511,23 @@ static MainController *sharedController;
         }
 
         if ( [df boolForKey:@"showTime"] ) {
-            time = [currentRemote currentSongLength];
+            time = [NSString stringWithFormat:@"%@: %@ / %@",
+                @"Time",
+                [currentRemote currentSongElapsed],
+                [currentRemote currentSongLength]];
         }
 
-        if ( [df boolForKey:@"showNumber"] ) {
-            trackNumber = [currentRemote currentSongTrack];
-            trackTotal  = [currentRemote currentAlbumTrackCount];
+        if ( [df boolForKey:@"showTrackNumber"] ) {
+            int trackNo    = [currentRemote currentSongTrack];
+            int trackCount = [currentRemote currentAlbumTrackCount];
+            
+            if ( (trackNo > 0) || (trackCount > 0) ) {
+                track = [NSString stringWithFormat:@"%@: %i %@ %i",
+                    @"Track", trackNo, @"of", trackCount];
+            }
         }
 
-        if ( [df boolForKey:@"showRating"] ) {
+        if ( [df boolForKey:@"showTrackRating"] ) {
             rating = ( [currentRemote currentSongRating] * 5 );
         }
         
@@ -529,8 +540,7 @@ static MainController *sharedController;
                                                    album:album
                                                   artist:artist
                                                     time:time
-                                             trackNumber:trackNumber
-                                              trackTotal:trackTotal
+                                                   track:track
                                                   rating:rating];
 }
 
@@ -652,12 +662,12 @@ static MainController *sharedController;
 
 - (void)toggleShuffle
 {
-    bool newShuffleEnabled = ![currentRemote shuffleEnabled];
+    BOOL newShuffleEnabled = ( ! [currentRemote shuffleEnabled] );
     ITDebugLog(@"Toggling shuffle mode.");
     [currentRemote setShuffleEnabled:newShuffleEnabled];
     //Show shuffle status window
     ITDebugLog(@"Setting shuffle mode to %i", newShuffleEnabled);
-    [statusWindowController showRepeatWindowWithMode:newShuffleEnabled];
+    [statusWindowController showShuffleWindow:newShuffleEnabled];
 }
 
 /*************************************************************************/

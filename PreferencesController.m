@@ -1,6 +1,7 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 #import "StatusWindow.h"
+#import "StatusWindowController.h"
 #import "CustomMenuTableView.h"
 
 #import <ITKit/ITHotKeyCenter.h>
@@ -105,9 +106,10 @@ static PreferencesController *prefs = nil;
         //Change the launch player checkbox to the proper name
         [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
     }
-    [window setLevel:NSStatusWindowLevel];
+
     [window center];
-    [window makeKeyAndOrderFront:self];
+    [NSApp activateIgnoringOtherApps:YES];
+    [window performSelector:@selector(makeKeyAndOrderFront:) withObject:self afterDelay:0.0];
 }
 
 - (IBAction)changeGeneralSetting:(id)sender
@@ -308,10 +310,24 @@ static PreferencesController *prefs = nil;
     [loginWindow release];
     
     if (!found) {
-        if (NSRunInformationalAlertPanel(NSLocalizedString(@"autolaunch", @"Auto-launch MenuTunes"), NSLocalizedString(@"autolaunch_msg", @"Would you like MenuTunes to automatically launch at login?"), @"Yes", @"No", nil) == NSOKButton) {
-            [self setLaunchesAtLogin:YES];
-        }
+        [[StatusWindowController sharedController] showSetupQueryWindow];
     }
+}
+
+- (void)autoLaunchOK
+{
+    [[StatusWindow sharedWindow] setLocked:NO];
+    [[StatusWindow sharedWindow] vanish:self];
+    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
+    
+    [self setLaunchesAtLogin:YES];
+}
+
+- (void)autoLaunchCancel
+{
+    [[StatusWindow sharedWindow] setLocked:NO];
+    [[StatusWindow sharedWindow] vanish:self];
+    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }
 
 - (IBAction)cancelHotKey:(id)sender

@@ -16,12 +16,16 @@
 #import <ITKit/ITKit.h>
 
 
-#define SW_PAD        24.0
-#define SW_SPACE      24.0
-#define SW_MINW      211.0
-#define SW_BORDER     32.0
-#define SW_METER_PAD   4.0
-
+#define SW_PAD            24.00
+#define SW_SPACE          24.00
+#define SW_MINW          211.00
+#define SW_BORDER         32.00
+#define SW_METER_PAD       4.00
+#define SW_BUTTON_PAD_R   30.00
+#define SW_BUTTON_PAD_B   24.00
+#define SW_BUTTON_DIV     12.00
+#define SW_BUTTON_EXTRA_W  8.00
+#define SW_SHADOW_SAT      1.25
 
 @interface StatusWindow : ITTransientStatusWindow {
     NSImage  *_image;
@@ -33,6 +37,7 @@
 
 - (void)buildTextWindowWithString:(NSString *)text;
 - (void)buildMeterWindowWithCharacter:(NSString *)character
+                                 size:(float)size
                                 count:(int)count
                                active:(int)active;
 - (void)buildDialogWindowWithMessage:(NSString *)message

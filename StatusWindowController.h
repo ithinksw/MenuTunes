@@ -20,9 +20,9 @@
 
 
 typedef enum {
-    StatusWindowRepeatNone,
+    StatusWindowRepeatNone = -1,
     StatusWindowRepeatGroup,
-    StatusWindowRepeatSong
+    StatusWindowRepeatTrack
 } StatusWindowRepeatMode;
 
 
@@ -31,10 +31,12 @@ typedef enum {
     NSUserDefaults *df;
 }
 
++ (StatusWindowController *)sharedController;
+
 - (void)showUpcomingSongsWindowWithTitles:(NSArray *)titleStrings;
 
 - (void)showVolumeWindowWithLevel:(float)level;
-- (void)showRatingWindowWithRating:(int)rating;
+- (void)showRatingWindowWithRating:(float)rating;
 - (void)showShuffleWindow:(BOOL)shuffle;
 - (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode;
 - (void)showSetupQueryWindow;
@@ -43,9 +45,8 @@ typedef enum {
                                title:            (NSString *)title
                                album:            (NSString *)album
                               artist:            (NSString *)artist
-                                time:            (NSString *)time
-                         trackNumber:                   (int)trackNumber
-                          trackTotal:              	    (int)trackTotal
+                                time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
+                               track:            (NSString *)track
                               rating:                   (int)rating;
 
 

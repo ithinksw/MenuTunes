@@ -390,7 +390,7 @@
             
             if ([defaults boolForKey:@"showAlbum"]) {
                 NSString *album = [currentRemote currentSongAlbum];
-                if ([album length] > 0) {
+                if ( album ) {
                     [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", album] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
                 }
             }
@@ -765,7 +765,7 @@
         
         if ([defaults boolForKey:@"showAlbum"]) {
             NSString *trackAlbum = [currentRemote currentSongAlbum];
-            if ([trackAlbum length]) {
+            if ( trackAlbum ) {
                 stringToShow = [stringToShow stringByAppendingString:trackAlbum];
                 stringToShow = [stringToShow stringByAppendingString:@"\n"];
             }
