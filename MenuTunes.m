@@ -1,6 +1,5 @@
 /*
 Things to do:
-¥ Radio mode makes things act oddly
 ¥ Make preferences window pretty
 ¥ Hot Keys
     - hot keys can't be set when NSBGOnly is on. The window is not key,
@@ -8,7 +7,6 @@ Things to do:
     - going to need a different way of defining key combos
 ¥ Optimize
 ¥ Apple Events! Apple Events! Apple Events!
-¥ Upcoming songs menu items are disabled after launching iTunes and playing
 */
 
 #import "MenuTunes.h"
@@ -214,11 +212,8 @@ Things to do:
             
             if (index > -1) {
                 [menu removeItemAtIndex:index + 1];
-                
-                if (!isPlayingRadio) {
-                    if (didHaveAlbumName) {
-                        [menu removeItemAtIndex:index + 1];
-                    }
+                if (didHaveAlbumName) {
+                    [menu removeItemAtIndex:index + 1];
                 }
             }
             if (!isPlayingRadio) {
@@ -271,6 +266,8 @@ Things to do:
             
             [upcomingSongsMenu release];
             upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
+            [upcomingSongsItem setSubmenu:upcomingSongsMenu];
+            [upcomingSongsItem setEnabled:YES];
             
             for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
@@ -282,12 +279,9 @@ Things to do:
                     [upcomingSongsMenu addItem:songItem];
                     [songItem release];
                 } else {
-                    [upcomingSongsMenu addItemWithTitle:@"End of playlist." action:nil keyEquivalent:@""];
                     break;
                 }
             }
-            [upcomingSongsItem setSubmenu:upcomingSongsMenu];
-            [upcomingSongsItem setEnabled:YES];
         }
     } else {
         [upcomingSongsItem setSubmenu:nil];
@@ -433,16 +427,50 @@ Things to do:
 - (void)timerUpdate
 {
     int pid;
-    
     if (GetProcessPID(&iTunesPSN, &pid) == noErr) {
         int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
         
         if (trackPlayingIndex != curTrackIndex) {
+            bool wasPlayingRadio = isPlayingRadio;
             isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
+            if (isPlayingRadio && !wasPlayingRadio) {
+                int i;
+                for (i = 0; i < [playlistMenu numberOfItems]; i++)
+                {
+                    [[playlistMenu itemAtIndex:i] setState:NSOffState];
+                }
+            }
+            if (wasPlayingRadio) {
+                NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
+                [menu insertItem:temp atIndex:trackInfoIndex + 1];
+                [temp release];
+            }
             [self updateMenu];
             curTrackIndex = trackPlayingIndex;
         }
-       	
+        else
+        {
+            int playlist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+            if (playlist != curPlaylistIndex) {
+                bool wasPlayingRadio = isPlayingRadio;
+                isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
+                if (isPlayingRadio && !wasPlayingRadio) {
+                    int i;
+                    for (i = 0; i < [playlistMenu numberOfItems]; i++)
+                    {
+                        [[playlistMenu itemAtIndex:i] setState:NSOffState];
+                    }
+                }
+                if (wasPlayingRadio) {
+                    NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
+                    [menu insertItem:temp atIndex:trackInfoIndex + 1];
+                    [temp release];
+                }
+                [self updateMenu];
+                curTrackIndex = trackPlayingIndex;
+                curPlaylistIndex = playlist;
+            }
+        }
         //Update Play/Pause menu item
         if (playPauseMenuItem){
             if ([[self runScriptAndReturnResult:@"return player state"] isEqualToString:@"playing"]) {
@@ -527,11 +555,12 @@ andEventID:(AEEventID)eventID
 - (void)selectPlaylist:(id)sender
 {
     int playlist = [[sender representedObject] intValue];
-    int curPlaylist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
-    [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
+    if (!isPlayingRadio) {
+        int curPlaylist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+        [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
+    }
     [self runScriptAndReturnResult:[NSString stringWithFormat:@"play playlist %i", playlist]];
     [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
-    [self updateMenu];
 }
 
 - (void)selectEQPreset:(id)sender

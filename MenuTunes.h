@@ -27,7 +27,7 @@
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
-    int curTrackIndex;
+    int curTrackIndex, curPlaylistIndex;
     int trackInfoIndex;
     bool isPlayingRadio;
     
