@@ -102,4 +102,185 @@
     }
 }
 
+- (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
+        onItem:(NSMenuItem *)item
+{
+    unichar charcode = 'a';
+    int i;
+    long cocoaModifiers = 0;
+    static long carbonToCocoa[6][2] = 
+    {
+        { cmdKey, NSCommandKeyMask },
+        { optionKey, NSAlternateKeyMask },
+        { controlKey, NSControlKeyMask },
+        { shiftKey, NSShiftKeyMask },
+    };
+    
+    for (i = 0; i < 6; i++) {
+        if (modifiers & carbonToCocoa[i][0]) {
+            cocoaModifiers += carbonToCocoa[i][1];
+        }
+    }
+    [item setKeyEquivalentModifierMask:cocoaModifiers];
+    
+    //Missing key combos for some keys. Must find them later.
+    switch (code)
+    {
+        case 36:
+            charcode = '\r';
+        break;
+        
+        case 48:
+            charcode = '\t';
+        break;
+        
+        //Space -- ARGH!
+        case 49:
+        {
+            // Haven't tested this, though it should work.
+            unichar buffer;
+            [[NSString stringWithString:@"Space"] getCharacters:&buffer];
+            charcode = buffer;
+            /*MenuRef menuRef = _NSGetCarbonMenu([item menu]);
+            NSLog(@"%@", menuRef);
+            SetMenuItemCommandKey(menuRef, 0, NO, 49);
+            SetMenuItemModifiers(menuRef, 0, kMenuNoCommandModifier);
+            SetMenuItemKeyGlyph(menuRef, 0, kMenuBlankGlyph);
+            charcode = 'b';*/
+            
+        }
+        break;
+        
+        case 51:
+            charcode = NSDeleteFunctionKey;
+        break;
+        
+        case 53:
+            charcode = '\e';
+        break;
+        
+        case 71:
+            charcode = '\e';
+        break;
+        
+        case 76:
+            charcode = '\r';
+        break;
+        
+        case 96:
+            charcode = NSF5FunctionKey;
+        break;
+        
+        case 97:
+            charcode = NSF6FunctionKey;
+        break;
+        
+        case 98:
+            charcode = NSF7FunctionKey;
+        break;
+        
+        case 99:
+            charcode = NSF3FunctionKey;
+        break;
+        
+        case 100:
+            charcode = NSF8FunctionKey;
+        break;
+        
+        case 101:
+            charcode = NSF9FunctionKey;
+        break;
+        
+        case 103:
+            charcode = NSF11FunctionKey;
+        break;
+        
+        case 105:
+            charcode = NSF3FunctionKey;
+        break;
+        
+        case 107:
+            charcode = NSF14FunctionKey;
+        break;
+        
+        case 109:
+            charcode = NSF10FunctionKey;
+        break;
+        
+        case 111:
+            charcode = NSF12FunctionKey;
+        break;
+        
+        case 113:
+            charcode = NSF13FunctionKey;
+        break;
+        
+        case 114:
+            charcode = NSInsertFunctionKey;
+        break;
+        
+        case 115:
+            charcode = NSHomeFunctionKey;
+        break;
+        
+        case 116:
+            charcode = NSPageUpFunctionKey;
+        break;
+        
+        case 117:
+            charcode = NSDeleteFunctionKey;
+        break;
+        
+        case 118:
+            charcode = NSF4FunctionKey;
+        break;
+        
+        case 119:
+            charcode = NSEndFunctionKey;
+        break;
+        
+        case 120:
+            charcode = NSF2FunctionKey;
+        break;
+        
+        case 121:
+            charcode = NSPageDownFunctionKey;
+        break;
+        
+        case 122:
+            charcode = NSF1FunctionKey;
+        break;
+        
+        case 123:
+            charcode = NSLeftArrowFunctionKey;
+        break;
+        
+        case 124:
+            charcode = NSRightArrowFunctionKey;
+        break;
+        
+        case 125:
+            charcode = NSDownArrowFunctionKey;
+        break;
+        
+        case 126:
+            charcode = NSUpArrowFunctionKey;
+        break;
+    }
+    
+    if (charcode == 'a') {
+        unsigned long state;
+        long keyTrans;
+        char charCode;
+        Ptr kchr;
+        state = 0;
+        kchr = (Ptr) GetScriptVariable(smCurrentScript, smKCHRCache);
+        keyTrans = KeyTranslate(kchr, code, &state);
+        charCode = keyTrans;
+        [item setKeyEquivalent:[NSString stringWithCString:&charCode length:1]];
+    } else if (charcode != 'b') {
+        [item setKeyEquivalent:[NSString stringWithCharacters:&charcode length:1]];
+    }
+}
+
 @end
