@@ -681,8 +681,9 @@
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
     [indices release];
-    [playlistsMenu addItem:[NSMenuItem separatorItem]];
-    [[playlistsMenu addItemWithTitle:NSLocalizedString(@"refresh", @"Refresh") action:@selector(rebuildSubmenus) keyEquivalent:@""] setTarget:self];
+    tempItem = [playlistsMenu addItemWithTitle:NSLocalizedString(@"refresh", @"Refresh") action:@selector(rebuildSubmenus) keyEquivalent:@""];
+    [tempItem setTarget:self];
+    [tempItem setImage:[NSImage imageNamed:@"ChasingArrow"]];
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
 }
