@@ -129,6 +129,9 @@
 //  Setup the Window, and remove all its contentview's subviews.
     windowWidth  = ( (SW_PAD / divisor) + imageWidth + (SW_SPACE / divisor) + dataWidth + (SW_PAD / divisor) );
     windowHeight = ( (SW_PAD / divisor) + contentHeight + (SW_PAD / divisor) );
+    
+#warning Adjust frame for positioning here.
+    
     [self setFrame:NSMakeRect( (SW_BORDER + [[self screen] visibleFrame].origin.x),
                                (SW_BORDER + [[self screen] visibleFrame].origin.y),
                                windowWidth,

@@ -10,6 +10,8 @@
 #import <arpa/inet.h>
 #import <openssl/sha.h>
 
+#import <ITFoundation/ITFoundation.h>
+
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
 #import <ITKit/ITKeyComboPanel.h>
@@ -17,6 +19,7 @@
 #import <ITKit/ITKeyBroadcaster.h>
 
 #import <ITKit/ITTSWBackgroundView.h>
+#import <ITKit/ITWindowEffect.h>
 #import <ITKit/ITCutWindowEffect.h>
 #import <ITKit/ITDissolveWindowEffect.h>
 #import <ITKit/ITSlideHorizontallyWindowEffect.h>
@@ -36,6 +39,7 @@
 - (void)setupCustomizationTables;
 - (void)setupMenuItems;
 - (void)setupUI;
+- (NSArray *)effectNamesFromDictionary:(NSDictionary *)infoDict;
 - (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update;
 - (IBAction)changeMenus:(id)sender;
 - (void)setLaunchesAtLogin:(BOOL)flag;
@@ -510,13 +514,13 @@ static PreferencesController *prefs = nil;
         nil] forKey:@"menu"];
 
     [df setInteger:5 forKey:@"SongsInAdvance"];
-    // [df setBool:YES forKey:@"showName"];  // Song info will always show song title.
+//  [df setBool:YES forKey:@"showName"];  // Song info will always show song title.
     [df setBool:YES forKey:@"showArtist"];
     [df setBool:NO forKey:@"showAlbum"];
     [df setBool:NO forKey:@"showTime"];
 
-    [df setInteger:2100 forKey:@"statusWindowAppearanceEffect"];
-    [df setInteger:2101 forKey:@"statusWindowVanishEffect"];
+    [df setObject:@"ITCutWindowEffect" forKey:@"statusWindowAppearanceEffect"];
+    [df setObject:@"ITDissolveWindowEffect" forKey:@"statusWindowVanishEffect"];
     [df setFloat:0.8 forKey:@"statusWindowAppearanceSpeed"];
     [df setFloat:0.8 forKey:@"statusWindowVanishSpeed"];
     [df setFloat:4.0 forKey:@"statusWindowVanishDelay"];
@@ -732,9 +736,12 @@ static PreferencesController *prefs = nil;
 {
     NSMutableDictionary *loginwindow;
     NSMutableArray *loginarray;
-    NSEnumerator *loginEnum, *keyArrayEnum;
-    NSString *serverName;
-    NSData *colorData;
+    NSEnumerator   *loginEnum;
+    NSEnumerator   *keyArrayEnum;
+    NSString       *serverName;
+    NSData         *colorData;
+    NSArray        *effectClasses = [ITWindowEffect effectClasses];
+//  NSEnumerator   *effectEnum = [effectList objectEnumerator];
     int selectedBGStyle;
     id anItem;
     
@@ -784,6 +791,16 @@ static PreferencesController *prefs = nil;
     // Setup the positioning controls
     
     // Setup effects controls
+    // Populate the effects popups
+    [appearanceEffectPopup removeItemAtIndex:0];
+    [vanishEffectPopup     removeItemAtIndex:0];
+    [appearanceEffectPopup addItemsWithTitles:[[effectList allValues] objectsForKey:@"Name"]];  // category method
+    [vanishEffectPopup     addItemsWithTitles:[[effectList allValues] objectsForKey:@"Name"]];  // category method
+    
+    // Attempt to find the pref'd effect in the list.
+    // If it's not there, use cut/dissolve.
+
+    
     [appearanceEffectPopup selectItem:[appearanceEffectPopup itemAtIndex:[appearanceEffectPopup indexOfItemWithTag:[df integerForKey:@"statusWindowAppearanceEffect"]]]];
     [vanishEffectPopup     selectItem:[vanishEffectPopup     itemAtIndex:[vanishEffectPopup     indexOfItemWithTag:[df integerForKey:@"statusWindowVanishEffect"]]]];
     [appearanceSpeedSlider setFloatValue:-([df floatForKey:@"statusWindowAppearanceSpeed"])];
@@ -791,7 +808,6 @@ static PreferencesController *prefs = nil;
     [vanishDelaySlider     setFloatValue:[df floatForKey:@"statusWindowVanishDelay"]];
 
     // Setup General Controls
-    
     selectedBGStyle = [df integerForKey:@"statusWindowBackgroundMode"];
     [backgroundStylePopup selectItem:[backgroundStylePopup itemAtIndex:[backgroundStylePopup indexOfItemWithTag:selectedBGStyle]]];
 
@@ -853,6 +869,11 @@ static PreferencesController *prefs = nil;
         [selectedPlayerTextField setStringValue:@"No shared player selected."];
         [locationTextField setStringValue:@"-"];
     }
+}
+
+- (NSArray *)effectNamesFromDictionary:(NSDictionary *)infoDict
+{
+    
 }
 
 - (IBAction)changeMenus:(id)sender
