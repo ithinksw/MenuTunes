@@ -72,13 +72,11 @@
 - (BOOL)showPrimaryInterface
 {
     // Make this into AppleEvents... shouldn't be too hard, I'm just too tired to do it right now.
-    //tell application "iTunes"
-    //	set frontmost to true
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }",YES] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    // Still have to convert these to AEs:
     //	set visible of browser window 1 to true
     //	set minimized of browser window 1 to false
     //	set view of browser window 1 to (playlist (index of current playlist))
-    //end tell
-    //Someone do this plz kthx
     return NO;
 }
 
