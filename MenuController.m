@@ -193,13 +193,13 @@
             [tempItem setTag:MTMenuPreferencesItem];
             [tempItem setTarget:self];
         } else if ([nextObject isEqualToString:@"quit"]) {
-            ITDebugLog(@"Add \"Quit\" menu item.");
             if ([[MainController sharedController] blingBling] == NO) {
                 ITDebugLog(@"Add \"Register MenuTunes...\" menu item.");
                 tempItem = [menu addItemWithTitle:NSLocalizedString(@"register", @"Register MenuTunes...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
                 [tempItem setTag:MTMenuRegisterItem];
                 [tempItem setTarget:self];
             }
+            ITDebugLog(@"Add \"Quit\" menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];

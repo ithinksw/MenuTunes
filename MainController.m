@@ -159,7 +159,11 @@ static MainController *sharedController;
     NSMutableDictionary *globalPrefs;
     [df synchronize];
     globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
-    [globalPrefs setObject:date forKey:@"ITMTTrialStart"];
+    if (date) {
+        [globalPrefs setObject:date forKey:@"ITMTTrialStart"];
+    } else {
+        [globalPrefs removeObjectForKey:@"ITMTTrialStart"];
+    }
     [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
     [df synchronize];
     [globalPrefs release];
@@ -174,19 +178,23 @@ static MainController *sharedController;
 - (void)blingTime
 {
     NSDate *now = [NSDate date];
-    if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
-        [self setBlingTime:now];
-    }
-    if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) ) {
-        [statusItem setEnabled:NO];
-        [self clearHotKeys];
-        if ([refreshTimer isValid]) {
-        [refreshTimer invalidate];
+    if (![self blingBling]) {
+        if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
+            [self setBlingTime:now];
         }
-        if ([registerTimer isValid]) {
-        [registerTimer invalidate];
+        if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) ) {
+            [statusItem setEnabled:NO];
+            [self clearHotKeys];
+            if ([refreshTimer isValid]) {
+                [refreshTimer invalidate];
+            }
+            if ([registerTimer isValid]) {
+                [registerTimer invalidate];
+            }
+            [statusWindowController showRegistrationQueryWindow];
         }
-        [statusWindowController showRegistrationQueryWindow];
+    } else {
+        [self setBlingTime:nil];
     }
 }
 

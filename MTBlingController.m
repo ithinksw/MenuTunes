@@ -82,7 +82,7 @@
                                                                    name:o
                                                                   extra:nil
                                                               publisher:@"04611"] autorelease];
-    if ( [s isValid] == ITeSerialNumberIsValid && ( [[s infoDictionary] objectForKey:@"appIdentifier"] == @"MT" ) ) {
+    if ( ([s isValid] == ITeSerialNumberIsValid) && ( [[[s infoDictionary] objectForKey:@"appIdentifier"] isEqualToString:@"MT"] ) ) {
     
         NSFileManager *fm = [NSFileManager defaultManager];
         
@@ -124,7 +124,7 @@
     MTeSerialNumber *k = [[[MTeSerialNumber alloc] initWithContentsOfFile:p
                                                                     extra:@""
                                                                 publisher:@"04611"] autorelease];
-    if ( k && [k isValid] == ITeSerialNumberIsValid && ( [[k infoDictionary] objectForKey:@"appIdentifier"] == @"MT" )) {
+    if ( k && ([k isValid] == ITeSerialNumberIsValid) && ( [[[k infoDictionary] objectForKey:@"appIdentifier"] isEqualToString:@"MT"] )) {
         return 7465;
     } else {
         [[NSFileManager defaultManager] removeFileAtPath:p handler:nil];
