@@ -125,18 +125,18 @@
 
 - (NSArray *)playlists
 {
-    long i = 0;
-    const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
-    NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:numPlaylists];
+    unsigned long i,k;
+    const signed long numSources = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cSrc'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:1];
     
     ITDebugLog(@"Getting playlists.");
-    
+    for (k = 1; k <= numSources ; k++) {
+    const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cPly'), '----':obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() }",k] eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
     for (i = 1; i <= numPlaylists; i++) {
-        const long j = i;
-        NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
+        NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%u), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } } }",i,k];
         NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-        ITDebugLog(@"Adding playlist: %@", theObj);
         [playlists addObject:theObj];
+    }
     }
     ITDebugLog(@"Finished getting playlists.");
     return [playlists autorelease];
