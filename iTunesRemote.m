@@ -123,7 +123,7 @@
     return ITMTRemotePlayerStopped;
 }
 
-/*- (NSArray *)playlists
+- (NSArray *)playlists
 {
     long i = 0;
     const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
@@ -136,10 +136,10 @@
         [playlists addObject:theObj];
     }
     return [playlists autorelease];
-}*/
+}
 
 //Full source awareness
-- (NSArray *)playlists
+/*- (NSArray *)playlists
 {   unsigned long i,k;
     const signed long numSources = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cSrc'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
     NSMutableArray *allSources = [[NSMutableArray alloc] init];
@@ -188,7 +188,7 @@
     }
     ITDebugLog(@"Finished getting playlists.");
     return [NSArray arrayWithArray:[allSources autorelease]];
-}
+}*/
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
@@ -626,14 +626,14 @@
     return YES;
 }
 
-- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
+/*- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
 {
     ITDebugLog(@"Switching to playlist at index %i of source %i", index, index2);
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from: obj { form:'indx', want:type('cSrc'), seld:long(%lu), from:'null'() } }", index - 1, index2 + 1] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
     //{ form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'indx', want:type('cSrc'), seld:long('%lu'), from:'null'() } } -- obj { form:'indx', want:type('cSrc'), seld:long(1), from:'null'() }
     ITDebugLog(@"Done switching to playlist at index %i of source %i", index, index2);
     return YES;
-}
+}*/
 
 - (BOOL)switchToSongAtIndex:(int)index
 {

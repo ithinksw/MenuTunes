@@ -292,7 +292,7 @@ static MainController *sharedController;
         [statusItem setMenu:[menuController menu]];
     }
     
-    if ( [self songChanged] && (timerUpdating != YES) ) {
+    if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"The song changed.");
         timerUpdating = YES;
         
@@ -406,7 +406,8 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Selecting playlist %i", index);
     NS_DURING
-        [[self currentRemote] switchToPlaylistAtIndex:(index % 1000) ofSourceAtIndex:(index / 1000)];
+        //[[self currentRemote] switchToPlaylistAtIndex:(index % 1000) ofSourceAtIndex:(index / 1000)];
+        [[self currentRemote] switchToPlaylistAtIndex:index];
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
@@ -1072,12 +1073,12 @@ static MainController *sharedController;
     NS_DURING
         if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]]) {
             ITDebugLog(@"Remote application terminated.");
+            playerRunningState = ITMTRemotePlayerNotRunning;
             [[self currentRemote] halt];
             [refreshTimer invalidate];
             [refreshTimer release];
             refreshTimer = nil;
             [self clearHotKeys];
-            playerRunningState = ITMTRemotePlayerNotRunning;
             
             if ([df objectForKey:@"ShowPlayer"] != nil) {
                 ITHotKey *hotKey;

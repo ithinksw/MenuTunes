@@ -264,10 +264,10 @@
     return NO;
 }
 
-- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
+/*- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
 {
     return NO;
-}
+}*/
 
 - (BOOL)switchToSongAtIndex:(int)index
 {

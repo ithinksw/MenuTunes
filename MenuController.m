@@ -22,6 +22,7 @@
 - (NSMenu *)eqMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(NSMenuItem *)item;
+- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
 @end
 
 @implementation MenuController
@@ -430,7 +431,6 @@
 - (void)rebuildSubmenus
 {
     ITDebugLog(@"Rebuilding all of the submenus.");
-    
     NS_DURING
         _currentPlaylist = [[[MainController sharedController] currentRemote] currentPlaylistIndex];
         _currentTrack = [[[MainController sharedController] currentRemote] currentSongIndex];
@@ -525,7 +525,7 @@
     return upcomingSongsMenu;
 }
 
-/*- (NSMenu *)playlistsMenu
+- (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
@@ -563,10 +563,10 @@
     }
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
-}*/
+}
 
 
-- (NSMenu *)playlistsMenu
+/*- (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
@@ -604,16 +604,18 @@
         NSString *name = [curPlaylist objectAtIndex:0];
         NSMenu *submenu = [[NSMenu alloc] init];
         ITDebugLog(@"Adding source: %@", name);
-        for (j = 2; j < [curPlaylist count]; j++) {
-            ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
-            tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-            [tempItem setTag:(i * 1000) + j];
-            [tempItem setTarget:self];
-            if ([[curPlaylist objectAtIndex:i] intValue] == ITMTRemoteiPodSource) {
-                [tempItem setEnabled:NO];
+        
+        if ( ([[curPlaylist objectAtIndex:i] intValue] == ITMTRemoteiPodSource) && (![self iPodAtPathAutomaticallyUpdates:[curPlaylist objectAtIndex:j]]) ) {
+            ITDebugLog(@"Invalid iPod source.");
+        } else {
+            for (j = 2; j < [curPlaylist count]; j++) {
+                ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
+                tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+                [tempItem setTag:(i * 1000) + j];
+                [tempItem setTarget:self];
             }
+            [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
         }
-        [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
     }
     
     if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ){
@@ -625,7 +627,7 @@
     }
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
-}
+}*/
 
 - (NSMenu *)eqMenu
 {
@@ -976,6 +978,38 @@
         [item setKeyEquivalent:[NSString stringWithCharacters:&charcode length:1]];
     }
     ITDebugLog(@"Done setting key equivalent on menu item: %@", [item title]);
+}
+
+- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name
+{
+    NSArray *volumes = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
+    NSEnumerator *volEnum = [volumes objectEnumerator];
+    NSString *nextVolume;
+    
+    while ( (nextVolume = [volEnum nextObject]) ) {
+        if ([nextVolume rangeOfString:name options:nil range:NSMakeRange(0, [name length] - 1)].location != NSNotFound) {
+            NSFileHandle *handle;
+            NSData *data;
+            NSString *path = [nextVolume stringByAppendingPathComponent:@"/iPod_Control/iTunes/iTunesPrefs"];
+            if ( ![[NSFileManager defaultManager] fileExistsAtPath:path] ) {
+                ITDebugLog(@"Error, path isn't an iPod! %@", path);
+                return NO;
+            }
+            handle = [NSFileHandle fileHandleForReadingAtPath:name];
+            [handle seekToFileOffset:10];
+            data = [handle readDataOfLength:1];
+            if ( (*((unsigned char*)[data bytes]) == 0x00) ) {
+                ITDebugLog(@"iPod is manually updated. %@", path);
+                return NO;
+            } else if ( ( *((unsigned char*)[data bytes]) == 0x01 ) ) {
+                ITDebugLog(@"iPod is automatically updated. %@", path);
+                return YES;
+            } else {
+                ITDebugLog(@"Error! Value: %h  Desc: %@ Path: %@", *((unsigned char*)[data bytes]), [data description], path);
+                return NO;
+            }
+        }
+    }
 }
 
 @end
