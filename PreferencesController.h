@@ -23,20 +23,31 @@
     IBOutlet NSPopUpButton *appearanceEffectPopup;
     IBOutlet NSSlider *appearanceSpeedSlider;
     IBOutlet NSButton *artistCheckbox;
+    IBOutlet NSTextField *hostTextField;
     IBOutlet NSTableView *hotKeysTableView;
     IBOutlet NSButton *launchAtLoginCheckbox;
     IBOutlet NSButton *launchPlayerAtLaunchCheckbox;
+    IBOutlet NSView *manualView;
     IBOutlet CustomMenuTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSButton *ratingCheckbox;
+    IBOutlet NSBox *selectPlayerBox;
+    IBOutlet NSPanel *selectPlayerSheet;
+    IBOutlet NSButton *selectSharedPlayerButton;
+    IBOutlet NSButton *shareMenuTunesCheckbox;
+    IBOutlet NSButton *sharePasswordCheckbox;
+    IBOutlet NSTextField *sharePasswordTextField;
+    IBOutlet NSTableView *sharingTableView;
     IBOutlet NSButton *showOnChangeCheckbox;
     IBOutlet NSTextField *songsInAdvance;
     IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
+    IBOutlet NSButton *useSharedMenuTunesCheckbox;
     IBOutlet NSSlider *vanishDelaySlider;
     IBOutlet NSPopUpButton *vanishEffectPopup;
     IBOutlet NSSlider *vanishSpeedSlider;
     IBOutlet NSWindow *window;
+    IBOutlet NSView *zeroConfView;
 
     MainController *controller;
     NSUserDefaults *df;
@@ -54,6 +65,7 @@
 - (void)setController:(id)object;
 
 - (IBAction)changeGeneralSetting:(id)sender;
+- (IBAction)changeSharingSetting:(id)sender;
 - (IBAction)changeStatusWindowSetting:(id)sender;
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)editHotKey:(id)sender;

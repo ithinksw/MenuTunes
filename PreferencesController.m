@@ -1,5 +1,6 @@
 #import "PreferencesController.h"
 #import "MainController.h"
+#import "NetworkController.h"
 #import "StatusWindow.h"
 #import "StatusWindowController.h"
 #import "CustomMenuTableView.h"
@@ -133,7 +134,11 @@ static PreferencesController *prefs = nil;
         [hotKeysTableView setDoubleAction:@selector(hotKeysTableViewDoubleClicked:)];
         
         //Change the launch player checkbox to the proper name
-        [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
+        NS_DURING
+            [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
+        NS_HANDLER
+            [controller networkError:localException];
+        NS_ENDHANDLER
     }
 
     [window center];
@@ -164,6 +169,84 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"showTrackNumber"];
     } else if ( [sender tag] == 1090) {
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
+    }
+    [df synchronize];
+}
+
+- (IBAction)changeSharingSetting:(id)sender
+{
+    ITDebugLog(@"Changing sharing setting of tag %i.", [sender tag]);
+    if ( [sender tag] == 5010 ) {
+        BOOL state = SENDER_STATE;
+        [df setBool:state forKey:@"enableSharing"];
+        //Disable/enable the use of shared player options
+        [useSharedMenuTunesCheckbox setEnabled:!state];
+        [sharePasswordCheckbox setEnabled:!state];
+        [sharePasswordTextField setEnabled:!state];
+        [controller setServerStatus:state]; //Set server status
+    } else if ( [sender tag] == 5020 ) {
+        [df setBool:SENDER_STATE forKey:@"enableSharingPassword"];
+    } else if ( [sender tag] == 5030 ) {
+        [df setObject:[sender stringValue] forKey:@"sharingPassword"];
+    } else if ( [sender tag] == 5040 ) {
+        BOOL state = SENDER_STATE;
+        [df setBool:state forKey:@"useSharedPlayer"];
+        //Disable/enable the use of sharing options
+        [shareMenuTunesCheckbox setEnabled:!state];
+        [sharePasswordCheckbox setEnabled:!state];
+        [sharePasswordTextField setEnabled:!state];
+        
+        if (state) {
+            [controller connectToServer];
+        } else {
+            [controller disconnectFromServer];
+        }
+    } else if ( [sender tag] == 5050 ) {
+        if ([sender clickedRow] > -1) {
+            //Set sharedPlayerHost
+            [df setObject:[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sender clickedRow]] objectForKey:@"ip"] forKey:@"sharedPlayerHost"];
+        }
+    } else if ( [sender tag] == 5060 ) {
+        //Show selection sheet
+        [NSApp beginSheet:selectPlayerSheet modalForWindow:window modalDelegate:self didEndSelector:NULL contextInfo:nil];
+    } else if ( [sender tag] == 5100 ) {
+        //Change view
+        if ( ([sender indexOfItem:[sender selectedItem]] == 0) && ([selectPlayerBox contentView] != zeroConfView) ) {
+            NSRect frame = [selectPlayerSheet frame];
+            frame.origin.y -= 58;
+            frame.size.height = 273;
+            [selectPlayerSheet setFrame:frame display:YES animate:YES];
+            [selectPlayerBox setContentView:zeroConfView];
+        } else if ([selectPlayerBox contentView] != manualView) {
+            NSRect frame = [selectPlayerSheet frame];
+            frame.origin.y += 58;
+            frame.size.height = 215;
+            [selectPlayerSheet setFrame:frame display:YES animate:YES];
+            [selectPlayerBox setContentView:manualView];
+        }
+    } else if ( [sender tag] == 5110 ) {
+        //Cancel
+        [NSApp endSheet:selectPlayerSheet];
+        [selectPlayerSheet orderOut:nil];
+        if ([selectPlayerBox contentView] == manualView) {
+            [hostTextField setStringValue:[df stringForKey:@"sharedPlayerHost"]];
+        } else {
+        }
+    } else if ( [sender tag] == 5120 ) {
+        //OK, try to connect
+        [NSApp endSheet:selectPlayerSheet];
+        [selectPlayerSheet orderOut:nil];
+        
+        if (![controller connectToServer]) {
+            NSRunAlertPanel(@"Connection error.", @"The MenuTunes server you attempted to connect to was not responding. MenuTunes will revert back to the local player.", @"OK", nil, nil);
+        } else {
+            [useSharedMenuTunesCheckbox setState:NSOnState];
+        }
+        
+        if ([selectPlayerBox contentView] == manualView) {
+            [df setObject:[hostTextField stringValue] forKey:@"sharedPlayerHost"];
+        } else {
+        }
     }
     [df synchronize];
 }
@@ -520,6 +603,28 @@ static PreferencesController *prefs = nil;
     [vanishSpeedSlider     setFloatValue:-([df floatForKey:@"statusWindowVanishSpeed"])];
     [vanishDelaySlider     setFloatValue:[df floatForKey:@"statusWindowVanishDelay"]];
     [showOnChangeCheckbox  setState:([df boolForKey:@"showSongInfoOnChange"] ? NSOnState : NSOffState)];
+    
+    // Setup the sharing controls
+    if ([df boolForKey:@"enableSharing"]) {
+        [shareMenuTunesCheckbox setState:NSOnState];
+        [useSharedMenuTunesCheckbox setEnabled:NO];
+        [selectSharedPlayerButton setEnabled:NO];
+        [hostTextField setEnabled:NO];
+    } else if ([df boolForKey:@"useSharedPlayer"]) {
+        [useSharedMenuTunesCheckbox setState:NSOnState];
+        [shareMenuTunesCheckbox setEnabled:NO];
+        [sharePasswordCheckbox setEnabled:NO];
+        [sharePasswordTextField setEnabled:NO];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:sharingTableView selector:@selector(reloadData) name:@"ITMTFoundNetService" object:nil];
+    
+    [selectPlayerBox setContentView:zeroConfView];
+    [sharePasswordCheckbox setState:([df boolForKey:@"enableSharingPassword"] ? NSOnState : NSOffState)];
+    //[sharePasswordTextField setStringValue:@""]; //DO THIS LATER
+    if ([df stringForKey:@"sharedPlayerHost"]) {
+        [hostTextField setStringValue:[df stringForKey:@"sharedPlayerHost"]];
+    }
 }
 
 - (IBAction)changeMenus:(id)sender
@@ -582,8 +687,10 @@ static PreferencesController *prefs = nil;
         return [myItems count];
     } else if (aTableView == allTableView) {
         return [availableItems count];
-    } else {
+    } else if (aTableView == hotKeysTableView) {
         return [hotKeysArray count];
+    } else {
+        return [[[NetworkController sharedController] remoteServices] count];
     }
 }
 
@@ -593,7 +700,13 @@ static PreferencesController *prefs = nil;
         NSString *object = [myItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             if ([object isEqualToString:@"showPlayer"]) {
-                return [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
+                NSString *string;
+                NS_DURING
+                    string = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
+                NS_HANDLER
+                    [controller networkError:localException];
+                NS_ENDHANDLER
+                return string;
             }
             return NSLocalizedString(object, @"ERROR");
         } else {
@@ -608,7 +721,13 @@ static PreferencesController *prefs = nil;
         NSString *object = [availableItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             if ([object isEqualToString:@"showPlayer"]) {
-                return [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
+                NSString *string;
+                NS_DURING
+                    string = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
+                NS_HANDLER
+                    [controller networkError:localException];
+                NS_ENDHANDLER
+                return string;
             }
             return NSLocalizedString(object, @"ERROR");
         } else {
@@ -618,11 +737,17 @@ static PreferencesController *prefs = nil;
                 return nil;
             }
         }
-    } else {
+    } else if (aTableView == hotKeysTableView) {
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             return [hotKeyNamesArray objectAtIndex:rowIndex];
         } else {
             return [[hotKeysDictionary objectForKey:[hotKeysArray objectAtIndex:rowIndex]] description];
+        }
+    } else {
+        if ([[aTableColumn identifier] isEqualToString:@"name"]) {
+            return [[[[NetworkController sharedController] remoteServices] objectAtIndex:rowIndex] objectForKey:@"name"];
+        } else {
+            return @"X";
         }
     }
 }

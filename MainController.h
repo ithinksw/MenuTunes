@@ -19,7 +19,7 @@
 #import <ITMTRemote/ITMTRemote.h>
 #import "MTBlingController.h"
 
-@class StatusWindowController, MenuController;
+@class StatusWindowController, MenuController, NetworkController;
 
 @interface MainController : NSObject
 {
@@ -36,6 +36,7 @@
 
     StatusWindowController *statusWindowController; //Shows status windows
     MenuController *menuController;
+    NetworkController *networkController;
     NSUserDefaults *df;
     
     MTBlingController *bling;
@@ -65,6 +66,13 @@
 - (void)showPlayer;
 - (void)showPreferences;
 - (void)quitMenuTunes;
+
+//
+
+- (void)setServerStatus:(BOOL)newStatus;
+- (BOOL)connectToServer;
+- (BOOL)disconnectFromServer;
+- (void)networkError:(NSException *)exception;
 
 //
 

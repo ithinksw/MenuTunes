@@ -1,6 +1,7 @@
 #import "MainController.h"
 #import "MenuController.h"
 #import "PreferencesController.h"
+#import "NetworkController.h"
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
@@ -54,7 +55,15 @@ static MainController *sharedController;
     }
     
     currentRemote = [self loadRemote];
-    [currentRemote begin];
+    [[self currentRemote] begin];
+    
+    //Turn on network stuff if needed
+    networkController = [[NetworkController alloc] init];
+    if ([df boolForKey:@"enableSharing"]) {
+        [self setServerStatus:YES];
+    } else if ([df boolForKey:@"useSharedPlayer"] && [df boolForKey:@"alwaysUseSharedPlayer"]) {
+        [self connectToServer];
+    }
     
     //Setup for notification of the remote player launching or quitting
     [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -86,18 +95,23 @@ static MainController *sharedController;
                              userInfo:nil
                              repeats:YES] retain];
     
-    if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
-        [self applicationLaunched:nil];
-    } else {
-        if ([df boolForKey:@"LaunchPlayerWithMT"])
-            [self showPlayer];
-        else
-            [self applicationTerminated:nil];
-    }
+    NS_DURING
+        if ([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
+            [self applicationLaunched:nil];
+        } else {
+            if ([df boolForKey:@"LaunchPlayerWithMT"])
+                [self showPlayer];
+            else
+                [self applicationTerminated:nil];
+        }
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     
     [statusItem setImage:[NSImage imageNamed:@"MenuNormal"]];
     [statusItem setAlternateImage:[NSImage imageNamed:@"MenuInverted"]];
 
+    [networkController startRemoteServerSearch];
     [NSApp deactivate];
 }
 
@@ -198,7 +212,7 @@ static MainController *sharedController;
             [self setupHotKeys];
             if (![refreshTimer isValid]) {
                 [refreshTimer release];
-                refreshTimer = refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
+                refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
                              target:self
                              selector:@selector(timerUpdate)
                              userInfo:nil
@@ -226,17 +240,35 @@ static MainController *sharedController;
 
 - (BOOL)songIsPlaying
 {
-    return ( ! ([[currentRemote playerStateUniqueIdentifier] isEqualToString:@"0-0"]) );
+    NSString *identifier;
+    NS_DURING
+        identifier = [[self currentRemote] playerStateUniqueIdentifier];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    return ( ! ([identifier isEqualToString:@"0-0"]) );
 }
 
 - (BOOL)radioIsPlaying
 {
-    return ( [currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist );
+    ITMTRemotePlayerPlaylistClass class;
+    NS_DURING
+        class = [[self currentRemote] currentPlaylistClass];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    return (class  == ITMTRemotePlayerRadioPlaylist );
 }
 
 - (BOOL)songChanged
 {
-    return ( ! [[currentRemote playerStateUniqueIdentifier] isEqualToString:_latestSongIdentifier] );
+    NSString *identifier;
+    NS_DURING
+        identifier = [[self currentRemote] playerStateUniqueIdentifier];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    return ( ! [identifier isEqualToString:_latestSongIdentifier] );
 }
 
 - (NSString *)latestSongIdentifier
@@ -253,17 +285,26 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
+    if ([networkController isConnectedToServer]) {
+        [statusItem setMenu:[menuController menu]];
+    }
+    
     if ( [self songChanged] && (timerUpdating != YES) ) {
         ITDebugLog(@"The song changed.");
         timerUpdating = YES;
-        latestPlaylistClass = [currentRemote currentPlaylistClass];
+        
+        NS_DURING
+        latestPlaylistClass = [[self currentRemote] currentPlaylistClass];
         [menuController rebuildSubmenus];
 
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
             [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
         }
         
-        [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
+        [self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
+        NS_HANDLER
+            [self networkError:localException];
+        NS_ENDHANDLER
         
         timerUpdating = NO;
     }
@@ -272,11 +313,20 @@ static MainController *sharedController;
 - (void)menuClicked
 {
     ITDebugLog(@"Menu clicked.");
-    if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
-        [statusItem setMenu:[menuController menu]];
-    } else {
-        [statusItem setMenu:[menuController menuForNoPlayer]];
+    if ([networkController isConnectedToServer]) {
+        //Used the cached version
+        return;
     }
+    
+    NS_DURING
+        if ([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
+            [statusItem setMenu:[menuController menu]];
+        } else {
+            [statusItem setMenu:[menuController menuForNoPlayer]];
+        }
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 //
@@ -287,72 +337,109 @@ static MainController *sharedController;
 
 - (void)playPause
 {
-    ITMTRemotePlayerPlayingState state = [currentRemote playerPlayingState];
-    ITDebugLog(@"Play/Pause toggled");
-    if (state == ITMTRemotePlayerPlaying) {
-        [currentRemote pause];
-    } else if ((state == ITMTRemotePlayerForwarding) || (state == ITMTRemotePlayerRewinding)) {
-        [currentRemote pause];
-        [currentRemote play];
-    } else {
-        [currentRemote play];
-    }
+    NS_DURING
+        ITMTRemotePlayerPlayingState state = [[self currentRemote] playerPlayingState];
+        ITDebugLog(@"Play/Pause toggled");
+        if (state == ITMTRemotePlayerPlaying) {
+            [[self currentRemote] pause];
+        } else if ((state == ITMTRemotePlayerForwarding) || (state == ITMTRemotePlayerRewinding)) {
+            [[self currentRemote] pause];
+            [[self currentRemote] play];
+        } else {
+            [[self currentRemote] play];
+        }
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    
     [self timerUpdate];
 }
 
 - (void)nextSong
 {
     ITDebugLog(@"Going to next song.");
-    [currentRemote goToNextSong];
+    NS_DURING
+        [[self currentRemote] goToNextSong];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)prevSong
 {
     ITDebugLog(@"Going to previous song.");
-    [currentRemote goToPreviousSong];
+    NS_DURING
+        [[self currentRemote] goToPreviousSong];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)fastForward
 {
     ITDebugLog(@"Fast forwarding.");
-    [currentRemote forward];
+    NS_DURING
+        [[self currentRemote] forward];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)rewind
 {
     ITDebugLog(@"Rewinding.");
-    [currentRemote rewind];
+    NS_DURING
+        [[self currentRemote] rewind];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)selectPlaylistAtIndex:(int)index
 {
     ITDebugLog(@"Selecting playlist %i", index);
-    [currentRemote switchToPlaylistAtIndex:index];
+    NS_DURING
+        [[self currentRemote] switchToPlaylistAtIndex:index];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)selectSongAtIndex:(int)index
 {
     ITDebugLog(@"Selecting song %i", index);
-    [currentRemote switchToSongAtIndex:index];
+    NS_DURING
+        [[self currentRemote] switchToSongAtIndex:index];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)selectSongRating:(int)rating
 {
     ITDebugLog(@"Selecting song rating %i", rating);
-    [currentRemote setCurrentSongRating:(float)rating / 100.0];
+    NS_DURING
+        [[self currentRemote] setCurrentSongRating:(float)rating / 100.0];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
 - (void)selectEQPresetAtIndex:(int)index
 {
     ITDebugLog(@"Selecting EQ preset %i", index);
-    [currentRemote switchToEQAtIndex:index];
+    NS_DURING
+        [[self currentRemote] switchToEQAtIndex:index];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
     [self timerUpdate];
 }
 
@@ -361,12 +448,20 @@ static MainController *sharedController;
     ITDebugLog(@"Beginning show player.");
     if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"Showing player interface.");
-        [currentRemote showPrimaryInterface];
+        NS_DURING
+            [[self currentRemote] showPrimaryInterface];
+        NS_HANDLER
+            [self networkError:localException];
+        NS_ENDHANDLER
     } else {
         ITDebugLog(@"Launching player.");
-        if (![[NSWorkspace sharedWorkspace] launchApplication:[currentRemote playerFullName]]) {
-            ITDebugLog(@"Error Launching Player");
-        }
+        NS_DURING
+            if (![[NSWorkspace sharedWorkspace] launchApplication:[[self currentRemote] playerFullName]]) {
+                ITDebugLog(@"Error Launching Player");
+            }
+        NS_HANDLER
+            [self networkError:localException];
+        NS_ENDHANDLER
     }
     ITDebugLog(@"Finished show player.");
 }
@@ -550,36 +645,62 @@ static MainController *sharedController;
 
 - (void)showCurrentTrackInfo
 {
-    ITMTRemotePlayerSource  source      = [currentRemote currentSource];
-    NSString               *title       = [currentRemote currentSongTitle];
+    ITMTRemotePlayerSource  source;
+    NSString               *title;
     NSString               *album       = nil;
     NSString               *artist      = nil;
     NSString               *time        = nil;
     NSString               *track       = nil;
     int                     rating      = -1;
     
+    NS_DURING
+        source      = [[self currentRemote] currentSource];
+        title       = [[self currentRemote] currentSongTitle];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    
     ITDebugLog(@"Showing track info status window.");
     
     if ( title ) {
 
         if ( [df boolForKey:@"showAlbum"] ) {
-            album = [currentRemote currentSongAlbum];
+            NS_DURING
+                album = [[self currentRemote] currentSongAlbum];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
         }
 
         if ( [df boolForKey:@"showArtist"] ) {
-            artist = [currentRemote currentSongArtist];
+            NS_DURING
+                artist = [[self currentRemote] currentSongArtist];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
         }
 
         if ( [df boolForKey:@"showTime"] ) {
-            time = [NSString stringWithFormat:@"%@: %@ / %@",
+            NS_DURING
+                time = [NSString stringWithFormat:@"%@: %@ / %@",
                 @"Time",
-                [currentRemote currentSongElapsed],
-                [currentRemote currentSongLength]];
+                [[self currentRemote] currentSongElapsed],
+                [[self currentRemote] currentSongLength]];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
         }
 
         if ( [df boolForKey:@"showTrackNumber"] ) {
-            int trackNo    = [currentRemote currentSongTrack];
-            int trackCount = [currentRemote currentAlbumTrackCount];
+            int trackNo;
+            int trackCount;
+            
+            NS_DURING
+                trackNo    = [[self currentRemote] currentSongTrack];
+                trackCount = [[self currentRemote] currentAlbumTrackCount];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
             
             if ( (trackNo > 0) || (trackCount > 0) ) {
                 track = [NSString stringWithFormat:@"%@: %i %@ %i",
@@ -588,7 +709,14 @@ static MainController *sharedController;
         }
 
         if ( [df boolForKey:@"showTrackRating"] ) {
-            float currentRating = [currentRemote currentSongRating];
+            float currentRating;
+            
+            NS_DURING
+                currentRating = [[self currentRemote] currentSongRating];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
+            
             if (currentRating >= 0.0) {
                 rating = ( currentRating * 5 );
             }
@@ -609,140 +737,173 @@ static MainController *sharedController;
 
 - (void)showUpcomingSongs
 {
-    int curPlaylist = [currentRemote currentPlaylistIndex];
-    int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:curPlaylist];
+    int numSongs;
+    
+    NS_DURING
+        numSongs = [[self currentRemote] numberOfSongsInPlaylistAtIndex:[[self currentRemote] currentPlaylistIndex]];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+    
     ITDebugLog(@"Showing upcoming songs status window.");
-    if (numSongs > 0) {
-        NSMutableArray *songList = [NSMutableArray arrayWithCapacity:5];
-        int numSongsInAdvance = [df integerForKey:@"SongsInAdvance"];
-        int curTrack = [currentRemote currentSongIndex];
-        int i;
-
-        for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
-            if (i <= numSongs) {
-                [songList addObject:[currentRemote songTitleAtIndex:i]];
+    NS_DURING
+        if (numSongs > 0) {
+            NSMutableArray *songList = [NSMutableArray arrayWithCapacity:5];
+            int numSongsInAdvance = [df integerForKey:@"SongsInAdvance"];
+            int curTrack = [[self currentRemote] currentSongIndex];
+            int i;
+    
+            for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
+                if (i <= numSongs) {
+                    [songList addObject:[[self currentRemote] songTitleAtIndex:i]];
+                }
             }
+            
+            [statusWindowController showUpcomingSongsWindowWithTitles:songList];
+        } else {
+            [statusWindowController showUpcomingSongsWindowWithTitles:[NSArray arrayWithObject:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.")]];
         }
-        
-        [statusWindowController showUpcomingSongsWindowWithTitles:songList];
-        
-    } else {
-        [statusWindowController showUpcomingSongsWindowWithTitles:[NSArray arrayWithObject:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.")]];
-    }
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)incrementVolume
 {
-    float volume  = [currentRemote volume];
-    float dispVol = volume;
-    ITDebugLog(@"Incrementing volume.");
-    volume  += 0.110;
-    dispVol += 0.100;
+    NS_DURING
+        float volume  = [[self currentRemote] volume];
+        float dispVol = volume;
+        ITDebugLog(@"Incrementing volume.");
+        volume  += 0.110;
+        dispVol += 0.100;
+        
+        if (volume > 1.0) {
+            volume  = 1.0;
+            dispVol = 1.0;
+        }
     
-    if (volume > 1.0) {
-        volume  = 1.0;
-        dispVol = 1.0;
-    }
-
-    ITDebugLog(@"Setting volume to %f", volume);
-    [currentRemote setVolume:volume];
-
-    // Show volume status window
-    [statusWindowController showVolumeWindowWithLevel:dispVol];
+        ITDebugLog(@"Setting volume to %f", volume);
+        [[self currentRemote] setVolume:volume];
+    
+        // Show volume status window
+        [statusWindowController showVolumeWindowWithLevel:dispVol];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)decrementVolume
 {
-    float volume  = [currentRemote volume];
-    float dispVol = volume;
-    ITDebugLog(@"Decrementing volume.");
-    volume  -= 0.090;
-    dispVol -= 0.100;
-
-    if (volume < 0.0) {
-        volume  = 0.0;
-        dispVol = 0.0;
-    }
+    NS_DURING
+        float volume  = [[self currentRemote] volume];
+        float dispVol = volume;
+        ITDebugLog(@"Decrementing volume.");
+        volume  -= 0.090;
+        dispVol -= 0.100;
     
-    ITDebugLog(@"Setting volume to %f", volume);
-    [currentRemote setVolume:volume];
-    
-    //Show volume status window
-    [statusWindowController showVolumeWindowWithLevel:dispVol];
+        if (volume < 0.0) {
+            volume  = 0.0;
+            dispVol = 0.0;
+        }
+        
+        ITDebugLog(@"Setting volume to %f", volume);
+        [[self currentRemote] setVolume:volume];
+        
+        //Show volume status window
+        [statusWindowController showVolumeWindowWithLevel:dispVol];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)incrementRating
 {
-    float rating = [currentRemote currentSongRating];
-    ITDebugLog(@"Incrementing rating.");
-    
-    if ([currentRemote currentPlaylistIndex] == 0) {
-        ITDebugLog(@"No song playing, rating change aborted.");
-        return;
-    }
-    
-    rating += 0.2;
-    if (rating > 1.0) {
-        rating = 1.0;
-    }
-    ITDebugLog(@"Setting rating to %f", rating);
-    [currentRemote setCurrentSongRating:rating];
-    
-    //Show rating status window
-    [statusWindowController showRatingWindowWithRating:rating];
+    NS_DURING
+        float rating = [[self currentRemote] currentSongRating];
+        ITDebugLog(@"Incrementing rating.");
+        
+        if ([[self currentRemote] currentPlaylistIndex] == 0) {
+            ITDebugLog(@"No song playing, rating change aborted.");
+            return;
+        }
+        
+        rating += 0.2;
+        if (rating > 1.0) {
+            rating = 1.0;
+        }
+        ITDebugLog(@"Setting rating to %f", rating);
+        [[self currentRemote] setCurrentSongRating:rating];
+        
+        //Show rating status window
+        [statusWindowController showRatingWindowWithRating:rating];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)decrementRating
 {
-    float rating = [currentRemote currentSongRating];
-    ITDebugLog(@"Decrementing rating.");
-    
-    if ([currentRemote currentPlaylistIndex] == 0) {
-        ITDebugLog(@"No song playing, rating change aborted.");
-        return;
-    }
-    
-    rating -= 0.2;
-    if (rating < 0.0) {
-        rating = 0.0;
-    }
-    ITDebugLog(@"Setting rating to %f", rating);
-    [currentRemote setCurrentSongRating:rating];
-    
-    //Show rating status window
-    [statusWindowController showRatingWindowWithRating:rating];
+    NS_DURING
+        float rating = [[self currentRemote] currentSongRating];
+        ITDebugLog(@"Decrementing rating.");
+        
+        if ([[self currentRemote] currentPlaylistIndex] == 0) {
+            ITDebugLog(@"No song playing, rating change aborted.");
+            return;
+        }
+        
+        rating -= 0.2;
+        if (rating < 0.0) {
+            rating = 0.0;
+        }
+        ITDebugLog(@"Setting rating to %f", rating);
+        [[self currentRemote] setCurrentSongRating:rating];
+        
+        //Show rating status window
+        [statusWindowController showRatingWindowWithRating:rating];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)toggleLoop
 {
-    ITMTRemotePlayerRepeatMode repeatMode = [currentRemote repeatMode];
-    ITDebugLog(@"Toggling repeat mode.");
-    switch (repeatMode) {
-        case ITMTRemotePlayerRepeatOff:
-            repeatMode = ITMTRemotePlayerRepeatAll;
-        break;
-        case ITMTRemotePlayerRepeatAll:
-            repeatMode = ITMTRemotePlayerRepeatOne;
-        break;
-        case ITMTRemotePlayerRepeatOne:
-            repeatMode = ITMTRemotePlayerRepeatOff;
-        break;
-    }
-    ITDebugLog(@"Setting repeat mode to %i", repeatMode);
-    [currentRemote setRepeatMode:repeatMode];
-    
-    //Show loop status window
-    [statusWindowController showRepeatWindowWithMode:repeatMode];
+    NS_DURING
+        ITMTRemotePlayerRepeatMode repeatMode = [[self currentRemote] repeatMode];
+        ITDebugLog(@"Toggling repeat mode.");
+        switch (repeatMode) {
+            case ITMTRemotePlayerRepeatOff:
+                repeatMode = ITMTRemotePlayerRepeatAll;
+            break;
+            case ITMTRemotePlayerRepeatAll:
+                repeatMode = ITMTRemotePlayerRepeatOne;
+            break;
+            case ITMTRemotePlayerRepeatOne:
+                repeatMode = ITMTRemotePlayerRepeatOff;
+            break;
+        }
+        ITDebugLog(@"Setting repeat mode to %i", repeatMode);
+        [[self currentRemote] setRepeatMode:repeatMode];
+        
+        //Show loop status window
+        [statusWindowController showRepeatWindowWithMode:repeatMode];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)toggleShuffle
 {
-    BOOL newShuffleEnabled = ( ! [currentRemote shuffleEnabled] );
-    ITDebugLog(@"Toggling shuffle mode.");
-    [currentRemote setShuffleEnabled:newShuffleEnabled];
-    //Show shuffle status window
-    ITDebugLog(@"Setting shuffle mode to %i", newShuffleEnabled);
-    [statusWindowController showShuffleWindow:newShuffleEnabled];
+    NS_DURING
+        BOOL newShuffleEnabled = ( ! [[self currentRemote] shuffleEnabled] );
+        ITDebugLog(@"Toggling shuffle mode.");
+        [[self currentRemote] setShuffleEnabled:newShuffleEnabled];
+        //Show shuffle status window
+        ITDebugLog(@"Setting shuffle mode to %i", newShuffleEnabled);
+        [statusWindowController showShuffleWindow:newShuffleEnabled];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
 - (void)registerNowOK
@@ -763,6 +924,53 @@ static MainController *sharedController;
     [NSApp terminate:self];
 }
 
+/*************************************************************************/
+#pragma mark -
+#pragma mark NETWORK HANDLERS
+/*************************************************************************/
+
+- (void)setServerStatus:(BOOL)newStatus
+{
+    if (newStatus) {
+        //Turn on
+        [networkController setServerStatus:YES];
+    } else {
+        //Tear down
+        [networkController setServerStatus:NO];
+    }
+}
+
+- (BOOL)connectToServer
+{
+    //Connect
+    if ([networkController connectToHost:[df stringForKey:@"sharedPlayerHost"]]) {
+        currentRemote = [networkController sharedRemote];
+        [refreshTimer invalidate];
+        return YES;
+    } else {
+        currentRemote = [remoteArray objectAtIndex:0];
+        return NO;
+    }
+}
+
+- (BOOL)disconnectFromServer
+{
+    //Disconnect
+    currentRemote = [remoteArray objectAtIndex:0];
+    [networkController disconnect];
+    [self timerUpdate];
+    return YES;
+}
+
+- (void)networkError:(NSException *)exception
+{
+    ITDebugLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
+    NSRunAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
+    if ([networkController isConnectedToServer] && [self disconnectFromServer]) {
+    } else {
+        ITDebugLog(@"CRITICAL ERROR DISCONNECTING!");
+    }
+}
 
 /*************************************************************************/
 #pragma mark -
@@ -771,33 +979,41 @@ static MainController *sharedController;
 
 - (void)applicationLaunched:(NSNotification *)note
 {
-    if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
-        ITDebugLog(@"Remote application launched.");
-        playerRunningState = ITMTRemotePlayerRunning;
-        [currentRemote begin];
-        [self setLatestSongIdentifier:@""];
-        [self timerUpdate];
-        refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
-                             target:self
-                             selector:@selector(timerUpdate)
-                             userInfo:nil
-                             repeats:YES] retain];
-        //[NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
-        [self setupHotKeys];
-    }
+    NS_DURING
+        if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]]) {
+            ITDebugLog(@"Remote application launched.");
+            playerRunningState = ITMTRemotePlayerRunning;
+            [[self currentRemote] begin];
+            [self setLatestSongIdentifier:@""];
+            [self timerUpdate];
+            refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
+                                target:self
+                                selector:@selector(timerUpdate)
+                                userInfo:nil
+                                repeats:YES] retain];
+            //[NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
+            [self setupHotKeys];
+        }
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
 }
 
  - (void)applicationTerminated:(NSNotification *)note
  {
-     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
-        ITDebugLog(@"Remote application terminated.");
-        [currentRemote halt];
-        [refreshTimer invalidate];
-        [refreshTimer release];
-        refreshTimer = nil;
-        [self clearHotKeys];
-        playerRunningState = ITMTRemotePlayerNotRunning;
-     }
+    NS_DURING
+        if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]]) {
+            ITDebugLog(@"Remote application terminated.");
+            [[self currentRemote] halt];
+            [refreshTimer invalidate];
+            [refreshTimer release];
+            refreshTimer = nil;
+            [self clearHotKeys];
+            playerRunningState = ITMTRemotePlayerNotRunning;
+        }
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
  }
 
 
@@ -809,6 +1025,7 @@ static MainController *sharedController;
 - (void)applicationWillTerminate:(NSNotification *)note
 {
     [self clearHotKeys];
+    [networkController stopRemoteServerSearch];
     [[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
 }
 
@@ -825,6 +1042,7 @@ static MainController *sharedController;
     [statusItem release];
     [statusWindowController release];
     [menuController release];
+    [networkController release];
     [super dealloc];
 }
 

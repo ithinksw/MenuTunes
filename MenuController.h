@@ -7,7 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "ITMTRemote.h"
 
 // Internal: To be used with NSMenuItems as their tag, for use with the NSMenuValidation stuff.
 // Also will be used in supplying the controller with the layout to use for the MenuItems, unless
@@ -45,7 +44,6 @@ typedef enum {
     NSMenu *_currentMenu;
     NSMenu *_ratingMenu, *_upcomingSongsMenu, *_eqMenu, *_playlistsMenu; //Submenus
     
-    ITMTRemote *currentRemote;
     int _currentPlaylist, _currentTrack;
     BOOL _playingRadio;
 }

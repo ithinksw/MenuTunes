@@ -8,6 +8,7 @@
 
 #import "MenuController.h"
 #import "MainController.h"
+#import "ITMTRemote.h"
 #import <ITFoundation/ITDebug.h>
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
@@ -44,10 +45,16 @@
     NSEnumerator *itemEnum;
     ITHotKey *hotKey;
     NSArray *hotKeys = [[ITHotKeyCenter sharedCenter] allHotKeys];
+    int currentSongRating;
     
     //Get the information
-    _currentPlaylist = [currentRemote currentPlaylistIndex];
-    _playingRadio = ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
+    NS_DURING
+        _currentPlaylist = [[[MainController sharedController] currentRemote] currentPlaylistIndex];
+        _playingRadio = ([[[MainController sharedController] currentRemote] currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
+        currentSongRating = ( [[[MainController sharedController] currentRemote] currentSongRating] != -1 );
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
     
     ITDebugLog(@"Reset menu if required.");
     
@@ -96,17 +103,21 @@
             }
             
             ITDebugLog(@"Set \"Play\"/\"Pause\" menu item's title to correct state.");
-            switch ([currentRemote playerPlayingState]) {
-                case ITMTRemotePlayerPlaying:
-                    [tempItem setTitle:NSLocalizedString(@"pause", @"Pause")];
-                break;
-                case ITMTRemotePlayerRewinding:
-                case ITMTRemotePlayerForwarding:
-                    [tempItem setTitle:NSLocalizedString(@"resume", @"Resume")];
-                break;
-                default:
-                break;
-            }
+            NS_DURING
+                switch ([[[MainController sharedController] currentRemote] playerPlayingState]) {
+                    case ITMTRemotePlayerPlaying:
+                        [tempItem setTitle:NSLocalizedString(@"pause", @"Pause")];
+                    break;
+                    case ITMTRemotePlayerRewinding:
+                    case ITMTRemotePlayerForwarding:
+                        [tempItem setTitle:NSLocalizedString(@"resume", @"Resume")];
+                    break;
+                    default:
+                    break;
+                }
+            NS_HANDLER
+                [[MainController sharedController] networkError:localException];
+            NS_ENDHANDLER
         } else if ([nextObject isEqualToString:@"nextTrack"]) {
             ITDebugLog(@"Add \"Next Track\" menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"nextTrack", @"Next Track")
@@ -167,11 +178,15 @@
             }
         } else if ([nextObject isEqualToString:@"showPlayer"]) {
             ITDebugLog(@"Add \"Show Player\" menu item.");
-            tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@",
-                            NSLocalizedString(@"show", @"Show"),
-                            [[[MainController sharedController] currentRemote] playerSimpleName]]
-                    action:@selector(performMainMenuAction:)
-                    keyEquivalent:@""];
+            NS_DURING
+                tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@",
+                                NSLocalizedString(@"show", @"Show"),
+                                    [[[MainController sharedController] currentRemote] playerSimpleName]]
+                                action:@selector(performMainMenuAction:)
+                                keyEquivalent:@""];
+            NS_HANDLER
+                [[MainController sharedController] networkError:localException];
+            NS_ENDHANDLER
             
             itemEnum = [hotKeys objectEnumerator];
             while ( (hotKey = [itemEnum nextObject]) ) {
@@ -209,7 +224,12 @@
             ITDebugLog(@"Check to see if a Track is playing...");
             //Handle playing radio too
             if (_currentPlaylist) {
-                NSString *title = [currentRemote currentSongTitle];
+                NSString *title;
+                NS_DURING
+                    title = [[[MainController sharedController] currentRemote] currentSongTitle];
+                NS_HANDLER
+                    [[MainController sharedController] networkError:localException];
+                NS_ENDHANDLER
                 ITDebugLog(@"A Track is Playing, Add \"Track Info\" menu items.");
                 ITDebugLog(@"Add \"Now Playing\" menu item.");
                 [menu addItemWithTitle:NSLocalizedString(@"nowPlaying", @"Now Playing") action:NULL keyEquivalent:@""];
@@ -222,7 +242,12 @@
                 
                 if (!_playingRadio) {
                     if ([defaults boolForKey:@"showAlbum"]) {
-                        NSString *curAlbum = [currentRemote currentSongAlbum];
+                        NSString *curAlbum;
+                        NS_DURING
+                            curAlbum = [[[MainController sharedController] currentRemote] currentSongAlbum];
+                        NS_HANDLER
+                            [[MainController sharedController] networkError:localException];
+                        NS_ENDHANDLER
                         ITDebugLog(@"Add Track Album (\"%@\") menu item.", curAlbum);
                         if ( curAlbum ) {
                             [menu indentItem:
@@ -231,7 +256,12 @@
                     }
                     
                     if ([defaults boolForKey:@"showArtist"]) {
-                        NSString *curArtist = [currentRemote currentSongArtist];
+                        NSString *curArtist;
+                        NS_DURING
+                            curArtist = [[[MainController sharedController] currentRemote] currentSongArtist];
+                        NS_HANDLER
+                            [[MainController sharedController] networkError:localException];
+                        NS_ENDHANDLER
                         ITDebugLog(@"Add Track Artist (\"%@\") menu item.", curArtist);
                         if ( curArtist ) {
                             [menu indentItem:
@@ -240,7 +270,12 @@
                     }
                     
                     if ([defaults boolForKey:@"showTrackNumber"]) {
-                        int track = [currentRemote currentSongTrack];
+                        int track;
+                        NS_DURING
+                            track = [[[MainController sharedController] currentRemote] currentSongTrack];
+                        NS_HANDLER
+                            [[MainController sharedController] networkError:localException];
+                        NS_ENDHANDLER
                         ITDebugLog(@"Add Track Number (\"Track %i\") menu item.", track);
                         if ( track > 0 ) {
                             [menu indentItem:
@@ -249,37 +284,45 @@
                     }
                 }
                 
-                if ([defaults boolForKey:@"showTime"] && ( ([currentRemote currentSongElapsed] != nil) || ([currentRemote currentSongLength] != nil) )) {
-                    ITDebugLog(@"Add Track Elapsed (\"%@/%@\") menu item.", [currentRemote currentSongElapsed], [currentRemote currentSongLength]);
-                    [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", [currentRemote currentSongElapsed], [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
-                }
+                NS_DURING
+                    if ([defaults boolForKey:@"showTime"] && ( ([[[MainController sharedController] currentRemote] currentSongElapsed] != nil) || ([[[MainController sharedController] currentRemote] currentSongLength] != nil) )) {
+                        ITDebugLog(@"Add Track Elapsed (\"%@/%@\") menu item.", [[[MainController sharedController] currentRemote] currentSongElapsed], [[[MainController sharedController] currentRemote] currentSongLength]);
+                        [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", [[[MainController sharedController] currentRemote] currentSongElapsed], [[[MainController sharedController] currentRemote] currentSongLength]] action:nil keyEquivalent:@""]];
+                    }
+                NS_HANDLER
+                    [[MainController sharedController] networkError:localException];
+                NS_ENDHANDLER
                 
                 if (!_playingRadio) {
-                    if ([defaults boolForKey:@"showTrackRating"] && ( [currentRemote currentSongRating] != -1.0 )) {
-                        NSString *string = nil;
-                        switch ((int)([currentRemote currentSongRating] * 5)) {
-                            case 0:
-                                string = [NSString stringWithUTF8String:"☆☆☆☆☆"];
-                            break;
-                            case 1:
-                                string = [NSString stringWithUTF8String:"★☆☆☆☆"];
-                            break;
-                            case 2:
-                                string = [NSString stringWithUTF8String:"★★☆☆☆"];
-                            break;
-                            case 3:
-                                string = [NSString stringWithUTF8String:"★★★☆☆"];
-                            break;
-                            case 4:
-                                string = [NSString stringWithUTF8String:"★★★★☆"];
-                            break;
-                            case 5:
-                                string = [NSString stringWithUTF8String:"★★★★★"];
-                            break;
+                    NS_DURING
+                        if ([defaults boolForKey:@"showTrackRating"] && ( [[[MainController sharedController] currentRemote] currentSongRating] != -1.0 )) {
+                            NSString *string = nil;
+                            switch ((int)([[[MainController sharedController] currentRemote] currentSongRating] * 5)) {
+                                case 0:
+                                    string = [NSString stringWithUTF8String:"☆☆☆☆☆"];
+                                break;
+                                case 1:
+                                    string = [NSString stringWithUTF8String:"★☆☆☆☆"];
+                                break;
+                                case 2:
+                                    string = [NSString stringWithUTF8String:"★★☆☆☆"];
+                                break;
+                                case 3:
+                                    string = [NSString stringWithUTF8String:"★★★☆☆"];
+                                break;
+                                case 4:
+                                    string = [NSString stringWithUTF8String:"★★★★☆"];
+                                break;
+                                case 5:
+                                    string = [NSString stringWithUTF8String:"★★★★★"];
+                                break;
+                            }
+                            ITDebugLog(@"Add Track Rating (\"%@\") menu item.", string);
+                            [menu indentItem:[menu addItemWithTitle:string action:nil keyEquivalent:@""]];
                         }
-                        ITDebugLog(@"Add Track Rating (\"%@\") menu item.", string);
-                        [menu indentItem:[menu addItemWithTitle:string action:nil keyEquivalent:@""]];
-                    }
+                    NS_HANDLER
+                        [[MainController sharedController] networkError:localException];
+                    NS_ENDHANDLER
                 }
             } else {
                 ITDebugLog(@"No Track is Playing, Add \"No Song\" menu item.");
@@ -308,8 +351,12 @@
             while ( (tempItem = [itemEnum nextObject]) ) {
                 [tempItem setState:NSOffState];
             }
-            [[_eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
-        } else if ([nextObject isEqualToString:@"songRating"] && ( [currentRemote currentSongRating] != -1 )) {
+            NS_DURING
+                [[_eqMenu itemAtIndex:([[[MainController sharedController] currentRemote] currentEQPresetIndex] - 1)] setState:NSOnState];
+            NS_HANDLER
+                [[MainController sharedController] networkError:localException];
+            NS_ENDHANDLER
+        } else if ([nextObject isEqualToString:@"songRating"] && currentSongRating) {
                 ITDebugLog(@"Add \"Song Rating\" submenu.");
                 tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
                         action:nil
@@ -325,7 +372,11 @@
                     [tempItem setState:NSOffState];
                 }
                 
-                [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
+                NS_DURING
+                    [[_ratingMenu itemAtIndex:([[[MainController sharedController] currentRemote] currentSongRating] * 5)] setState:NSOnState];
+                NS_HANDLER
+                    [[MainController sharedController] networkError:localException];
+                NS_ENDHANDLER
             } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
                 ITDebugLog(@"Add \"Upcoming Songs\" submenu.");
                 tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
@@ -349,8 +400,12 @@
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
     NSMenuItem *tempItem;
     ITDebugLog(@"Creating menu for when player isn't running.");
-    ITDebugLog(@"Add \"Open %@\" menu item.", [[[MainController sharedController] currentRemote] playerSimpleName]);
-    tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"open", @"Open"), [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    NS_DURING
+        ITDebugLog(@"Add \"Open %@\" menu item.", [[[MainController sharedController] currentRemote] playerSimpleName]);
+        tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"open", @"Open"), [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
     [tempItem setTag:MTMenuShowPlayerItem];
     [tempItem setTarget:self];
     ITDebugLog(@"Add a separator menu item.");
@@ -376,10 +431,13 @@
 {
     ITDebugLog(@"Rebuilding all of the submenus.");
     
-    currentRemote = [[MainController sharedController] currentRemote];
-    _currentPlaylist = [currentRemote currentPlaylistIndex];
-    _currentTrack = [currentRemote currentSongIndex];
-    _playingRadio = ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
+    NS_DURING
+        _currentPlaylist = [[[MainController sharedController] currentRemote] currentPlaylistIndex];
+        _currentTrack = [[[MainController sharedController] currentRemote] currentSongIndex];
+        _playingRadio = ([[[MainController sharedController] currentRemote] currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
     
     [_ratingMenu release];
     [_upcomingSongsMenu release];
@@ -428,8 +486,13 @@
 - (NSMenu *)upcomingSongsMenu
 {
     NSMenu *upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
-    int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:_currentPlaylist];
-    int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
+    int numSongs, numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
+    
+    NS_DURING
+        numSongs = [[[MainController sharedController] currentRemote] numberOfSongsInPlaylistAtIndex:_currentPlaylist];
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
     
     ITDebugLog(@"Building \"Upcoming Songs\" menu.");
     
@@ -439,7 +502,12 @@
 
             for (i = _currentTrack + 1; i <= _currentTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
-                    NSString *curSong = [currentRemote songTitleAtIndex:i];
+                    NSString *curSong;
+                    NS_DURING
+                        curSong = [[[MainController sharedController] currentRemote] songTitleAtIndex:i];
+                    NS_HANDLER
+                        [[MainController sharedController] networkError:localException];
+                    NS_ENDHANDLER
                     NSMenuItem *songItem;
                     ITDebugLog(@"Adding song: %@", curSong);
                     songItem = [upcomingSongsMenu addItemWithTitle:curSong action:@selector(performUpcomingSongsMenuAction:) keyEquivalent:@""];
@@ -458,9 +526,15 @@
 - (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
-    NSArray *playlists = [currentRemote playlists];
+    NSArray *playlists;
     NSMenuItem *tempItem;
     int i;
+    
+    NS_DURING
+        playlists = [[[MainController sharedController] currentRemote] playlists];
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
     
     ITDebugLog(@"Building \"Playlists\" menu.");
     
@@ -482,9 +556,15 @@
 - (NSMenu *)eqMenu
 {
     NSMenu *eqMenu = [[NSMenu alloc] initWithTitle:@""];
-    NSArray *eqPresets = [currentRemote eqPresets];
+    NSArray *eqPresets;
     NSMenuItem *tempItem;
     int i;
+    
+    NS_DURING
+        eqPresets = [[[MainController sharedController] currentRemote] eqPresets];
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
     
     ITDebugLog(@"Building \"EQ Presets\" menu.");
     

@@ -6,6 +6,7 @@
         {
             ACTIONS = {
                 changeGeneralSetting = id; 
+                changeSharingSetting = id; 
                 changeStatusWindowSetting = id; 
                 clearHotKey = id; 
                 editHotKey = id; 
@@ -19,20 +20,31 @@
                 appearanceEffectPopup = NSPopUpButton; 
                 appearanceSpeedSlider = NSSlider; 
                 artistCheckbox = NSButton; 
+                hostTextField = NSTextField; 
                 hotKeysTableView = NSTableView; 
                 launchAtLoginCheckbox = NSButton; 
                 launchPlayerAtLaunchCheckbox = NSButton; 
+                manualView = NSView; 
                 menuTableView = CustomMenuTableView; 
                 nameCheckbox = NSButton; 
                 ratingCheckbox = NSButton; 
+                selectPlayerBox = NSBox; 
+                selectPlayerSheet = NSPanel; 
+                selectSharedPlayerButton = NSButton; 
+                shareMenuTunesCheckbox = NSButton; 
+                sharePasswordCheckbox = NSButton; 
+                sharePasswordTextField = NSTextField; 
+                sharingTableView = NSTableView; 
                 showOnChangeCheckbox = NSButton; 
                 songsInAdvance = NSTextField; 
                 trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
+                useSharedMenuTunesCheckbox = NSButton; 
                 vanishDelaySlider = NSSlider; 
                 vanishEffectPopup = NSPopUpButton; 
                 vanishSpeedSlider = NSSlider; 
                 window = NSWindow; 
+                zeroConfView = NSView; 
             }; 
             SUPERCLASS = NSObject; 
         }
