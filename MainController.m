@@ -576,7 +576,6 @@ static MainController *sharedController;
 - (void)toggleLoop
 {
     ITMTRemotePlayerRepeatMode repeatMode = [currentRemote repeatMode];
-    
     switch (repeatMode) {
         case ITMTRemotePlayerRepeatOff:
             repeatMode = ITMTRemotePlayerRepeatAll;

@@ -758,14 +758,14 @@ static PreferencesController *prefs = nil;
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
     if (aTableView == menuTableView) {
+        NSString *object = [myItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
-            NSString *object = [myItems objectAtIndex:rowIndex];
-            if ([object isEqualToString:@"Show Player"]) {
+            if ([object isEqualToString:@"showPlayer"]) {
                 return [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
             }
             return NSLocalizedString(object, @"ERROR");
         } else {
-            if ([submenuItems containsObject:[myItems objectAtIndex:rowIndex]])
+            if ([submenuItems containsObject:object])
             {
                 return [NSImage imageNamed:@"submenu"];
             } else {
@@ -773,10 +773,14 @@ static PreferencesController *prefs = nil;
             }
         }
     } else {
+        NSString *object = [availableItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
-            return NSLocalizedString([availableItems objectAtIndex:rowIndex], @"ERROR");
+            if ([object isEqualToString:@"showPlayer"]) {
+                return [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
+            }
+            return NSLocalizedString(object, @"ERROR");
         } else {
-            if ([submenuItems containsObject:[availableItems objectAtIndex:rowIndex]]) {
+            if ([submenuItems containsObject:object]) {
                 return [NSImage imageNamed:@"submenu"];
             } else {
                 return nil;

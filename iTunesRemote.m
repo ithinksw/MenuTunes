@@ -318,7 +318,8 @@
 
     switch (m00f)
 	   {
-	   case 'kRp0':
+	   //case 'kRp0':
+           case 1800564815:
 		  result = ITMTRemotePlayerRepeatOff;
 		  break;
 	   case 'kRp1':
@@ -328,7 +329,6 @@
 		  result = ITMTRemotePlayerRepeatAll;
 		  break;
 	   }
-    
     return result;
 }
 
