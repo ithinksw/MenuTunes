@@ -377,7 +377,7 @@ static MainController *sharedController;
 - (void)timerUpdate
 {
 	NSString *identifier = [[self currentRemote] playerStateUniqueIdentifier];
-	if (identifier == nil) {
+	if (refreshTimer && identifier == nil) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
 			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
