@@ -998,7 +998,7 @@
     NSArray *volumes = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
     NSEnumerator *volEnum = [volumes objectEnumerator];
     NSString *nextVolume;
-    
+    ITDebugLog(@"Looking for an iPod named %@", name);
     while ( (nextVolume = [volEnum nextObject]) ) {
         if ([nextVolume rangeOfString:name options:nil range:NSMakeRange(0, [name length] - 1)].location != NSNotFound) {
             NSFileHandle *handle;
