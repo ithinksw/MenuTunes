@@ -159,8 +159,6 @@
     
     fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber :[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }"] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     
-    NSLog(@"FourCC: %u", fourcc);
-    
     switch (fourcc) {
         case 'kTun':
             ITDebugLog(@"Getting current source done. Source: Radio.");
