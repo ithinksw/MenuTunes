@@ -1,7 +1,7 @@
 #import "MenuTunes.h"
 #import "HotKeyCenter.h"
 
-@implementation MTApplication
+@implementation MenuTunes
 
 - (void)sendEvent:(NSEvent *)event
 {

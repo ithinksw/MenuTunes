@@ -14,7 +14,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class MenuTunes, KeyCombo;
+@class MainController, KeyCombo;
 
 @interface PreferencesController : NSObject
 {
