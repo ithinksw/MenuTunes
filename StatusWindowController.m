@@ -114,15 +114,16 @@ static StatusWindowController *sharedController;
     NSString *text  = title;
     
     if ( art != nil ) {
-        image = art;
-        [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
-        [image setScalesWhenResized:YES];
-        [image setSize:NSMakeSize(110, 110)];
-        /*if (size.width > 110 && size.width > size.height) {
-            [image setSize:NSMakeSize(110, (size.width / size.height) * 110)];
-        } else if (size.height > 110 && size.height > size.width) {
-            [image setSize:NSMakeSize((size.height / size.width) * 110, 110)];
-        }*/
+        NSImageRep *artRep = [art bestRepresentationForDevice:nil];
+        image = [[NSImage alloc] initWithSize:NSMakeSize(110, 110)];
+        [image lockFocus];
+        {
+            [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+            [[NSGraphicsContext currentContext] setShouldAntialias:YES];
+            [artRep drawInRect:NSMakeRect(3, 3, 104, 104)];
+        }
+        [image unlockFocus];
+        [image autorelease];
     } else if ( source == ITMTRemoteLibrarySource ) {
         image = [NSImage imageNamed:@"Library"];
     } else if ( source == ITMTRemoteCDSource ) {
