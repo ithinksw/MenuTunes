@@ -13,8 +13,9 @@ Things to do:
     - hot keys can't be set when NSBGOnly is on. The window is not key,
       so the KeyBroadcaster does not pick up key combos
     - going to need a different way of defining key combos
-• Optimize, this thing is big and slow :(
+• Optimize
 • Apple Events! Apple Events! Apple Events!
+• Upcoming songs menu items are disabled after launching iTunes and playing
 */
 
 #import "MenuTunes.h"
@@ -27,6 +28,7 @@ Things to do:
 
 - (void)applicationDidFinishLaunching:(NSNotification *)note
 {
+    asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
     if (![[NSUserDefaults standardUserDefaults] objectForKey:@"menu"])
     {
         [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", @"Upcoming Songs", @"Playlists", @"<separator>", @"Preferences…", @"Quit", @"<separator>", @"Current Track Info", nil] forKey:@"menu"];
@@ -72,6 +74,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     {
         [refreshTimer invalidate];
     }
+    CloseComponent(asComponent);
     [statusItem release];
     [menu release];
     [view release];
@@ -261,7 +264,6 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
                 NSMenuItem *songItem;
                 songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
                 [songItem setTarget:self];
-                [songItem setEnabled:YES];
                 [songItem setRepresentedObject:[NSNumber numberWithInt:i]];
                 [upcomingSongsMenu addItem:songItem];
                 [songItem release];
@@ -389,14 +391,13 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     Size length;
     NSString *result;
     Ptr buffer;
-    ComponentInstance myComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
     
     script = [NSString stringWithFormat:@"tell application \"iTunes\"\n%@\nend tell", script];
     
     AECreateDesc(typeChar, [script cString], [script cStringLength], 
 &scriptDesc);
     
-    OSADoScript(myComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
+    OSADoScript(asComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
     
     length = AEGetDescDataSize(&resultDesc);
     buffer = malloc(length);
@@ -404,7 +405,6 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     AEGetDescData(&resultDesc, buffer, length);
     AEDisposeDesc(&scriptDesc);
     AEDisposeDesc(&resultDesc);
-    CloseComponent(myComponent);
     result = [NSString stringWithCString:buffer length:length];
     if (![result isEqualToString:@""] &&
         ([result characterAtIndex:0] == '\"') &&

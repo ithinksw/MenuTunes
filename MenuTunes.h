@@ -10,6 +10,7 @@
     NSStatusItem *statusItem;
     NSMenu *menu;
     MenuTunesView *view;
+    ComponentInstance asComponent;
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
