@@ -22,14 +22,6 @@
     return nil;
 }
 
-- (NSString *)sharedRemoteName
-{
-    NSString *name = [[NSUserDefaults standardUserDefaults] stringForKey:@"sharedPlayerName"];
-    if (!name)
-        name = @"MenuTunes Shared Player";
-    return name;
-}
-
 - (BOOL)begin
 {
     return NO;

@@ -947,7 +947,7 @@ static MainController *sharedController;
     ITDebugLog(@"Attempting to connect to shared remote.");
     //Connect
     if ([networkController connectToHost:[df stringForKey:@"sharedPlayerHost"]]) {
-        currentRemote = [networkController sharedRemote];
+        currentRemote = [[networkController networkObject] remote];
         [refreshTimer invalidate];
         ITDebugLog(@"Connection successful.");
         return YES;

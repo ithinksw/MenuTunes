@@ -15,7 +15,7 @@
 
 #define SERVER_PORT 5712
 
-@class ITMTRemote;
+@class NetworkObject;
 
 @interface NetworkController : NSObject
 {
@@ -28,7 +28,7 @@
     NSString *remoteHost;
     BOOL serverOn, clientConnected, connectedToServer;
     NSData *serverPass, *clientPass;
-    ITMTRemote *clientProxy;
+    NetworkObject *clientProxy;
 }
 + (NetworkController *)sharedController;
 
@@ -44,6 +44,6 @@
 - (BOOL)isConnectedToServer;
 - (NSString *)remoteHost;
 
-- (ITMTRemote *)sharedRemote;
+- (NetworkObject *)networkObject;
 - (NSArray *)remoteServices;
 @end

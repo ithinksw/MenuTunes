@@ -140,14 +140,6 @@ typedef enum {
 - (NSImage *)remoteIcon;
 
 /*!
- * @method sharedRemoteName
- * @abstract Returns the shared remote's name.
- * @discussion This title is shown while the user is selecting which shared remote to use. This is for informational purposes only, should not be overridden.
- * @result An NSString containing the name of the shared remote.
- */
-- (NSString *)sharedRemoteName;
-
-/*!
  * @method begin
  * @abstract Sent when the remote should begin operation.
  * @result A result code signifying success.

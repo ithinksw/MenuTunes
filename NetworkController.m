@@ -13,9 +13,9 @@
 
 #import "NetworkController.h"
 #import "MainController.h"
+#import "NetworkObject.h"
 #import <ITFoundation/ITDebug.h>
 #import <ITFoundation/ITFoundation.h>
-#import <ITMTRemote/ITMTRemote.h>
 
 static NetworkController *sharedController;
 
@@ -76,7 +76,7 @@ static NetworkController *sharedController;
             serverPort = [[NSSocketPort alloc] initWithTCPPort:SERVER_PORT];
             serverConnection = [[NSConnection alloc] initWithReceivePort:serverPort
                                                      sendPort:serverPort];
-            [serverConnection setRootObject:[[MainController sharedController] currentRemote]];
+            [serverConnection setRootObject:[[NetworkObject alloc] init]];
             [serverConnection registerName:@"ITMTPlayerHost"];
             [serverConnection setDelegate:self];
         NS_HANDLER
@@ -106,6 +106,7 @@ static NetworkController *sharedController;
         //Turn off
         [service stop];
         [serverConnection registerName:nil];
+        [[serverConnection rootObject] release];
         [serverPort invalidate];
         [serverConnection invalidate];
         [serverConnection release];
@@ -165,7 +166,7 @@ static NetworkController *sharedController;
     unsigned char buffer;
     NSConnection *testConnection;
     NSSocketPort *testPort;
-    NSDistantObject *tempProxy;
+    NetworkObject *tempProxy;
     ITDebugLog(@"Checking for shared remote at %@.", host);
     if (fullPass) {
         [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
@@ -182,7 +183,7 @@ static NetworkController *sharedController;
         [testConnection setReplyTimeout:2];
         tempProxy = [testConnection rootProxy];
         [testConnection setDelegate:self];
-        [tempProxy sharedRemoteName];
+        [tempProxy serverName];
     NS_HANDLER
         ITDebugLog(@"Connection to host failed: %@", host);
         [testConnection invalidate];
@@ -216,9 +217,9 @@ static NetworkController *sharedController;
     return remoteHost;
 }
 
-- (ITMTRemote *)sharedRemote
+- (NetworkObject *)networkObject
 {
-    return (ITMTRemote *)clientProxy;
+    return clientProxy;
 }
 
 - (NSArray *)remoteServices

@@ -1,6 +1,7 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 #import "NetworkController.h"
+#import "NetworkObject.h"
 #import "StatusWindow.h"
 #import "StatusWindowController.h"
 #import "CustomMenuTableView.h"
@@ -274,7 +275,7 @@ static PreferencesController *prefs = nil;
         
         if ([controller connectToServer]) {
             [useSharedMenuTunesCheckbox setState:NSOnState];
-            [selectedPlayerTextField setStringValue:[[[MainController sharedController] currentRemote] sharedRemoteName]];
+            [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
             [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
         } else {
             NSRunAlertPanel(@"Connection error.", @"The MenuTunes server you attempted to connect to was not responding. MenuTunes will revert back to the local player.", @"OK", nil, nil);
@@ -669,7 +670,7 @@ static PreferencesController *prefs = nil;
     }
     
     if ([[NetworkController sharedController] isConnectedToServer]) {
-        [selectedPlayerTextField setStringValue:[[[MainController sharedController] currentRemote] sharedRemoteName]];
+        [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
         [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
     } else {
         [selectedPlayerTextField setStringValue:@"No shared player selected."];
