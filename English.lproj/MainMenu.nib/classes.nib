@@ -1,14 +1,8 @@
 {
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {CLASS = MTApplication; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }, 
-        {
-            ACTIONS = {}; 
-            CLASS = MenuTunes; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {}; 
-            SUPERCLASS = NSObject; 
-        }
+        {CLASS = MainController; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = MenuTunes; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }
     ); 
     IBVersion = 1; 
 }
