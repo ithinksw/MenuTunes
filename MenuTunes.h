@@ -29,6 +29,7 @@
     NSTimer *refreshTimer;
     int curTrackIndex;
     int trackInfoIndex;
+    bool isPlayingRadio;
     
     ProcessSerialNumber iTunesPSN;
     bool didHaveAlbumName; //Helper variable for creating the menu

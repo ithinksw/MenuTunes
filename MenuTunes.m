@@ -191,7 +191,6 @@ Things to do:
 {
     NSString *curAlbumName = [self runScriptAndReturnResult:@"return album of current track"];
     NSMenuItem *menuItem;
-    
     if ((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)) {
         return;
     }
@@ -216,19 +215,21 @@ Things to do:
             if (index > -1) {
                 [menu removeItemAtIndex:index + 1];
                 
-                if (didHaveAlbumName) {
-                    [menu removeItemAtIndex:index + 1];
+                if (!isPlayingRadio) {
+                    if (didHaveAlbumName) {
+                        [menu removeItemAtIndex:index + 1];
+                    }
                 }
             }
-            
-            if ([curAlbumName length] > 0) {
-                menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName]
-                                                    action:nil
-                                                    keyEquivalent:@""];
-                [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
-                [menuItem release];
+            if (!isPlayingRadio) {
+                if ([curAlbumName length] > 0) {
+                    menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName]
+                                                        action:nil
+                                                        keyEquivalent:@""];
+                    [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
+                    [menuItem release];
+                }
             }
-            
             menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
                                                 action:nil
                                                 keyEquivalent:@""];
@@ -263,30 +264,34 @@ Things to do:
 {
     int numSongs = [[self runScriptAndReturnResult:@"return number of tracks in current playlist"] intValue];
     int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
-    
-    if (numSongs > 0) {
-        int curTrack = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
-        int i;
-        
-        [upcomingSongsMenu release];
-        upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
-        
-        for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
-            if (i <= numSongs) {
-                NSString *curSong = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of track %i of current playlist", i]];
-                NSMenuItem *songItem;
-                songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
-                [songItem setTarget:self];
-                [songItem setRepresentedObject:[NSNumber numberWithInt:i]];
-                [upcomingSongsMenu addItem:songItem];
-                [songItem release];
-            } else {
-                [upcomingSongsMenu addItemWithTitle:@"End of playlist." action:nil keyEquivalent:@""];
-                break;
+    if (!isPlayingRadio) {
+        if (numSongs > 0) {
+            int curTrack = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
+            int i;
+            
+            [upcomingSongsMenu release];
+            upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
+            
+            for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
+                if (i <= numSongs) {
+                    NSString *curSong = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of track %i of current playlist", i]];
+                    NSMenuItem *songItem;
+                    songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
+                    [songItem setTarget:self];
+                    [songItem setRepresentedObject:[NSNumber numberWithInt:i]];
+                    [upcomingSongsMenu addItem:songItem];
+                    [songItem release];
+                } else {
+                    [upcomingSongsMenu addItemWithTitle:@"End of playlist." action:nil keyEquivalent:@""];
+                    break;
+                }
             }
+            [upcomingSongsItem setSubmenu:upcomingSongsMenu];
+            [upcomingSongsItem setEnabled:YES];
         }
-        [upcomingSongsItem setSubmenu:upcomingSongsMenu];
-        [upcomingSongsItem setEnabled:YES];
+    } else {
+        [upcomingSongsItem setSubmenu:nil];
+        [upcomingSongsItem setEnabled:NO];
     }
 }
 
@@ -294,6 +299,11 @@ Things to do:
 {
     int numPlaylists = [[self runScriptAndReturnResult:@"return number of playlists"] intValue];
     int i, curPlaylist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+    
+    if (isPlayingRadio)
+    {
+        curPlaylist = 0;
+    }
     
     if (playlistMenu && (numPlaylists == [playlistMenu numberOfItems]))
         return;
@@ -428,6 +438,7 @@ Things to do:
         int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
         
         if (trackPlayingIndex != curTrackIndex) {
+            isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
             [self updateMenu];
             curTrackIndex = trackPlayingIndex;
         }
