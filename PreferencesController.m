@@ -6,6 +6,7 @@
 
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
+#import <ITKit/ITKeyComboPanel.h>
 #import <ITKit/ITWindowPositioning.h>
 #import <ITKit/ITKeyBroadcaster.h>
 
@@ -62,6 +63,33 @@ static PreferencesController *prefs = nil;
     if ( (self = [super init]) ) {
         ITDebugLog(@"Preferences initialized.");
         df = [[NSUserDefaults standardUserDefaults] retain];
+        hotKeysArray = [[NSArray alloc] initWithObjects:@"PlayPause",
+                                                       @"NextTrack",
+                                                       @"PrevTrack",
+                                                       @"ShowPlayer",
+                                                       @"TrackInfo",
+                                                       @"UpcomingSongs",
+                                                       @"IncrementVolume",
+                                                       @"DecrementVolume",
+                                                       @"IncrementRating",
+                                                       @"DecrementRating",
+                                                       @"ToggleShuffle",
+                                                       @"ToggleLoop",
+                                                       nil];
+        
+        hotKeyNamesArray = [[NSArray alloc] initWithObjects:@"Play/Pause",
+                                                       @"Next Track",
+                                                       @"Previous Track",
+                                                       @"Show Player",
+                                                       @"Track Info",
+                                                       @"Upcoming Songs",
+                                                       @"Increment Volume",
+                                                       @"Decrement Volume",
+                                                       @"Increment Rating",
+                                                       @"Decrement Rating",
+                                                       @"Toggle Shuffle",
+                                                       @"Toggle Loop",
+                                                       nil];
         hotKeysDictionary = [[NSMutableDictionary alloc] init];
         controller = nil;
     }
@@ -102,6 +130,7 @@ static PreferencesController *prefs = nil;
         [self setupUI]; // Sets up additional UI
         [window setDelegate:self];
         [menuTableView reloadData];
+        [hotKeysTableView setDoubleAction:@selector(hotKeysTableViewDoubleClicked:)];
         
         //Change the launch player checkbox to the proper name
         [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
@@ -206,63 +235,6 @@ static PreferencesController *prefs = nil;
     [df synchronize];
 }
 
-- (IBAction)changeHotKey:(id)sender
-{
-    ITDebugLog(@"Changing hot keys.");
-    [controller clearHotKeys];
-    switch ([sender tag])
-    {
-        case 4010:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"PlayPause"]];
-            [self setCurrentHotKey:@"PlayPause"];
-            break;
-        case 4020:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"NextTrack"]];
-            [self setCurrentHotKey:@"NextTrack"];
-            break;
-        case 4030:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"PrevTrack"]];
-            [self setCurrentHotKey:@"PrevTrack"];
-            break;
-        case 4035:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"ShowPlayer"]];
-            [self setCurrentHotKey:@"ShowPlayer"];
-            break;
-        case 4040:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"ToggleLoop"]];
-            [self setCurrentHotKey:@"ToggleLoop"];
-            break;
-        case 4050:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"ToggleShuffle"]];
-            [self setCurrentHotKey:@"ToggleShuffle"];
-            break;
-        case 4060:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"TrackInfo"]];
-            [self setCurrentHotKey:@"TrackInfo"];
-            break;
-        case 4070:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"UpcomingSongs"]];
-            [self setCurrentHotKey:@"UpcomingSongs"];
-            break;
-        case 4080:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"IncrementVolume"]];
-            [self setCurrentHotKey:@"IncrementVolume"];
-            break;
-        case 4090:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"DecrementVolume"]];
-            [self setCurrentHotKey:@"DecrementVolume"];
-            break;
-        case 4100:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"IncrementRating"]];
-            [self setCurrentHotKey:@"IncrementRating"];
-            break;
-        case 4110:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"DecrementRating"]];
-            [self setCurrentHotKey:@"DecrementRating"];
-            break;
-    }
-}
-
 - (void)registerDefaults
 {
     BOOL found = NO;
@@ -332,111 +304,6 @@ static PreferencesController *prefs = nil;
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }
 
-- (IBAction)cancelHotKey:(id)sender
-{
-    ITDebugLog(@"Hot key canceled.");
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [NSApp endSheet:keyComboPanel];
-    [keyComboPanel orderOut:nil];
-}
-
-- (IBAction)clearHotKey:(id)sender
-{
-    ITDebugLog(@"Hot key cleared.");
-    [self setKeyCombo:[ITKeyCombo clearKeyCombo]];
-}
-
-- (IBAction)okHotKey:(id)sender
-{
-    NSString *string = [combo description];
-    NSEnumerator *enumerator = [hotKeysDictionary keyEnumerator];
-    NSString *enumKey;
-    
-    ITDebugLog(@"Hot key ok'd, saving.");
-    
-    if (string == nil) {
-        string = @"";
-    }
-    
-    ITDebugLog(@"Checking for duplicate hot keys.");
-    while ( (enumKey = [enumerator nextObject]) ) {
-        if (![enumKey isEqualToString:currentHotKey]) {
-            if (![combo isEqual:[ITKeyCombo clearKeyCombo]] &&
-                 [combo isEqual:[hotKeysDictionary objectForKey:enumKey]]) {
-                [window setLevel:NSNormalWindowLevel];
-                ITDebugLog(@"Duplicate hot key found: %@", enumKey);
-                if ( NSRunAlertPanel(NSLocalizedString(@"duplicateCombo", @"Duplicate Key Combo") , NSLocalizedString(@"duplicateCombo_msg", @"The specified key combo is already in use..."), NSLocalizedString(@"replace", @"Replace"), NSLocalizedString(@"cancel", @"Cancel"), nil) ) {
-                    [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:currentHotKey];
-                    if ([enumKey isEqualToString:@"PlayPause"]) {
-                        [playPauseButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"NextTrack"]) {
-                        [nextTrackButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"PrevTrack"]) {
-                        [previousTrackButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"ShowPlayer"]) {
-                        [showPlayerButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"TrackInfo"]) {
-                        [trackInfoButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"UpcomingSongs"]) {
-                        [upcomingSongsButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"IncrementVolume"]) {
-                        [volumeIncrementButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"DecrementVolume"]) {
-                        [volumeDecrementButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"IncrementRating"]) {
-                        [ratingIncrementButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"DecrementRating"]) {
-                        [ratingDecrementButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"ToggleShuffle"]) {
-                        [toggleShuffleButton setTitle:@"(None)"];
-                    } else if ([enumKey isEqualToString:@"ToggleLoop"]) {
-                        [toggleLoopButton setTitle:@"(None)"];
-                    }
-                    ITDebugLog(@"Saved hot key named %@.", enumKey);
-                    [df setObject:[[ITKeyCombo clearKeyCombo] plistRepresentation] forKey:enumKey];
-                    [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:enumKey];
-                } else {
-                    return;
-                }
-                [window setLevel:NSStatusWindowLevel];
-            }
-        }
-    }
-    
-    ITDebugLog(@"Saved hot key named %@.", currentHotKey);
-    [hotKeysDictionary setObject:combo forKey:currentHotKey];
-    [df setObject:[combo plistRepresentation] forKey:currentHotKey];
-    
-    ITDebugLog(@"Setting button name.");
-    if ([currentHotKey isEqualToString:@"PlayPause"]) {
-        [playPauseButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"NextTrack"]) {
-        [nextTrackButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"PrevTrack"]) {
-        [previousTrackButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"ShowPlayer"]) {
-        [showPlayerButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"TrackInfo"]) {
-        [trackInfoButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"UpcomingSongs"]) {
-        [upcomingSongsButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"IncrementVolume"]) {
-        [volumeIncrementButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"DecrementVolume"]) {
-        [volumeDecrementButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"IncrementRating"]) {
-        [ratingIncrementButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"DecrementRating"]) {
-        [ratingDecrementButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"ToggleShuffle"]) {
-        [toggleShuffleButton setTitle:string];
-    } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
-        [toggleLoopButton setTitle:string];
-    }
-    [controller setupHotKeys];
-    [self cancelHotKey:sender];
-}
-
 - (void)deletePressedInTableView:(NSTableView *)tableView
 {
     if (tableView == menuTableView) {
@@ -461,39 +328,61 @@ static PreferencesController *prefs = nil;
     }
 }
 
-
 /*************************************************************************/
 #pragma mark -
 #pragma mark HOTKEY SUPPORT METHODS
 /*************************************************************************/
 
-- (void)setCurrentHotKey:(NSString *)key
+- (IBAction)clearHotKey:(id)sender
 {
-    ITDebugLog(@"Setting current hot key to %@", key);
-    [currentHotKey autorelease];
-    currentHotKey = [key copy];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyEvent:) name:ITKeyBroadcasterKeyEvent object:nil];
-    [NSApp beginSheet:keyComboPanel modalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
+    [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:[hotKeysArray objectAtIndex:[hotKeysTableView selectedRow]]];
+    [df setObject:[[ITKeyCombo clearKeyCombo] plistRepresentation] forKey:[hotKeysArray objectAtIndex:[hotKeysTableView selectedRow]]];
+    [controller setupHotKeys];
+    [hotKeysTableView reloadData];
 }
 
-- (void)keyEvent:(NSNotification *)note
+- (IBAction)editHotKey:(id)sender
 {
-    [self setKeyCombo:[[[note userInfo] objectForKey:@"keyCombo"] copy]];
-}
-
-- (void)setKeyCombo:(ITKeyCombo *)newCombo
-{
-    NSString *string;
-    [combo release];
-    combo = [newCombo copy];
-    ITDebugLog(@"Setting key combo to %@", newCombo);
-    string = [combo description];
-    if (string == nil) {
-        string = @"(None)";
+    ITKeyComboPanel *panel = [ITKeyComboPanel sharedPanel];
+    NSString *keyComboKey = [hotKeysArray objectAtIndex:[hotKeysTableView selectedRow]];
+    ITKeyCombo *keyCombo;
+    
+    ITDebugLog(@"Setting key combo on hot key %@.", keyComboKey);
+    [controller clearHotKeys];
+    [panel setKeyCombo:[hotKeysDictionary objectForKey:[hotKeysArray objectAtIndex:[hotKeysTableView selectedRow]]]];
+    [panel setKeyBindingName:[hotKeyNamesArray objectAtIndex:[hotKeysTableView selectedRow]]];
+    if ([panel runModal] == NSOKButton) {
+        NSEnumerator *keyEnumerator = [[hotKeysDictionary allKeys] objectEnumerator];
+        NSString *nextKey;
+        keyCombo = [panel keyCombo];
+        
+        //Check for duplicate key combo
+        while ( (nextKey = [keyEnumerator nextObject]) ) {
+            if ([[hotKeysDictionary objectForKey:nextKey] isEqual:keyCombo] &&
+                ![keyCombo isEqual:[ITKeyCombo clearKeyCombo]]) {
+                [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo]
+                                   forKey:nextKey];
+                [df setObject:[[ITKeyCombo clearKeyCombo] plistRepresentation]
+                    forKey:nextKey];
+            }
+        }
+        
+        [hotKeysDictionary setObject:keyCombo forKey:keyComboKey];
+        [df setObject:[keyCombo plistRepresentation] forKey:keyComboKey];
+        [controller setupHotKeys];
+        [hotKeysTableView reloadData];
+        ITDebugLog(@"Set combo %@ on hot key %@.", keyCombo, keyComboKey);
+    } else {
+        ITDebugLog(@"Hot key setting on hot key %@ cancelled.", keyComboKey);
     }
-    [keyComboField setStringValue:string];
 }
 
+- (void)hotKeysTableViewDoubleClicked:(id)sender
+{
+    if ([sender clickedRow] > -1) {
+        [self editHotKey:sender];
+    }
+}
 
 /*************************************************************************/
 #pragma mark -
@@ -576,131 +465,23 @@ static PreferencesController *prefs = nil;
 {
     NSMutableDictionary *loginwindow;
     NSMutableArray *loginarray;
-    NSEnumerator *loginEnum;
+    NSEnumerator *loginEnum, *keyArrayEnum;
     id anItem;
+    
     ITDebugLog(@"Setting up preferences UI.");
     // Fill in the number of songs in advance to show field
     [songsInAdvance setIntValue:[df integerForKey:@"SongsInAdvance"]];
     
-    // Fill in hot key buttons
-    if ([df objectForKey:@"PlayPause"]) {
-        ITDebugLog(@"Setting up \"PlayPause\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PlayPause"]];
-        [hotKeysDictionary setObject:anItem forKey:@"PlayPause"];
-        [playPauseButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"PlayPause"];
-        [playPauseButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
+    // Fill hot key array
+    keyArrayEnum = [hotKeysArray objectEnumerator];
     
-    if ([df objectForKey:@"NextTrack"]) {
-        ITDebugLog(@"Setting up \"NextTrack\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"NextTrack"]];
-        [hotKeysDictionary setObject:anItem forKey:@"NextTrack"];
-        [nextTrackButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"NextTrack"];
-        [nextTrackButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"PrevTrack"]) {
-        ITDebugLog(@"Setting up \"PrevTrack\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PrevTrack"]];
-        [hotKeysDictionary setObject:anItem forKey:@"PrevTrack"];
-        [previousTrackButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"PrevTrack"];
-        [previousTrackButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"ShowPlayer"]) {
-        ITDebugLog(@"Setting up \"ShowPlayer\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ShowPlayer"]];
-        [hotKeysDictionary setObject:anItem forKey:@"ShowPlayer"];
-        [showPlayerButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"ShowPlayer"];
-        [showPlayerButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"TrackInfo"]) {
-        ITDebugLog(@"Setting up \"TrackInfo\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"TrackInfo"]];
-        [hotKeysDictionary setObject:anItem forKey:@"TrackInfo"];
-        [trackInfoButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"TrackInfo"];
-        [trackInfoButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"UpcomingSongs"]) {
-        ITDebugLog(@"Setting up \"UpcomingSongs\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"UpcomingSongs"]];
-        [hotKeysDictionary setObject:anItem forKey:@"UpcomingSongs"];
-        [upcomingSongsButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"UpcomingSongs"];
-        [upcomingSongsButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"IncrementVolume"]) {
-        ITDebugLog(@"Setting up \"IncrementVolume\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"IncrementVolume"]];
-        [hotKeysDictionary setObject:anItem forKey:@"IncrementVolume"];
-        [volumeIncrementButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"IncrementVolume"];
-        [volumeIncrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"DecrementVolume"]) {
-        ITDebugLog(@"Setting up \"DecrementVolume\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"DecrementVolume"]];
-        [hotKeysDictionary setObject:anItem forKey:@"DecrementVolume"];
-        [volumeDecrementButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"DecrementVolume"];
-        [volumeDecrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"IncrementRating"]) {
-        ITDebugLog(@"Setting up \"IncrementRating\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"IncrementRating"]];
-        [hotKeysDictionary setObject:anItem forKey:@"IncrementRating"];
-        [ratingIncrementButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"IncrementRating"];
-        [ratingIncrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"DecrementRating"]) {
-        ITDebugLog(@"Setting up \"DecrementRating\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"DecrementRating"]];
-        [hotKeysDictionary setObject:anItem forKey:@"DecrementRating"];
-        [ratingDecrementButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"DecrementRating"];
-        [ratingDecrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"ToggleLoop"]) {
-        ITDebugLog(@"Setting up \"ToggleLoop\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleLoop"]];
-        [hotKeysDictionary setObject:anItem forKey:@"ToggleLoop"];
-        [toggleLoopButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"ToggleLoop"];
-        [toggleLoopButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
-    }
-    
-    if ([df objectForKey:@"ToggleShuffle"]) {
-        ITDebugLog(@"Setting up \"ToggleShuffle\" hot key.");
-        anItem = [ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleShuffle"]];
-        [hotKeysDictionary setObject:anItem forKey:@"ToggleShuffle"];
-        [toggleShuffleButton setTitle:[anItem description]];
-    } else {
-        [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"ToggleShuffle"];
-        [toggleShuffleButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
+    while ( (anItem = [keyArrayEnum nextObject]) ) {
+        if ([df objectForKey:anItem]) {
+            ITDebugLog(@"Setting up \"%@\" hot key.", anItem);
+            [hotKeysDictionary setObject:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:anItem]] forKey:anItem];
+        } else {
+            [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:anItem];
+        }
     }
     
     ITDebugLog(@"Setting up track info checkboxes.");
@@ -799,8 +580,10 @@ static PreferencesController *prefs = nil;
 {
     if (aTableView == menuTableView) {
         return [myItems count];
-    } else {
+    } else if (aTableView == allTableView) {
         return [availableItems count];
+    } else {
+        return [hotKeysArray count];
     }
 }
 
@@ -821,7 +604,7 @@ static PreferencesController *prefs = nil;
                 return nil;
             }
         }
-    } else {
+    } else if (aTableView == allTableView) {
         NSString *object = [availableItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             if ([object isEqualToString:@"showPlayer"]) {
@@ -834,6 +617,12 @@ static PreferencesController *prefs = nil;
             } else {
                 return nil;
             }
+        }
+    } else {
+        if ([[aTableColumn identifier] isEqualToString:@"name"]) {
+            return [hotKeyNamesArray objectAtIndex:rowIndex];
+        } else {
+            return [[hotKeysDictionary objectForKey:[hotKeysArray objectAtIndex:rowIndex]] description];
         }
     }
 }
@@ -874,7 +663,7 @@ static PreferencesController *prefs = nil;
             } else {
                 [myItems removeObjectAtIndex:dragRow + 1];
             }
-        } else {
+        } else if (tableView == allTableView) {
             if (![temp isEqualToString:@"separator"]) {
                 [availableItems addObject:temp];
             }
@@ -920,7 +709,6 @@ static PreferencesController *prefs = nil;
     {
         return NSDragOperationNone;
     }
-    
     return NSDragOperationGeneric;
 }
 
@@ -932,9 +720,8 @@ static PreferencesController *prefs = nil;
 
 - (void)dealloc
 {
-    [self setKeyCombo:nil];
+    [hotKeysArray release];
     [hotKeysDictionary release];
-    [keyComboPanel release];
     [menuTableView setDataSource:nil];
     [allTableView setDataSource:nil];
     [controller release];
@@ -943,6 +730,5 @@ static PreferencesController *prefs = nil;
     [myItems release];
     [df release];
 }
-
 
 @end

@@ -795,9 +795,6 @@ static MainController *sharedController;
         [refreshTimer invalidate];
         [refreshTimer release];
         refreshTimer = nil;
-        [registerTimer invalidate];
-        [registerTimer release];
-        registerTimer = nil;
         [self clearHotKeys];
         playerRunningState = ITMTRemotePlayerNotRunning;
      }
