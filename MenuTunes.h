@@ -75,4 +75,6 @@
 - (void)clearHotKeys;
 - (void)closePreferences;
 
+- (void)showPlayer;
+
 @end

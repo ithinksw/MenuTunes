@@ -167,6 +167,11 @@ typedef enum {
 - (NSDictionary *)capabilities;
 
 /*!
+ * @method showPrimaryInterface
+ */
+- (BOOL)showPrimaryInterface;
+
+/*!
  * @method playerRunningState
  * @abstract Returns the running state of the remote's player.
  * @discussion While most remotes will use only ITMTRemotePlayerNotRunning or ITMTRemotePlayerRunning, we have included support for ITMTRemotePlayerLaunching (see ITMTRemotePlayerRunningState) for remotes that want the most precise control over their player's process managment.

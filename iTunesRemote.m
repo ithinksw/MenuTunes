@@ -69,6 +69,11 @@
                 nil];
 }
 
+- (BOOL)showPrimaryInterface
+{
+    return NO;
+}
+
 - (ITMTRemotePlayerRunningState)playerRunningState
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];

@@ -749,8 +749,7 @@
     
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
-    [menu addItemWithTitle:@"Audio Player" action:NULL keyEquivalent:@""];
-    [menu addItemWithTitle:@"Not Running" action:NULL keyEquivalent:@""];
+    [[menu addItemWithTitle:[NSString stringWithFormat:@"Open %@", [currentRemote playerSimpleName]] action:@selector(showPlayer:) keyEquivalent:@""] setTarget:self];
     [menu addItem:[NSMenuItem separatorItem]];
     [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
     [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
@@ -874,6 +873,18 @@
     [prefsController release];
     prefsController = nil;
 }
+
+- (void)showPlayer:(id)sender
+{
+    if ( ( isAppRunning == ITMTRemotePlayerRunning) ) {
+        [currentRemote showPrimaryInterface];
+    } else {
+        if (![[NSWorkspace sharedWorkspace] launchApplication:[currentRemote playerFullName]]) {
+            NSLog(@"Error Launching Player");
+        }
+    }
+}
+        
 
 //
 //

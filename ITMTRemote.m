@@ -59,6 +59,11 @@
                 nil];
 }
 
+- (BOOL)showPrimaryInterface
+{
+    return NO;
+}
+
 - (ITMTRemotePlayerRunningState)playerRunningState
 {
     return nil;
