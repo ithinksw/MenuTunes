@@ -174,16 +174,9 @@
     long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:[self iTunesPSN]];
     NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
 
-
-<<<<<<< iTunesRemote.m
 	   for (i = 1; i <= numPresets; i++) {
-		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:%d, from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
-		  [presets addObject:theObj];
-=======
-	   for (i = 0; i < numPresets; i++) {
 		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN] fixForAECrappiness:i];
 		  if (theObj) [presets addObject:theObj];
->>>>>>> 1.16
 	   }
 	   return [presets autorelease];
 }
@@ -192,51 +185,43 @@
 {
     int result;
     result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
-													  fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd"
-																    appPSN:[self iTunesPSN]];
+                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd"appPSN:[self iTunesPSN]];
     return result;
 }
 
 - (BOOL)play
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Play"
-																		   appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Play" appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)pause
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Paus"
-																		   appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Paus" appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)goToNextSong
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
-																		   appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next" appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)goToPreviousSong
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Prev"
-																		   appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Prev" appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)fastForward
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Fast"
-																		   appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Fast" appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)rewind
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Rwnd"
-																		   appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Rwnd" appPSN:[self iTunesPSN]];
     return YES;
 }
 
