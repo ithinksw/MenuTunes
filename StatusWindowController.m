@@ -115,7 +115,6 @@ static StatusWindowController *sharedController;
     
     if ( art != nil ) {
         image = art;
-        NSSize size = [image size];
         [image setScalesWhenResized:YES];
         [image setSize:NSMakeSize(110, 110)];
         /*if (size.width > 110 && size.width > size.height) {

@@ -21,7 +21,7 @@
 - (NSMenu *)playlistsMenu;
 - (NSMenu *)eqMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
-        onItem:(NSMenuItem *)item;
+        onItem:(id <NSMenuItem>)item;
 //- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
 @end
 
@@ -42,7 +42,7 @@
     NSArray *menuArray = [defaults arrayForKey:@"menu"];
     NSEnumerator *enumerator = [menuArray objectEnumerator];
     NSString *nextObject;
-    NSMenuItem *tempItem;
+    id <NSMenuItem> tempItem;
     NSEnumerator *itemEnum;
     ITHotKey *hotKey;
     NSArray *hotKeys = [[ITHotKeyCenter sharedCenter] allHotKeys];
@@ -399,7 +399,7 @@
 - (NSMenu *)menuForNoPlayer
 {
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
-    NSMenuItem *tempItem;
+    id <NSMenuItem> tempItem;
     ITDebugLog(@"Creating menu for when player isn't running.");
     NS_DURING
         ITDebugLog(@"Add \"Open %@\" menu item.", [[[MainController sharedController] currentRemote] playerSimpleName]);
@@ -506,7 +506,7 @@
                     NS_HANDLER
                         [[MainController sharedController] networkError:localException];
                     NS_ENDHANDLER
-                    NSMenuItem *songItem;
+                    id <NSMenuItem> songItem;
                     ITDebugLog(@"Adding song: %@", curSong);
                     songItem = [upcomingSongsMenu addItemWithTitle:curSong action:@selector(performUpcomingSongsMenuAction:) keyEquivalent:@""];
                     [songItem setTag:i];
@@ -529,7 +529,7 @@
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
-    NSMenuItem *tempItem;
+    id <NSMenuItem> tempItem;
     ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
     int i;
     NS_DURING
@@ -633,7 +633,7 @@
 {
     NSMenu *eqMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *eqPresets;
-    NSMenuItem *tempItem;
+    id <NSMenuItem> tempItem;
     int i;
     
     NS_DURING
@@ -761,7 +761,7 @@
 }
 
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
-        onItem:(NSMenuItem *)item
+        onItem:(id <NSMenuItem>)item
 {
     unichar charcode = 'a';
     int i;

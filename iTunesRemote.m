@@ -419,10 +419,12 @@
 {
     NSAppleScript *script;
     NSAppleEventDescriptor *moof;
-    NSData  *data;
+    NSData *data;
+    ITDebugLog(@"Getting current song album art.");
     script = [[NSAppleScript alloc] initWithSource:@"tell application \"iTunes\"\nget data of artwork 1 of current track\nend tell"];
     moof = [script executeAndReturnError:nil];
     data = [moof data];
+    ITDebugLog(@"Getting current song album art done.");
     if (data) {
         return [[[NSImage alloc] initWithData:data] autorelease];
     } else {

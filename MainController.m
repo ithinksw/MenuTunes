@@ -305,6 +305,21 @@ static MainController *sharedController;
     
     if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"The song changed.");
+        
+        if ([df boolForKey:@"runScripts"] && [[self currentRemote] currentSongTitle]) {
+            NSArray *scripts = [[NSFileManager defaultManager] directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
+            NSEnumerator *scriptsEnum = [scripts objectEnumerator];
+            NSString *nextScript;
+            while ( (nextScript = [scriptsEnum nextObject]) ) {
+                NSDictionary *error;
+                NSAppleScript *currentScript = [[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] stringByAppendingPathComponent:nextScript]] error:&error];
+                if (!currentScript || ![currentScript executeAndReturnError:nil]) {
+                    ITDebugLog(@"Error running script %@.", nextScript);
+                }
+                [currentScript release];
+            }
+        }
+        
         timerUpdating = YES;
         
         NS_DURING
