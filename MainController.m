@@ -1,4 +1,4 @@
-#import "MainController.h"
+#import "NewMainController.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
 #import "StatusWindowController.h"
