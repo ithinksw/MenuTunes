@@ -106,6 +106,7 @@
             [tempItem setTag:MTMenuQuitItem];
             [tempItem setTarget:self];
         } else if ([nextObject isEqualToString:@"Current Track Info"]) {
+            //Handle playing radio too
             if (_currentPlaylist) {
                 NSString *title = [currentRemote currentSongTitle];
                 
@@ -126,11 +127,17 @@
                     action:nil
                     keyEquivalent:@""];
             [tempItem setSubmenu:[self ratingMenu]];
+            if (_playingRadio || !_currentPlaylist) {
+                [tempItem setEnabled:NO];
+            }
         } else if ([nextObject isEqualToString:@"Upcoming Songs"]) {
             tempItem = [menu addItemWithTitle:@"Upcoming Songs"
                     action:nil
                     keyEquivalent:@""];
             [tempItem setSubmenu:[self upcomingSongsMenu]];
+            if (_playingRadio || !_currentPlaylist) {
+                [tempItem setEnabled:NO];
+            }
         } else if ([nextObject isEqualToString:@"Playlists"]) {
             tempItem = [menu addItemWithTitle:@"Playlists"
                     action:nil
@@ -169,6 +176,31 @@
 - (NSMenu *)ratingMenu
 {
     NSMenu *ratingMenu = [[NSMenu alloc] initWithTitle:@""];
+    
+    if (_currentPlaylist && !_playingRadio) {
+        NSEnumerator *itemEnum;
+        id  anItem;
+        int itemTag = 0;
+        SEL itemSelector = @selector(performRatingMenuAction:);
+        
+        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"☆☆☆☆☆"] action:nil keyEquivalent:@""];
+        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★☆☆☆☆"] action:nil keyEquivalent:@""];
+        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★☆☆☆"] action:nil keyEquivalent:@""];
+        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★☆☆"] action:nil keyEquivalent:@""];
+        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★☆"] action:nil keyEquivalent:@""];
+        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★★"] action:nil keyEquivalent:@""];
+        
+        [[ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
+        
+        itemEnum = [[ratingMenu itemArray] objectEnumerator];
+        while ( (anItem = [itemEnum nextObject]) ) {
+            [anItem setAction:itemSelector];
+            [anItem setTarget:self];
+            [anItem setTag:itemTag];
+            itemTag += 20;
+        }
+    }
+    
     return [ratingMenu autorelease];
 }
 
@@ -201,12 +233,38 @@
 - (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSArray *playlists = [currentRemote playlists];
+    NSMenuItem *tempItem;
+    int i;
+    
+    for (i = 0; i < [playlists count]; i++) {
+        tempItem = [playlistsMenu addItemWithTitle:[playlists objectAtIndex:i] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+        [tempItem setTag:i + 1];
+        [tempItem setTarget:self];
+    }
+    
+    if (!_playingRadio && _currentPlaylist) {
+        [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
+    }
     return [playlistsMenu autorelease];
 }
 
 - (NSMenu *)eqMenu
 {
     NSMenu *eqMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSArray *eqPresets = [currentRemote eqPresets];
+    NSMenuItem *tempItem;
+    int i;
+    
+    for (i = 0; i < [eqPresets count]; i++) {
+        NSString *name;
+	if ( ( name = [eqPresets objectAtIndex:i] ) ) {
+            tempItem = [eqMenu addItemWithTitle:name action:@selector(performEqualizerMenuAction:) keyEquivalent:@""];
+            [tempItem setTag:i];
+            [tempItem setTarget:self];
+	}
+    }
+    [[eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
     return [eqMenu autorelease];
 }
 
