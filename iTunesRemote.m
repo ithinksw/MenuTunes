@@ -134,6 +134,7 @@
 	   {
 	   case 'cLiP':
 		  return ITMTRemotePlayerLibraryPlaylist;
+		  break;
 	   case 'cRTP':
 		  return ITMTRemotePlayerRadioPlaylist;
 		  break;
@@ -200,7 +201,7 @@
 
 - (BOOL)setCurrentSongRating:(float)rating
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } } }",(long)rating*100,[self currentSongIndex],[self currentPlaylistIndex]] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }",(long)rating*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
 }
 
