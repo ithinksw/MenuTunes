@@ -98,6 +98,12 @@ static PreferencesController *prefs = nil;
                                                        @"ToggleShuffle",
                                                        @"ToggleLoop",
                                                        @"PopupMenu",
+                                                       @"SetRating0",
+                                                       @"SetRating1",
+                                                       @"SetRating2",
+                                                       @"SetRating3",
+                                                       @"SetRating4",
+                                                       @"SetRating5",
                                                        nil];
         
         hotKeyNamesArray = [[NSArray alloc] initWithObjects:@"Play/Pause",
@@ -115,6 +121,12 @@ static PreferencesController *prefs = nil;
                                                        @"Toggle Shuffle",
                                                        @"Toggle Loop",
                                                        @"Pop-up status menu",
+                                                       [NSString stringWithUTF8String:"Set Rating: ☆☆☆☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★☆☆☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★☆☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★★☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★★★☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★★★★"],
                                                        nil];
         hotKeysDictionary = [[NSMutableDictionary alloc] init];
         controller = nil;
@@ -194,6 +206,7 @@ static PreferencesController *prefs = nil;
         [self setupUI]; // Sets up additional UI
         [window setDelegate:self];
         [menuTableView reloadData];
+        [hotKeysTableView reloadData];
         [hotKeysTableView setDoubleAction:@selector(hotKeysTableViewDoubleClicked:)];
         
         //Change the launch player checkbox to the proper name

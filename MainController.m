@@ -6,6 +6,7 @@
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
+#import <ITKit/ITCategory-NSMenu.h>
 #import "StatusWindow.h"
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
@@ -810,6 +811,20 @@ static MainController *sharedController;
         [hotKey setAction:@selector(popupMenu)];
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
+    
+    int i;
+    for (i = 0; i <= 5; i++) {
+        NSString *curName = [NSString stringWithFormat:@"SetRating%i", i];
+        if ([df objectForKey:curName] != nil) {
+            ITDebugLog(@"Setting up set rating %i hot key.", i);
+            hotKey = [[ITHotKey alloc] init];
+            [hotKey setName:curName];
+            [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:curName]]];
+            [hotKey setTarget:self];
+            [hotKey setAction:@selector(setRating:)];
+            [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+        }
+    }
     ITDebugLog(@"Finished setting up hot keys.");
 }
 
@@ -1076,6 +1091,13 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
+}
+
+- (void)setRating:(ITHotKey *)sender
+{
+    float rating = ([[sender name] characterAtIndex:9] - 48) / 5.0;
+    [self selectSongRating:rating];
+    [statusWindowController showRatingWindowWithRating:rating];
 }
 
 - (void)toggleLoop
