@@ -177,7 +177,7 @@ static MainController *sharedController;
         [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
-        
+
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
             [self showCurrentTrackInfo];
         }
@@ -424,12 +424,13 @@ static MainController *sharedController;
     NSString *title = [currentRemote currentSongTitle];
 
     if ( title ) {
-        NSString *album       = nil;
-        NSString *artist      = nil;
-        NSString *time        = nil;
-        int       trackNumber = 0;
-        int       trackTotal  = 0;
-        int       rating      = 0;
+        NSString              *album       = nil;
+        NSString              *artist      = nil;
+        NSString              *time        = nil;
+        int                    trackNumber = 0;
+        int                    trackTotal  = 0;
+        int                    rating      = 0;
+        ITMTRemotePlayerSource source      = [currentRemote currentSource];
 
         if ( [df boolForKey:@"showAlbum"] ) {
             album = [currentRemote currentSongAlbum];
@@ -458,7 +459,8 @@ static MainController *sharedController;
                                                    time:time
                                             trackNumber:trackNumber
                                              trackTotal:trackTotal
-                                                 rating:rating];
+                                                 rating:rating
+                                                 source:source];
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
         [statusWindowController showSongWindowWithTitle:title
@@ -467,7 +469,8 @@ static MainController *sharedController;
                                                    time:nil
                                             trackNumber:0
                                              trackTotal:0
-                                                 rating:0];
+                                                 rating:0
+                                                 source:[currentRemote currentSource]];
     }
 }
 

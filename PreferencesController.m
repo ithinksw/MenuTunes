@@ -1,9 +1,18 @@
 #import "PreferencesController.h"
 #import "MainController.h"
+#import "StatusWindow.h"
+
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>
 #import <ITKit/ITWindowPositioning.h>
 #import <ITKit/ITKeyBroadcaster.h>
+
+#import <ITKit/ITCutWindowEffect.h>
+#import <ITKit/ITDissolveWindowEffect.h>
+#import <ITKit/ITSlideHorizontallyWindowEffect.h>
+#import <ITKit/ITSlideVerticallyWindowEffect.h>
+#import <ITKit/ITPivotWindowEffect.h>
+
 
 #define SENDER_STATE (([sender state] == NSOnState) ? YES : NO)
 
@@ -93,10 +102,10 @@ static PreferencesController *prefs = nil;
         [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
     }
     
-    [window setLevel:NSStatusWindowLevel];
+//  [window setLevel:NSStatusWindowLevel];
     [window center];
-    [window makeKeyAndOrderFront:self];
     [NSApp activateIgnoringOtherApps:YES];
+    [window makeKeyAndOrderFront:self];
 }
 
 - (IBAction)changeGeneralSetting:(id)sender
@@ -122,11 +131,14 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 1090) {
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
     }
+    
     [df synchronize];
 }
 
 - (IBAction)changeStatusWindowSetting:(id)sender
 {
+    StatusWindow *sw = [StatusWindow sharedWindow];
+
     if ( [sender tag] == 2010) {
         [df setInteger:[sender selectedRow] forKey:@"statusWindowVerticalPosition"];
         [df setInteger:[sender selectedColumn] forKey:@"statusWindowHorizontalPosition"];
@@ -134,19 +146,61 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 2020) {
         // update screen selection
     } else if ( [sender tag] == 2030) {
-        // Update appearance effect
+        int effectTag = [[sender selectedItem] tag];
+        float time = ([df floatForKey:@"statusWindowAppearanceSpeed"] ? [df floatForKey:@"statusWindowAppearanceSpeed"] : 0.8);
+        [df setInteger:effectTag forKey:@"statusWindowAppearanceEffect"];
+
+        if ( effectTag == 2100 ) {
+            [sw setEntryEffect:[[[ITCutWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2101 ) {
+            [sw setEntryEffect:[[[ITDissolveWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2102 ) {
+            [sw setEntryEffect:[[[ITSlideVerticallyWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2103 ) {
+            [sw setEntryEffect:[[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2104 ) {
+            NSLog(@"dflhgldf");
+            [sw setEntryEffect:[[[ITPivotWindowEffect alloc] initWithWindow:sw] autorelease]];
+        }
+
+        [[sw entryEffect] setEffectTime:time];
+        
     } else if ( [sender tag] == 2040) {
-        // Update Vanish Effect
+        int effectTag = [[sender selectedItem] tag];
+        float time = ([df floatForKey:@"statusWindowVanishSpeed"] ? [df floatForKey:@"statusWindowVanishSpeed"] : 0.8);
+        
+        [df setInteger:[[sender selectedItem] tag] forKey:@"statusWindowVanishEffect"];
+        
+        if ( effectTag == 2100 ) {
+            [sw setExitEffect:[[[ITCutWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2101 ) {
+            [sw setExitEffect:[[[ITDissolveWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2102 ) {
+            [sw setExitEffect:[[[ITSlideVerticallyWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2103 ) {
+            [sw setExitEffect:[[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:sw] autorelease]];
+        } else if ( effectTag == 2104 ) {
+            [sw setExitEffect:[[[ITPivotWindowEffect alloc] initWithWindow:sw] autorelease]];
+        }
+
+        [[sw exitEffect] setEffectTime:time];
+
     } else if ( [sender tag] == 2050) {
-        // Update appearance speed
+        float newTime = (-([sender floatValue]));
+        [df setFloat:newTime forKey:@"statusWindowAppearanceSpeed"];
+        [[sw entryEffect] setEffectTime:newTime];
     } else if ( [sender tag] == 2060) {
-        // Update vanish speed
+        float newTime = (-([sender floatValue]));
+        [df setFloat:newTime forKey:@"statusWindowVanishSpeed"];
+        [[sw exitEffect] setEffectTime:newTime];
     } else if ( [sender tag] == 2070) {
-        // Update vanish delay
+        [df setFloat:[sender floatValue] forKey:@"statusWindowVanishDelay"];
+        [sw setExitDelay:[sender floatValue]];
     } else if ( [sender tag] == 2080) {
-        // Update "Song Info window when song changes" setting.
         [df setBool:SENDER_STATE forKey:@"showSongInfoOnChange"];
     }
+    
+    [df synchronize];
 }
 
 - (IBAction)changeHotKey:(id)sender

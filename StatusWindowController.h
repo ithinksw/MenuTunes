@@ -13,6 +13,7 @@
 
 
 #import <Cocoa/Cocoa.h>
+#import "ITMTRemote.h"
 
 
 @class StatusWindow;
@@ -32,15 +33,17 @@ typedef enum {
 
 @interface StatusWindowController : NSObject {
     StatusWindow *_window;
+    NSUserDefaults *df;
 }
 
-- (void)showSongWindowWithTitle:(NSString *)title
-                          album:(NSString *)album
-                         artist:(NSString *)artist
-                           time:(NSString *)time  // FLOW: Should probably be NSDate or something.
-                    trackNumber:       (int)trackNumber
-                     trackTotal:       (int)trackTotal
-                         rating:       (int)rating;
+- (void)showSongWindowWithTitle:            (NSString *)title
+                          album:            (NSString *)album
+                         artist:            (NSString *)artist
+                           time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
+                    trackNumber:                   (int)trackNumber
+                     trackTotal:              	   (int)trackTotal
+                         rating:                   (int)rating
+                         source:(ITMTRemotePlayerSource)source;
 
 - (void)showUpcomingSongsWithTitles:(NSArray *)titleStrings;
 
