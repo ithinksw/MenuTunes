@@ -238,7 +238,7 @@
         } else if ([nextObject isEqualToString:@"trackInfo"]) {
             ITDebugLog(@"Check to see if a Track is playing...");
             //Handle playing radio too
-            if (_currentPlaylist) {
+            if (_currentTrack != -1 && _currentPlaylist) {
                 NSString *title = nil;
                 NS_DURING
                     title = [mtr currentSongTitle];
@@ -531,7 +531,6 @@
 		ITDebugLog(@"Beginning Rebuild of \"EQ Presets\" submenu.");
 		_eqMenu = [self eqMenu];
 	}
-    
     if (_continue && [menu containsObject:@"artists"]) {
         ITDebugLog(@"Releasing artists menu");
         [_artistsMenu release];
@@ -691,7 +690,6 @@
 		[playlistsMenu release];
 		return nil;
 	}
-	
 	NS_DURING
     ITDebugLog(@"Building \"Playlists\" menu.");
     {
@@ -707,6 +705,7 @@
         ITDebugLog(@"Adding index to the index array.");
         [indices addObject:[curPlaylist objectAtIndex:2]];
     }
+	
     if ([playlists count] > 1) {
         if ([[[playlists objectAtIndex:1] objectAtIndex:1] intValue] == ITMTRemoteRadioSource) {
             [indices addObject:[[playlists objectAtIndex:1] objectAtIndex:2]];
@@ -718,7 +717,7 @@
             [playlistsMenu addItem:[NSMenuItem separatorItem]];
         }
     }
-    
+	
     if ([playlists count] > 1) {
         for (i = 1; i < [playlists count]; i++) {
             NSArray *curPlaylist = [playlists objectAtIndex:i];
@@ -746,13 +745,15 @@
     }
     ITDebugLog(@"Checking the current source.");
 	NS_DURING
-    if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ) {
-        tempItem = [playlistsMenu itemAtIndex:[playlistsMenu numberOfItems] + [indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] - [indices count]];
-        [tempItem setState:NSOnState];
-        [[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
-    } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
-        [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
-    }
+	if (_currentPlaylist != -1) {
+		if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ) {
+			tempItem = [playlistsMenu itemAtIndex:[playlistsMenu numberOfItems] + [indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] - [indices count]];
+			[tempItem setState:NSOnState];
+			[[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
+		} else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
+			[[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
+		}
+	}
 	NS_HANDLER
 	NS_ENDHANDLER
     [indices release];

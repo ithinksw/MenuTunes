@@ -16,6 +16,7 @@
 {
     ProcessSerialNumber savedPSN;
 }
+- (BOOL)isPlaying;
 - (ProcessSerialNumber)iTunesPSN;
 - (NSString*)formatTimeInSeconds:(long)seconds;
 - (NSString*)zeroSixty:(int)seconds;

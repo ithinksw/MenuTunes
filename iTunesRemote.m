@@ -73,13 +73,13 @@
 			 ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'getd', &savedPSN) booleanValue] != 0) &&
              [[[[NSWorkspace sharedWorkspace] activeApplication] objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"] ) {
             //set minimized of browser window 1 to true
-			ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'setd', &savedPSN);
+			ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:long(1), from:'null'() } }", 'core', 'setd', &savedPSN);
         } else {
             //set minimized of browser window 1 to false
-			ITSendAEWithString(@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'setd', &savedPSN);
+			ITSendAEWithString(@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:long(1), from:'null'() } }", 'core', 'setd', &savedPSN);
         }
         //set visible of browser window 1 to true
-		ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'setd', &savedPSN);
+		ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:long(1), from:'null'() } }", 'core', 'setd', &savedPSN);
         //active iTunes
 		ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }", 'core', 'setd', &savedPSN);
         ITDebugLog(@"Done showing player primary interface.");
@@ -286,7 +286,7 @@
 
     ITDebugLog(@"Getting current source.");   
     
-    fourcc = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value];
+    fourcc = ([self isPlaying]) ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value] : 'kLib';
     
     switch (fourcc) {
         case 'kTun':
@@ -349,7 +349,7 @@
 {  
     int temp1;
     ITDebugLog(@"Getting current playlist index.");
-    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    temp1 = ([self isPlaying] ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] : -1);
     ITDebugLog(@"Getting current playlist index done.");
     return temp1;
 }
@@ -409,7 +409,7 @@
 {
     int temp1;
     ITDebugLog(@"Getting current song index.");
-	temp1 = (([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] != 'prop') ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] : -1);
+	temp1 = ([self isPlaying] ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] : -1);
     ITDebugLog(@"Getting current song index done.");
     return temp1;
 }
@@ -418,16 +418,19 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current song title.");
-    
+    SInt32 result = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+	
     //If we're listening to the radio.
-    if ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] == 'cURT') {
+    if (result == 'cURT') {
         NSString *bad = [NSString stringWithUTF8String:"浳湧"];
         temp1 = [ITSendAEWithKey('pStT', 'core', 'getd', &savedPSN) stringValue];
         if ([temp1 isEqualToString:bad]) {
             temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
         }
         temp1 = [temp1 stringByAppendingString:@" (Stream)"];
-    } else {
+    } else if (result == 'prop') {
+		temp1 = nil;
+	} else {
         temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     }
     ITDebugLog(@"Getting current song title done.");
@@ -528,7 +531,7 @@
 - (NSImage *)currentSongAlbumArt
 {
     ITDebugLog(@"Getting current song album art.");
-    NSData *data = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPCT'), from:obj { form:'indx', want:type('cArt'), seld:long(1), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }", 'core', 'getd', &savedPSN) data];
+    NSData *data = ([self isPlaying]) ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPCT'), from:obj { form:'indx', want:type('cArt'), seld:long(1), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }", 'core', 'getd', &savedPSN) data] : nil;
     ITDebugLog(@"Getting current song album art done.");    
     if (data) {
         return [[[NSImage alloc] initWithData:data] autorelease];
@@ -550,8 +553,7 @@
 {
     float temp1;
     ITDebugLog(@"Getting current song rating.");
-    temp1 = ((float)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] / 100.0);
-    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = -1.0; }
+    temp1 = (![self isPlaying] || ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist)) ? -1.0 : ((float)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] / 100.0);
     ITDebugLog(@"Getting current song rating done.");
     return temp1;
 }
@@ -810,6 +812,11 @@
     ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'hook', 'Play', &savedPSN);
     
     return YES;
+}
+
+- (BOOL)isPlaying
+{
+	return ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] != 'prop');
 }
 
 - (ProcessSerialNumber)iTunesPSN
