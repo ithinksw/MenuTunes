@@ -1,6 +1,9 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 #import "HotKeyCenter.h"
+#import <ITKit/ITWindowPositioning.h>
+
+#define SENDER_STATE (([sender state] == NSOnState) ? YES : NO)
 
 /*************************************************************************/
 #pragma mark -
@@ -12,6 +15,8 @@
 - (void)setupCustomizationTables;
 - (void)setupMenuItems;
 - (void)setupUI;
+- (IBAction)changeMenus:(id)sender;
+- (void)setLaunchesAtLogin:(BOOL)flag;
 @end
 
 
@@ -87,10 +92,54 @@ static PreferencesController *prefs = nil;
     [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (IBAction)changeGeneralSetting:(id)sender
+{
+    if ( [sender tag] == 101) {
+        [self setLaunchesAtLogin:SENDER_STATE];
+    } else if ( [sender tag] == 102) {
+        [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
+    } else if ( [sender tag] == 103) {
+        [df setInteger:[sender intValue] forKey:@"SongsInAdvance"];
+    } else if ( [sender tag] == 104) {
+        [df setBool:SENDER_STATE forKey:@"showAlbum"];
+    } else if ( [sender tag] == 105) {
+        [df setBool:SENDER_STATE forKey:@"showName"];
+    } else if ( [sender tag] == 106) {
+        [df setBool:SENDER_STATE forKey:@"showArtist"];
+    } else if ( [sender tag] == 107) {
+        [df setBool:SENDER_STATE forKey:@"showTime"];
+    } else if ( [sender tag] == 108) {
+        [df setBool:SENDER_STATE forKey:@"showTrackNumber"];
+    } else if ( [sender tag] == 109) {
+        [df setBool:SENDER_STATE forKey:@"showTrackRating"];
+    }
+}
+
+- (IBAction)changeStatusWindowSetting:(id)sender
+{
+    if ( [sender tag] == 201) {
+        [df setInteger:[sender selectedRow] forKey:@"statusWindowVerticalPosition"];
+        [df setInteger:[sender selectedColumn] forKey:@"statusWindowHorizontalPosition"];
+        // update the window's position here
+    } else if ( [sender tag] == 202) {
+        // update screen selection
+    } else if ( [sender tag] == 203) {
+        // Update appearance effect
+    } else if ( [sender tag] == 204) {
+        // Update Vanish Effect
+    } else if ( [sender tag] == 205) {
+        // Update appearance speed
+    } else if ( [sender tag] == 206) {
+        // Update vanish speed
+    } else if ( [sender tag] == 207) {
+        // Update vanish delay
+    } else if ( [sender tag] == 208) {
+        // Update "Song Info window when song changes" setting.
+    }
+}
+
 - (IBAction)apply:(id)sender
 {
-    [df setObject:myItems forKey:@"menu"];
-    
     //Set key combos
     [df setKeyCombo:playPauseCombo forKey:@"PlayPause"];
     [df setKeyCombo:nextTrackCombo forKey:@"NextTrack"];
@@ -111,56 +160,6 @@ static PreferencesController *prefs = nil;
     [df setBool:[trackTimeCheckbox state] forKey:@"showTime"];
     
     //Here we set whether we will launch at login by modifying loginwindow.plist
-    if ([launchAtLoginCheckbox state] == NSOnState) {
-        NSMutableDictionary *loginwindow;
-        NSMutableArray *loginarray;
-        ComponentInstance temp = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);;
-        int i;
-        BOOL skip = NO;
-        
-        [df synchronize];
-        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-        
-        for (i = 0; i < [loginarray count]; i++) {
-            NSDictionary *tempDict = [loginarray objectAtIndex:i];
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
-                skip = YES;
-            }
-        }
-        
-        if (!skip) {
-            AEDesc scriptDesc, resultDesc;
-            NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
-            
-            AECreateDesc(typeChar, [script cString], [script cStringLength], 
-        &scriptDesc);
-            
-            OSADoScript(temp, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
-            
-            AEDisposeDesc(&scriptDesc);
-            AEDisposeDesc(&resultDesc);
-            CloseComponent(temp);
-        }
-    } else {
-        NSMutableDictionary *loginwindow;
-        NSMutableArray *loginarray;
-        int i;
-        
-        [df synchronize];
-        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
-        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-        
-        for (i = 0; i < [loginarray count]; i++) {
-            NSDictionary *tempDict = [loginarray objectAtIndex:i];
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
-                [loginarray removeObjectAtIndex:i];
-                [df setPersistentDomain:loginwindow forName:@"loginwindow"];
-                [df synchronize];
-                break;
-            }
-        }
-    }
     
     //Set songs in advance
     if ([songsInAdvance intValue]) {
@@ -712,6 +711,68 @@ static PreferencesController *prefs = nil;
     }
 }
 
+- (IBAction)changeMenus:(id)sender
+{
+    [df setObject:myItems forKey:@"menu"];
+    [df synchronize];
+    [controller rebuildMenu];
+}
+
+- (void)setLaunchesAtLogin:(BOOL)flag
+{
+    if ( flag ) {
+        NSMutableDictionary *loginwindow;
+        NSMutableArray *loginarray;
+        ComponentInstance temp = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);;
+        int i;
+        BOOL skip = NO;
+
+        [df synchronize];
+        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
+        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+
+        for (i = 0; i < [loginarray count]; i++) {
+            NSDictionary *tempDict = [loginarray objectAtIndex:i];
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
+                skip = YES;
+            }
+        }
+
+        if (!skip) {
+            AEDesc scriptDesc, resultDesc;
+            NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
+
+            AECreateDesc(typeChar, [script cString], [script cStringLength],
+                         &scriptDesc);
+
+            OSADoScript(temp, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
+
+            AEDisposeDesc(&scriptDesc);
+            AEDisposeDesc(&resultDesc);
+            CloseComponent(temp);
+        }
+
+    } else {
+        NSMutableDictionary *loginwindow;
+        NSMutableArray *loginarray;
+        int i;
+
+        [df synchronize];
+        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
+        loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+
+        for (i = 0; i < [loginarray count]; i++) {
+            NSDictionary *tempDict = [loginarray objectAtIndex:i];
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
+                [loginarray removeObjectAtIndex:i];
+                [df setPersistentDomain:loginwindow forName:@"loginwindow"];
+                [df synchronize];
+                break;
+            }
+        }
+    }
+}
+
 
 /*************************************************************************/
 #pragma mark -
@@ -818,6 +879,7 @@ static PreferencesController *prefs = nil;
     
     [menuTableView reloadData];
     [allTableView reloadData];
+    [self changeMenus:self];
     return YES;
 }
 
