@@ -54,6 +54,22 @@ typedef enum {
 } ITMTRemotePlayerPlayingState;
 
 /*!
+ * @enum ITMTRemotePlayerPlaylistClass
+ * @abstract Possible playlist classes used by a remote's player
+ * @discussion Used in functions that report the class of a playlist to MenuTunes. While we borrow the terms/descriptions from iTunes, these should work fine with any other player. If your player doesn't support a given type of playlist, then just return ITMTRemotePlayerPlaylist.
+ * @constant ITMTRemotePlayerLibraryPlaylist For players that have one playlist that contains all of a user's music, or for players that don't have the concept of multiple playlists, this is the class for that "Master" list.
+ * @constant ITMTRemotePlayerPlaylist The generic playlist. Created and maintained by the user.
+ * @constant ITMTRemotePlayerSmartPlaylist A smart playlist is a playlist who's contents are dynamic, based on a set of criteria or updated by a script. These are usually not edited directly by the user, but instead maintained by the player.
+ * @constant ITMTRemotePlayerRadioPlaylist This is for when playing tracks off of (online) radio stations.
+ */
+typedef enum {
+    ITMTRemotePlayerLibraryPlaylist = -1,
+    ITMTRemotePlayerPlaylist,
+    ITMTRemotePlayerSmartPlaylist,
+    ITMTRemotePlayerRadioPlaylist
+} ITMTRemotePlayerPlaylistClass;
+
+/*!
  * @enum ITMTRemotePlayerRepeatMode
  * @abstract Possible repeat modes for the remote's player.
  * @discussion Used in functions that report or set the remote's player's repeat mode.
@@ -176,7 +192,7 @@ typedef enum {
 /*!
  * @method classOfPlaylistAtIndex:
  */
-- (NSString *)classOfPlaylistAtIndex:(int)index;
+- (ITMTRemotePlayerPlaylistClass)classOfPlaylistAtIndex:(int)index;
 
 /*!
  * @method currentPlaylistIndex

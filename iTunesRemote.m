@@ -125,17 +125,19 @@
     return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
 }
 
-- (NSString *)classOfPlaylistAtIndex:(int)index
+- (ITMTRemotePlayerPlaylistClass)classOfPlaylistAtIndex:(int)index
 {
     int realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     
+    // ADD SUPPORT FOR RETURNING A ITMTRemotePlayerLibraryPlaylist WHEN PLAYLIST IS LIBRARY.
+
     switch (realResult)
 	   {
 	   case 'cRTP':
-		  return @"radio tuner playlist";
+		  return ITMTRemotePlayerRadioPlaylist;
 		  break;
 	   default:
-		  return @"playlist";
+		  return ITMTRemotePlayerPlaylist;
 	   }
 }
 

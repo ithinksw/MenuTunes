@@ -79,7 +79,7 @@
     return nil;
 }
 
-- (NSString *)classOfPlaylistAtIndex:(int)index
+- (ITMTRemotePlayerPlaylistClass)classOfPlaylistAtIndex:(int)index
 {
     return nil;
 }
