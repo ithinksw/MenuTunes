@@ -90,3 +90,7 @@
 - (void)showCurrentTrackInfo;
 
 @end
+
+@interface NSImage (SmoothAdditions)
+- (NSImage *)imageScaledSmoothlyToSize:(NSSize)scaledSize;
+@end

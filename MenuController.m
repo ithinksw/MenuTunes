@@ -8,6 +8,7 @@
 
 #import "MenuController.h"
 #import "MainController.h"
+#import "NetworkController.h"
 #import "ITMTRemote.h"
 #import <ITFoundation/ITDebug.h>
 #import <ITKit/ITHotKeyCenter.h>
@@ -338,6 +339,23 @@
                     NS_HANDLER
                         [[MainController sharedController] networkError:localException];
                     NS_ENDHANDLER
+                    
+                    if ([tempItem respondsToSelector:@selector(setAttributedTitle:)] && [defaults boolForKey:@"showAlbumArtwork"] && ![[NetworkController sharedController] isConnectedToServer]) {
+                        NSImage *image = [[[MainController sharedController] currentRemote] currentSongAlbumArt];
+                        if (image) {
+                            NSSize oldSize, newSize;
+                            oldSize = [image size];
+                            if (oldSize.width > oldSize.height) newSize = NSMakeSize(110,oldSize.height * (110.0f / oldSize.width));
+                            else newSize = NSMakeSize(oldSize.width * (110.0f / oldSize.height),110);
+                            image = [[[[NSImage alloc] initWithData:[image TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
+                            
+                            tempItem = [menu addItemWithTitle:@"" action:nil keyEquivalent:@""];
+                            NSTextAttachment *attachment = [[[NSTextAttachment alloc] init] autorelease];
+                            [[attachment attachmentCell] setImage:image];
+                            NSAttributedString *attrString = [NSAttributedString attributedStringWithAttachment:attachment];
+                            [tempItem setAttributedTitle:attrString];
+                        }
+                    }
                 }
             } else {
                 ITDebugLog(@"No Track is Playing, Add \"No Song\" menu item.");

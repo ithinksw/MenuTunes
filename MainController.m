@@ -10,11 +10,7 @@
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
 
-@interface NSImage (WeeAdditions)
-- (NSImage *)imageScaledSmoothlyToSize:(NSSize)scaledSize;
-@end
-
-@implementation NSImage (WeeAdditions)
+@implementation NSImage (SmoothAdditions)
 
 - (NSImage *)imageScaledSmoothlyToSize:(NSSize)scaledSize
 {
@@ -264,7 +260,7 @@ static MainController *sharedController;
             [self setupHotKeys];
             if (![refreshTimer isValid]) {
                 [refreshTimer release];
-                refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
+                refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
                              target:self
                              selector:@selector(timerUpdate)
                              userInfo:nil
