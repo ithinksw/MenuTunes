@@ -40,6 +40,7 @@ typedef enum {
 - (void)showSetupQueryWindow;
 - (void)showRegistrationQueryWindow;
 - (void)showReconnectQueryWindow;
+- (void)showNetworkErrorQueryWindow;
 - (void)showPreferencesUpdateWindow;
 
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source

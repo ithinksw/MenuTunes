@@ -281,6 +281,23 @@ static StatusWindowController *sharedController;
     [_window setLocked:YES];
 }
 
+- (void)showNetworkErrorQueryWindow
+{
+    NSString *message = @"The remote MenuTunes server is unreachable.\nMenuTunes will revert back to the local player.";
+
+    [_window setImage:[NSImage imageNamed:@"Setup"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window buildDialogWindowWithMessage:message
+                            defaultButton:@" OK "
+                          alternateButton:nil
+                                   target:[MainController sharedController]
+                            defaultAction:@selector(cancelReconnect)
+                          alternateAction:nil];
+
+    [_window appear:self];
+    [_window setLocked:YES];
+}
+
 - (void)showPreferencesUpdateWindow
 {
     NSString *message = @"The new features in this version of MenuTunes\nrequire you to reconfigure your preferences.";

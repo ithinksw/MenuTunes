@@ -477,7 +477,9 @@
                                            wideButtonW,
                                            24.0)];
         [[self contentView] addSubview:okButton];
-        [[self contentView] addSubview:cancelButton];
+        if (alternateTitle) {
+            [[self contentView] addSubview:cancelButton];
+        }
 
         [self setIgnoresMouseEvents:NO];
   

@@ -777,7 +777,19 @@ static MainController *sharedController;
     NS_ENDHANDLER
     
     if ( title ) {
-
+        if ( [df boolForKey:@"showAlbumArtwork"] ) {
+	    NSSize oldSize, newSize;
+             NS_DURING
+		 art = [[self currentRemote] currentSongAlbumArt];
+		 oldSize = [art size];
+		 if (oldSize.width > oldSize.height) newSize = NSMakeSize(110,oldSize.height * (110.0f / oldSize.width));
+		 else newSize = NSMakeSize(oldSize.width * (110.0f / oldSize.height),110);
+                art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
+        }
+        
         if ( [df boolForKey:@"showAlbum"] ) {
             NS_DURING
                 album = [[self currentRemote] currentSongAlbum];
@@ -843,20 +855,6 @@ static MainController *sharedController;
                 rating = ( currentRating * 5 );
             }
         }
-        
-        if ( [df boolForKey:@"showAlbumArtwork"] ) {
-	    NSSize oldSize, newSize;
-             NS_DURING
-		 art = [[self currentRemote] currentSongAlbumArt];
-		 oldSize = [art size];
-		 if (oldSize.width > oldSize.height) newSize = NSMakeSize(110,oldSize.height * (110.0f / oldSize.width));
-		 else newSize = NSMakeSize(oldSize.width * (110.0f / oldSize.height),110);
-                art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
-            NS_HANDLER
-                [self networkError:localException];
-            NS_ENDHANDLER
-        }
-        
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
     }
@@ -1168,7 +1166,8 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
     if ( ((exception == nil) || [[exception name] isEqualToString:NSPortTimeoutException]) && [networkController isConnectedToServer]) {
-        NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
+        //NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
+        [[StatusWindowController sharedController] showNetworkErrorQueryWindow];
         if ([self disconnectFromServer]) {
             [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
             [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:YES];
