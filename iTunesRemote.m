@@ -157,10 +157,9 @@
 
     ITDebugLog(@"Getting current source.");   
     
+    fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber :[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }"] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     
-    fourcc = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber :[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('cntr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-    
-    fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pKnd" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    NSLog(@"FourCC: %u", fourcc);
     
     switch (fourcc) {
         case 'kTun':
