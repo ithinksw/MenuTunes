@@ -22,18 +22,29 @@
  *
  */
 
+/*! @header ITMTRemote
+ *  @abstract Declares the necessary protocol and class to implement a MenuTunes Remote.
+ */
+
 #import <Cocoa/Cocoa.h>
 
-@protocol ITMTRemote
+/*! @protocol ITMTRemote
+ *  @abstract Declares what a MenuTunes Remote must be able to do.
+ *  @discussion A MenuTunes Remote must be able to return and change state information.
+ */
 
+@protocol ITMTRemote
+/*! @method remote:
+ *  @abstract Return an autoreleased instance of the remote.
+ *  @discussion Should be very quick and compact.
+ * EXAMPLE:
+ *   + (id)remote
+ *   {
+ *       return [[[MyRemote alloc] init] autorelease];
+ *   }
+ * @result The instance.
+ */
 + (id)remote;
-// Return an autoreleased instance of the remote.
-// Should be very quick and compact.
-// EXAMPLE:
-//   + (id)remote
-//   {
-//       return [[[MyRemote alloc] init] autorelease];
-//   }
 
 - (NSString *)title;
 // Return the title of the remote.
