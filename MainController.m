@@ -334,10 +334,6 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    if ([networkController isConnectedToServer]) {
-        [statusItem setMenu:[menuController menu]];
-    }
-    
     if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"The song changed.");
         
@@ -393,6 +389,10 @@ static MainController *sharedController;
         
         timerUpdating = NO;
         [statusItem setEnabled:YES];
+    }
+    
+    if ([networkController isConnectedToServer]) {
+        [statusItem setMenu:[menuController menu]];
     }
 }
 
@@ -1119,6 +1119,12 @@ static MainController *sharedController;
     [currentRemote release];
     currentRemote = [remoteArray objectAtIndex:0];
     [networkController disconnect];
+    
+    if ([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
+        [self applicationLaunched:nil];
+    } else {
+        [self applicationTerminated:nil];
+    }
     [self timerUpdate];
     return YES;
 }
