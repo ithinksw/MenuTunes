@@ -631,15 +631,9 @@
 - (BOOL)shuffleEnabled
 {
     ITDebugLog(@"Getting shuffle enabled status.");
-    BOOL final;
-    int result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('pPla'), seld:type('pEQP'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
-    if (result != 0) {
-        final = YES;
-    } else {
-        final = NO;
-    }
+	int result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting shuffle enabled status done.");
-    return final;
+    return (result != 0);
 }
 
 - (BOOL)setShuffleEnabled:(BOOL)enabled
@@ -654,7 +648,7 @@
 {
     FourCharCode m00f = 0;
     int result = 0;
-    m00f = (FourCharCode)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('pPla'), seld:type('pEQP'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    m00f = (FourCharCode)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting repeat mode.");
     switch (m00f)
     {
