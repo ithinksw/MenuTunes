@@ -209,9 +209,8 @@ Things to do:
     
     trackInfoIndex = -1;
     lastSongIndex = -1;
-    didHaveAlbumName = ([[self runScriptAndReturnResult:@"return album of current track"] length] > 0);
-    didHaveArtistName = ([[self runScriptAndReturnResult:@"return artist of current track"] length] > 0);
-    
+    didHaveAlbumName = ([[currentRemote currentSongAlbum] length] > 0);
+    didHaveArtistName = ([[currentRemote currentSongArtist] length] > 0);
     
     while ([menu numberOfItems] > 0) {
         [menu removeItemAtIndex:0];
@@ -365,7 +364,7 @@ Things to do:
             
             if (!isPlayingRadio) {
                 if ([defaults boolForKey:@"showTime"]) {
-                    menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", [self runScriptAndReturnResult:@"return time of current track"]]
+                    menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", [currentRemote currentSongLength]]
                                                         action:nil
                                                         keyEquivalent:@""];
                     [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
@@ -654,7 +653,7 @@ Things to do:
     }
     //Update Play/Pause menu item
     if (playPauseMenuItem){
-        if ([[self runScriptAndReturnResult:@"return player state"] isEqualToString:@"playing"]) {
+        if ([currentRemote playerState] == playing) {
             [playPauseMenuItem setTitle:@"Pause"];
         } else {
             [playPauseMenuItem setTitle:@"Play"];
@@ -769,13 +768,11 @@ andEventID:(AEEventID)eventID
 
 - (void)playPause:(id)sender
 {
-    NSString *state = [self runScriptAndReturnResult:@"return player state"];
-    NSLog(@"%i", [currentRemote playerState]);
-    if ([state isEqualToString:@"playing"]) {
-        [currentRemote play];
+    PlayerState state = [currentRemote playerState];
+    if (state == playing) {
+        [currentRemote pause];
         [playPauseMenuItem setTitle:@"Play"];
-    } else if ([state isEqualToString:@"fast forwarding"] || [state 
-isEqualToString:@"rewinding"]) {
+    } else if ((state == forwarding) || (state == rewinding)) {
         [currentRemote play];
         [currentRemote pause];
     } else {
@@ -846,7 +843,7 @@ isEqualToString:@"rewinding"]) {
 
 - (void)showCurrentTrackInfo
 {
-    NSString *trackName = [self runScriptAndReturnResult:@"return name of current track"];
+    NSString *trackName = [currentRemote currentSongTitle];
     if (!statusController && [trackName length]) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *stringToShow = @"";
