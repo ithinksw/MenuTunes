@@ -215,7 +215,9 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
     } else if ( [sender tag] == 1030) {
         [df setInteger:[sender intValue] forKey:@"SongsInAdvance"];
-        [[controller menuController] rebuildSubmenus];
+        if ([[controller currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
+            [[controller menuController] rebuildSubmenus];
+        }
     } else if ( [sender tag] == 1040) {
         // This will not be executed.  Song info always shows the title of the song.
         // [df setBool:SENDER_STATE forKey:@"showName"];

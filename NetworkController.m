@@ -220,6 +220,7 @@ static NetworkController *sharedController;
                                          host:host];
         testConnection = [[NSConnection connectionWithReceivePort:nil sendPort:testPort] retain];
         [testConnection setReplyTimeout:2];
+        [testConnection setRequestTimeout:2];
         tempProxy = (NetworkObject *)[testConnection rootProxy];
         [tempProxy serverName];
         valid = [tempProxy isValid];
@@ -230,7 +231,7 @@ static NetworkController *sharedController;
         return NO;
     NS_ENDHANDLER
     
-    if (!clientProxy) {
+    if (!tempProxy) {
         ITDebugLog(@"Null proxy! Couldn't connect!");
         [testConnection release];
         [testPort release];

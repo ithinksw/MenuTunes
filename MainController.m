@@ -392,7 +392,7 @@ static MainController *sharedController;
     }
     
     if ([networkController isConnectedToServer]) {
-        [statusItem setMenu:[menuController menu]];
+        [statusItem setMenu:([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) ? [menuController menu] : [menuController menuForNoPlayer]];
     }
 }
 
@@ -533,14 +533,14 @@ static MainController *sharedController;
 - (void)showPlayer
 {
     ITDebugLog(@"Beginning show player.");
-    if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
+    //if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"Showing player interface.");
         NS_DURING
             [[self currentRemote] showPrimaryInterface];
         NS_HANDLER
             [self networkError:localException];
         NS_ENDHANDLER
-    } else {
+    /*} else {
         ITDebugLog(@"Launching player.");
         NS_DURING
             NSString *path;
@@ -554,7 +554,7 @@ static MainController *sharedController;
         NS_HANDLER
             [self networkError:localException];
         NS_ENDHANDLER
-    }
+    }*/
     ITDebugLog(@"Finished show player.");
 }
 
@@ -1209,7 +1209,7 @@ static MainController *sharedController;
  - (void)applicationTerminated:(NSNotification *)note
  {
     NS_DURING
-        if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]]) {
+        if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[[self currentRemote] playerFullName]] && ![[NetworkController sharedController] isConnectedToServer]) {
             ITDebugLog(@"Remote application terminated.");
             playerRunningState = ITMTRemotePlayerNotRunning;
             [[self currentRemote] halt];

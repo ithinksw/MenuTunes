@@ -66,25 +66,37 @@
 {
     ITDebugLog(@"Showing player primary interface.");
     
-    //If the window is closed
-    _winClosed = YES;
-    
-    //If not minimized and visible
-    if ( ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) &&
-         ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] != 0) &&
-         [[[[NSWorkspace sharedWorkspace] activeApplication] objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"] ) {
-        //set minimized of browser window 1 to true
-        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    if ([self playerRunningState] == ITMTRemotePlayerRunning) {
+        ITDebugLog(@"Showing player interface.");
+        //If not minimized and visible
+        if ( ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) &&
+             ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] != 0) &&
+             [[[[NSWorkspace sharedWorkspace] activeApplication] objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"] ) {
+            //set minimized of browser window 1 to true
+            [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+        } else {
+            //set minimized of browser window 1 to false
+            [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+        }
+        //set visible of browser window 1 to true
+        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+        //active iTunes
+        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+        ITDebugLog(@"Done showing player primary interface.");
+        return YES;
     } else {
-        //set minimized of browser window 1 to false
-        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+        NSString *path;
+        ITDebugLog(@"Launching player.");
+        if ( (path = [[NSUserDefaults standardUserDefaults] stringForKey:@"CustomPlayerPath"]) ) {
+        } else {
+            path = [self playerFullName];
+        }
+        if (![[NSWorkspace sharedWorkspace] launchApplication:path]) {
+            ITDebugLog(@"Error Launching Player");
+            return NO;
+        }
+        return YES;
     }
-    //set visible of browser window 1 to true
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    //active iTunes
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    ITDebugLog(@"Done showing player primary interface.");
-    return YES;
 }
 
 - (ITMTRemotePlayerRunningState)playerRunningState
