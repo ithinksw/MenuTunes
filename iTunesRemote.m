@@ -65,12 +65,17 @@
 - (BOOL)showPrimaryInterface
 {
     ITDebugLog(@"Showing player primary interface.");
-    // Still have to convert these to AEs:
-    //	set minimized of browser window 1 to false
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    //	set visible of browser window 1 to true
+    //If not minimized
+    if ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) {
+        //set minimized of browser window 1 to true
+        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    } else {
+        //set minimized of browser window 1 to false
+        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    }
+    //set visible of browser window 1 to true
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    // Make this into AppleEvents... shouldn't be too hard, I'm just too tired to do it right now.
+    //active iTunes
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     ITDebugLog(@"Done showing player primary interface.");
     return YES;
@@ -425,6 +430,9 @@
     moof = [script executeAndReturnError:nil];
     data = [moof data];
     ITDebugLog(@"Getting current song album art done.");
+    
+    //NSLog(@"%@", [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForData:@"'---':obj { form:'prop', want:type('prop'), seld:type('data'), from:obj { form:'indx', want:type('cArt'), seld:1, from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN]);
+    
     if (data) {
         return [[[NSImage alloc] initWithData:data] autorelease];
     } else {
