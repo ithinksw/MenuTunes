@@ -173,11 +173,19 @@ static MainController *sharedController;
 
     [networkController startRemoteServerSearch];
     [NSApp deactivate];
+	[self performSelector:@selector(rawr) withObject:nil afterDelay:1.0];
 }
 
-- (void)applicationDidBecomeActive:(NSNotification *)note
+- (void)rawr
 {
-	[[MainController sharedController] showPreferences];
+	_open = YES;
+}
+
+- (void)applicationWillBecomeActive:(NSNotification *)note
+{
+	if (_open) {
+		[[MainController sharedController] showPreferences];
+	}
 }
 
 - (ITMTRemote *)loadRemote
@@ -283,6 +291,8 @@ static MainController *sharedController;
             [self clearHotKeys];
             if ([refreshTimer isValid]) {
                 [refreshTimer invalidate];
+				[refreshTimer release];
+				refreshTimer = nil;
             }
             [statusWindowController showRegistrationQueryWindow];
         }
@@ -443,12 +453,18 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Menu clicked.");
 	
-	if ( ([[self currentRemote] playerStateUniqueIdentifier] == nil) && playerRunningState == ITMTRemotePlayerRunning ) {
-		if ([statusItem isEnabled]) {
-			[statusItem setToolTip:@"iTunes not responding."];
-			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
+	if (([[self currentRemote] playerStateUniqueIdentifier] == nil) && playerRunningState == ITMTRemotePlayerRunning) {
+		if (refreshTimer) {
+			if ([statusItem isEnabled]) {
+				[statusItem setToolTip:@"iTunes not responding."];
+				[[ITHotKeyCenter sharedCenter] setEnabled:NO];
+			}
+			[statusItem setEnabled:NO];
+		} else {
+			NSMenu *menu = [[NSMenu alloc] init];
+			[menu addItemWithTitle:@"iTunes Not Responding" action:nil keyEquivalent:@""];
+			[statusItem setMenu:[menu autorelease]];
 		}
-		[statusItem setEnabled:NO];
 		return;
 	} else if (![statusItem isEnabled]) {
 		[statusItem setEnabled:YES];
@@ -471,6 +487,81 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
+}
+
+- (void)trackChanged:(NSNotification *)note
+{
+	//If we're running the timer, shut it off since we don't need it!
+	if (refreshTimer && [refreshTimer isValid]) {
+		ITDebugLog(@"Invalidating refresh timer.");
+		[refreshTimer invalidate];
+		[refreshTimer release];
+		refreshTimer = nil;
+	}
+	
+	if (![self songChanged]) {
+		return;
+	}
+	NSString *identifier = [[self currentRemote] playerStateUniqueIdentifier];
+	if ( [df boolForKey:@"showSongInfoOnChange"] ) {
+		[self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
+	}
+	[_lastTrackInfo release];
+	_lastTrackInfo = [[note userInfo] retain];
+	
+	[self setLatestSongIdentifier:identifier];
+	ITDebugLog(@"The song changed. '%@'", _latestSongIdentifier);
+	if ([df boolForKey:@"runScripts"]) {
+		NSArray *scripts = [[NSFileManager defaultManager] directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
+		NSEnumerator *scriptsEnum = [scripts objectEnumerator];
+		NSString *nextScript;
+		ITDebugLog(@"Running AppleScripts for song change.");
+		while ( (nextScript = [scriptsEnum nextObject]) ) {
+			NSDictionary *error;
+			NSAppleScript *currentScript = [[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] stringByAppendingPathComponent:nextScript]] error:&error];
+			ITDebugLog(@"Running script: %@", nextScript);
+			if (!currentScript || ![currentScript executeAndReturnError:nil]) {
+				ITDebugLog(@"Error running script %@.", nextScript);
+			}
+			[currentScript release];
+		}
+	}
+	
+	[statusItem setEnabled:NO];
+	
+	NS_DURING
+		latestPlaylistClass = [[self currentRemote] currentPlaylistClass];
+		
+		if ([menuController rebuildSubmenus]) {
+			/*if ( [df boolForKey:@"showSongInfoOnChange"] ) {
+				[self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
+			}*/
+			[self setLatestSongIdentifier:identifier];
+			//Create the tooltip for the status item
+			if ( [df boolForKey:@"showToolTip"] ) {
+				ITDebugLog(@"Creating status item tooltip.");
+				NSString *artist = [_lastTrackInfo objectForKey:@"Artist"], *title = [_lastTrackInfo objectForKey:@"Name"];
+				if (artist) {
+					_toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
+				} else if (title) {
+					_toolTip = title;
+				} else {
+					_toolTip = @"No Song Playing";
+				}
+				[statusItem setToolTip:_toolTip];
+			} else {
+				[statusItem setToolTip:nil];
+			}
+		}
+	NS_HANDLER
+		[self networkError:localException];
+	NS_ENDHANDLER
+	timerUpdating = NO;
+	[statusItem setEnabled:YES];
+	
+	if ([networkController isConnectedToServer]) {
+        [statusItem setMenu:([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) ? [menuController menu] : [menuController menuForNoPlayer]];
+    }
 }
 
 //
@@ -496,7 +587,9 @@ static MainController *sharedController;
         [self networkError:localException];
     NS_ENDHANDLER
     
-    [self timerUpdate];
+	if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)nextSong
@@ -507,7 +600,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)prevSong
@@ -518,7 +613,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)fastForward
@@ -529,7 +626,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)rewind
@@ -540,7 +639,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)selectPlaylistAtIndex:(int)index
@@ -552,7 +653,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)selectSongAtIndex:(int)index
@@ -563,7 +666,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)selectSongRating:(int)rating
@@ -574,7 +679,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)selectEQPresetAtIndex:(int)index
@@ -589,7 +696,9 @@ static MainController *sharedController;
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	}
 }
 
 - (void)makePlaylistWithTerm:(NSString *)term ofType:(int)type
@@ -1238,8 +1347,9 @@ static MainController *sharedController;
         [self setupHotKeys];
         //playerRunningState = ITMTRemotePlayerRunning;
         playerRunningState = [[self currentRemote] playerRunningState];
-		
-        [refreshTimer invalidate];
+		if (refreshTimer) {
+			[refreshTimer invalidate];
+		}
         refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
                                 target:self
                                 selector:@selector(timerUpdate)
@@ -1273,7 +1383,9 @@ static MainController *sharedController;
     } else {
         [self applicationTerminated:nil];
     }
-    [self timerUpdate];
+    if (refreshTimer) {
+		[self timerUpdate];
+	};
     return YES;
 }
 
@@ -1384,6 +1496,9 @@ static MainController *sharedController;
                                 userInfo:nil
                                 repeats:YES] retain];
             //[NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
+			if (![df boolForKey:@"UsePollingOnly"]) {
+				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackChanged:) name:@"ITMTTrackChanged" object:nil];
+			}
             [self setupHotKeys];
         }
     NS_HANDLER
@@ -1401,10 +1516,12 @@ static MainController *sharedController;
             [refreshTimer invalidate];
             [refreshTimer release];
             refreshTimer = nil;
+			[[NSNotificationCenter defaultCenter] removeObserver:self];
 			[statusItem setEnabled:YES];
 			[statusItem setToolTip:@"iTunes not running."];
             [self clearHotKeys];
-            
+
+			
             if ([df objectForKey:@"ShowPlayer"] != nil) {
                 ITHotKey *hotKey;
                 ITDebugLog(@"Setting up show player hot key.");
@@ -1429,6 +1546,7 @@ static MainController *sharedController;
 
 - (void)applicationWillTerminate:(NSNotification *)note
 {
+	[[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
     [networkController stopRemoteServerSearch];
     [self clearHotKeys];
     [[NSStatusBar systemStatusBar] removeStatusItem:statusItem];

@@ -35,6 +35,7 @@
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
     NSString *_latestSongIdentifier, *_toolTip;
+	NSDictionary *_lastTrackInfo;
 
     StatusWindowController *statusWindowController; //Shows status windows
     MenuController *menuController;
@@ -43,7 +44,7 @@
     
     MTBlingController *bling;
     NSTimer *registerTimer;
-    BOOL timerUpdating, _checkingForServer, _popped;
+    BOOL timerUpdating, _checkingForServer, _popped, _open;
     BOOL blinged;
     NSLock *_serverCheckLock;
 }

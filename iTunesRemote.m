@@ -26,12 +26,14 @@
 {
     ITDebugLog(@"iTunesRemote begun");
     savedPSN = [self iTunesPSN];
+	[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationHandler:) name:@"com.apple.iTunes.playerInfo" object:@"com.apple.iTunes.player"];
     return YES;
 }
 
 - (BOOL)halt
 {
     ITDebugLog(@"iTunesRemote halted");
+	[[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
     return YES;
 }
 
@@ -820,6 +822,13 @@
 - (BOOL)isPlaying
 {
 	return ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] != 'prop');
+}
+
+- (void)notificationHandler:(NSNotification *)note
+{
+	ITDebugLog(@"Received notification: %@", note);
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTTrackChanged" object:self userInfo:[note userInfo]];
+	ITDebugLog(@"Handled notification.");
 }
 
 - (ProcessSerialNumber)iTunesPSN
