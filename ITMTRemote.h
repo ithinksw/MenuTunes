@@ -24,7 +24,7 @@
 */
 
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 typedef enum {
     ITMTRemoteName,
@@ -103,7 +103,9 @@ typedef enum {
 
 - (BOOL)supportsTrackProperty:(ITMTRemoteTrackProperty)property;
 - (id)trackProperty:(ITMTRemoteTrackProperty)property atIndex:(int)index;
-- (BOOL)setTrackProperty:(ITMTRemoteTrackProperty)property toValue:(id)value atIndex:(int)index; // currently only used to set Ratings... someday, we might provide a full frontend? well, it is possible that other apps could use MT remotes, as such, they might want to set other values. For Rating, send in an NSNumber from a float 0.0 - 1.0. For Art, send in an NSImage... this is also what you'll recieve when using the accessor
+- (BOOL)setTrackProperty:(ITMTRemoteTrackProperty)property toValue:(id)value atIndex:(int)index;
+/* currently only used to set Ratings... someday, we might provide a full frontend? well, it is possible that other apps could use MT remotes, as such, they might want to set other values. For Rating, send in an NSNumber from a float 0.0 - 1.0. For Art, send in an NSImage... this is also what you'll recieve when using the accessor */
+
 
 - (BOOL)supportsShuffle;
 - (BOOL)setShuffle:(BOOL)toggle;
@@ -111,7 +113,7 @@ typedef enum {
 
 - (BOOL)supportsRepeatMode:(ITMTRemoteRepeatMode)repeatMode;
 - (BOOL)setRepeatMode:(ITMTRemoteRepeatMode)repeatMode;
-- (BOOL)repeatMode;
+- (ITMTRemoteRepeatMode)repeatMode;
 
 - (BOOL)supportsVolume;
 - (BOOL)setVolume:(float)volume;

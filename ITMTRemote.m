@@ -64,12 +64,137 @@
     return NO;
 }
 
-- (ITMTRemotePlayerRunningState)playerRunningState
+- (BOOL)showExternalWindow
+{
+    return NO;
+}
+
+- (NSString*)externalWindowName
 {
     return nil;
 }
 
-- (ITMTRemotePlayerPlayingState)playerPlayingState
+- (BOOL)setShuffle:(BOOL)toggle
+{
+    return NO;
+}
+
+- (BOOL)supportsVolume
+{
+    return NO;
+}
+
+- (BOOL)supportsShuffle
+{
+    return NO;
+}
+
+- (BOOL)shuffle
+{
+    return NO;
+}
+
+- (BOOL)setTrackProperty:(ITMTRemoteTrackProperty)property toValue:(id)value atIndex:(int)index
+{
+    return NO;
+}
+
+- (id)trackProperty:(ITMTRemoteTrackProperty)property atIndex:(int)index
+{
+    return nil;
+}
+
+- (BOOL)supportsTrackProperty:(ITMTRemoteTrackProperty)property
+{
+    return NO;
+}
+
+- (BOOL)supportsRepeatMode:(ITMTRemoteRepeatMode)repeatMode
+{
+    return NO;
+}
+
+- (BOOL)sendControlAction:(ITMTRemoteControlAction)action
+{
+    return NO;
+}
+
+- (BOOL)supportsControlAction:(ITMTRemoteControlAction)action
+{
+    return NO;
+}
+
+- (int)indexForTrack:(int)identifier inPlaylist:(int)playlistIndex
+{
+    return 0;
+}
+
+- (NSImage*)icon
+{
+    return nil;
+}
+
+- (NSArray*)playlistNames
+{
+    return nil;
+}
+
+- (NSString*)informationString:(ITMTRemoteInformationString)string;
+{
+    return nil;
+}
+
+- (BOOL)switchToPlaylist:(int)playlistIndex
+{
+    return 0;
+}
+
+- (BOOL)switchToTrackAtIndex:(int)index
+{
+    return 0;
+}
+
+- (int)identifierForTrackAtIndex:(int)index inPlaylist:(int)playlistIndex
+{
+    return 0;
+}
+
+- (BOOL)supportsCustomEqualizer
+{
+    return NO;
+}
+
+- (BOOL)showEqualizerWindow
+{
+    return NO;
+}
+
+- (BOOL)supportsEqualizerPresets
+{
+    return NO;
+}
+
+- (BOOL)supportsExternalWindow
+{
+    return NO;
+}
+
+- (NSArray*)equalizerPresetNames
+{
+    return nil;
+}
+
+- (BOOL)switchToEqualizerPreset:(int)index
+{
+    return NO;
+}
+
+- (ITMTRemoteControlState)controlState
+{
+    return nil;
+}
+
+- (ITMTRemotePlaylistMode)playlistMode
 {
     return nil;
 }
@@ -80,11 +205,6 @@
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
-{
-    return nil;
-}
-
-- (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
     return nil;
 }
@@ -199,12 +319,12 @@
     return NO;
 }
 
-- (ITMTRemotePlayerRepeatMode)repeatMode
+- (ITMTRemoteRepeatMode)repeatMode
 {
-    return ITMTRemotePlayerRepeatOff;
+    return ITMTRemoteRepeatNone;
 }
 
-- (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode
+- (BOOL)setRepeatMode:(ITMTRemoteRepeatMode)repeatMode
 {
     return NO;
 }
