@@ -192,6 +192,7 @@ static PreferencesController *prefs = nil;
         NS_ENDHANDLER
     }
 
+    [self resetRemotePlayerTextFields];
     [window center];
     [NSApp activateIgnoringOtherApps:YES];
     [window performSelector:@selector(makeKeyAndOrderFront:) withObject:self afterDelay:0.0];

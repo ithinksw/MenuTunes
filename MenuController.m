@@ -438,7 +438,6 @@
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
-    
     [_ratingMenu release];
     [_upcomingSongsMenu release];
     [_playlistsMenu release];
@@ -495,7 +494,6 @@
     NS_ENDHANDLER
     
     ITDebugLog(@"Building \"Upcoming Songs\" menu.");
-    
     if (_currentPlaylist && !_playingRadio) {
         if (numSongs > 0) {
             int i;
@@ -585,10 +583,10 @@
         NSArray *curPlaylist = [playlists objectAtIndex:0];
         NSString *name = [curPlaylist objectAtIndex:0];
         ITDebugLog(@"Adding main source: %@", name);
-        for (i = 1; i < [curPlaylist count]; i++) {
+        for (i = 2; i < [curPlaylist count]; i++) {
             ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:i]);
             tempItem = [playlistsMenu addItemWithTitle:[curPlaylist objectAtIndex:i] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-            [tempItem setTag:i + 1];
+            [tempItem setTag:i];
             [tempItem setTarget:self];
         }
     }
@@ -606,17 +604,20 @@
         NSString *name = [curPlaylist objectAtIndex:0];
         NSMenu *submenu = [[NSMenu alloc] init];
         ITDebugLog(@"Adding source: %@", name);
-        for (j = 1; j < [curPlaylist count]; j++) {
+        for (j = 2; j < [curPlaylist count]; j++) {
             ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
             tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-            [tempItem setTag:(i * 1000) + (j + 1)];
+            [tempItem setTag:(i * 1000) + j];
             [tempItem setTarget:self];
+            if ([[curPlaylist objectAtIndex:i] intValue] == ITMTRemoteiPodSource) {
+                [tempItem setEnabled:NO];
+            }
         }
         [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
     }
     
     if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ){
-        tempItem = [playlistsMenu itemAtIndex:(int)[[[MainController sharedController] currentRemote] currentSourceIndex] + [playlistsMenu numberOfItems] - 6];
+        tempItem = [playlistsMenu itemAtIndex:(int)[[[MainController sharedController] currentRemote] currentSourceIndex] + [playlistsMenu numberOfItems] - 5];
         [tempItem setState:NSOnState];
         [[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
