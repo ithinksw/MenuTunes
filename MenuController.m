@@ -249,10 +249,10 @@
                     }
                     
                     if ([defaults boolForKey:@"showTime"]) {
-                        int left = [[currentRemote currentSongRemaining] intValue];
-                        NSString *remaining = [NSString stringWithFormat:@"%i:%02i", left / 60, left % 60];
-                        ITDebugLog(@"Add Track Remaining (\"%@/%@\") menu item.", remaining, [currentRemote currentSongLength]);
-                        [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", remaining, [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
+                        int left = [[currentRemote currentSongElapsed] intValue];
+                        NSString *elapsed = [NSString stringWithFormat:@"%i:%02i", left / 60, left % 60];
+                        ITDebugLog(@"Add Track Elapsed (\"%@/%@\") menu item.", elapsed, [currentRemote currentSongLength]);
+                        [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", elapsed, [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
                     }
                     
                     if ([defaults boolForKey:@"showTrackRating"]) {
