@@ -37,6 +37,7 @@
     IBOutlet NSButton *trackInfoButton;
     IBOutlet NSButton *trackTimeCheckbox;
     IBOutlet NSButton *upcomingSongsButton;
+    IBOutlet NSButton *visualizerButton;
     IBOutlet NSButton *volumeDecrementButton;
     IBOutlet NSButton *volumeIncrementButton;
     IBOutlet NSWindow *window;
@@ -51,6 +52,7 @@
     KeyCombo *playPauseCombo;
     KeyCombo *nextTrackCombo;
     KeyCombo *prevTrackCombo;
+    KeyCombo *visualizerCombo;
     KeyCombo *trackInfoCombo;
     KeyCombo *upcomingSongsCombo;
     KeyCombo *volumeIncrementCombo;

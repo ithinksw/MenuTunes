@@ -34,6 +34,7 @@
                 trackInfoButton = NSButton; 
                 trackTimeCheckbox = NSButton; 
                 upcomingSongsButton = NSButton; 
+                visualizerButton = NSButton; 
                 volumeDecrementButton = NSButton; 
                 volumeIncrementButton = NSButton; 
                 window = NSWindow; 

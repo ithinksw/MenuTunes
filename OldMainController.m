@@ -513,7 +513,7 @@
         //
         //
         // If we want to show the new track floater, do it here!
-        //[self showCurrentTrackInfo];
+        //[self showCurrentTrackInfoStatusWindow];
         //
         //
         [self rebuildMenu];
@@ -653,6 +653,7 @@
     [[HotKeyCenter sharedCenter] removeHotKey:@"PlayPause"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"NextTrack"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleVisualizer"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
@@ -685,16 +686,22 @@
                 target:self action:@selector(prevSong:)];
     }
     
+    if ([defaults objectForKey:@"ToggleVisualizer"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleVisualizer"
+                combo:[defaults keyComboForKey:@"ToggleVisualizer"]
+                target:self action:@selector(toggleVisualizer)];
+    }
+    
     if ([defaults objectForKey:@"TrackInfo"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo"
                 combo:[defaults keyComboForKey:@"TrackInfo"]
-                target:self action:@selector(showCurrentTrackInfo)];
+                target:self action:@selector(showCurrentTrackInfoStatusWindow)];
     }
     
     if ([defaults objectForKey:@"UpcomingSongs"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
                combo:[defaults keyComboForKey:@"UpcomingSongs"]
-               target:self action:@selector(showUpcomingSongs)];
+               target:self action:@selector(showUpcomingSongsStatusWindow)];
     }
     
     if ([defaults objectForKey:@"ToggleLoop"] != nil) {
@@ -740,7 +747,7 @@
 //
 //
 
-- (void)showCurrentTrackInfo
+- (void)showCurrentTrackInfoStatusWindow
 {
     NSString *trackName = [currentRemote currentSongTitle];
     if (!statusWindow && [trackName length]) {
@@ -796,7 +803,7 @@
     }
 }
 
-- (void)showUpcomingSongs
+- (void)showUpcomingSongsStatusWindow
 {
     int curPlaylist = [currentRemote currentPlaylistIndex];
     if (!statusWindow) {
@@ -854,6 +861,11 @@
 {
 }
 
+- (void)toggleVisualizer
+{
+    NSLog(@"Visualizer On/Off");
+}
+
 - (void)fadeAndCloseStatusWindow
 {
     [statusWindow orderOut:self];
@@ -894,10 +906,10 @@
         //Space -- ARGH!
         case 49:
         {
-            MenuRef menuRef = _NSGetCarbonMenu([item menu]);
+            /*MenuRef menuRef = _NSGetCarbonMenu([item menu]);
             SetMenuItemCommandKey(menuRef, 1, NO, 49);
             SetMenuItemModifiers(menuRef, 1, kMenuNoCommandModifier);
-            SetMenuItemKeyGlyph(menuRef, 1, kMenuBlankGlyph);
+            SetMenuItemKeyGlyph(menuRef, 1, kMenuBlankGlyph);*/
             charcode = 'b';
             
         }
