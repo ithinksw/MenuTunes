@@ -63,12 +63,12 @@
     }
     
     if ( (tempItem = [_currentMenu itemWithTag:3]) ) {
-        ITDebugLog(@"Removing \"EQ Presets\" submenu.");
+        ITDebugLog(@"Removing \"Playlists\" submenu.");
         [tempItem setSubmenu:nil];
     }
     
     if ( (tempItem = [_currentMenu itemWithTag:4]) ) {
-        ITDebugLog(@"Removing \"Playlists\" submenu.");
+        ITDebugLog(@"Removing \"EQ Presets\" submenu.");
         [tempItem setSubmenu:nil];
     }
     
@@ -194,23 +194,22 @@
             [tempItem setTarget:self];
         } else if ([nextObject isEqualToString:@"quit"]) {
             ITDebugLog(@"Add \"Quit\" menu item.");
-            tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit")
-                    action:@selector(performMainMenuAction:)
-                    keyEquivalent:@""];
-            [tempItem setTag:MTMenuQuitItem];
-            [tempItem setTarget:self];
             if ([[MainController sharedController] blingBling] == NO) {
                 ITDebugLog(@"Add \"Register MenuTunes...\" menu item.");
                 tempItem = [menu addItemWithTitle:NSLocalizedString(@"register", @"Register MenuTunes...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
                 [tempItem setTag:MTMenuRegisterItem];
                 [tempItem setTarget:self];
             }
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit")
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuQuitItem];
+            [tempItem setTarget:self];
         } else if ([nextObject isEqualToString:@"trackInfo"]) {
             ITDebugLog(@"Check to see if a Track is playing...");
             //Handle playing radio too
             if (_currentPlaylist) {
                 NSString *title = [currentRemote currentSongTitle];
-                
                 ITDebugLog(@"A Track is Playing, Add \"Track Info\" menu items.");
                 ITDebugLog(@"Add \"Now Playing\" menu item.");
                 [menu addItemWithTitle:NSLocalizedString(@"nowPlaying", @"Now Playing") action:NULL keyEquivalent:@""];
@@ -221,64 +220,66 @@
                         [menu addItemWithTitle:title action:nil keyEquivalent:@""]];
                 }
                 
-                if ([defaults boolForKey:@"showAlbum"]) {
-                    NSString *curAlbum = [currentRemote currentSongAlbum];
-                    ITDebugLog(@"Add Track Album (\"%@\") menu item.", curAlbum);
-                    if ([curAlbum length]) {
-                        [menu indentItem:
-                            [menu addItemWithTitle:curAlbum action:nil keyEquivalent:@""]];
+                if (!_playingRadio) {
+                    if ([defaults boolForKey:@"showAlbum"]) {
+                        NSString *curAlbum = [currentRemote currentSongAlbum];
+                        ITDebugLog(@"Add Track Album (\"%@\") menu item.", curAlbum);
+                        if ([curAlbum length]) {
+                            [menu indentItem:
+                                [menu addItemWithTitle:curAlbum action:nil keyEquivalent:@""]];
+                        }
                     }
-                }
-                
-                if ([defaults boolForKey:@"showArtist"]) {
-                    NSString *curArtist = [currentRemote currentSongArtist];
-                    ITDebugLog(@"Add Track Artist (\"%@\") menu item.", curArtist);
-                    if ([curArtist length]) {
-                        [menu indentItem:
-                            [menu addItemWithTitle:curArtist action:nil keyEquivalent:@""]];
+                    
+                    if ([defaults boolForKey:@"showArtist"]) {
+                        NSString *curArtist = [currentRemote currentSongArtist];
+                        ITDebugLog(@"Add Track Artist (\"%@\") menu item.", curArtist);
+                        if ([curArtist length]) {
+                            [menu indentItem:
+                                [menu addItemWithTitle:curArtist action:nil keyEquivalent:@""]];
+                        }
                     }
-                }
-                
-                if ([defaults boolForKey:@"showTrackNumber"]) {
-                    int track = [currentRemote currentSongTrack];
-                    ITDebugLog(@"Add Track Number (\"Track %i\") menu item.", track);
-                    if (track) {
-                        [menu indentItem:
-                            [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %i", NSLocalizedString(@"track", @"Track"), track] action:nil keyEquivalent:@""]];
+                    
+                    if ([defaults boolForKey:@"showTrackNumber"]) {
+                        int track = [currentRemote currentSongTrack];
+                        ITDebugLog(@"Add Track Number (\"Track %i\") menu item.", track);
+                        if (track) {
+                            [menu indentItem:
+                                [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %i", NSLocalizedString(@"track", @"Track"), track] action:nil keyEquivalent:@""]];
+                        }
                     }
-                }
-                
-                if ([defaults boolForKey:@"showTime"]) {
-                    int left = [[currentRemote currentSongRemaining] intValue];
-                    NSString *remaining = [NSString stringWithFormat:@"%i:%02i", left / 60, left % 60];
-                    ITDebugLog(@"Add Track Remaining (\"%@/%@\") menu item.", remaining, [currentRemote currentSongLength]);
-                    [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", remaining, [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
-                }
-                
-                if ([defaults boolForKey:@"showTrackRating"]) {
-                    NSString *string = nil;
-                    switch ((int)([currentRemote currentSongRating] * 5)) {
-                        case 0:
-                            string = [NSString stringWithUTF8String:"☆☆☆☆☆"];
-                        break;
-                        case 1:
-                            string = [NSString stringWithUTF8String:"★☆☆☆☆"];
-                        break;
-                        case 2:
-                            string = [NSString stringWithUTF8String:"★★☆☆☆"];
-                        break;
-                        case 3:
-                            string = [NSString stringWithUTF8String:"★★★☆☆"];
-                        break;
-                        case 4:
-                            string = [NSString stringWithUTF8String:"★★★★☆"];
-                        break;
-                        case 5:
-                            string = [NSString stringWithUTF8String:"★★★★★"];
-                        break;
+                    
+                    if ([defaults boolForKey:@"showTime"]) {
+                        int left = [[currentRemote currentSongRemaining] intValue];
+                        NSString *remaining = [NSString stringWithFormat:@"%i:%02i", left / 60, left % 60];
+                        ITDebugLog(@"Add Track Remaining (\"%@/%@\") menu item.", remaining, [currentRemote currentSongLength]);
+                        [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", remaining, [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
                     }
-                    ITDebugLog(@"Add Track Rating (\"%@\") menu item.", string);
-                    [menu indentItem:[menu addItemWithTitle:string action:nil keyEquivalent:@""]];
+                    
+                    if ([defaults boolForKey:@"showTrackRating"]) {
+                        NSString *string = nil;
+                        switch ((int)([currentRemote currentSongRating] * 5)) {
+                            case 0:
+                                string = [NSString stringWithUTF8String:"☆☆☆☆☆"];
+                            break;
+                            case 1:
+                                string = [NSString stringWithUTF8String:"★☆☆☆☆"];
+                            break;
+                            case 2:
+                                string = [NSString stringWithUTF8String:"★★☆☆☆"];
+                            break;
+                            case 3:
+                                string = [NSString stringWithUTF8String:"★★★☆☆"];
+                            break;
+                            case 4:
+                                string = [NSString stringWithUTF8String:"★★★★☆"];
+                            break;
+                            case 5:
+                                string = [NSString stringWithUTF8String:"★★★★★"];
+                            break;
+                        }
+                        ITDebugLog(@"Add Track Rating (\"%@\") menu item.", string);
+                        [menu indentItem:[menu addItemWithTitle:string action:nil keyEquivalent:@""]];
+                    }
                 }
             } else {
                 ITDebugLog(@"No Track is Playing, Add \"No Song\" menu item.");
@@ -288,33 +289,6 @@
             ITDebugLog(@"Add a separator menu item.");
             [menu addItem:[NSMenuItem separatorItem]];
         //Submenu items
-        } else if ([nextObject isEqualToString:@"songRating"]) {
-            ITDebugLog(@"Add \"Song Rating\" submenu.");
-            tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
-                    action:nil
-                    keyEquivalent:@""];
-            [tempItem setSubmenu:_ratingMenu];
-            [tempItem setTag:1];
-            if (_playingRadio || !_currentPlaylist) {
-                [tempItem setEnabled:NO];
-            }
-            
-            itemEnum = [[_ratingMenu itemArray] objectEnumerator];
-            while ( (tempItem = [itemEnum nextObject]) ) {
-                [tempItem setState:NSOffState];
-            }
-            
-            [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
-        } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
-            ITDebugLog(@"Add \"Upcoming Songs\" submenu.");
-            tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
-                    action:nil
-                    keyEquivalent:@""];
-            [tempItem setSubmenu:_upcomingSongsMenu];
-            [tempItem setTag:2];
-            if (_playingRadio || !_currentPlaylist) {
-                [tempItem setEnabled:NO];
-            }
         } else if ([nextObject isEqualToString:@"playlists"]) {
             ITDebugLog(@"Add \"Playlists\" submenu.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"playlists", @"Playlists")
@@ -335,6 +309,37 @@
                 [tempItem setState:NSOffState];
             }
             [[_eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
+        }
+        
+        if (!_playingRadio) {
+            if ([nextObject isEqualToString:@"songRating"]) {
+                ITDebugLog(@"Add \"Song Rating\" submenu.");
+                tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
+                        action:nil
+                        keyEquivalent:@""];
+                [tempItem setSubmenu:_ratingMenu];
+                [tempItem setTag:1];
+                if (_playingRadio || !_currentPlaylist) {
+                    [tempItem setEnabled:NO];
+                }
+                
+                itemEnum = [[_ratingMenu itemArray] objectEnumerator];
+                while ( (tempItem = [itemEnum nextObject]) ) {
+                    [tempItem setState:NSOffState];
+                }
+                
+                [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
+            } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
+                ITDebugLog(@"Add \"Upcoming Songs\" submenu.");
+                tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
+                        action:nil
+                        keyEquivalent:@""];
+                [tempItem setSubmenu:_upcomingSongsMenu];
+                [tempItem setTag:2];
+                if (_playingRadio || !_currentPlaylist) {
+                    [tempItem setEnabled:NO];
+                }
+            }
         }
     }
     ITDebugLog(@"Finished building menu.");
