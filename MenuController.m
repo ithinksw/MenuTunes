@@ -176,15 +176,21 @@
                 }
                 
                 if ([defaults boolForKey:@"showAlbum"]) {
-                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", [currentRemote currentSongAlbum]]
-                            action:nil
-                            keyEquivalent:@""];
+                    NSString *curAlbum = [currentRemote currentSongAlbum];
+                    if ([curAlbum length]) {
+                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", curAlbum]
+                                action:nil
+                                keyEquivalent:@""];
+                    }
                 }
                 
                 if ([defaults boolForKey:@"showArtist"]) {
-                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", [currentRemote currentSongArtist]]
-                            action:nil
-                            keyEquivalent:@""];
+                    NSString *curArtist = [currentRemote currentSongArtist];
+                    if ([curArtist length]) {
+                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", curArtist]
+                                action:nil
+                                keyEquivalent:@""];
+                    }
                 }
                 
                 if ([defaults boolForKey:@"showTrackNumber"]) {

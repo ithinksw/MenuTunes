@@ -630,7 +630,7 @@ static PreferencesController *prefs = nil;
     if ( flag ) {
         NSMutableDictionary *loginwindow;
         NSMutableArray *loginarray;
-        ComponentInstance temp = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);;
+        ComponentInstance temp = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
         int i;
         BOOL skip = NO;
 
