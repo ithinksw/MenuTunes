@@ -200,7 +200,6 @@
     menu = [[NSMenu alloc] initWithTitle:@""];
     
     playPauseItem = nil;
-    lastSongIdentifier = @"0-0";
     
     upcomingSongsItem = nil;
     [upcomingSongsMenu release];
@@ -269,6 +268,9 @@
             upcomingSongsItem = [menu addItemWithTitle:@"Upcoming Songs"
                     action:nil
                     keyEquivalent:@""];
+            upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
+            [upcomingSongsItem setSubmenu:upcomingSongsMenu];
+            [upcomingSongsItem setEnabled:NO];
         } else if ([item isEqualToString:@"Playlists"]) {
             playlistItem = [menu addItemWithTitle:@"Playlists"
                     action:nil
