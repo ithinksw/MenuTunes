@@ -45,6 +45,11 @@ static MainController *sharedController;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)note
 {
+    //Turn on debug mode if needed
+    if ([df boolForKey:@"ITDebugMode"]) {
+        SetITDebugMode(YES);
+    }
+    
     currentRemote = [self loadRemote];
     [currentRemote begin];
     

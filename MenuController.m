@@ -12,6 +12,7 @@
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
+#import <ITKit/ITCategory-NSMenu.h>
 
 @interface MenuController (SubmenuMethods)
 - (NSMenu *)ratingMenu;
@@ -65,10 +66,13 @@
         [tempItem setSubmenu:nil];
     }
     
+    ITDebugLog(@"Begin building menu.");
+    
     //create our menu
     while ( (nextObject = [enumerator nextObject]) ) {
         //Main menu items
         if ([nextObject isEqualToString:@"playPause"]) {
+            ITDebugLog(@"Add play/pause menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"play", @"Play")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
@@ -97,6 +101,7 @@
                 break;
             }
         } else if ([nextObject isEqualToString:@"nextTrack"]) {
+            ITDebugLog(@"Add next track menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"nextTrack", @"Next Track")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
@@ -116,6 +121,7 @@
                 [tempItem setTarget:self];
             }
         } else if ([nextObject isEqualToString:@"prevTrack"]) {
+            ITDebugLog(@"Add previous track menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"prevTrack", @"Previous Track")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
@@ -135,6 +141,7 @@
                 [tempItem setTarget:self];
             }
         } else if ([nextObject isEqualToString:@"fastForward"]) {
+            ITDebugLog(@"Add fast forward menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"fastForward", @"Fast Forward")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
@@ -143,6 +150,7 @@
                 [tempItem setTarget:self];
             }
         } else if ([nextObject isEqualToString:@"rewind"]) {
+            ITDebugLog(@"Add rewind menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"rewind", @"Rewind")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
@@ -151,6 +159,7 @@
                 [tempItem setTarget:self];
             }
         } else if ([nextObject isEqualToString:@"showPlayer"]) {
+            ITDebugLog(@"Add show player menu item.");
             tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@",
                             NSLocalizedString(@"show", @"Show"),
                             [[[MainController sharedController] currentRemote] playerSimpleName]]
@@ -170,6 +179,7 @@
             [tempItem setTarget:self];
             [tempItem setTag:MTMenuShowPlayerItem];
         } else if ([nextObject isEqualToString:@"preferences"]) {
+            ITDebugLog(@"Add preferences menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"preferences", @"Preferences...")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
@@ -182,6 +192,7 @@
             [tempItem setTag:MTMenuQuitItem];
             [tempItem setTarget:self];
         } else if ([nextObject isEqualToString:@"trackInfo"]) {
+            ITDebugLog(@"Add track info menu items.");
             //Handle playing radio too
             if (_currentPlaylist) {
                 NSString *title = [currentRemote currentSongTitle];
@@ -189,44 +200,38 @@
                 [menu addItemWithTitle:NSLocalizedString(@"nowPlaying", @"Now Playing") action:NULL keyEquivalent:@""];
                 
                 if ([title length] > 0) {
-                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title]
-                            action:nil
-                            keyEquivalent:@""];
+                    [menu indentItem:
+                        [menu addItemWithTitle:title action:nil keyEquivalent:@""]];
                 }
                 
                 if ([defaults boolForKey:@"showAlbum"]) {
                     NSString *curAlbum = [currentRemote currentSongAlbum];
                     if ([curAlbum length]) {
-                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", curAlbum]
-                                action:nil
-                                keyEquivalent:@""];
+                        [menu indentItem:
+                            [menu addItemWithTitle:curAlbum action:nil keyEquivalent:@""]];
                     }
                 }
                 
                 if ([defaults boolForKey:@"showArtist"]) {
                     NSString *curArtist = [currentRemote currentSongArtist];
                     if ([curArtist length]) {
-                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", curArtist]
-                                action:nil
-                                keyEquivalent:@""];
+                        [menu indentItem:
+                            [menu addItemWithTitle:curArtist action:nil keyEquivalent:@""]];
                     }
                 }
                 
                 if ([defaults boolForKey:@"showTrackNumber"]) {
                     int track = [currentRemote currentSongTrack];
                     if (track) {
-                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@ %i", NSLocalizedString(@"track", @"Track"), track]
-                            action:nil
-                            keyEquivalent:@""];
+                        [menu indentItem:
+                            [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %i", NSLocalizedString(@"track", @"Track"), track] action:nil keyEquivalent:@""]];
                     }
                 }
                 
                 if ([defaults boolForKey:@"showTime"]) {
                     int left = [[currentRemote currentSongRemaining] intValue];
                     NSString *remaining = [NSString stringWithFormat:@"%i:%02i", left / 60, left % 60];
-                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@/%@", remaining, [currentRemote currentSongLength]]
-                            action:nil
-                            keyEquivalent:@""];
+                    [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"%@/%@", remaining, [currentRemote currentSongLength]] action:nil keyEquivalent:@""]];
                 }
                 
                 if ([defaults boolForKey:@"showTrackRating"]) {
@@ -251,18 +256,17 @@
                             string = [NSString stringWithUTF8String:"★★★★★"];
                         break;
                     }
-                    [menu addItemWithTitle:
-                        [@"	" stringByAppendingString:string]
-                          action:nil
-                          keyEquivalent:@""];
+                    [menu indentItem:[menu addItemWithTitle:string action:nil keyEquivalent:@""]];
                 }
             } else {
                 [menu addItemWithTitle:NSLocalizedString(@"noSong", @"No Song") action:NULL keyEquivalent:@""];
             }
         } else if ([nextObject isEqualToString:@"separator"]) {
+            ITDebugLog(@"Add separator menu item.");
             [menu addItem:[NSMenuItem separatorItem]];
         //Submenu items
         } else if ([nextObject isEqualToString:@"songRating"]) {
+            ITDebugLog(@"Add song rating menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
                     action:nil
                     keyEquivalent:@""];
@@ -279,6 +283,7 @@
             
             [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
         } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
+            ITDebugLog(@"Add upcoming songs menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
                     action:nil
                     keyEquivalent:@""];
@@ -294,6 +299,7 @@
             [tempItem setSubmenu:_playlistsMenu];
             [tempItem setTag:3];
         } else if ([nextObject isEqualToString:@"eqPresets"]) {
+            ITDebugLog(@"Add eq presets menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"eqPresets", @"EQ Presets")
                     action:nil
                     keyEquivalent:@""];
@@ -307,6 +313,7 @@
             [[_eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
         }
     }
+    ITDebugLog(@"Finished building menu.");
     [_currentMenu release];
     _currentMenu = menu;
     return _currentMenu;
@@ -354,6 +361,8 @@
     int itemTag = 0;
     SEL itemSelector = @selector(performRatingMenuAction:);
     
+    ITDebugLog(@"Building rating menu.");
+    
     [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"☆☆☆☆☆"] action:nil keyEquivalent:@""];
     [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★☆☆☆☆"] action:nil keyEquivalent:@""];
     [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★☆☆☆"] action:nil keyEquivalent:@""];
@@ -376,6 +385,8 @@
     NSMenu *upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
     int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:_currentPlaylist];
     int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
+    
+    ITDebugLog(@"Building upcoming songs menu.");
     
     if (_currentPlaylist && !_playingRadio) {
         if (numSongs > 0) {
@@ -404,6 +415,8 @@
     NSMenuItem *tempItem;
     int i;
     
+    ITDebugLog(@"Building playlists menu.");
+    
     for (i = 0; i < [playlists count]; i++) {
         tempItem = [playlistsMenu addItemWithTitle:[playlists objectAtIndex:i] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
         [tempItem setTag:i + 1];
@@ -422,6 +435,8 @@
     NSArray *eqPresets = [currentRemote eqPresets];
     NSMenuItem *tempItem;
     int i;
+    
+    ITDebugLog(@"Building EQ presets menu.");
     
     for (i = 0; i < [eqPresets count]; i++) {
         NSString *name;
