@@ -276,4 +276,21 @@ static StatusWindowController *sharedController;
     [_window setLocked:YES];
 }
 
+- (void)showPreferencesUpdateWindow
+{
+    NSString *message = @"The new features in this version of MenuTunes\nrequire you to reconfigure your preferences.";
+
+    [_window setImage:[NSImage imageNamed:@"Setup"]];
+    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window buildDialogWindowWithMessage:message
+                            defaultButton:@"Show Preferences"
+                          alternateButton:@"OK"
+                                   target:[MainController sharedController]
+                            defaultAction:@selector(showPreferencesAndClose)
+                          alternateAction:@selector(cancelReconnect)];
+
+    [_window appear:self];
+    [_window setLocked:YES];
+}
+
 @end

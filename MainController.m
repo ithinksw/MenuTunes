@@ -55,6 +55,12 @@ static MainController *sharedController;
         SetITDebugMode(YES);
     }
     
+    if (![df stringForKey:@"appVersion"]) {
+        [df removePersistentDomainForName:@"com.ithinksw.menutunes"];
+        [df setObject:@"1.2" forKey:@"appVersion"];
+        [[StatusWindowController sharedController] showPreferencesUpdateWindow];
+    }
+    
     currentRemote = [self loadRemote];
     [[self currentRemote] begin];
     
@@ -474,6 +480,15 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Show preferences.");
     [[PreferencesController sharedPrefs] showPrefsWindow:self];
+}
+
+- (void)showPreferencesAndClose
+{
+    ITDebugLog(@"Show preferences.");
+    [[PreferencesController sharedPrefs] showPrefsWindow:self];
+    [[StatusWindow sharedWindow] setLocked:NO];
+    [[StatusWindow sharedWindow] vanish:self];
+    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }
 
 - (void)showTestWindow
