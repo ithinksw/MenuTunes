@@ -114,6 +114,7 @@ static StatusWindowController *sharedController;
     NSString *text  = title;
     
     if ( art != nil ) {
+	/*
         NSImageRep *artRep = [art bestRepresentationForDevice:nil];
         image = [[NSImage alloc] initWithSize:NSMakeSize(110, 110)];
         [image lockFocus];
@@ -123,7 +124,10 @@ static StatusWindowController *sharedController;
             [artRep drawInRect:NSMakeRect(3, 3, 104, 104)];
         }
         [image unlockFocus];
-        [image autorelease];
+        [image autorelease];*/
+	image = art;
+	[image setScalesWhenResized:YES];
+	[image setSize:NSMakeSize(110,110)];
     } else if ( source == ITMTRemoteLibrarySource ) {
         image = [NSImage imageNamed:@"Library"];
     } else if ( source == ITMTRemoteCDSource ) {
