@@ -286,8 +286,8 @@
 
 - (ITMTRemotePlayerRepeatMode)repeatMode
 {
-    FourCharCode m00f;
-    int result;
+    FourCharCode m00f = 0;
+    int result = 0;
     m00f = [[ITAppleEventCenter sharedCenter]
                 sendTwoTierAEWithRequestedKeyForNumber:@"pRpt" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
 
@@ -309,7 +309,7 @@
 
 - (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode
 {
-    FourCharCode m00f;
+    FourCharCode m00f = 0;
     switch (repeatMode)
 	   {
 	   case ITMTRemotePlayerRepeatOff:

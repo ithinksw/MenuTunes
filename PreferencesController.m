@@ -2,153 +2,110 @@
 #import "MainController.h"
 #import "HotKeyCenter.h"
 
+/*************************************************************************/
+#pragma mark -
+#pragma mark PRIVATE INTERFACE
+/*************************************************************************/
+
+@interface PreferencesController (Private)
+- (void)setupWindow;
+- (void)setupCustomizationTables;
+- (void)setupMenuItems;
+- (void)setupUI;
+@end
+
+
 @implementation PreferencesController
 
-- (id)initWithMenuTunes:(MainController *)tunes;
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark STATIC VARIABLES
+/*************************************************************************/
+
+static PreferencesController *prefs = nil;
+
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark INITIALIZATION METHODS
+/*************************************************************************/
+
++ (PreferencesController *)sharedPrefs;
+{
+    if (! prefs) {
+        prefs = [[self alloc] init];
+    }
+    return prefs;
+}
+
+- (id)init
 {
     if ( (self = [super init]) ) {
-        int i;
-        NSImageCell *imgCell = [[[NSImageCell alloc] init] autorelease];
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
-        mt = [tunes retain];
-        [mt registerDefaults];
-        
-        [NSBundle loadNibNamed:@"Preferences" owner:self]; //Load the nib
-        
-        //Set the table view cells up
-        [imgCell setImageScaling:NSScaleNone];
-        [[menuTableView tableColumnWithIdentifier:@"submenu"] setDataCell:imgCell];
-        [[allTableView tableColumnWithIdentifier:@"submenu"] setDataCell:imgCell];
-        
-        //Register for drag and drop
-        [menuTableView registerForDraggedTypes:[NSArray arrayWithObjects:@"MenuTableViewPboardType", @"AllTableViewPboardType", nil]];
-        [allTableView registerForDraggedTypes:[NSArray arrayWithObjects:@"MenuTableViewPboardType", @"AllTableViewPboardType", nil]];
-        
-        //Set the list of items you can have.
-        availableItems = [[NSMutableArray alloc] initWithObjects:@"Current Track Info",  @"Upcoming Songs", @"Playlists", @"EQ Presets", @"Song Rating", @"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", nil];
-        
-        //Get our preferred menu
-        myItems = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"] mutableCopy];
-        
-        //Delete items in the availableItems array that are already part of the menu
-        for (i = 0; i < [myItems count]; i++) {
-            NSString *item = [myItems objectAtIndex:i];
-            if (![item isEqualToString:@"<separator>"])
-            {
-                [availableItems removeObject:item];
-            }
-        }
-        
-        //Items that show should a submenu image
-        submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", @"EQ Presets", @"Song Rating", nil];
-        
-        //Fill in the number of songs in advance to show field
-        [songsInAdvance setIntValue:[defaults integerForKey:@"SongsInAdvance"]];
-        
-        //Fill in hot key buttons
-        if ([defaults objectForKey:@"PlayPause"]){
-            playPauseCombo = [defaults keyComboForKey:@"PlayPause"];
-            [playPauseButton setTitle:[playPauseCombo userDisplayRep]];
-        } else {
-            playPauseCombo = [[KeyCombo alloc] init];
-        }
-        
-        if ([defaults objectForKey:@"NextTrack"]) {
-            nextTrackCombo = [defaults keyComboForKey:@"NextTrack"];
-            [nextTrackButton setTitle:[nextTrackCombo userDisplayRep]];
-        } else {
-            nextTrackCombo = [[KeyCombo alloc] init];
-        }
-        
-        if ([defaults objectForKey:@"PrevTrack"]) {
-            prevTrackCombo = [defaults keyComboForKey:@"PrevTrack"];
-            [previousTrackButton setTitle:[prevTrackCombo userDisplayRep]];
-        } else {
-            prevTrackCombo = [[KeyCombo alloc] init];
-        }
-        
-        if ([defaults objectForKey:@"TrackInfo"]) {
-            trackInfoCombo = [defaults keyComboForKey:@"TrackInfo"];
-            [trackInfoButton setTitle:[trackInfoCombo userDisplayRep]];
-        } else {
-            trackInfoCombo = [[KeyCombo alloc] init];
-        }
-        
-        if ([defaults objectForKey:@"UpcomingSongs"]) {
-            upcomingSongsCombo = [defaults keyComboForKey:@"UpcomingSongs"];
-            [upcomingSongsButton setTitle:[upcomingSongsCombo userDisplayRep]];
-        } else {
-            upcomingSongsCombo = [[KeyCombo alloc] init];
-        }
-        
-        //Check current track info buttons
-        [albumCheckbox setState:[defaults boolForKey:@"showAlbum"] ? NSOnState : NSOffState];
-        [nameCheckbox setState:[defaults boolForKey:@"showName"] ? NSOnState : NSOffState];
-        [artistCheckbox setState:[defaults boolForKey:@"showArtist"] ? NSOnState : NSOffState];
-        [trackTimeCheckbox setState:[defaults boolForKey:@"showTime"] ? NSOnState : NSOffState];
-        
-        //Set the launch at login checkbox state
-        {
-            NSMutableDictionary *loginwindow;
-            NSMutableArray *loginarray;
-            int i;
-            
-            [defaults synchronize];
-            loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
-            loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-            
-            for (i = 0; i < [loginarray count]; i++) {
-                NSDictionary *tempDict = [loginarray objectAtIndex:i];
-                if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
-                    [launchAtLoginCheckbox setState:NSOnState];
-                }
-            }
-        }
-        
-        //Show our window
-        [window setLevel:NSStatusWindowLevel];
-        [window center];
-        [window makeKeyAndOrderFront:nil];
-        [window setDelegate:self];
+        df = [[NSUserDefaults standardUserDefaults] retain];
+        controller = nil;
     }
     return self;
 }
 
-- (void)dealloc
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark ACCESSOR METHODS
+/*************************************************************************/
+
+- (id)controller
 {
-    [self setKeyCombo:nil];
-    [playPauseCombo release];
-    [nextTrackCombo release];
-    [prevTrackCombo release];
-    [trackInfoCombo release];
-    [upcomingSongsCombo release];
-    [keyComboPanel release];
-    [menuTableView setDataSource:nil];
-    [allTableView setDataSource:nil];
-    [mt release];
-    [availableItems release];
-    [submenuItems release];
-    [myItems release];
+    return controller;
+}
+
+- (void)setController:(id)object
+{
+NSLog(@"foo");
+    [controller autorelease];
+    controller = [object retain];
+NSLog(@"bar");
+}
+
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark INSTANCE METHODS
+/*************************************************************************/
+
+
+- (IBAction)showPrefsWindow:(id)sender
+{
+    if (! window) {  // If window does not exist yet, then the nib hasn't been loaded.
+        [self setupWindow];  // Load in the nib, and perform any initial setup.
+        [self setupCustomizationTables];  // Setup the DnD manu config tables.
+        [self setupMenuItems];  // Setup the arrays of menu items
+        [self setupUI]; // Sets up additional UI
+        [window setDelegate:self];
+    }
+    
+    [window setLevel:NSStatusWindowLevel];
+    [window center];
+    [window makeKeyAndOrderFront:self];
+    [NSApp activateIgnoringOtherApps:YES];
 }
 
 - (IBAction)apply:(id)sender
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:myItems forKey:@"menu"];
+    [df setObject:myItems forKey:@"menu"];
     
     //Set key combos
-    [defaults setKeyCombo:playPauseCombo forKey:@"PlayPause"];
-    [defaults setKeyCombo:nextTrackCombo forKey:@"NextTrack"];
-    [defaults setKeyCombo:prevTrackCombo forKey:@"PrevTrack"];
-    [defaults setKeyCombo:trackInfoCombo forKey:@"TrackInfo"];
-    [defaults setKeyCombo:upcomingSongsCombo forKey:@"UpcomingSongs"];
+    [df setKeyCombo:playPauseCombo forKey:@"PlayPause"];
+    [df setKeyCombo:nextTrackCombo forKey:@"NextTrack"];
+    [df setKeyCombo:prevTrackCombo forKey:@"PrevTrack"];
+    [df setKeyCombo:trackInfoCombo forKey:@"TrackInfo"];
+    [df setKeyCombo:upcomingSongsCombo forKey:@"UpcomingSongs"];
     
     //Set info checkboxes
-    [defaults setBool:[albumCheckbox state] forKey:@"showAlbum"];
-    [defaults setBool:[nameCheckbox state] forKey:@"showName"];
-    [defaults setBool:[artistCheckbox state] forKey:@"showArtist"];
-    [defaults setBool:[trackTimeCheckbox state] forKey:@"showTime"];
+    [df setBool:[albumCheckbox state] forKey:@"showAlbum"];
+    [df setBool:[nameCheckbox state] forKey:@"showName"];
+    [df setBool:[artistCheckbox state] forKey:@"showArtist"];
+    [df setBool:[trackTimeCheckbox state] forKey:@"showTime"];
     
     //Here we set whether we will launch at login by modifying loginwindow.plist
     if ([launchAtLoginCheckbox state] == NSOnState) {
@@ -158,8 +115,8 @@
         int i;
         BOOL skip = NO;
         
-        [defaults synchronize];
-        loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
+        [df synchronize];
+        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
         loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
         
         for (i = 0; i < [loginarray count]; i++) {
@@ -187,16 +144,16 @@
         NSMutableArray *loginarray;
         int i;
         
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        loginwindow = [[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"loginwindow"] mutableCopy];
+        [df synchronize];
+        loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
         loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
         
         for (i = 0; i < [loginarray count]; i++) {
             NSDictionary *tempDict = [loginarray objectAtIndex:i];
             if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
                 [loginarray removeObjectAtIndex:i];
-                [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
-                [defaults synchronize];
+                [df setPersistentDomain:loginwindow forName:@"loginwindow"];
+                [df synchronize];
                 break;
             }
         }
@@ -204,9 +161,9 @@
     
     //Set songs in advance
     if ([songsInAdvance intValue]) {
-        [defaults setInteger:[songsInAdvance intValue] forKey:@"SongsInAdvance"];
+        [df setInteger:[songsInAdvance intValue] forKey:@"SongsInAdvance"];
     } else {
-        [defaults setInteger:5 forKey:@"SongsInAdvance"];
+        [df setInteger:5 forKey:@"SongsInAdvance"];
     }
     
     /*{
@@ -216,17 +173,17 @@
         for (i = 0; i < [apps count]; i++) {
             if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
                     isEqualToString:@"iTunes"]) {
-                [mt rebuildMenu];
+                [controller rebuildMenu];
             }
         }
     }*/
-    [mt clearHotKeys];
+    [controller clearHotKeys];
 }
 
 - (IBAction)cancel:(id)sender
 {
     [window close];
-    [mt closePreferences];
+    [controller closePreferences];
 }
 
 - (IBAction)cancelHotKey:(id)sender
@@ -260,9 +217,7 @@
         }
         playPauseCombo = [combo copy];
         [playPauseButton setTitle:string];
-    }
-    else if ([setHotKey isEqualToString:@"NextTrack"])
-    {
+    } else if ([setHotKey isEqualToString:@"NextTrack"]) {
         if (([combo isEqual:playPauseCombo] || [combo isEqual:prevTrackCombo] ||
             [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
@@ -274,9 +229,7 @@
         }
         nextTrackCombo = [combo copy];
         [nextTrackButton setTitle:string];
-    }
-    else if ([setHotKey isEqualToString:@"PrevTrack"])
-    {
+    } else if ([setHotKey isEqualToString:@"PrevTrack"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:playPauseCombo] ||
             [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
@@ -288,9 +241,7 @@
         }
         prevTrackCombo = [combo copy];
         [previousTrackButton setTitle:string];
-    }
-    else if ([setHotKey isEqualToString:@"TrackInfo"])
-    {
+    } else if ([setHotKey isEqualToString:@"TrackInfo"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
             [combo isEqual:playPauseCombo] || [combo isEqual:upcomingSongsCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
@@ -302,9 +253,7 @@
         }
         trackInfoCombo = [combo copy];
         [trackInfoButton setTitle:string];
-    }
-    else if ([setHotKey isEqualToString:@"UpcomingSongs"])
-    {
+    } else if ([setHotKey isEqualToString:@"UpcomingSongs"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
             [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
@@ -324,7 +273,7 @@
 {
     [self apply:nil];
     [window close];
-    [mt closePreferences];
+    [controller closePreferences];
 }
 
 - (IBAction)setCurrentTrackInfo:(id)sender
@@ -391,19 +340,161 @@
     [keyComboField setStringValue:string];
 }
 
-//
-//
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark PRIVATE METHOD IMPLEMENTATIONS
+/*************************************************************************/
+
+- (void)setupWindow
+{
+    if ( ! [NSBundle loadNibNamed:@"Preferences" owner:self] ) {
+        NSLog( @"Failed to load Preferences.nib" );
+        NSBeep();
+        return;
+    }
+}
+
+- (void)setupCustomizationTables
+{
+    NSImageCell *imgCell = [[[NSImageCell alloc] initImageCell:nil] autorelease];
+    
+    // Set the table view cells up
+    [imgCell setImageScaling:NSScaleNone];
+    [[menuTableView tableColumnWithIdentifier:@"submenu"] setDataCell:imgCell];
+    [[allTableView tableColumnWithIdentifier:@"submenu"] setDataCell:imgCell];
+
+    // Register for drag and drop
+    [menuTableView registerForDraggedTypes:[NSArray arrayWithObjects:
+        @"MenuTableViewPboardType",
+        @"AllTableViewPboardType",
+        nil]];
+    [allTableView registerForDraggedTypes:[NSArray arrayWithObjects:
+        @"MenuTableViewPboardType",
+        @"AllTableViewPboardType",
+        nil]];
+}
+
+- (void)setupMenuItems
+{
+    NSEnumerator *itemEnum;
+    id            anItem;
+    // Set the list of items you can have.
+    availableItems = [[NSMutableArray alloc] initWithObjects:
+        @"Current Track Info",
+        @"Upcoming Songs",
+        @"Playlists",
+        @"EQ Presets",
+        @"Song Rating",
+        @"Play/Pause",
+        @"Next Track",
+        @"Previous Track",
+        @"Fast Forward",
+        @"Rewind",
+        @"<separator>",
+        nil];
+    
+    // Get our preferred menu
+    myItems = [[df arrayForKey:@"menu"] mutableCopy];
+    
+    // Delete items in the availableItems array that are already part of the menu
+    itemEnum = [myItems objectEnumerator];
+    while ( (anItem = [itemEnum nextObject]) ) {
+        if ( ! [anItem isEqualToString:@"<separator>"] ) {
+            [availableItems removeObject:anItem];
+        }
+    }
+    
+    // Items that show should a submenu image
+    submenuItems = [[NSArray alloc] initWithObjects:
+        @"Upcoming Songs",
+        @"Playlists",
+        @"EQ Presets",
+        @"Song Rating",
+        nil];
+}
+
+- (void)setupUI
+{
+    NSMutableDictionary *loginwindow;
+    NSMutableArray *loginarray;
+    NSEnumerator *loginEnum;
+    id anItem;
+
+    // Fill in the number of songs in advance to show field
+    [songsInAdvance setIntValue:[df integerForKey:@"SongsInAdvance"]];
+    
+    // Fill in hot key buttons
+    if ([df objectForKey:@"PlayPause"]){
+        playPauseCombo = [df keyComboForKey:@"PlayPause"];
+        [playPauseButton setTitle:[playPauseCombo userDisplayRep]];
+    } else {
+        playPauseCombo = [[KeyCombo alloc] init];
+    }
+
+    if ([df objectForKey:@"NextTrack"]) {
+        nextTrackCombo = [df keyComboForKey:@"NextTrack"];
+        [nextTrackButton setTitle:[nextTrackCombo userDisplayRep]];
+    } else {
+        nextTrackCombo = [[KeyCombo alloc] init];
+    }
+
+    if ([df objectForKey:@"PrevTrack"]) {
+        prevTrackCombo = [df keyComboForKey:@"PrevTrack"];
+        [previousTrackButton setTitle:[prevTrackCombo userDisplayRep]];
+    } else {
+        prevTrackCombo = [[KeyCombo alloc] init];
+    }
+
+    if ([df objectForKey:@"TrackInfo"]) {
+        trackInfoCombo = [df keyComboForKey:@"TrackInfo"];
+        [trackInfoButton setTitle:[trackInfoCombo userDisplayRep]];
+    } else {
+        trackInfoCombo = [[KeyCombo alloc] init];
+    }
+
+    if ([df objectForKey:@"UpcomingSongs"]) {
+        upcomingSongsCombo = [df keyComboForKey:@"UpcomingSongs"];
+        [upcomingSongsButton setTitle:[upcomingSongsCombo userDisplayRep]];
+    } else {
+        upcomingSongsCombo = [[KeyCombo alloc] init];
+    }
+    
+    // Check current track info buttons
+    [albumCheckbox setState:[df boolForKey:@"showAlbum"] ? NSOnState : NSOffState];
+    [nameCheckbox setState:[df boolForKey:@"showName"] ? NSOnState : NSOffState];
+    [artistCheckbox setState:[df boolForKey:@"showArtist"] ? NSOnState : NSOffState];
+    [trackTimeCheckbox setState:[df boolForKey:@"showTime"] ? NSOnState : NSOffState];
+    
+    // Set the launch at login checkbox state
+    [df synchronize];
+    loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
+    loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+
+    loginEnum = [loginarray objectEnumerator];
+    while ( (anItem = [loginEnum nextObject]) ) {
+        if ([[[anItem objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
+            [launchAtLoginCheckbox setState:NSOnState];
+        }
+    }
+}
+
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark NSWindow DELEGATE METHODS
+/*************************************************************************/
 
 - (void)windowWillClose:(NSNotification *)note
 {
-    [mt closePreferences];
+    [(MainController *)controller closePreferences]; 
 }
 
-//
-//
-// Table View Datasource Methods
-//
-//
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark NSTableView DATASOURCE METHODS
+/*************************************************************************/
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
@@ -522,5 +613,30 @@
     
     return NSDragOperationGeneric;
 }
+
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark DEALLOCATION METHODS
+/*************************************************************************/
+
+- (void)dealloc
+{
+    [self setKeyCombo:nil];
+    [playPauseCombo release];
+    [nextTrackCombo release];
+    [prevTrackCombo release];
+    [trackInfoCombo release];
+    [upcomingSongsCombo release];
+    [keyComboPanel release];
+    [menuTableView setDataSource:nil];
+    [allTableView setDataSource:nil];
+    [controller release];
+    [availableItems release];
+    [submenuItems release];
+    [myItems release];
+    [df release];
+}
+
 
 @end

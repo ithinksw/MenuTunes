@@ -53,7 +53,7 @@
     imageHeight = [image size].height;
     
      // Iterate over each line to get text width and height
-    while ( oneLine = [lineEnum nextObject] ) {
+    while ( (oneLine = [lineEnum nextObject]) ) {
          // Get the width of one line, adding 8.0 because Apple sucks donkey rectum.
         float oneLineWidth = ( [oneLine sizeWithAttributes:attr].width + 8.0 );
          // Add the height of this line to the total text height

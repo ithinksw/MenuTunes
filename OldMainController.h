@@ -58,7 +58,6 @@
     
     NSMenuItem *playPauseItem; //Toggle between 'Play' and 'Pause'
     
-    PreferencesController *prefsController;
     StatusWindow *statusWindow; //Shows track info and upcoming songs.
 }
 

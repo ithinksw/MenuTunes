@@ -18,32 +18,45 @@
 
 @interface PreferencesController : NSObject
 {
-    IBOutlet NSButton *albumCheckbox;
+    IBOutlet NSButton    *albumCheckbox;
     IBOutlet NSTableView *allTableView;
-    IBOutlet NSButton *artistCheckbox;
+    IBOutlet NSButton    *artistCheckbox;
     IBOutlet NSTextField *keyComboField;
-    IBOutlet NSPanel *keyComboPanel;
-    IBOutlet NSButton *launchAtLoginCheckbox;
+    IBOutlet NSPanel     *keyComboPanel;
+    IBOutlet NSButton    *launchAtLoginCheckbox;
     IBOutlet NSTableView *menuTableView;
-    IBOutlet NSButton *nameCheckbox;
-    IBOutlet NSButton *nextTrackButton;
-    IBOutlet NSButton *playPauseButton;
-    IBOutlet NSButton *previousTrackButton;
+    IBOutlet NSButton    *nameCheckbox;
+    IBOutlet NSButton    *nextTrackButton;
+    IBOutlet NSButton    *playPauseButton;
+    IBOutlet NSButton    *previousTrackButton;
     IBOutlet NSTextField *songsInAdvance;
-    IBOutlet NSButton *trackInfoButton;
-    IBOutlet NSButton *trackTimeCheckbox;
-    IBOutlet NSButton *upcomingSongsButton;
-    IBOutlet NSWindow *window;
+    IBOutlet NSButton    *trackInfoButton;
+    IBOutlet NSButton    *trackTimeCheckbox;
+    IBOutlet NSButton    *upcomingSongsButton;
+    IBOutlet NSWindow    *window;
     
-    MainController *mt;
-    NSMutableArray *availableItems, *myItems;
-    NSArray *submenuItems;
+    MainController *controller;
+    NSUserDefaults *df;
+    NSMutableArray *availableItems;
+    NSMutableArray *myItems;
+    NSArray        *submenuItems;
+
+    KeyCombo *combo;
+    KeyCombo *playPauseCombo;
+    KeyCombo *nextTrackCombo;
+    KeyCombo *prevTrackCombo;
+    KeyCombo *trackInfoCombo;
+    KeyCombo *upcomingSongsCombo;
     
-    KeyCombo *combo, *playPauseCombo, *nextTrackCombo,
-             *prevTrackCombo, *trackInfoCombo, *upcomingSongsCombo;
     NSString *setHotKey;
 }
-- (id)initWithMenuTunes:(MainController *)menutunes;
+
++ (PreferencesController *)sharedPrefs;
+
+- (id)controller;
+- (void)setController:(id)object;
+
+- (IBAction)showPrefsWindow:(id)sender;
 
 - (IBAction)apply:(id)sender;
 - (IBAction)cancel:(id)sender;

@@ -728,10 +728,8 @@
 
 - (void)showPreferences:(id)sender
 {
-    if (!prefsController) {
-        prefsController = [[PreferencesController alloc] initWithMenuTunes:self];
-        [self clearHotKeys];
-    }
+    [[PreferencesController sharedPrefs] setController:self];
+    [[PreferencesController sharedPrefs] showPrefsWindow:self];
 }
 
 - (void)closePreferences
@@ -739,8 +737,6 @@
     if ( ( isAppRunning == ITMTRemotePlayerRunning) ) {
         [self setupHotKeys];
     }
-    [prefsController release];
-    prefsController = nil;
 }
 
 
