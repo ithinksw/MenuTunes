@@ -783,11 +783,17 @@
     //Search for the term
     NSAppleEventDescriptor *searchResults = ITSendAEWithString([NSString stringWithFormat:@"pTrm:\"%@\", pAre:'%@', '----':obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:'null'() } }", term, ((type == 1) ? @"kSrR" : @"kSrL")], 'hook', 'Srch', &savedPSN);
     
-    //Delete old MenuTunes playlist
-    ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'core', 'delo', &savedPSN);
-    
-    //Create MenuTunes playlist
-    ITSendAEWithString(@"prdt:{ pnam:\"MenuTunes\" }, kocl:type('cPly'), &subj:()", 'core', 'crel', &savedPSN);
+    //If MenuTunes playlist exists
+    if ([ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'core', 'doex', &savedPSN) booleanValue]) {
+        //Clear old MenuTunes playlist
+        int numSongs = [ITSendAEWithString(@"kocl:type('cTrk'), '----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'cnte', &savedPSN) int32Value];
+        for (i = 1; i <= numSongs; i++) {
+            ITSendAEWithString(@"'----':obj { form:'indx', want:type('cTrk'), seld:long(1), from:obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() } }", 'core', 'delo', &savedPSN);
+        }
+    } else {
+        //Create MenuTunes playlist
+        ITSendAEWithString(@"prdt:{ pnam:\"MenuTunes\" }, kocl:type('cPly'), &subj:()", 'core', 'crel', &savedPSN);
+    }
     
     //Duplicate search results to playlist
     for (i = 1; i <= [searchResults numberOfItems]; i++) {
@@ -797,7 +803,7 @@
     ITSendAEWithString([NSString stringWithFormat:@"data:long(%i), '----':obj { form:'prop', want:type('prop'), seld:type('pFix'), from:'null'() }", fixed], 'core', 'setd', &savedPSN);
     
     //Play MenuTunes playlist
-    ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'hook', 'Play', &savedPSN);
+    //ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'hook', 'Play', &savedPSN);
     
     return YES;
 }
