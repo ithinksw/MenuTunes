@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {dismiss = id; verifyRegistration = id; }; 
+            CLASS = RegController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                f = NSWindow; 
+                g = NSWindow; 
+                keyField = NSTextField; 
+                n = NSWindow; 
+                nameField = NSTextField; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

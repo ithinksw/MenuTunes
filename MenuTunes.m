@@ -4,6 +4,7 @@ Things to do:
 ¥ Optimize
 ¥ Apple Events! Apple Events! Apple Events!
 ¥ Manual and webpage
+¥ Finish up registration frontend
 */
 
 #import "MenuTunes.h"
