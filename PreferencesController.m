@@ -32,7 +32,7 @@
         [allTableView registerForDraggedTypes:[NSArray arrayWithObjects:@"MenuTableViewPboardType", @"AllTableViewPboardType", nil]];
         
         //Set the list of items you can have.
-        availableItems = [[NSMutableArray alloc] initWithObjects:@"Current Track Info",  @"Upcoming Songs", @"Playlists", @"EQ Presets", @"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", nil];
+        availableItems = [[NSMutableArray alloc] initWithObjects:@"Current Track Info",  @"Upcoming Songs", @"Playlists", @"EQ Presets", @"Song Rating", @"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", nil];
         
         //Get our preferred menu
         myItems = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"] mutableCopy];
@@ -47,7 +47,7 @@
         }
         
         //Items that show should a submenu image
-        submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", @"EQ Presets", nil];
+        submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", @"EQ Presets", @"Song Rating", nil];
         
         //Fill in the number of songs in advance to show field
         [songsInAdvance setIntValue:[defaults integerForKey:@"SongsInAdvance"]];

@@ -166,6 +166,16 @@
     return [[NSNumber numberWithLong:duration - current] stringValue];
 }
 
+- (int)currentSongRating
+{
+    return 0;
+}
+
+- (BOOL)setCurrentSongRating:(int)rating
+{
+    return NO;
+}
+
 - (NSArray *)eqPresets;
 {
     int i;
@@ -227,20 +237,20 @@
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:() }",index] eventClass:@"hook" eventID:@"Play" appPSN:iTunesPSN];
-    return NO;
+    return YES;
 }
 
 - (BOOL)switchToSongAtIndex:(int)index
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:iTunesPSN];
-    return NO;
+    return YES;
 }
 
 - (BOOL)switchToEQAtIndex:(int)index
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }, '----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }",index] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:1, '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
-    return NO;
+    return YES;
 }
 
 - (ProcessSerialNumber)iTunesPSN

@@ -67,7 +67,6 @@ Things to do:
     [statusItem setMenu:menu];
     // Below line of code is for creating builds for Beta Testers
     // [statusItem setToolTip:@[NSString stringWithFormat:@"This Nontransferable Beta (Built on %s) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com).",__DATE__]];
-    [statusWindow orderFront:self]; //DEBUG
 }
 
 - (ITMTRemote *)loadRemote
@@ -130,6 +129,7 @@ Things to do:
                 @"<separator>",
                 @"Upcoming Songs",
                 @"Playlists",
+                @"Song Rating",
                 @"<separator>",
                 @"Preferences…",
                 @"Quit",
@@ -288,6 +288,32 @@ Things to do:
             [menu addItemWithTitle:@"No Song"
                     action:nil
                     keyEquivalent:@""];
+        } else if ([item isEqualToString:@"Song Rating"]) {
+            NSMenu *ratingSubmenu = [[NSMenu alloc] initWithTitle:@""];
+            unichar whiteStar = 'o';//2606;
+            unichar blackStar = 'x';//2605;
+            NSString *whiteStarString = [NSString stringWithCharacters:&whiteStar
+                                            length:1];
+            NSString *blackStarString = [NSString stringWithCharacters:&blackStar
+                                            length:1];
+            NSString *string = @"";
+            int i;
+            
+            for (i = 0; i < 5; i++) {
+                string = [string stringByAppendingString:whiteStarString];
+            }
+            for (i = 0; i < 6; i++) {
+                NSMenuItem *ratingItem;
+                ratingItem = [ratingSubmenu addItemWithTitle:string action:@selector(setSongRating:) keyEquivalent:@""];
+                [ratingItem setTarget:self];
+                [ratingItem setTag:i * 20];
+                string = [string substringToIndex:4];
+                string = [blackStarString stringByAppendingString:string];
+            }
+            [[menu addItemWithTitle:@"Song Rating"
+                    action:nil
+                    keyEquivalent:@""] setSubmenu:ratingSubmenu];
+            [ratingSubmenu autorelease];
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         }
@@ -739,6 +765,11 @@ Things to do:
 {
     [currentRemote rewind];
     [playPauseMenuItem setTitle:@"Play"];
+}
+
+- (void)setSongRating:(id)sender
+{
+    //[currentRemote setCurrentSongRating:[sender tag]];
 }
 
 //

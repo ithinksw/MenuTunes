@@ -103,6 +103,16 @@
     return nil;
 }
 
+- (int)currentSongRating
+{
+    return 0;
+}
+
+- (BOOL)setCurrentSongRating:(int)rating
+{
+    return NO;
+}
+
 - (NSArray *)eqPresets;
 {
     return nil;

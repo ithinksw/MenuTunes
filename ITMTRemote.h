@@ -103,6 +103,9 @@ typedef enum {
 - (NSString *)currentSongLength;
 - (NSString *)currentSongRemaining;
 
+- (int)currentSongRating;
+- (BOOL)setCurrentSongRating:(int)rating;
+
 - (NSArray *)eqPresets;
 - (int)currentEQPresetIndex;
 
