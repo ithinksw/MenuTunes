@@ -635,7 +635,7 @@
 - (NSString*)formatTimeInSeconds:(long)seconds {
     long final = seconds;
     NSString *finalString;
-    if (final > 60) {
+    if (final >= 60) {
         if (final > 3600) {
             finalString = [NSString stringWithFormat:@"%i:%@:%@",(final / 3600),[self zeroSixty:(int)((final % 3600) / 60)],[self zeroSixty:(int)((final % 3600) % 60)]];
         } else {

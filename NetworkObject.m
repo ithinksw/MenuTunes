@@ -21,9 +21,24 @@
 
 @implementation NetworkObject
 
+- (id)init
+{
+    if ( (self = [super init]) ) {
+        if (![self requiresPassword]) {
+            _authenticated = YES;
+        } else {
+            _authenticated = NO;
+        }
+    }
+    return self;
+}
+
 - (ITMTRemote *)remote
 {
-    return [[MainController sharedController] currentRemote];
+    if (_authenticated)
+        return [[MainController sharedController] currentRemote];
+    else
+        return nil;
 }
 
 - (NSString *)serverName
@@ -42,8 +57,10 @@
 - (BOOL)sendPassword:(NSData *)password
 {
     if ([password isEqualToData:[[NSUserDefaults standardUserDefaults] dataForKey:@"sharedPlayerPassword"]]) {
+        _authenticated = YES;
         return YES;
     } else {
+        _authenticated = NO;
         return NO;
     }
 }

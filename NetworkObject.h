@@ -21,7 +21,7 @@
 
 @interface NetworkObject : NSObject
 {
-
+    BOOL _authenticated;
 }
 - (ITMTRemote *)remote;
 - (NSString *)serverName;

@@ -42,6 +42,7 @@ static MainController *sharedController;
         statusWindowController = [StatusWindowController sharedController];
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
+        [[PreferencesController sharedPrefs] setController:self];
         timerUpdating = NO;
         blinged = NO;
     }
@@ -472,7 +473,6 @@ static MainController *sharedController;
 - (void)showPreferences
 {
     ITDebugLog(@"Show preferences.");
-    [[PreferencesController sharedPrefs] setController:self];
     [[PreferencesController sharedPrefs] showPrefsWindow:self];
 }
 
@@ -959,11 +959,11 @@ static MainController *sharedController;
         ITDebugLog(@"Connection failed.");
         currentRemote = [remoteArray objectAtIndex:0];
         return NO;
-    } else if (result == -1) {
+    } else {
+        //Do something about the password being invalid
         ITDebugLog(@"Connection failed.");
         currentRemote = [remoteArray objectAtIndex:0];
         return NO;
-        //Do something about the password being invalid
     }
 }
 

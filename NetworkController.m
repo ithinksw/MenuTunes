@@ -14,6 +14,7 @@
 #import "NetworkController.h"
 #import "MainController.h"
 #import "NetworkObject.h"
+#import "PreferencesController.h"
 #import <ITFoundation/ITDebug.h>
 #import <ITFoundation/ITFoundation.h>
 
@@ -146,17 +147,32 @@ static NetworkController *sharedController;
     }
     
     if ([clientProxy requiresPassword]) {
+        ITDebugLog(@"Server requires password.");
+        //Check to see if a password is set in defaults
+        if ([[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"] == nil) {
+            ITDebugLog(@"Asking for password.");
+            if (![[PreferencesController sharedPrefs] showPasswordPanel]) {
+                ITDebugLog(@"Giving up connection attempt.");
+                [self disconnect];
+                return -1;
+            }
+        }
+        
+        //Send the password
         ITDebugLog(@"Sending password.");
-        if (![clientProxy sendPassword:[[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"]]) {
+        while (![clientProxy sendPassword:[[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"]]) {
             ITDebugLog(@"Invalid password!");
-            [self disconnect];
-            return -1;
+            if (![[PreferencesController sharedPrefs] showInvalidPasswordPanel]) {
+                ITDebugLog(@"Giving up connection attempt.");
+                [self disconnect];
+                return -1;
+            }
         }
     }
     
     ITDebugLog(@"Connected to host: %@", host);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnect) name:NSConnectionDidDieNotification object:clientConnection];
-    connectedToServer = 1;
+    connectedToServer = YES;
     return 1;
 }
 

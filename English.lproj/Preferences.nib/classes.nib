@@ -30,6 +30,10 @@
                 menuTableView = CustomMenuTableView; 
                 nameCheckbox = NSButton; 
                 nameTextField = NSTextField; 
+                passwordPanel = NSPanel; 
+                passwordPanelMessage = NSTextField; 
+                passwordPanelOKButton = NSButton; 
+                passwordPanelTextField = NSTextField; 
                 passwordTextField = NSTextField; 
                 ratingCheckbox = NSButton; 
                 selectPlayerBox = NSBox; 

@@ -33,6 +33,10 @@
     IBOutlet CustomMenuTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSTextField *nameTextField;
+    IBOutlet NSPanel *passwordPanel;
+    IBOutlet NSTextField *passwordPanelMessage;
+    IBOutlet NSButton *passwordPanelOKButton;
+    IBOutlet NSTextField *passwordPanelTextField;
     IBOutlet NSTextField *passwordTextField;
     IBOutlet NSButton *ratingCheckbox;
     IBOutlet NSTextField *selectedPlayerTextField;
@@ -67,6 +71,9 @@
 
 - (id)controller;
 - (void)setController:(id)object;
+
+- (BOOL)showPasswordPanel;
+- (BOOL)showInvalidPasswordPanel;
 
 - (IBAction)changeGeneralSetting:(id)sender;
 - (IBAction)changeSharingSetting:(id)sender;

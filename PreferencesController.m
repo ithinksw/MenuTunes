@@ -98,6 +98,8 @@ static PreferencesController *prefs = nil;
                                                        nil];
         hotKeysDictionary = [[NSMutableDictionary alloc] init];
         controller = nil;
+        
+        [self setupWindow];  // Load in the nib, and perform any initial setup.
     }
     return self;
 }
@@ -125,12 +127,37 @@ static PreferencesController *prefs = nil;
 #pragma mark INSTANCE METHODS
 /*************************************************************************/
 
+- (BOOL)showPasswordPanel
+{
+    [passwordPanel setLevel:NSStatusWindowLevel];
+    [passwordPanelOKButton setTitle:@"OK"];
+    [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"Please enter a password for access to the MenuTunes player named %@ at %@.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
+    [passwordPanel makeKeyAndOrderFront:nil];
+    if ([NSApp runModalForWindow:passwordPanel]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)showInvalidPasswordPanel
+{
+    [passwordPanel setLevel:NSStatusWindowLevel];
+    [passwordPanelOKButton setTitle:@"Retry"];
+    [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"The password entered for access to the MenuTunes player named %@ at %@ is invalid.  Please provide a new password.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
+    [passwordPanel makeKeyAndOrderFront:nil];
+    if ([NSApp runModalForWindow:passwordPanel]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (IBAction)showPrefsWindow:(id)sender
 {
     ITDebugLog(@"Showing preferences window.");
     if (! window) {  // If window does not exist yet, then the nib hasn't been loaded.
         ITDebugLog(@"Window doesn't exist, initial setup.");
-        [self setupWindow];  // Load in the nib, and perform any initial setup.
         [self setupCustomizationTables];  // Setup the DnD manu config tables.
         [self setupMenuItems];  // Setup the arrays of menu items
         [self setupUI]; // Sets up additional UI
@@ -219,14 +246,15 @@ static PreferencesController *prefs = nil;
         [nameTextField setEnabled:NO];
         [selectSharedPlayerButton setEnabled:state];
         
-        if (state) {
+        if (state && [controller connectToServer]) {
             [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
             [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
-            [controller connectToServer];
         } else {
             [selectedPlayerTextField setStringValue:@"No shared player selected."];
             [locationTextField setStringValue:@"-"];
-            [controller disconnectFromServer];
+            if ([[NetworkController sharedController] isConnectedToServer]) {
+                [controller disconnectFromServer];
+            }
             
         }
     } else if ( [sender tag] == 5050 ) {
@@ -288,6 +316,18 @@ static PreferencesController *prefs = nil;
         } else {
             NSRunAlertPanel(@"Connection error.", @"The MenuTunes server you attempted to connect to was not responding. MenuTunes will revert back to the local player.", @"OK", nil, nil);
         }
+    } else if ( [sender tag] == 6010 ) {
+        //Cancel password entry
+        [passwordPanel orderOut:nil];
+        [NSApp stopModalWithCode:0];
+    } else if ( [sender tag] == 6020 ) {
+        //OK password entry, retry connect
+        const char *instring = [[passwordPanelTextField stringValue] UTF8String];
+        unsigned char *result;
+        result = SHA1(instring, strlen(instring), NULL);
+        [df setObject:[NSData dataWithBytes:result length:strlen(result)] forKey:@"connectPassword"];
+        [passwordPanel orderOut:nil];
+        [NSApp stopModalWithCode:1];
     }
     [df synchronize];
 }
