@@ -135,7 +135,13 @@
 
 - (int)checkDone
 {
-    return checkDone;
+    if ( ! (checkDone == 2475) ) {
+        if ( ! ([self checkKeyFile] == 7465) ) {
+            return 0
+        } else {
+            return 2475;
+        }
+    }
 }
 
 - (void)finishValidSheet:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
