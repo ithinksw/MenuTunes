@@ -197,7 +197,7 @@ typedef enum {
 /*!
  * @method classOfPlaylistAtIndex:
  */
-- (ITMTRemotePlayerPlaylistClass)classOfPlaylistAtIndex:(int)index;
+- (ITMTRemotePlayerPlaylistClass)currentPlaylistClass;
 
 /*!
  * @method currentPlaylistIndex

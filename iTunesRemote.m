@@ -128,7 +128,7 @@
     return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:[self iTunesPSN]];
 }
 
-- (ITMTRemotePlayerPlaylistClass)classOfPlaylistAtIndex:(int)index
+- (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
     int realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
     

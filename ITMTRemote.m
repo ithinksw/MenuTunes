@@ -84,7 +84,7 @@
     return nil;
 }
 
-- (ITMTRemotePlayerPlaylistClass)classOfPlaylistAtIndex:(int)index
+- (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
     return nil;
 }
