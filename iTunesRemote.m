@@ -126,13 +126,32 @@
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:save
-dPSN];
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
 }
 
 - (ITMTRemotePlayerSource)currentSource
 {
-    return ITMTRemoteLibrarySource;
+    unsigned long fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pKnd" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    switch (fourcc) {
+	case 'kUnk':
+	case 'kLib':
+	case 'kShd':
+	default:
+	    return ITMTRemoteLibrarySource;
+	    break;
+	case 'kTun':
+	    return ITMTRemoteRadioSource;
+	    break;
+	case 'kDev':
+	    return ITMTRemoteGenericDeviceSource;
+	case 'kPod':
+	    return ITMTRemoteiPodSource; //this is stupid
+	    break;
+	case 'kMCD':
+	case 'kACD':
+	    return ITMTRemoteCDSource;
+	    break;
+    }
 }
 
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
@@ -160,8 +179,7 @@ dPSN];
 
 - (NSString *)songTitleAtIndex:(int)index
 {
-    return [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('p
-rop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
 }
 
 - (int)currentAlbumTrackCount
@@ -227,8 +245,7 @@ rop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID
 
 - (BOOL)setCurrentSongRating:(float)rating
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', wan
-t:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self currentSongIndex]] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self currentSongIndex]] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
@@ -252,8 +269,7 @@ t:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self
     NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
     
     for (i = 1; i <= numPresets; i++) {
-        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i
-] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
         if (theObj) {
             [presets addObject:theObj];
         }
@@ -276,8 +292,7 @@ t:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self
 
 - (BOOL)setVolume:(float)volume
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)(volume*100)] eventClass:@"core" eventID:@"setd" appPSN:savedPS
-N];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)(volume*100)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return NO;
 }
 
@@ -290,8 +305,7 @@ N];
 
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigne
-d long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigned long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
@@ -334,8 +348,7 @@ d long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
 		  break;
 	   }
 
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s') ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] e
-ventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s') ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
@@ -383,16 +396,14 @@ ventClass:@"core" eventID:@"setd" appPSN:savedPSN];
 
 - (BOOL)switchToSongAtIndex:(int)index
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",index] eventClass:@"hook" even
-tID:@"Play" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
     return YES;
 }
 
 - (BOOL)switchToEQAtIndex:(int)index
 {
     // index should count from 0, but itunes counts from 1, so let's add 1.
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }",(index+1)
-] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }",(index+1)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
