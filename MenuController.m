@@ -22,7 +22,7 @@
 - (NSMenu *)eqMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(id <NSMenuItem>)item;
-//- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
+- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
 @end
 
 @implementation MenuController
@@ -525,7 +525,7 @@
     return upcomingSongsMenu;
 }
 
-- (NSMenu *)playlistsMenu
+/*- (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
@@ -563,14 +563,14 @@
     }
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
-}
+}*/
 
 
-/*- (NSMenu *)playlistsMenu
+- (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
-    NSMenuItem *tempItem;
+    id <NSMenuItem> tempItem;
     ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
     int i, j;
     NS_DURING
@@ -590,7 +590,6 @@
             [tempItem setTarget:self];
         }
     }
-    
     if ( (source == ITMTRemoteRadioSource) || ([playlists count] - 2 > 0) ) {
         [playlistsMenu addItem:[NSMenuItem separatorItem]];
     }
@@ -627,7 +626,7 @@
     }
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
-}*/
+}
 
 - (NSMenu *)eqMenu
 {
@@ -980,7 +979,7 @@
     ITDebugLog(@"Done setting key equivalent on menu item: %@", [item title]);
 }
 
-/*- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name
+- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name
 {
     NSArray *volumes = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
     NSEnumerator *volEnum = [volumes objectEnumerator];
@@ -1010,6 +1009,7 @@
             }
         }
     }
-}*/
+    return NO;
+}
 
 @end

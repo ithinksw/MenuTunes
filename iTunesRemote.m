@@ -65,8 +65,10 @@
 - (BOOL)showPrimaryInterface
 {
     ITDebugLog(@"Showing player primary interface.");
-    //If not minimized
-    if ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) {
+    //If not minimized and visible
+    if ( ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) &&
+         ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] != 0) &&
+         [[[[NSWorkspace sharedWorkspace] activeApplication] objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"] ) {
         //set minimized of browser window 1 to true
         [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     } else {
@@ -128,7 +130,7 @@
     return ITMTRemotePlayerStopped;
 }
 
-- (NSArray *)playlists
+/*- (NSArray *)playlists
 {
     long i = 0;
     const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
@@ -141,10 +143,10 @@
         [playlists addObject:theObj];
     }
     return [playlists autorelease];
-}
+}*/
 
 //Full source awareness
-/*- (NSArray *)playlists
+- (NSArray *)playlists
 {   unsigned long i,k;
     const signed long numSources = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cSrc'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
     NSMutableArray *allSources = [[NSMutableArray alloc] init];
@@ -157,7 +159,6 @@
         NSNumber *sourceClass;
         NSMutableArray *aSource = [[NSMutableArray alloc] init];
         [aSource addObject:sourceName];
-        
         switch (fourcc) {
             case 'kTun':
                 sourceClass = [NSNumber numberWithInt:ITMTRemoteRadioSource];
@@ -181,19 +182,20 @@
                 sourceClass = [NSNumber numberWithInt:ITMTRemoteLibrarySource];
                 break;
         }
-        
+        ITDebugLog(@"Adding source %@ of type %i", sourceName, [sourceClass intValue]);
         [aSource addObject:sourceClass];
         for (i = 1; i <= numPlaylists; i++) {
             NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%u), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } } }",i,k];
             NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+            ITDebugLog(@" - Adding playlist %@", theObj);
             [aSource addObject:theObj];
         }
         [allSources addObject:aSource];
         [aSource release];
     }
     ITDebugLog(@"Finished getting playlists.");
-    return [NSArray arrayWithArray:[allSources autorelease]];
-}*/
+    return [allSources autorelease];
+}
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
