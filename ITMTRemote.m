@@ -1,4 +1,4 @@
-#import "ITMTRemote.h"
+pen#import "ITMTRemote.h"
 
 @implementation ITMTRemote
 
@@ -95,6 +95,11 @@
 }
 
 - (NSString *)songTitleAtIndex:(int)index
+{
+    return nil;
+}
+
+- (NSString *)currentSongUniqueIdentifier
 {
     return nil;
 }

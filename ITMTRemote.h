@@ -210,6 +210,11 @@ typedef enum {
 - (NSString *)songTitleAtIndex:(int)index;
 
 /*!
+ * @method currentSongUniqueIdentifier:
+ */
+- (NSString *)currentSongUniqueIdentifier;
+
+/*!
  * @method currentSongIndex
  */
 - (int)currentSongIndex;
