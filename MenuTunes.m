@@ -1,12 +1,3 @@
-/*
-Things to do:
-¥ Make preferences window pretty
-¥ Optimize
-¥ Apple Events! Apple Events! Apple Events!
-¥ Manual and webpage
-¥ Finish up registration frontend
-*/
-
 #import "MenuTunes.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
@@ -549,7 +540,7 @@ Things to do:
     }
     [eqItem setSubmenu:eqMenu];
     
-    [[eqMenu itemAtIndex:[currentRemote currentEQPresetIndex] - 1] setState:NSOnState];
+    [[eqMenu itemAtIndex:[currentRemote currentEQPresetIndex] + 1] setState:NSOnState];
 }
 
 - (void)clearHotKeys
@@ -713,7 +704,12 @@ Things to do:
     refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
     
     [self rebuildMenu]; //Rebuild the menu since no songs will be playing
-    [self rebuildPlaylistMenu];
+    if (playlistItem) {
+        [self rebuildPlaylistMenu];
+    }
+    if (eqItem) {
+        [self rebuildEQPresetsMenu];
+    }
     [statusItem setMenu:menu]; //Set the menu back to the main one
 }
 
