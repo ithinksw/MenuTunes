@@ -930,7 +930,7 @@ static MainController *sharedController;
             }
         }
         
-        if ( [df boolForKey:@"showPlayCount"] && ![self radioIsPlaying] ) {
+        if ( [df boolForKey:@"showPlayCount"] && ![self radioIsPlaying] && [[self currentRemote] currentSource] == ITMTRemoteLibrarySource ) {
             NS_DURING
                 playCount = [[self currentRemote] currentSongPlayCount];
             NS_HANDLER

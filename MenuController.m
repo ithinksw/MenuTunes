@@ -312,7 +312,7 @@
                 
                 if (!_playingRadio) {
                     NS_DURING
-                        if ([defaults boolForKey:@"showPlayCount"]) {
+                        if ([defaults boolForKey:@"showPlayCount"] && [mtr currentSource] == ITMTRemoteLibrarySource) {
                             [menu indentItem:[menu addItemWithTitle:[NSString stringWithFormat:@"Play Count: %i", [mtr currentSongPlayCount]] action:nil keyEquivalent:@""]];
                         }
                         if ([defaults boolForKey:@"showTrackRating"] && ( [mtr currentSongRating] != -1.0 )) {
