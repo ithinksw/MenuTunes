@@ -210,6 +210,16 @@ typedef enum {
 - (NSString *)songTitleAtIndex:(int)index;
 
 /*!
+ * @method currentAlbumTrackCount:
+ */
+- (int)currentAlbumTrackCount;
+
+/*!
+ * @method currentSongTrack:
+ */
+- (int)currentSongTrack;
+
+/*!
  * @method currentSongUniqueIdentifier:
  */
 - (NSString *)currentSongUniqueIdentifier;
@@ -258,16 +268,6 @@ typedef enum {
  * @method setCurrentSongRating:
  */
 - (BOOL)setCurrentSongRating:(float)rating;
-
-/*!
- * @method equalizerEnabled
- */
-- (BOOL)equalizerEnabled;
-
-/*!
- * @method setEqualizerEnabled:
- */
-- (BOOL)setEqualizerEnabled:(BOOL)enabled;
 
 /*!
  * @method eqPresets

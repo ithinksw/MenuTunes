@@ -153,6 +153,7 @@
     }
     
     isAppRunning = ITMTRemotePlayerRunning;
+    NSLog(@"applicationTerminated");
 }
 
 - (void)applicationTerminated:(NSNotification *)note
@@ -346,12 +347,14 @@
     lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
     
     //If we're in a playlist or radio mode
-    if ( (trackInfoIndex > -1) && (playlist || isPlayingRadio) ) {
+    if ( (trackInfoIndex > -1) ) {
         NSString *title;
         
-        if ( (i = [menu indexOfItemWithTitle:@"No Song"]) && (i > -1) ) {
-            [menu removeItemAtIndex:i];
-            [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:i];
+        if ( (i = [menu indexOfItemWithTitle:@"No Song"]) ) {
+            if ( (i > -1) ) {
+                [menu removeItemAtIndex:i];
+                [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:i-1];
+            }
         }
         
         title = [currentRemote currentSongTitle];
@@ -366,13 +369,23 @@
             }
             
             if ([defaults boolForKey:@"showTrackRating"]) {
+                if (title) { //Check to see if there's a song playing
                 [menu insertItemWithTitle:[NSString stringWithFormat:@"	 %@", [[ratingMenu itemAtIndex:[currentRemote currentSongRating] * 5] title]] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+                }
             }
             
             if ([defaults boolForKey:@"showArtist"]) {
                 NSString *artist = [currentRemote currentSongArtist];
                 if ([artist length] > 0) {
                     [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", artist] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+                }
+            }
+            
+            if ([defaults boolForKey:@"showTrackNumber"]) {
+                int track = [currentRemote currentSongTrack];
+                int total = [currentRemote currentAlbumTrackCount];
+                if (total > 0) {
+                    [menu insertItemWithTitle:[NSString stringWithFormat:@"  Track %i of %i", track, total] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
                 }
             }
             
@@ -459,37 +472,25 @@
 - (void)rebuildEQPresetsMenu
 {
     NSArray *eqPresets = [currentRemote eqPresets];
-    NSMenuItem *enabledItem;
     int i;
     
-    [eqMenu release];
+    [eqMenu autorelease];
     eqMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    enabledItem = [eqMenu addItemWithTitle:@"Enabled"
-                          action:@selector(selectEQPreset:)
-                          keyEquivalent:@""];
-    [enabledItem setTag:-1];
-    
-    if ([currentRemote equalizerEnabled]) {
-        [enabledItem setState:NSOnState];
-    }
-    
-    [eqMenu addItem:[NSMenuItem separatorItem]];
-    
     for (i = 0; i < [eqPresets count]; i++) {
-        NSString *name = [eqPresets objectAtIndex:i];
+        NSString *name;
         NSMenuItem *tempItem;
-	if (name) {
+	if ( ( name = [eqPresets objectAtIndex:i] ) ) {
             tempItem = [[NSMenuItem alloc] initWithTitle:name action:@selector(selectEQPreset:) keyEquivalent:@""];
             [tempItem setTag:i];
             [eqMenu addItem:tempItem];
-            [tempItem release];
+            [tempItem autorelease];
 	}
     }
     [eqItem setSubmenu:eqMenu];
     [eqItem setEnabled:YES];
     
-    [[eqMenu itemAtIndex:[currentRemote currentEQPresetIndex] + 1] setState:NSOnState];
+    [[eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
 }
 
 - (void)updateRatingMenu
@@ -547,14 +548,9 @@
     int curSet = [currentRemote currentEQPresetIndex];
     int item = [sender tag];
     
-    if (item == -1) {
-        [currentRemote setEqualizerEnabled:![currentRemote equalizerEnabled]];
-    } else {
-        [currentRemote setEqualizerEnabled:YES];
-        [currentRemote switchToEQAtIndex:item];
-        [[eqMenu itemAtIndex:curSet + 1] setState:NSOffState];
-        [[eqMenu itemAtIndex:item + 2] setState:NSOnState];
-    }
+    [currentRemote switchToEQAtIndex:item];
+    [[eqMenu itemAtIndex:curSet - 1] setState:NSOffState];
+    [[eqMenu itemAtIndex:item] setState:NSOnState];
 }
 
 - (void)selectSongRating:(id)sender
@@ -826,12 +822,17 @@
         //Space -- ARGH!
         case 49:
         {
+            // Haven't tested this, though it should work.
+            unichar buffer;
+            [[NSString stringWithString:@"Space"] getCharacters:&buffer];
+            charcode = buffer;
             /*MenuRef menuRef = _NSGetCarbonMenu([item menu]);
             NSLog(@"%@", menuRef);
             SetMenuItemCommandKey(menuRef, 0, NO, 49);
             SetMenuItemModifiers(menuRef, 0, kMenuNoCommandModifier);
             SetMenuItemKeyGlyph(menuRef, 0, kMenuBlankGlyph);
             charcode = 'b';*/
+            
         }
         break;
         

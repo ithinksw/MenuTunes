@@ -1,7 +1,7 @@
 {\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fnil\fcharset77 Futura-CondensedExtraBold;\f1\fswiss\fcharset77 Helvetica;\f2\fswiss\fcharset77 Helvetica-Bold;
 \f3\fnil\fcharset77 Monaco;}
-{\colortbl;\red255\green255\blue255;\red198\green198\blue198;\red198\green198\blue198;}
+{\colortbl;\red255\green255\blue255;\red198\green198\blue198;}
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
 
 \f0\b\fs72 \cf0 MenuTunes Issues\
@@ -16,17 +16,17 @@
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Analyze\
-       Issue: Menu - Rebuild speed is abyssmal.  It needs to take less than half a second.\
+       Issue: Menu - Rebuild speed is abyssmal.  It needs to take less than half a second. (Note [Joe] I believe something (not sure what) I did tonight fixed this.. double check for me, though, as I wasn't the one who reported this bug)\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Analyze\
-       Issue: HotKeys - FKeys (F1 - F15) must be made to work without a modifier key.\
+       Issue: HotKeys - FKeys (F1 - F15) must be made to work without a modifier key. (Note [Joe] Might want to make this 1.1, or even 1.0.1, as this actually requires us to do some research, and we might not have time)\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Analyze\
-       Issue: HotKeys - Hotkeys which use the space bar must show the word "Space" in the menu.\
+       Issue: HotKeys - Hotkeys which use the space bar must show the word "Space" in the menu. (Note [Joe] I believe the code I added for this will work, though since hotkeys won't save, I can't test it...)\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
@@ -42,11 +42,6 @@
                                \'a5 Rating changed (show song info window, forcing rating to show)\
                                \'a5 Loop mode changed (show loop mode window)\
                                \'a5 Shuffle mode changed (show shuffle mode window)\
-\
-    Priority: SHOWSTOPPER\
-       Owner: Kent Sutherland\
-      Status: Assigned\
-       Issue: Hot Keys (Preferences) - Changing hot keys in the prefs has no effect.\
 \
     Priority: SHOWSTOPPER\
        Owner: Matthew Judy\
@@ -73,17 +68,17 @@
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Assigned\
-       Issue: Menu - Shows "No Song" when one is playing. (if not in a playlist?)\
+       Issue: Menu - Shows "No Song" when one is playing. (if not in a playlist?) (Note [Joe] this is misleading, it still shows the song's info, it just says "No Song" at the beginning of the Song info block. Also, I'm not exactly sure how it couldn't be in a playlist, at least, using the iTunes plugin, since even the Library is a playlist)\
 \
     Priority: SHOWSTOPPER\
        Owner: Joseph Spiros\
       Status: Assigned\
-       Issue: Menu - Show <Player> - Does not work.\
+       Issue: iTunesRemote - Show iTunes - Is not Fully Implemented.\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Assigned\
-       Issue: Menu - Song Info displayed twice in menu if MT is launched when iTunes is already open.\
+       Issue: Menu - Song Info displayed twice in menu if MT is launched when iTunes is already open. (Note [Joe] Haven't been able to reproduce this)\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
@@ -93,12 +88,11 @@
     Priority: Important\
        Owner: Kent Sutherland\
       Status: Assigned\
-       Issue: Hot Keys (Preferences) - Migrate to new style.\
+       Issue: Hot Keys (Preferences) - Migrate to new style. (Note [Joe] Move this to a 1.1 future feature... we don't have time, and old style works great, apart from above problem)\
        \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
 \cf2     Priority: SHOWSTOPPER\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
-\cf3        Owner: Kent Sutherland\
+       Owner: Kent Sutherland\
       Status: Closed\
        Issue: Preferences (Menu) - Show Player - Needs to show the player name (Show iTunes).\
        \

@@ -99,6 +99,16 @@
     return nil;
 }
 
+- (int)currentAlbumTrackCount
+{
+    return nil;
+}
+
+- (int)currentSongTrack
+{
+    return nil;
+}
+
 - (NSString *)currentSongUniqueIdentifier
 {
     return nil;
@@ -149,7 +159,7 @@
     return NO;
 }
 
-- (BOOL)equalizerEnabled
+/* - (BOOL)equalizerEnabled
 {
     return NO;
 }
@@ -157,7 +167,7 @@
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
     return NO;
-}
+} */
 
 - (NSArray *)eqPresets
 {

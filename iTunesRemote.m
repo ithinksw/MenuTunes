@@ -166,6 +166,16 @@
     return [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
 }
 
+- (int)currentAlbumTrackCount
+{
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pTrC" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+}
+
+- (int)currentSongTrack
+{
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pTrN" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+}
+
 - (NSString *)currentSongUniqueIdentifier
 {
     return [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN]];
@@ -223,18 +233,18 @@
     return YES;
 }
 
-- (BOOL)equalizerEnabled
+/* - (BOOL)equalizerEnabled
 {
     int thingy = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:type('prop'), want:type('prop'), seld:type('pEQ '), from:() }" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     NSLog(@"Debug equalizerEnabled: %i", thingy);
-    return thingy;    
+    return thingy;
 }
 
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
-}
+} */
 
 - (NSArray *)eqPresets
 {
@@ -404,28 +414,6 @@
         }
     }
     return number;
-}
-
-- (void)applicationLaunched:(NSNotification *)note
-{
-    NSDictionary *info = [note userInfo];
-
-    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
-        iTunesPSN.highLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberHigh"] longValue];
-        iTunesPSN.lowLongOfPSN = [[info objectForKey:@"NSApplicationProcessSerialNumberLow"] longValue];
-
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidLaunchNotification" object:nil];
-    }
-}
-
-- (void)applicationTerminated:(NSNotification *)note
-{
-    NSDictionary *info = [note userInfo];
-
-    if ([[info objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"]) {
-        iTunesPSN.highLongOfPSN = kNoProcess;
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidTerminateNotification" object:nil];
-    }
 }
 
 @end
