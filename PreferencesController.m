@@ -126,7 +126,7 @@ static PreferencesController *prefs = nil;
     }
 
     if ( rebuildRequired ) {
-        [controller rebuildMenu];
+        //[controller rebuildMenu];
         // redraw song info status window, or upcoming songs here
     }
 
@@ -232,7 +232,7 @@ static PreferencesController *prefs = nil;
         @"Playlists",
         @"Song Rating",
         @"<separator>",
-        @"Preferences…",
+        @"Preferences",
         @"Quit",
         @"<separator>",
         @"Current Track Info",
@@ -372,7 +372,6 @@ static PreferencesController *prefs = nil;
         } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
             [toggleLoopButton setTitle:string];
         }
-        //[controller rebuildMenu];
     }
     [self cancelHotKey:sender];
 }
@@ -625,7 +624,6 @@ static PreferencesController *prefs = nil;
 {
     [df setObject:myItems forKey:@"menu"];
     [df synchronize];
-    [controller rebuildMenu];
 }
 
 - (void)setLaunchesAtLogin:(BOOL)flag
@@ -806,7 +804,7 @@ static PreferencesController *prefs = nil;
         
         if ([[[info draggingPasteboard] types] containsObject:@"MenuTableViewPboardType"]) {
             NSString *item = [myItems objectAtIndex:[[[info draggingPasteboard] stringForType:@"MenuTableViewPboardType"] intValue]];
-            if ([item isEqualToString:@"Preferences…"] || [item isEqualToString:@"Quit"]) {
+            if ([item isEqualToString:@"Preferences"] || [item isEqualToString:@"Quit"]) {
                 return NSDragOperationNone;
             }
         }

@@ -43,6 +43,7 @@ typedef enum {
 }
 
 - (NSMenu *)menu;
+- (NSMenu *)menuForNoPlayer;
 
 // - (NSArray *)menuLayout;
 // - (void)setMenuLayout:(NSArray *)newLayoutArray;

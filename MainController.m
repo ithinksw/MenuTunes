@@ -156,7 +156,6 @@ static MainController *sharedController;
     if ( ( [self songChanged] ) ||
          ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
          ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) ) {
-        //[statusItem setMenu:[self menu]];
         [self setLatestSongIdentifier:[currentRemote currentSongUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         
@@ -164,22 +163,15 @@ static MainController *sharedController;
             [self showCurrentTrackInfo];
         }
     }
-/*    
-    //Update Play/Pause menu item
-    if (playPauseItem){
-        if ([currentRemote playerPlayingState] == ITMTRemotePlayerPlaying) {
-            [playPauseItem setTitle:@"Pause"];
-        } else {
-            [playPauseItem setTitle:@"Play"];
-        }
-    }
-*/
 }
 
 - (void)menuClicked
 {
-    [statusItem setMenu:[menuController menu]];
-    NSLog(@"The menu was clix0r3d, do something!");
+    if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
+        [statusItem setMenu:[menuController menu]];
+    } else {
+        [statusItem setMenu:[menuController menuForNoPlayer]];
+    }
 }
 
 //
@@ -474,8 +466,6 @@ static MainController *sharedController;
          refreshTimer = nil;
          [self clearHotKeys];
          playerRunningState = ITMTRemotePlayerNotRunning;
-
-         [statusItem setMenu:[self menuForNoPlayer]];
      }
  }
 

@@ -31,10 +31,11 @@
     
     //Get the current playlist, track index, etc.
     int playlistIndex = [currentRemote currentPlaylistIndex];
-    int trackIndex = [currentRemote currentSongIndex];
+    //int trackIndex = [currentRemote currentSongIndex];
     
-    // dynamically create menu from supplied data and layout information.
+    //create our menu
     while ( (nextObject = [enumerator nextObject]) ) {
+        //Main menu items
         if ([nextObject isEqualToString:@"Play/Pause"]) {
             tempItem = [menu addItemWithTitle:@"Play"
                     action:@selector(performMainMenuAction:)
@@ -57,28 +58,102 @@
             tempItem = [menu addItemWithTitle:@"Next Track"
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
-            [tempItem setTag:MTMenuNextTrackItem];
-            [tempItem setTarget:self];
+            if (playlistIndex) {
+                [tempItem setTag:MTMenuNextTrackItem];
+                [tempItem setTarget:self];
+            }
         } else if ([nextObject isEqualToString:@"Previous Track"]) {
             tempItem = [menu addItemWithTitle:@"Previous Track"
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
-            [tempItem setTag:MTMenuPreviousTrackItem];
+            if (playlistIndex) {
+                [tempItem setTag:MTMenuPreviousTrackItem];
+                [tempItem setTarget:self];
+            }
+        } else if ([nextObject isEqualToString:@"Fast Forward"]) {
+            tempItem = [menu addItemWithTitle:@"Fast Forward"
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            if (playlistIndex) {
+                [tempItem setTag:MTMenuFastForwardItem];
+                [tempItem setTarget:self];
+            }
+        } else if ([nextObject isEqualToString:@"Rewind"]) {
+            tempItem = [menu addItemWithTitle:@"Rewind"
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            if (playlistIndex) {
+                [tempItem setTag:MTMenuRewindItem];
+                [tempItem setTarget:self];
+            }
+        } else if ([nextObject isEqualToString:@"Preferences"]) {
+            tempItem = [menu addItemWithTitle:@"Preferences..."
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuPreferencesItem];
+            [tempItem setTarget:self];
+        } else if ([nextObject isEqualToString:@"Quit"]) {
+            tempItem = [menu addItemWithTitle:@"Quit"
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuQuitItem];
             [tempItem setTarget:self];
         } else if ([nextObject isEqualToString:@"Current Track Info"]) {
-            NSString *title = [currentRemote currentSongTitle];
-            [menu addItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
-            
-            if ([title length] > 0) {
-                [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title] action:nil keyEquivalent:@""];
+            if (playlistIndex) {
+                NSString *title = [currentRemote currentSongTitle];
+                
+                [menu addItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
+                
+                if ([title length] > 0) {
+                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title] action:nil keyEquivalent:@""];
+                }
+            } else {
+                [menu addItemWithTitle:@"No Song" action:NULL keyEquivalent:@""];
             }
+        } else if ([nextObject isEqualToString:@"<separator>"]) {
+            [menu addItem:[NSMenuItem separatorItem]];
+        //Submenu items
+        } else if ([nextObject isEqualToString:@"Song Rating"]) {
+            tempItem = [menu addItemWithTitle:@"Song Rating"
+                    action:nil
+                    keyEquivalent:@""];
+            //[tempItem setSubmenu:[self ratingMenu]];
+        } else if ([nextObject isEqualToString:@"Upcoming Songs"]) {
+            tempItem = [menu addItemWithTitle:@"Upcoming Songs"
+                    action:nil
+                    keyEquivalent:@""];
+            //[tempItem setSubmenu:[self upcomingSongsMenu]];
+        } else if ([nextObject isEqualToString:@"Playlists"]) {
+            tempItem = [menu addItemWithTitle:@"Playlists"
+                    action:nil
+                    keyEquivalent:@""];
+            //[tempItem setSubmenu:[self playlistsMenu]];
+        } else if ([nextObject isEqualToString:@"EQ Presets"]) {
+            tempItem = [menu addItemWithTitle:@"EQ Presets"
+                    action:nil
+                    keyEquivalent:@""];
+            //[tempItem setSubmenu:[self eqMenu]];
         }
-        //Do cool stuff here woo hehe gack yay! 0_o
     }
     
     [_currentMenu release];
     _currentMenu = menu;
     return _currentMenu;
+}
+
+- (NSMenu *)menuForNoPlayer
+{
+    NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
+    NSMenuItem *tempItem;
+    [menu addItemWithTitle:[NSString stringWithFormat:@"Open %@", [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    [menu addItem:[NSMenuItem separatorItem]];
+    tempItem = [menu addItemWithTitle:@"Preferences" action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    [tempItem setTag:MTMenuPreferencesItem];
+    [tempItem setTarget:self];
+    tempItem = [menu addItemWithTitle:@"Quit" action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    [tempItem setTag:MTMenuQuitItem];
+    [tempItem setTarget:self];
+    return [menu autorelease];
 }
 
 - (void)performMainMenuAction:(id)sender
@@ -208,6 +283,7 @@
         case 49:
         {
             // Haven't tested this, though it should work.
+            // This doesn't work. :'(
             unichar buffer;
             [[NSString stringWithString:@"Space"] getCharacters:&buffer];
             charcode = buffer;
