@@ -626,7 +626,7 @@ Things to do:
             if ([(NSString *)procName isEqualToString:@"iTunes"]) {
                 return procNum;
             }
-            CFRelease(release);
+            CFRelease(procName);
         }
     }
     return procNum;
