@@ -39,6 +39,7 @@ typedef enum {
 @interface MenuController : NSObject
 {
     NSMutableArray *_menuLayout;
+    NSMenu *_currentMenu;
 }
 
 - (NSMenu *)menu;

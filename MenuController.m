@@ -7,23 +7,64 @@
 //
 
 #import "MenuController.h"
-#import "MainController.h"
+#import "NewMainController.h"
+#import "ITMTRemote.h"
 
 @implementation MenuController
 
 - (id)init
 {
     if ( (self = [super init]) ) {
-        _menuLayout = [[NSMutableArray alloc] initWithCapacity:
+        _menuLayout = [[NSMutableArray alloc] initWithCapacity:0];
     }
     return self;
 }
 
 - (NSMenu *)menu
 {
+    NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
+    NSArray *menuArray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
+    NSEnumerator *enumerator = [menuArray objectEnumerator];
+    NSString *nextObject;
+    ITMTRemote *currentRemote = [[MainController sharedController] currentRemote];
+    NSMenuItem *tempItem;
+    
+    //Get the current playlist, track index, etc.
+    int playlistIndex = [currentRemote currentPlaylistIndex];
+    int trackIndex = [currentRemote currentSongIndex];
+    
     // dynamically create menu from supplied data and layout information.
-    // ...
-    // right before returning the menu, set the created menu to instance variable _currentMenu.
+    while ( (nextObject = [enumerator nextObject]) ) {
+        if ([nextObject isEqualToString:@"Play/Pause"]) {
+            if ([currentRemote playerPlayingState] == ITMTRemotePlayerPlaying) {
+                tempItem = [menu addItemWithTitle:@"Pause"
+                        action:@selector(performMainMenuAction:)
+                        keyEquivalent:@""];
+                [tempItem setTag:MTMenuPlayPauseItem];
+                [tempItem setTarget:self];
+            } else {
+                tempItem = [menu addItemWithTitle:@"Play"
+                        action:@selector(performMainMenuAction:)
+                        keyEquivalent:@""];
+                [tempItem setTag:MTMenuPlayPauseItem];
+                [tempItem setTarget:self];
+            }
+        }
+        
+        if ([nextObject isEqualToString:@"Current Track Info"]) {
+            NSString *title = [currentRemote currentSongTitle];
+            [menu addItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
+            
+            if ([title length] > 0) {
+                [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title] action:nil keyEquivalent:@""];
+            }
+        }
+        //Do cool stuff here woo hehe gack yay! 0_o
+    }
+    
+    [_currentMenu release];
+    _currentMenu = menu;
+    return _currentMenu;
 }
 
 - (void)performMainMenuAction:(id)sender
@@ -79,12 +120,12 @@
 
 - (void)performEqualizerMenuAction:(id)sender
 {
-    [[MainController sharedController] selectEQItemAtIndex:[sender tag]]
+    [[MainController sharedController] selectEQPresetAtIndex:[sender tag]];
 }
 
 - (void)performUpcomingSongsMenuAction:(id)sender
 {
-    [[MainController sharedController] selectSongAtIndex:[sender tag]]
+    [[MainController sharedController] selectSongAtIndex:[sender tag]];
 }
 
 - (void)updateMenu
@@ -95,6 +136,7 @@
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
+    return YES;
 }
 
 - (NSString *)systemUIColor
@@ -103,7 +145,7 @@
     NSNumber *tmpNumber;
     if ( (tmpDict = [NSDictionary dictionaryWithContentsOfFile:[@"~/Library/Preferences/.GlobalPreferences.plist" stringByExpandingTildeInPath]]) ) {
         if ( (tmpNumber = [tmpDict objectForKey:@"AppleAquaColorVariant"]) ) {
-            if ( ([tmpNumber intValue == 1) ) {
+            if ( ([tmpNumber intValue] == 1) ) {
                 return @"Aqua";
             } else {
                 return @"Graphite";

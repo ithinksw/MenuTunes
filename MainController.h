@@ -18,28 +18,28 @@
 #import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
 
-
-@class StatusWindowController;
-
+@class StatusWindowController, MenuController;
 
 @interface MainController : NSObject
 {
     ITStatusItem   *statusItem;
     NSMutableArray *remoteArray;
     ITMTRemote     *currentRemote;
-
+    
     ITMTRemotePlayerRunningState  playerRunningState;
     ITMTRemotePlayerPlaylistClass latestPlaylistClass;
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
-
     NSString *_latestSongIdentifier;
-
-    StatusWindowController *statusWindowController; //Shows track info and upcoming songs.
+    
+    StatusWindowController *statusWindowController; //Shows status windows
+    MenuController *menuController;
     NSUserDefaults *df;
 }
 + (MainController *)sharedController;
+
+- (void)menuClicked;
 
 //Methods called from MenuController by menu items
 - (void)playPause;

@@ -1,7 +1,9 @@
 #import "NewMainController.h"
+#import "MenuController.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
 #import "StatusWindowController.h"
+#import "StatusItemHack.h"
 
 @interface MainController(Private)
 - (ITMTRemote *)loadRemote;
@@ -32,6 +34,7 @@ static MainController *sharedController;
         
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
         statusWindowController = [[StatusWindowController alloc] init];
+        menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
         [self setLatestSongIdentifier:@"0-0"];
     }
@@ -60,6 +63,7 @@ static MainController *sharedController;
         [[PreferencesController sharedPrefs] registerDefaults];
     }
     
+    [StatusItemHack install];
     statusItem = [[ITStatusItem alloc]
             initWithStatusBar:[NSStatusBar systemStatusBar]
             withLength:NSSquareStatusItemLength];
@@ -170,6 +174,12 @@ static MainController *sharedController;
         }
     }
 */
+}
+
+- (void)menuClicked
+{
+    [statusItem setMenu:[menuController menu]];
+    NSLog(@"The menu was clix0r3d, do something!");
 }
 
 //
@@ -498,6 +508,7 @@ static MainController *sharedController;
     [currentRemote halt];
     [statusItem release];
     [statusWindowController release];
+    [menuController release];
     [super dealloc];
 }
 
