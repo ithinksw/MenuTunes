@@ -388,8 +388,10 @@
     NSString *temp1;
     ITDebugLog(@"Getting current unique identifier.");
 	NSAppleEventDescriptor *descriptor = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN);
-	if ((descriptor == nil) || ([descriptor int32Value] == 'prop')) {
+	if ([descriptor int32Value] == 'prop') {
 		return @"0-0";
+	} else if (descriptor == nil) {
+		return nil;
 	}
     SInt32 cls = [descriptor int32Value];
     if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (cls == 'cURT') ) {
@@ -803,6 +805,7 @@
     
     //Duplicate search results to playlist
     for (i = 1; i <= [searchResults numberOfItems]; i++) {
+		//NSLog(@"%@", ITSendAEWithStringAndParameter(@"'----':obj { form:'prop', want:type('prop'), seld:prop('pnam'), from:aevt(@) }", *[[searchResults descriptorAtIndex:i] aeDesc], 'core', 'getd', &savedPSN));
         ITSendAEWithStringAndObject(@"insh:obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", [[searchResults descriptorAtIndex:i] aeDesc], 'core', 'clon', &savedPSN);
     }
     //Reset fixed indexing

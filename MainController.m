@@ -361,7 +361,8 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-	if ([[self currentRemote] playerStateUniqueIdentifier] == nil) {
+	NSString *identifier = [[self currentRemote] playerStateUniqueIdentifier];
+	if (identifier == nil) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
 			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
@@ -403,8 +404,7 @@ static MainController *sharedController;
 				if ( [df boolForKey:@"showSongInfoOnChange"] ) {
 					[self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
 				}
-				
-				[self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
+				[self setLatestSongIdentifier:identifier];
 				//Create the tooltip for the status item
 				if ( [df boolForKey:@"showToolTip"] ) {
 					NSString *artist = [[self currentRemote] currentSongArtist];
