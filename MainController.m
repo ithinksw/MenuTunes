@@ -83,8 +83,8 @@ static MainController *sharedController;
         }
     }
     
-    [statusItem setImage:[NSImage imageNamed:@"menu"]];
-    [statusItem setAlternateImage:[NSImage imageNamed:@"selected_image"]];
+    [statusItem setImage:[NSImage imageNamed:@"MenuNormal"]];
+    [statusItem setAlternateImage:[NSImage imageNamed:@"MenuInverted"]];
 }
 
 - (ITMTRemote *)loadRemote
