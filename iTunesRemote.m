@@ -179,6 +179,9 @@
         case 'kUnk':
         case 'kLib':
         case 'kShd':
+            ITDebugLog(@"Getting current source done. Source: Shared Library.");
+            return ITMTRemoteSharedLibrarySource;
+            break;
         default:
             ITDebugLog(@"Getting current source done. Source: Library.");
             return ITMTRemoteLibrarySource;
