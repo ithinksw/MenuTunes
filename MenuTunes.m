@@ -1,10 +1,6 @@
 /*
 Things to do:
 ¥ Make preferences window pretty
-¥ Hot Keys
-    - hot keys can't be set when NSBGOnly is on. The window is not key,
-      so the KeyBroadcaster does not pick up key combos
-    - going to need a different way of defining key combos
 ¥ Optimize
 ¥ Apple Events! Apple Events! Apple Events!
 */
