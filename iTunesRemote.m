@@ -117,17 +117,16 @@
 
 - (NSString *)currentSongRemaining
 {
-    NSString* duration = [[ITAppleEventCenter sharedCenter]
-                        sendTwoTierAEWithRequestedKey:@"pDur"
+    long duration = [[ITAppleEventCenter sharedCenter]
+                        sendTwoTierAEWithRequestedKeyForNumber:@"pDur"
                         fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
                         appPSN:[self iTunesPSN]];
-    NSString* current = [[ITAppleEventCenter sharedCenter]
-                        sendAEWithRequestedKey:@"pPos"
+    long current = [[ITAppleEventCenter sharedCenter]
+                        sendAEWithRequestedKeyForNumber:@"pPos"
                         eventClass:@"core" eventID:@"getd"
                         appPSN:[self iTunesPSN]];
-    NSLog(@"%@ %@", duration, current);
-    //return [[NSNumber numberWithInt:duration - current] stringValue];
-    return nil;
+    
+    return [[NSNumber numberWithLong:duration - current] stringValue];
 }
 
 - (NSArray *)eqPresets;
@@ -153,6 +152,7 @@
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
             appPSN:[self iTunesPSN]];
+    
     return YES;
 }
 
