@@ -167,40 +167,46 @@
         unsigned long fourcc = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
         NSString *sourceName = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
         unsigned long class;
-        NSMutableArray *aSource = [[NSMutableArray alloc] init];
-        [aSource addObject:[[sourceName copy] autorelease]];
-        switch (fourcc) {
-            case 'kTun':
-                class = ITMTRemoteRadioSource;
-                break;
-            case 'kDev':
-                class = ITMTRemoteGenericDeviceSource;
-                break;
-            case 'kPod':
-                class = ITMTRemoteiPodSource;
-                break;
-            case 'kMCD':
-            case 'kACD':
-                class = ITMTRemoteCDSource;
-                break;
-            case 'kShd':
-                class = ITMTRemoteSharedLibrarySource;
-                break;
-            case 'kUnk':
-            case 'kLib':
-            default:
-                class = ITMTRemoteLibrarySource;
-                break;
+        if (sourceName) {
+            NSMutableArray *aSource = [[NSMutableArray alloc] init];
+            [aSource addObject:[[sourceName copy] autorelease]];
+            switch (fourcc) {
+                case 'kTun':
+                    class = ITMTRemoteRadioSource;
+                    break;
+                case 'kDev':
+                    class = ITMTRemoteGenericDeviceSource;
+                    break;
+                case 'kPod':
+                    class = ITMTRemoteiPodSource;
+                    break;
+                case 'kMCD':
+                case 'kACD':
+                    class = ITMTRemoteCDSource;
+                    break;
+                case 'kShd':
+                    class = ITMTRemoteSharedLibrarySource;
+                    break;
+                case 'kUnk':
+                case 'kLib':
+                default:
+                    class = ITMTRemoteLibrarySource;
+                    break;
+            }
+            ITDebugLog(@"Adding source %@ of type %i", sourceName, class);
+            [aSource addObject:[NSNumber numberWithInt:class]];
+            for (i = 1; i <= numPlaylists; i++) {
+                NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%u), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } } }",i,k];
+                NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+                ITDebugLog(@" - Adding playlist %@", theObj);
+                if (theObj) {
+                    [aSource addObject:[[theObj copy] autorelease]];
+                }
+            }
+            [allSources addObject:[aSource autorelease]];
+        } else {
+            ITDebugLog(@"Source at index %i disappeared.", k);
         }
-        ITDebugLog(@"Adding source %@ of type %i", sourceName, class);
-        [aSource addObject:[NSNumber numberWithInt:class]];
-        for (i = 1; i <= numPlaylists; i++) {
-            NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%u), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } } }",i,k];
-            NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-            ITDebugLog(@" - Adding playlist %@", theObj);
-            [aSource addObject:[[theObj copy] autorelease]];
-        }
-        [allSources addObject:[aSource autorelease]];
     }
     ITDebugLog(@"Finished getting playlists.");
     return [allSources autorelease];
