@@ -152,6 +152,7 @@ static PreferencesController *prefs = nil;
         // Update vanish delay
     } else if ( [sender tag] == 2080) {
         // Update "Song Info window when song changes" setting.
+        [df setBool:SENDER_STATE forKey:@"showSongInfoOnChange"];
     }
 }
 
