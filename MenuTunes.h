@@ -32,10 +32,10 @@
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
     int trackInfoIndex, lastSongIndex;
-    bool isPlayingRadio;
+    BOOL isPlayingRadio;
     
-    bool isAppRunning;
-    bool didHaveAlbumName, didHaveArtistName; //Helper variable for creating the menu
+    BOOL isAppRunning;
+    BOOL didHaveAlbumName, didHaveArtistName; //Helper variable for creating the menu
     
     //For upcoming songs
     NSMenuItem *upcomingSongsItem;
@@ -54,6 +54,7 @@
     PreferencesController *prefsController;
     StatusWindowController *statusController; //Shows track info and upcoming songs.
 }
+
 - (void)registerDefaultsIfNeeded;
 - (void)rebuildMenu;
 - (void)clearHotKeys;

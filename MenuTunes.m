@@ -126,7 +126,7 @@ Things to do:
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults objectForKey:@"menu"]) {
-        bool found = NO;
+        BOOL found = NO;
         NSMutableDictionary *loginwindow;
         NSMutableArray *loginarray;
         int i;
@@ -583,7 +583,7 @@ Things to do:
         int playlist = [currentRemote currentPlaylistIndex];
         
         if (trackPlayingIndex != lastSongIndex) {
-            bool wasPlayingRadio = isPlayingRadio;
+            BOOL wasPlayingRadio = isPlayingRadio;
             isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
             if (isPlayingRadio && !wasPlayingRadio) {
                 int i;
@@ -603,7 +603,7 @@ Things to do:
         else
         {
             if (playlist != [currentRemote currentPlaylistIndex]) {
-                bool wasPlayingRadio = isPlayingRadio;
+                BOOL wasPlayingRadio = isPlayingRadio;
                 isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
                 if (isPlayingRadio && !wasPlayingRadio) {
                     int i;
