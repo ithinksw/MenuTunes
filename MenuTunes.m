@@ -661,6 +661,41 @@ Things to do:
                 [playPauseMenuItem setTitle:@"Play"];
             }
         }
+    } else if ((lastPlaylistIndex > 0) && (playlist == 0)) {
+        NSMenuItem *menuItem;
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        //Remote the now playing item and add no song item
+        [menu removeItemAtIndex:trackInfoIndex];
+        
+        if ([defaults boolForKey:@"showName"] == YES) {
+            [menu removeItemAtIndex:trackInfoIndex];
+        }
+        
+        if ([defaults boolForKey:@"showTime"] == YES) {
+            [menu removeItemAtIndex:trackInfoIndex];
+        }
+        
+        if (didHaveArtistName && [defaults boolForKey:@"showArtist"]) {
+            [menu removeItemAtIndex:trackInfoIndex];
+        }
+        
+        if (didHaveAlbumName && [defaults boolForKey:@"showAlbum"]) {
+            [menu removeItemAtIndex:trackInfoIndex];
+        }
+        
+        [playPauseMenuItem setTitle:@"Play"];
+        
+        didHaveArtistName = NO;
+        didHaveAlbumName = NO;
+        lastPlaylistIndex = -1;
+        lastSongIndex = -1;
+        
+        [upcomingSongsItem setSubmenu:nil];
+        [upcomingSongsItem setEnabled:NO];
+        
+        menuItem = [[NSMenuItem alloc] initWithTitle:@"No Song" action:nil keyEquivalent:@""];
+        [menu insertItem:menuItem atIndex:trackInfoIndex];
+        [menuItem release];
     }
 }
 
