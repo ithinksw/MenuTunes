@@ -20,6 +20,11 @@
 */
 @protocol ITMTPlayer
 /*!
+    @method writable
+*/
+- (BOOL)writable;
+
+/*!
     @method show
 */
 - (BOOL)show;

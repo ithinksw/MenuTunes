@@ -10,5 +10,8 @@
 
 #import <ITMTRemote/ITMTRemote.h>
 
-@interface iTunesPlayer : ITMTPlayer <ITMTPlayer>
+@interface iTunesPlayer : ITMTPlayer <ITMTPlayer> {
+    iTunesRemote	*_remote;
+}
+
 @end

@@ -34,7 +34,7 @@
                 return NO;
             }
         }
-        if ( ( _player = [iTunesPlayer sharedPlayer] ) ) {
+        if ( ( _player = [iTunesPlayer sharedPlayerForRemote:self] ) ) {
             _activated = YES;
             return YES;
         }

@@ -33,6 +33,7 @@ typedef enum {
 - (ITMTPlayer *)player;
 
 - (float)dBForLevel:(ITMTEqualizerLevel)level;
+- (BOOL)setdB:(float)dB forLevel:(ITMTEqualizerLevel)level;
 @end
 
 @interface ITMTEqualizer : NSObject 

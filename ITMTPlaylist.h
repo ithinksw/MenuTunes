@@ -14,6 +14,8 @@
 #import <ITMTRemote/ITMTRemote.h>
 
 @protocol ITMTPlaylist
+- (BOOL)writable;
+
 - (BOOL)show; // graphical
 
 - (BOOL)setValue:(id)value forProperty:(ITMTGenericProperty)property;

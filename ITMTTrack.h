@@ -14,6 +14,8 @@
 #import <ITMTRemote/ITMTRemote.h>
 
 @protocol ITMTTrack
+- (BOOL)writable;
+
 - (BOOL)addToPlaylist:(ITMTPlaylist *)playlist;
 - (BOOL)addToPlaylist:(ITMTPlaylist *)playlist atIndex:(int)index;
 
