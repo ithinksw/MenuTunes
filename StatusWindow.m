@@ -184,9 +184,10 @@
                             ((SW_PAD / divisor) + ((contentHeight - imageHeight) / 2)),
                             imageWidth,
                             imageHeight );
-    imageView = [[[NSImageView alloc] initWithFrame:imageRect] autorelease];
+    imageView = [[[ITImageView alloc] initWithFrame:imageRect] autorelease];
     [imageView setAutoresizingMask:(NSViewMinYMargin | NSViewMaxYMargin)];
     [imageView setImage:_image];
+    [imageView setCastsShadow:YES];
     [[self contentView] addSubview:imageView];
 
     return NSMakeRect( ((SW_PAD / divisor) + imageWidth + (SW_SPACE / divisor)),
