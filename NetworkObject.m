@@ -53,7 +53,7 @@
 
 - (BOOL)requiresPassword
 {
-    return [[[NSUserDefaults standardUserDefaults] dataForKey:@"sharedPlayerPassword"] length];
+    return ([[[NSUserDefaults standardUserDefaults] dataForKey:@"sharedPlayerPassword"] length] > 0);
 }
 
 - (BOOL)sendPassword:(NSData *)password
