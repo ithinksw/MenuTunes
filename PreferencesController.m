@@ -1,5 +1,5 @@
 #import "PreferencesController.h"
-#import "MainController.h"
+#import "NewMainController.h"
 #import "HotKeyCenter.h"
 #import <ITKit/ITWindowPositioning.h>
 
@@ -296,7 +296,6 @@ static PreferencesController *prefs = nil;
     NSString *string = [combo userDisplayRep];
     NSEnumerator *enumerator = [hotKeysDictionary keyEnumerator];
     NSString *enumKey;
-    BOOL duplicateCombo = NO;
     
     if (string == nil) {
         string = @"";
@@ -343,35 +342,45 @@ static PreferencesController *prefs = nil;
         }
     }
     
-    if (!duplicateCombo) {
-        [hotKeysDictionary setObject:combo forKey:currentHotKey];
-        [df setKeyCombo:combo forKey:currentHotKey];
-        
-        if ([currentHotKey isEqualToString:@"PlayPause"]) {
-            [playPauseButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"NextTrack"]) {
-            [nextTrackButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"PrevTrack"]) {
-            [previousTrackButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"ToggleVisualizer"]) {
-            [visualizerButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"TrackInfo"]) {
-            [trackInfoButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"UpcomingSongs"]) {
-            [upcomingSongsButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"IncrementVolume"]) {
-            [volumeIncrementButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"DecrementVolume"]) {
-            [volumeDecrementButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"IncrementRating"]) {
-            [ratingIncrementButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"DecrementRating"]) {
-            [ratingDecrementButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"ToggleShuffle"]) {
-            [toggleShuffleButton setTitle:string];
-        } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
-            [toggleLoopButton setTitle:string];
-        }
+    [hotKeysDictionary setObject:combo forKey:currentHotKey];
+    [df setKeyCombo:combo forKey:currentHotKey];
+    
+    if ([currentHotKey isEqualToString:@"PlayPause"]) {
+        [playPauseButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"PlayPause" combo:combo target:[MainController sharedController] action:@selector(playPause)];
+    } else if ([currentHotKey isEqualToString:@"NextTrack"]) {
+        [nextTrackButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"NextTrack" combo:combo target:[MainController sharedController] action:@selector(nextSong)];
+    } else if ([currentHotKey isEqualToString:@"PrevTrack"]) {
+        [previousTrackButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack" combo:combo target:[MainController sharedController] action:@selector(prevSong)];
+    } else if ([currentHotKey isEqualToString:@"ToggleVisualizer"]) {
+        [visualizerButton setTitle:string];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"ToggleVisualizer" combo:combo target:[MainController sharedController] selector:@selector(NULL)];
+    } else if ([currentHotKey isEqualToString:@"TrackInfo"]) {
+        [trackInfoButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo" combo:combo target:[MainController sharedController] action:@selector(showCurrentTrackInfo)];
+    } else if ([currentHotKey isEqualToString:@"UpcomingSongs"]) {
+        [upcomingSongsButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs" combo:combo target:[MainController sharedController] action:@selector(showUpcomingSongs)];
+    } else if ([currentHotKey isEqualToString:@"IncrementVolume"]) {
+        [volumeIncrementButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume" combo:combo target:[MainController sharedController] action:@selector(incrementVolume)];
+    } else if ([currentHotKey isEqualToString:@"DecrementVolume"]) {
+        [volumeDecrementButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume" combo:combo target:[MainController sharedController] action:@selector(decrementVolume)];
+    } else if ([currentHotKey isEqualToString:@"IncrementRating"]) {
+        [ratingIncrementButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating" combo:combo target:[MainController sharedController] action:@selector(incrementRating)];
+    } else if ([currentHotKey isEqualToString:@"DecrementRating"]) {
+        [ratingDecrementButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating" combo:combo target:[MainController sharedController] action:@selector(decrementRating)];
+    } else if ([currentHotKey isEqualToString:@"ToggleShuffle"]) {
+        [toggleShuffleButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle" combo:combo target:[MainController sharedController] action:@selector(toggleShuffle)];
+    } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
+        [toggleLoopButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop" combo:combo target:[MainController sharedController] action:@selector(toggleLoop)];
     }
     [self cancelHotKey:sender];
 }

@@ -39,7 +39,6 @@ static MainController *sharedController;
         statusWindowController = [[StatusWindowController alloc] init];
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
-        [self setLatestSongIdentifier:@"0-0"];
     }
     return self;
 }
@@ -334,41 +333,41 @@ static MainController *sharedController;
                target:self action:@selector(showUpcomingSongs)];
     }
     
-/*    if ([df objectForKey:@"ToggleLoop"] != nil) {
+    if ([df objectForKey:@"ToggleLoop"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
                combo:[df keyComboForKey:@"ToggleLoop"]
-               target:self action:NULL];
+               target:self action:@selector(toggleLoop)];
     }
     
     if ([df objectForKey:@"ToggleShuffle"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
                combo:[df keyComboForKey:@"ToggleShuffle"]
-               target:self action:NULL];
+               target:self action:@selector(toggleShuffle)];
     }
     
     if ([df objectForKey:@"IncrementVolume"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
                combo:[df keyComboForKey:@"IncrementVolume"]
-               target:self action:NULL];
+               target:self action:@selector(incrementVolume)];
     }
     
     if ([df objectForKey:@"DecrementVolume"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
                combo:[df keyComboForKey:@"DecrementVolume"]
-               target:self action:NULL];
+               target:self action:@selector(decrementVolume)];
     }
     
     if ([df objectForKey:@"IncrementRating"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
                combo:[df keyComboForKey:@"IncrementRating"]
-               target:self action:NULL];
+               target:self action:@selector(incrementRating)];
     }
     
     if ([df objectForKey:@"DecrementRating"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
                combo:[df keyComboForKey:@"DecrementRating"]
-               target:self action:NULL];
-    }*/
+               target:self action:@selector(decrementRating)];
+    }
 }
 
 - (void)showCurrentTrackInfo
@@ -447,6 +446,80 @@ static MainController *sharedController;
     }
 }
 
+- (void)incrementVolume
+{
+    float volume = [currentRemote volume];
+    volume += 0.2;
+    if (volume > 1.0) {
+        volume = 1.0;
+    }
+    [currentRemote setVolume:volume];
+    
+    //Show volume status window
+}
+
+- (void)decrementVolume
+{
+    float volume = [currentRemote volume];
+    volume -= 0.2;
+    if (volume < 0.0) {
+        volume = 0.0;
+    }
+    [currentRemote setVolume:volume];
+    
+    //Show volume status window
+}
+
+- (void)incrementRating
+{
+    float rating = [currentRemote currentSongRating];
+    rating += 0.2;
+    if (rating > 1.0) {
+        rating = 1.0;
+    }
+    [currentRemote setCurrentSongRating:rating];
+    
+    //Show rating status window
+}
+
+- (void)decrementRating
+{
+    float rating = [currentRemote currentSongRating];
+    rating -= 0.2;
+    if (rating < 0.0) {
+        rating = 0.0;
+    }
+    [currentRemote setCurrentSongRating:rating];
+    
+    //Show rating status window
+}
+
+- (void)toggleLoop
+{
+    ITMTRemotePlayerRepeatMode repeatMode = [currentRemote repeatMode];
+    
+    switch (repeatMode) {
+        case ITMTRemotePlayerRepeatOff:
+            repeatMode = ITMTRemotePlayerRepeatAll;
+        break;
+        case ITMTRemotePlayerRepeatAll:
+            repeatMode = ITMTRemotePlayerRepeatOne;
+        break;
+        case ITMTRemotePlayerRepeatOne:
+            repeatMode = ITMTRemotePlayerRepeatOff;
+        break;
+    }
+    [currentRemote setRepeatMode:repeatMode];
+    
+    //Show loop status window
+}
+
+- (void)toggleShuffle
+{
+    [currentRemote setShuffleEnabled:![currentRemote shuffleEnabled]];
+    //Show shuffle status window
+}
+
 /*************************************************************************/
 #pragma mark -
 #pragma mark WORKSPACE NOTIFICATION HANDLERS
@@ -455,6 +528,7 @@ static MainController *sharedController;
 - (void)applicationLaunched:(NSNotification *)note
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
+        [self setLatestSongIdentifier:@""];
         [self timerUpdate];
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
         [self setupHotKeys];

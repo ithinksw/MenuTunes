@@ -213,7 +213,7 @@
 
 - (float)currentSongRating
 {
-    return [[ITAppleEventCenter sharedCenter]
+    return (float)[[ITAppleEventCenter sharedCenter]
                 sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]] / 100.0;
 }
 
@@ -261,8 +261,7 @@
 
 - (float)volume
 {
-    long vol = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pVol" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
-    return vol / 100;
+    return (float)[[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pVol" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]] / 100;
 }
 
 - (BOOL)setVolume:(float)volume

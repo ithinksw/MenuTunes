@@ -8,12 +8,16 @@
 
 #import "MenuController.h"
 #import "NewMainController.h"
+#import "HotKeyCenter.h"
+#import "KeyCombo.h"
 
 @interface MenuController (SubmenuMethods)
 - (NSMenu *)ratingMenu;
 - (NSMenu *)upcomingSongsMenu;
 - (NSMenu *)playlistsMenu;
 - (NSMenu *)eqMenu;
+- (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
+        onItem:(NSMenuItem *)item;
 @end
 
 @implementation MenuController
@@ -33,6 +37,8 @@
     NSEnumerator *enumerator = [menuArray objectEnumerator];
     NSString *nextObject;
     NSMenuItem *tempItem;
+    NSEnumerator *itemEnum;
+    KeyCombo *keyCombo;
     
     //Get the information
     _currentPlaylist = [currentRemote currentPlaylistIndex];
@@ -65,6 +71,12 @@
             [tempItem setTag:MTMenuPlayPauseItem];
             [tempItem setTarget:self];
             
+            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"PlayPause"]) ) {
+                [self setKeyEquivalentForCode:[keyCombo keyCode]
+                        andModifiers:[keyCombo modifiers]
+                        onItem:tempItem];
+            }
+            
             switch ([currentRemote playerPlayingState]) {
                 case ITMTRemotePlayerPlaying:
                     [tempItem setTitle:@"Pause"];
@@ -80,6 +92,13 @@
             tempItem = [menu addItemWithTitle:@"Next Track"
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
+            
+            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"NextTrack"]) ) {
+                [self setKeyEquivalentForCode:[keyCombo keyCode]
+                        andModifiers:[keyCombo modifiers]
+                        onItem:tempItem];
+            }
+            
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuNextTrackItem];
                 [tempItem setTarget:self];
@@ -88,6 +107,13 @@
             tempItem = [menu addItemWithTitle:@"Previous Track"
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
+            
+            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"PrevTrack"]) ) {
+                [self setKeyEquivalentForCode:[keyCombo keyCode]
+                        andModifiers:[keyCombo modifiers]
+                        onItem:tempItem];
+            }
+            
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuPreviousTrackItem];
                 [tempItem setTarget:self];
@@ -143,6 +169,13 @@
                     keyEquivalent:@""];
             [tempItem setSubmenu:_ratingMenu];
             [tempItem setTag:1];
+            
+            itemEnum = [[_ratingMenu itemArray] objectEnumerator];
+            while ( (tempItem = [itemEnum nextObject]) ) {
+                [tempItem setState:NSOffState];
+            }
+            
+            [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
             if (_playingRadio || !_currentPlaylist) {
                 [tempItem setEnabled:NO];
             }
@@ -167,6 +200,12 @@
                     keyEquivalent:@""];
             [tempItem setSubmenu:_eqMenu];
             [tempItem setTag:4];
+            
+            itemEnum = [[_eqMenu itemArray] objectEnumerator];
+            while ( (tempItem = [itemEnum nextObject]) ) {
+                [tempItem setState:NSOffState];
+            }
+            [[_eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
         }
     }
     [_currentMenu release];
@@ -223,8 +262,6 @@
         [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★☆☆"] action:nil keyEquivalent:@""];
         [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★☆"] action:nil keyEquivalent:@""];
         [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★★"] action:nil keyEquivalent:@""];
-        
-        [[ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
         
         itemEnum = [[ratingMenu itemArray] objectEnumerator];
         while ( (anItem = [itemEnum nextObject]) ) {
@@ -297,7 +334,6 @@
             [tempItem setTarget:self];
 	}
     }
-    [[eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
     return eqMenu;
 }
 
@@ -308,17 +344,14 @@
         case MTMenuPlayPauseItem:
             NSLog(@"MenuController: Play/Pause");
             [[MainController sharedController] playPause];
-            //We're gonna have to change the Play menu item to Pause here too.
             break;
         case MTMenuFastForwardItem:
             NSLog(@"MenuController: Fast Forward");
             [[MainController sharedController] fastForward];
-            //make sure play/pause item says sane through this
             break;
         case MTMenuRewindItem:
             NSLog(@"MenuController: Rewind");
             [[MainController sharedController] rewind];
-            //make sure play/pause item says sane through this
             break;
         case MTMenuPreviousTrackItem:
             NSLog(@"MenuController: Previous Track");
