@@ -11,29 +11,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import <ITMTRemote/ITMTPlayer.h>
-#import <ITMTRemote/ITMTPlaylist.h>
-#import <ITMTRemote/ITMTTrack.h>
-#import <ITMTRemote/ITMTEqualizer.h>
-
-/*!
-    @typedef ITMTGenericProperty
-    @constant ITMTNameProperty The object's human readable name.
-    @constant ITMTImageProperty An image that can be associated with the object.
-*/
 typedef enum {
     ITMTNameProperty,
     ITMTImageProperty
 } ITMTGenericProperty;
-/*!
-    @typedef ITMTRemoteProperty
-    @constant ITMTRemoteNameProperty
-    @constant ITMTRemoteImageProperty
-    @constant ITMTRemoteAuthorProperty
-    @constant ITMTRemoteDescriptionProperty
-    @constant ITMTRemoteURLProperty
-    @constant ITMTRemoteCopyrightProperty
-*/
+
 typedef enum {
     ITMTRemoteNameProperty,
     ITMTRemoteImageProperty,
@@ -43,7 +25,24 @@ typedef enum {
     ITMTRemoteCopyrightProperty,
     ITMTRemoteActivationStringProperty,
     ITMTRemoteDeactivationStringProperty
-} ITMTRemoteProperty
+} ITMTRemoteProperty;
+
+typedef enum {
+    ITMTTrackTitle,
+    ITMTTrackArtist,
+    ITMTTrackComposer,
+    ITMTTrackYear,
+    ITMTTrackImage,
+    ITMTTrackAlbum,
+    ITMTTrackNumber,
+    ITMTTrackTotal,
+    ITMTDiscNumber,
+    ITMTDiscTotal,
+    ITMTTrackComments,
+    ITMTTrackGenre,
+    ITMTTrackRating
+} ITMTTrackProperty;
+
 /*!
     @typedef ITMTPlayerStyle
     @constant ITMTSinglePlayerStyle Like iTunes, One player controls all available songs.
@@ -56,58 +55,156 @@ typedef enum {
     ITMTSinglePlayerSinglePlaylistStyle
 } ITMTPlayerStyle;
 
-/*!
-    @protocol ITMTRemote
-    @abstract The ITMTRemote protocol is the protocol that all MenuTunes remotes' primary class must implement.
-*/
+typedef enum {
+    ITMT32HzEqualizerBandLevel,
+    ITMT64HzEqualizerBandLevel,
+    ITMT125HzEqualizerBandLevel,
+    ITMT250HzEqualizerBandLevel,
+    ITMT500HzEqualizerBandLevel,
+    ITMT1kHzEqualizerBandLevel,
+    ITMT2kHzEqualizerBandLevel,
+    ITMT4kHzEqualizerBandLevel,
+    ITMT8kHzEqualizerBandLevel,
+    ITMT16kHzEqualizerBandLevel,
+    ITMTEqualizerPreampLevel
+} ITMTEqualizerLevel;
+
+typedef enum {
+    ITMTTrackStopped = -1,
+    ITMTTrackPaused,
+    ITMTTrackPlaying,
+    ITMTTrackForwarding,
+    ITMTTrackRewinding
+} ITMTTrackState;
+
+@class ITMTRemote, ITMTPlayer, ITMTPlaylist, ITMTTrack, ITMTEqualizer;
+
 @protocol ITMTRemote
-/*!
-    @method remote
-    @result Returns an autoreleased instance of the remote.
-*/
 + (id)remote;
 
-/*!
-    @method valueOfProperty:
-*/
 - (id)valueOfProperty:(ITMTRemoteProperty)property;
 
-/*!
-    @method propertiesAndValues
-*/
 - (NSDictionary *)propertiesAndValues;
 
-/*!
-    @method playerStyle
-    @result An ITMTPlayerStyle defining how the remote works with players and playlists.
-*/
 - (ITMTPlayerStyle)playerStyle;
 
-/*!
-    @method activate
-    @result A BOOL indicating success or failure.
-*/
 - (BOOL)activate;
-/*!
-    @method deactivate
-    @result A BOOL indicating success or failure.
-*/
 - (BOOL)deactivate;
 
-/*!
-    @method currentPlayer
-    @result An ITMTPlayer object representing the currently active player that the remote is controlling.
-*/
-- (ITMTPlayer *)currentPlayer
-/*!
-    @method players
-    @result An NSArray filled with ITMTPlayer objects.
-*/
+- (ITMTPlayer *)currentPlayer;
+- (BOOL)selectPlayer:(ITMTPlayer *)player;
 - (NSArray *)players;
 @end
 
-/*!
-    @class ITMTRemote
-*/
 @interface ITMTRemote : NSObject <ITMTRemote>
+@end
+
+/*!
+    @protocol ITMTPlayer
+    @abstract Object representation for a controlled player.
+    @discussion Object representation for a controlled player. Players can be defined as things that control playlist(s) objects, a pool of track objects, and possibly, equalizer objects.
+*/
+@protocol ITMTPlayer
+- (BOOL)writable;
+
+- (BOOL)show;
+
+- (BOOL)setValue:(id)value forProperty:(ITMTGenericProperty)property;
+- (id)valueOfProperty:(ITMTGenericProperty)property;
+- (NSDictionary *)propertiesAndValues;
+
+- (ITMTRemote *)remote;
+
+- (ITMTPlaylist *)currentPlaylist;
+- (BOOL)selectPlaylist:(ITMTPlaylist *)playlist;
+- (ITMTTrack *)currentTrack;
+- (BOOL)selectTrack:(ITMTTrack *)track;
+- (ITMTEqualizer *)currentEqualizer;
+- (BOOL)selectEqualizer:(ITMTEqualizer *)equalizer;
+
+- (NSArray *)playlists;
+
+- (NSArray *)tracks;
+- (ITMTPlaylist *)libraryPlaylist;
+
+- (NSArray *)equalizers;
+@end
+
+@interface ITMTPlayer : NSObject <ITMTPlayer>
+@end
+
+@protocol ITMTPlaylist
+- (BOOL)isEqualToPlaylist:(ITMTPlaylist *)playlist;
+
+- (BOOL)writable;
+
+- (BOOL)show;
+
+- (BOOL)setValue:(id)value forProperty:(ITMTGenericProperty)property;
+- (id)valueOfProperty:(ITMTGenericProperty)property;
+- (NSDictionary *)propertiesAndValues;
+
+- (ITMTPlayer *)player;
+
+- (BOOL)addTrack:(ITMTTrack *)track;
+- (BOOL)insertTrack:(ITMTTrack *)track atIndex:(int)index;
+
+- (BOOL)removeTrack:(ITMTTrack *)item;
+- (BOOL)removeTrackAtIndex:(int)index;
+
+- (ITMTTrack *)trackAtIndex:(int)index;
+
+- (int)indexOfTrack:(ITMTTrack *)track;
+- (ITMTTrack *)trackWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatch:(BOOL)partial;
+- (NSArray *)tracksWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatches:(BOOL)partial;
+- (int)indexOfTrackWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatch:(BOOL)partial;
+- (NSArray *)indexesOfTracksWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatches:(BOOL)partial;
+
+- (int)trackCount;
+- (NSArray *)tracks;
+
+- (ITMTTrack *)currentTrack;
+- (int)indexOfCurrentTrack;
+
+- (BOOL)selectTrack:(ITMTTrack *)track;
+- (BOOL)selectTrackAtIndex:(int)index;
+@end
+
+@interface ITMTPlaylist : NSObject <ITMTPlaylist>
+@end
+
+@protocol ITMTTrack
+- (BOOL)isEqualToTrack:(ITMTTrack *)track;
+
+- (BOOL)writable;
+
+- (BOOL)addToPlaylist:(ITMTPlaylist *)playlist;
+- (BOOL)addToPlaylist:(ITMTPlaylist *)playlist atIndex:(int)index;
+
+- (ITMTPlayer *)player;
+- (NSArray *)playlists;
+- (ITMTPlaylist *)currentPlaylist;
+- (BOOL)setCurrentPlaylist:(ITMTPlaylist *)playlist;
+
+- (BOOL)setValue:(id)value forProperty:(ITMTTrackProperty)property;
+- (id)valueOfProperty:(ITMTTrackProperty)property;
+- (NSDictionary *)propertiesAndValues;
+
+- (BOOL)setState:(ITMTTrackState)state;
+- (ITMTTrackState)state;
+@end
+
+@interface ITMTTrack : NSObject <ITMTTrack>
+@end
+
+@protocol ITMTEqualizer
+- (BOOL)writable;
+
+- (ITMTPlayer *)player;
+
+- (float)dBForLevel:(ITMTEqualizerLevel)level;
+- (BOOL)setdB:(float)dB forLevel:(ITMTEqualizerLevel)level;
+@end
+
+@interface ITMTEqualizer : NSObject <ITMTEqualizer>
 @end

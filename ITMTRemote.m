@@ -2,5 +2,4 @@
 
 #import "ITMTRemote.h"
 
-@implementation ITMTRemote
-@end
+// Put Implementations of Default Classes Here Soon!
