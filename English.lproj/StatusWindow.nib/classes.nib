@@ -1,0 +1,13 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = StatusWindow; LANGUAGE = ObjC; SUPERCLASS = NSWindow; }, 
+        {
+            CLASS = StatusWindowController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {statusField = NSTextField; statusWindow = StatusWindow; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

@@ -1,0 +1,46 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = KeyBroadcaster; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
+        {
+            ACTIONS = {
+                apply = id; 
+                cancel = id; 
+                cancelHotKey = id; 
+                clearHotKey = id; 
+                okHotKey = id; 
+                save = id; 
+                setCurrentTrackInfo = id; 
+                setNextTrack = id; 
+                setPlayPause = id; 
+                setPreviousTrack = id; 
+                setUpcomingSongs = id; 
+            }; 
+            CLASS = PreferencesController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                albumCheckbox = NSButton; 
+                allTableView = NSTableView; 
+                artistCheckbox = NSButton; 
+                genreCheckbox = NSButton; 
+                keyComboField = NSTextField; 
+                keyComboPanel = NSPanel; 
+                menuTableView = NSTableView; 
+                nameCheckbox = NSButton; 
+                nextTrackButton = NSButton; 
+                playPauseButton = NSButton; 
+                previousTrackButton = NSButton; 
+                songRatingCheckbox = NSButton; 
+                songsInAdvance = NSTextField; 
+                trackInfoButton = NSButton; 
+                trackNumberCheckbox = NSButton; 
+                trackTimeCheckbox = NSButton; 
+                upcomingSongsButton = NSButton; 
+                window = NSWindow; 
+                yearCheckbox = NSButton; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
