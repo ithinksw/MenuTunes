@@ -439,16 +439,16 @@ static MainController *sharedController;
 
 - (void)showCurrentTrackInfo
 {
-    NSString *title = [currentRemote currentSongTitle];
-
+    ITMTRemotePlayerSource  source      = [currentRemote currentSource];
+    NSString               *title       = [currentRemote currentSongTitle];
+    NSString               *album       = nil;
+    NSString               *artist      = nil;
+    NSString               *time        = nil;
+    int                     trackNumber = 0;
+    int                     trackTotal  = 0;
+    int                     rating      = -1;
+    
     if ( title ) {
-        NSString              *album       = nil;
-        NSString              *artist      = nil;
-        NSString              *time        = nil;
-        int                    trackNumber = 0;
-        int                    trackTotal  = 0;
-        int                    rating      = 0;
-        ITMTRemotePlayerSource source      = [currentRemote currentSource];
 
         if ( [df boolForKey:@"showAlbum"] ) {
             album = [currentRemote currentSongAlbum];
@@ -470,26 +470,19 @@ static MainController *sharedController;
         if ( [df boolForKey:@"showRating"] ) {
             rating = ( [currentRemote currentSongRating] * 5 );
         }
-
-        [statusWindowController showSongWindowWithTitle:title
-                                                  album:album
-                                                 artist:artist
-                                                   time:time
-                                            trackNumber:trackNumber
-                                             trackTotal:trackTotal
-                                                 rating:rating
-                                                 source:source];
+        
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
-        [statusWindowController showSongWindowWithTitle:title
-                                                  album:nil
-                                                 artist:nil
-                                                   time:nil
-                                            trackNumber:0
-                                             trackTotal:0
-                                                 rating:0
-                                                 source:[currentRemote currentSource]];
     }
+
+    [statusWindowController showSongInfoWindowWithSource:source
+                                                   title:title
+                                                   album:album
+                                                  artist:artist
+                                                    time:time
+                                             trackNumber:trackNumber
+                                              trackTotal:trackTotal
+                                                  rating:rating];
 }
 
 - (void)showUpcomingSongs
@@ -509,10 +502,10 @@ static MainController *sharedController;
             }
         }
         
-        [statusWindowController showUpcomingSongsWithTitles:songList];
+        [statusWindowController showUpcomingSongsWindowWithTitles:songList];
         
     } else {
-        [statusWindowController showUpcomingSongsWithTitles:[NSArray arrayWithObject:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.")]];
+        [statusWindowController showUpcomingSongsWindowWithTitles:[NSArray arrayWithObject:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.")]];
     }
 }
 
@@ -564,7 +557,7 @@ static MainController *sharedController;
     [currentRemote setCurrentSongRating:rating];
     
     //Show rating status window
-    [statusWindowController showRatingWindowWithLevel:rating];
+    [statusWindowController showRatingWindowWithRating:rating];
 }
 
 - (void)decrementRating
@@ -577,7 +570,7 @@ static MainController *sharedController;
     [currentRemote setCurrentSongRating:rating];
     
     //Show rating status window
-    [statusWindowController showRatingWindowWithLevel:rating];
+    [statusWindowController showRatingWindowWithRating:rating];
 }
 
 - (void)toggleLoop
@@ -598,7 +591,7 @@ static MainController *sharedController;
     [currentRemote setRepeatMode:repeatMode];
     
     //Show loop status window
-    [statusWindowController showLoopWindowWithMode:repeatMode];
+    [statusWindowController showRepeatWindowWithMode:repeatMode];
 }
 
 - (void)toggleShuffle
@@ -606,7 +599,7 @@ static MainController *sharedController;
     bool newShuffleEnabled = ![currentRemote shuffleEnabled];
     [currentRemote setShuffleEnabled:newShuffleEnabled];
     //Show shuffle status window
-    [statusWindowController showLoopWindowWithMode:newShuffleEnabled];
+    [statusWindowController showRepeatWindowWithMode:newShuffleEnabled];
 }
 
 /*************************************************************************/

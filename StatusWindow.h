@@ -16,28 +16,30 @@
 #import <ITKit/ITKit.h>
 
 
-#define SW_PAD    24.0
-#define SW_SPACE  24.0
-#define SW_MINW   211.0
-#define SW_BORDER 32.0
+#define SW_PAD        24.0
+#define SW_SPACE      24.0
+#define SW_MINW      211.0
+#define SW_BORDER     32.0
+#define SW_METER_PAD   4.0
 
-typedef enum {
-    StatusWindowTextMode,
-    StatusWindowVolumeMode
-} StatusWindowMode;
 
 @interface StatusWindow : ITTransientStatusWindow {
-    NSImage          *image;
-    NSString         *text;
-    NSImageView      *imageView;
-    ITTextField      *textField;
-    NSMatrix         *volMatrix;
-    StatusWindowMode  windowMode;
-    float             volumeLevel;
+    NSImage  *_image;
+    BOOL      _locked;
 }
 
 - (void)setImage:(NSImage *)newImage;
-- (void)setText:(NSString *)newText;
-- (void)setVolume:(float)level;
+- (void)setLocked:(BOOL)flag;
 
+- (void)buildTextWindowWithString:(NSString *)text;
+- (void)buildMeterWindowWithCharacter:(NSString *)character
+                                count:(int)count
+                               active:(int)active;
+- (void)buildDialogWindowWithMessage:(NSString *)message
+                       defaultButton:(NSString *)title
+                     alternateButton:(NSString *)title
+                              target:(id)target
+                       defaultAction:(SEL)okAction
+                     alternateAction:(SEL)alternateAction;           
+                         
 @end

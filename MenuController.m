@@ -230,7 +230,7 @@
                 }
                 
                 if ([defaults boolForKey:@"showTrackRating"]) {
-                    NSString *string;
+                    NSString *string = nil;
                     switch ((int)([currentRemote currentSongRating] * 5)) {
                         case 0:
                             string = [NSString stringWithUTF8String:"☆☆☆☆☆"];

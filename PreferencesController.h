@@ -25,7 +25,7 @@
     IBOutlet NSPanel *keyComboPanel;
     IBOutlet NSButton *launchAtLoginCheckbox;
     IBOutlet NSButton *launchPlayerAtLaunchCheckbox;
-    IBOutlet MyTableView *menuTableView;
+    IBOutlet CustomMenuTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSButton *nextTrackButton;
     IBOutlet NSButton *playPauseButton;

@@ -85,21 +85,21 @@
     [super dealloc];
 }
 
-- (void)showSongWindowWithTitle:            (NSString *)title
-                          album:            (NSString *)album
-                         artist:            (NSString *)artist
-                           time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
-                    trackNumber:                   (int)trackNumber
-                     trackTotal:              	   (int)trackTotal
-                         rating:                   (int)rating
-                         source:(ITMTRemotePlayerSource)source
+- (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
+                               title:            (NSString *)title
+                               album:            (NSString *)album
+                              artist:            (NSString *)artist
+                                time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
+                         trackNumber:                   (int)trackNumber
+                          trackTotal:              	    (int)trackTotal
+                              rating:                   (int)rating
 {
     [_window setImage:[NSImage imageNamed:@"Library"]];
-    [_window setText:title];
+    [_window buildTextWindowWithString:title];
     [_window appear:self];
 }
 
-- (void)showUpcomingSongsWithTitles:(NSArray *)titleStrings
+- (void)showUpcomingSongsWindowWithTitles:(NSArray *)titleStrings
 {
 
 }
@@ -107,23 +107,31 @@
 - (void)showVolumeWindowWithLevel:(float)level
 {
     [_window setImage:[NSImage imageNamed:@"Volume"]];
-    [_window setVolume:level];
+    [_window buildMeterWindowWithCharacter:[NSString stringWithUTF8String:"▊"]
+                                     count:10
+                                    active:( ceil(level * 100) / 10 )];
     [_window appear:self];
 }
 
-- (void)showRatingWindowWithLevel:(int)level
+- (void)showRatingWindowWithRating:(int)rating
 {
 
 }
 
-- (void)showShuffleWindowWithMode:(MTStatusWindowShuffleMode)mode
+- (void)showShuffleWindow:(BOOL)shuffle
 {
 
 }
 
-- (void)showLoopWindowWithMode:(MTStatusWindowLoopMode)mode
+- (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode
 {
 
 }
+
+- (void)showSetupQueryWindow
+{
+
+}
+
 
 @end

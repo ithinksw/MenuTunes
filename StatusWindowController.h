@@ -20,36 +20,33 @@
 
 
 typedef enum {
-    MTStatusWindowLoopModeLoopNone,
-    MTStatusWindowLoopModeLoopOne,
-    MTStatusWindowLoopModeLoopAll
-} MTStatusWindowLoopMode;
-
-typedef enum {
-    MTStatusWindowShuffleModeOn,
-    MTStatusWindowShuffleModeOff
-} MTStatusWindowShuffleMode;
+    StatusWindowRepeatNone,
+    StatusWindowRepeatGroup,
+    StatusWindowRepeatSong
+} StatusWindowRepeatMode;
 
 
 @interface StatusWindowController : NSObject {
-    StatusWindow *_window;
+    StatusWindow   *_window;
     NSUserDefaults *df;
 }
 
-- (void)showSongWindowWithTitle:            (NSString *)title
-                          album:            (NSString *)album
-                         artist:            (NSString *)artist
-                           time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
-                    trackNumber:                   (int)trackNumber
-                     trackTotal:              	   (int)trackTotal
-                         rating:                   (int)rating
-                         source:(ITMTRemotePlayerSource)source;
-
-- (void)showUpcomingSongsWithTitles:(NSArray *)titleStrings;
+- (void)showUpcomingSongsWindowWithTitles:(NSArray *)titleStrings;
 
 - (void)showVolumeWindowWithLevel:(float)level;
-- (void)showRatingWindowWithLevel:(int)level;
-- (void)showShuffleWindowWithMode:(MTStatusWindowShuffleMode)mode;
-- (void)showLoopWindowWithMode:(MTStatusWindowLoopMode)mode;
+- (void)showRatingWindowWithRating:(int)rating;
+- (void)showShuffleWindow:(BOOL)shuffle;
+- (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode;
+- (void)showSetupQueryWindow;
+
+- (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
+                               title:            (NSString *)title
+                               album:            (NSString *)album
+                              artist:            (NSString *)artist
+                                time:            (NSString *)time
+                         trackNumber:                   (int)trackNumber
+                          trackTotal:              	    (int)trackTotal
+                              rating:                   (int)rating;
+
 
 @end
