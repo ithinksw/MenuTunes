@@ -3,7 +3,7 @@
 //  MenuTunes
 //
 //  Created by Matthew L. Judy on Tue Aug 19 2003.
-//  Copyright (c) 2003 NibFile.com. All rights reserved.
+//  Copyright (c) 2003 iThink Software. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>

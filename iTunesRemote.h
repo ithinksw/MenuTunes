@@ -3,7 +3,7 @@
 //  MenuTunes
 //
 //  Created by Matt L. Judy on Sun Jan 05 2003.
-//  Copyright (c) 2003 NibFile.com. All rights reserved.
+//  Copyright (c) 2003 iThink Software. All rights reserved.
 //
 
 
