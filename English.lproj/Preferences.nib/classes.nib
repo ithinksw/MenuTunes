@@ -42,6 +42,7 @@
                 selectSharedPlayerButton = NSButton; 
                 selectedPlayerTextField = NSTextField; 
                 shareMenuTunesCheckbox = NSButton; 
+                sharingPanelOKButton = NSButton; 
                 sharingTableView = NSTableView; 
                 showOnChangeCheckbox = NSButton; 
                 songsInAdvance = NSTextField; 

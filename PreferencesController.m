@@ -162,7 +162,7 @@ static PreferencesController *prefs = nil;
 - (IBAction)showPrefsWindow:(id)sender
 {
     ITDebugLog(@"Showing preferences window.");
-    if (! window) {  // If window does not exist yet, then the nib hasn't been loaded.
+    if (!myItems) {  // If menu array does not exist yet, then the window hasn't been setup.
         ITDebugLog(@"Window doesn't exist, initial setup.");
         [self setupCustomizationTables];  // Setup the DnD manu config tables.
         [self setupMenuItems];  // Setup the arrays of menu items
@@ -252,7 +252,7 @@ static PreferencesController *prefs = nil;
         [nameTextField setEnabled:NO];
         [selectSharedPlayerButton setEnabled:state];
         
-        if (state && [controller connectToServer]) {
+        if (state && ([controller connectToServer] == 1)) {
             [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
             [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
         } else {
@@ -264,10 +264,22 @@ static PreferencesController *prefs = nil;
             
         }
     } else if ( [sender tag] == 5050 ) {
-        //Do nothing on table view click
+        //If no player is selected in the table view, turn off OK button.
+        if ([sender clickedRow] == -1 ) {
+            [sharingPanelOKButton setEnabled:NO];
+        } else {
+            [sharingPanelOKButton setEnabled:YES];
+        }
     } else if ( [sender tag] == 5051 ) {
         [df setObject:[sender stringValue] forKey:@"sharedPlayerHost"];
     } else if ( [sender tag] == 5060 ) {
+        //Set OK button state
+        if (([selectPlayerBox contentView] == zeroConfView && [sharingTableView selectedRow] == -1) ||
+            ([selectPlayerBox contentView] == manualView && [[hostTextField stringValue] length] == 0)) {
+            [sharingPanelOKButton setEnabled:NO];
+        } else {
+            [sharingPanelOKButton setEnabled:YES];
+        }
         //Show selection sheet
         [NSApp beginSheet:selectPlayerSheet modalForWindow:window modalDelegate:self didEndSelector:NULL contextInfo:nil];
     } else if ( [sender tag] == 5100 ) {
@@ -276,13 +288,20 @@ static PreferencesController *prefs = nil;
             NSRect frame = [selectPlayerSheet frame];
             frame.origin.y -= 58;
             frame.size.height = 273;
+            if ([sharingTableView selectedRow] == -1) {
+                [sharingPanelOKButton setEnabled:NO];
+            }
             [selectPlayerBox setContentView:zeroConfView];
             [selectPlayerSheet setFrame:frame display:YES animate:YES];
         } else if ( ([sender indexOfItem:[sender selectedItem]] == 1) && ([selectPlayerBox contentView] != manualView) ){
             NSRect frame = [selectPlayerSheet frame];
             frame.origin.y += 58;
             frame.size.height = 215;
-            //[window makeFirstResponder:hostTextField];
+            if ([[hostTextField stringValue] length] == 0) {
+                [sharingPanelOKButton setEnabled:NO];
+            } else {
+                [sharingPanelOKButton setEnabled:YES];
+            }
             [selectPlayerBox setContentView:manualView];
             [selectPlayerSheet setFrame:frame display:YES animate:YES];
             [hostTextField selectText:nil];
@@ -315,7 +334,7 @@ static PreferencesController *prefs = nil;
             }
         }
         
-        if ([controller connectToServer]) {
+        if ([controller connectToServer] == 1) {
             [useSharedMenuTunesCheckbox setState:NSOnState];
             [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
             [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
@@ -790,6 +809,21 @@ static PreferencesController *prefs = nil;
     [(MainController *)controller closePreferences]; 
 }
 
+/*************************************************************************/
+#pragma mark -
+#pragma mark NSTextField DELEGATE METHODS
+/*************************************************************************/
+
+- (void)controlTextDidChange:(NSNotification*)note
+{
+    if ([note object] == hostTextField) {
+        if ([[hostTextField stringValue] length] == 0) {
+            [sharingPanelOKButton setEnabled:NO];
+        } else {
+            [sharingPanelOKButton setEnabled:YES];
+        }
+    }
+}
 
 /*************************************************************************/
 #pragma mark -

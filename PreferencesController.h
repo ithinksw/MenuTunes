@@ -45,6 +45,7 @@
     IBOutlet NSPanel *selectPlayerSheet;
     IBOutlet NSButton *selectSharedPlayerButton;
     IBOutlet NSButton *shareMenuTunesCheckbox;
+    IBOutlet NSButton *sharingPanelOKButton;
     IBOutlet NSTableView *sharingTableView;
     IBOutlet NSButton *showOnChangeCheckbox;
     IBOutlet NSTextField *songsInAdvance;

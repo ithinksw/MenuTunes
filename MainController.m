@@ -64,7 +64,7 @@ static MainController *sharedController;
     if ([df boolForKey:@"enableSharing"]) {
         [self setServerStatus:YES];
     } else if ([df boolForKey:@"useSharedPlayer"]) {
-        if (![self connectToServer]) {
+        if ([self connectToServer] == 0) {
             [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
         }
     }
@@ -943,7 +943,7 @@ static MainController *sharedController;
     }
 }
 
-- (BOOL)connectToServer
+- (int)connectToServer
 {
     int result;
     ITDebugLog(@"Attempting to connect to shared remote.");
@@ -954,16 +954,16 @@ static MainController *sharedController;
         currentRemote = [[[networkController networkObject] remote] retain];
         [self timerUpdate];
         ITDebugLog(@"Connection successful.");
-        return YES;
+        return 1;
     } else if (result == 0) {
         ITDebugLog(@"Connection failed.");
         currentRemote = [remoteArray objectAtIndex:0];
-        return NO;
+        return 0;
     } else {
         //Do something about the password being invalid
         ITDebugLog(@"Connection failed.");
         currentRemote = [remoteArray objectAtIndex:0];
-        return NO;
+        return -1;
     }
 }
 
@@ -1009,7 +1009,7 @@ static MainController *sharedController;
 
 - (void)reconnect
 {
-    if (![self connectToServer]) {
+    if ([self connectToServer] == 0) {
         [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
     }
     [[StatusWindow sharedWindow] setLocked:NO];

@@ -70,7 +70,7 @@
 //
 
 - (void)setServerStatus:(BOOL)newStatus;
-- (BOOL)connectToServer;
+- (int)connectToServer;
 - (BOOL)disconnectFromServer;
 - (void)networkError:(NSException *)exception;
 
