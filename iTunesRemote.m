@@ -169,7 +169,7 @@
 - (float)currentSongRating
 {
     int realResult = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
 
     return realResult / 100;
 }
