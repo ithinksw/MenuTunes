@@ -26,7 +26,8 @@
     NSMutableArray *remoteArray;
     ITMTRemote     *currentRemote;
     
-    ITMTRemoteControlState  playerRunningState;
+    ITMTRemotePlayerRunningState  playerRunningState;
+    ITMTRemotePlayerPlaylistClass latestPlaylistClass;
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
