@@ -422,17 +422,9 @@
 
 - (NSImage *)currentSongAlbumArt
 {
-    NSAppleScript *script;
-    NSAppleEventDescriptor *moof;
-    NSData *data;
     ITDebugLog(@"Getting current song album art.");
-    script = [[NSAppleScript alloc] initWithSource:@"tell application \"iTunes\"\nget data of artwork 1 of current track\nend tell"];
-    moof = [script executeAndReturnError:nil];
-    data = [moof data];
-    ITDebugLog(@"Getting current song album art done.");
-    
-    //NSLog(@"%@", [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForData:@"'---':obj { form:'prop', want:type('prop'), seld:type('data'), from:obj { form:'indx', want:type('cArt'), seld:1, from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN]);
-    
+    NSData *data = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForData:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPCT'), from:obj { form:'indx', want:type('cArt'), seld:long(1), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    ITDebugLog(@"Getting current song album art done.");    
     if (data) {
         return [[[NSImage alloc] initWithData:data] autorelease];
     } else {
