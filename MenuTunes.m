@@ -56,10 +56,12 @@ Things to do:
     {
         [self rebuildMenu];
         refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5
-                                                    target:self
-                                                    selector:@selector(timerUpdate)
-                                                    userInfo:nil
-                                                    repeats:YES];
+                            target:self
+                            selector:@selector(timerUpdate)
+                            userInfo:nil
+                            repeats:YES];
+        
+        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
     }
     else
     {
@@ -605,11 +607,30 @@ Things to do:
 //Called when the timer fires.
 - (void)timerUpdate
 {
-    int pid;
-    if (GetProcessPID(&iTunesPSN, &pid) == noErr) {
-        int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
-        
-        if (trackPlayingIndex != curTrackIndex) {
+    int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
+    
+    if (trackPlayingIndex != curTrackIndex) {
+        bool wasPlayingRadio = isPlayingRadio;
+        isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
+        if (isPlayingRadio && !wasPlayingRadio) {
+            int i;
+            for (i = 0; i < [playlistMenu numberOfItems]; i++)
+            {
+                [[playlistMenu itemAtIndex:i] setState:NSOffState];
+            }
+        }
+        if (wasPlayingRadio) {
+            NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
+            [menu insertItem:temp atIndex:trackInfoIndex + 1];
+            [temp release];
+        }
+        [self updateMenu];
+        curTrackIndex = trackPlayingIndex;
+    }
+    else
+    {
+        int playlist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+        if (playlist != curPlaylistIndex) {
             bool wasPlayingRadio = isPlayingRadio;
             isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
             if (isPlayingRadio && !wasPlayingRadio) {
@@ -626,50 +647,16 @@ Things to do:
             }
             [self updateMenu];
             curTrackIndex = trackPlayingIndex;
+            curPlaylistIndex = playlist;
         }
-        else
-        {
-            int playlist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
-            if (playlist != curPlaylistIndex) {
-                bool wasPlayingRadio = isPlayingRadio;
-                isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
-                if (isPlayingRadio && !wasPlayingRadio) {
-                    int i;
-                    for (i = 0; i < [playlistMenu numberOfItems]; i++)
-                    {
-                        [[playlistMenu itemAtIndex:i] setState:NSOffState];
-                    }
-                }
-                if (wasPlayingRadio) {
-                    NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
-                    [menu insertItem:temp atIndex:trackInfoIndex + 1];
-                    [temp release];
-                }
-                [self updateMenu];
-                curTrackIndex = trackPlayingIndex;
-                curPlaylistIndex = playlist;
-            }
+    }
+    //Update Play/Pause menu item
+    if (playPauseMenuItem){
+        if ([[self runScriptAndReturnResult:@"return player state"] isEqualToString:@"playing"]) {
+            [playPauseMenuItem setTitle:@"Pause"];
+        } else {
+            [playPauseMenuItem setTitle:@"Play"];
         }
-        //Update Play/Pause menu item
-        if (playPauseMenuItem){
-            if ([[self runScriptAndReturnResult:@"return player state"] isEqualToString:@"playing"]) {
-                [playPauseMenuItem setTitle:@"Pause"];
-            } else {
-                [playPauseMenuItem setTitle:@"Play"];
-            }
-        }
-    } else {
-        [menu release];
-        menu = [[NSMenu alloc] initWithTitle:@""];
-        [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
-        [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
-        [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
-        [statusItem setMenu:menu];
-        
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
-        [refreshTimer invalidate];
-        refreshTimer = nil;
-        [self clearHotKeys];
     }
 }
 
@@ -686,25 +673,47 @@ Things to do:
     [self rebuildMenu]; //Rebuild the menu since no songs will be playing
     [statusItem setMenu:menu]; //Set the menu back to the main one
     [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+    
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
+}
+
+- (void)iTunesTerminated:(NSNotification *)note
+{
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+    
+    [menu release];
+    menu = [[NSMenu alloc] initWithTitle:@""];
+    [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
+    [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
+    [statusItem setMenu:menu];
+    
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
+    [refreshTimer invalidate];
+    refreshTimer = nil;
+    [self clearHotKeys];
 }
 
 //Return the PSN of iTunes, if it's running
 - (ProcessSerialNumber)iTunesPSN
 {
-    ProcessSerialNumber procNum;
-    procNum.highLongOfPSN = kNoProcess;
-    procNum.lowLongOfPSN = 0;
+    NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
+    ProcessSerialNumber number;
+    int i;
     
-    while ( (GetNextProcess(&procNum) == noErr) ) {
-        CFStringRef procName;
-        if ( (CopyProcessName(&procNum, &procName) == noErr) ) {
-            if ([(NSString *)procName isEqualToString:@"iTunes"]) {
-                return procNum;
-            }
-            CFRelease(procName);
+    number.highLongOfPSN = kNoProcess;
+    
+    for (i = 0; i < [apps count]; i++)
+    {
+        NSDictionary *curApp = [apps objectAtIndex:i];
+        
+        if ([[curApp objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"])
+        {
+            number.highLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberHigh"] intValue];
+            number.lowLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberLow"] intValue];
         }
     }
-    return procNum;
+    return number;
 }
 
 //Send an AppleEvent with a given event ID
@@ -722,8 +731,12 @@ andEventID:(AEEventID)eventID
 }
 
 //
+//
 // Selectors - called from status item menu
 //
+//
+
+// Plugin dependent selectors
 
 - (void)playTrack:(id)sender
 {
@@ -754,6 +767,7 @@ andEventID:(AEEventID)eventID
 
 - (void)playPause:(id)sender
 {
+    NSString *rawr;
     NSString *state = [self runScriptAndReturnResult:@"return player state"];
     if ([state isEqualToString:@"playing"]) {
         [self sendAEWithEventClass:'hook' andEventID:'Paus'];
@@ -770,12 +784,12 @@ isEqualToString:@"rewinding"]) {
 
 - (void)nextSong:(id)sender
 {
-    [self sendAEWithEventClass:'hook' andEventID:'Next'];
+    [currentRemote goToNextSong];
 }
 
 - (void)prevSong:(id)sender
 {
-    [self sendAEWithEventClass:'hook' andEventID:'Prev'];
+    [currentRemote goToPreviousSong];
 }
 
 - (void)fastForward:(id)sender
@@ -787,6 +801,8 @@ isEqualToString:@"rewinding"]) {
 {
     [self sendAEWithEventClass:'hook' andEventID:'Rwnd'];
 }
+
+// Plugin independent selectors
 
 - (void)quitMenuTunes:(id)sender
 {

@@ -1,6 +1,5 @@
 #import "iTunesRemote.h"
 
-
 @implementation iTunesRemote
 
 + (id)remote
@@ -10,12 +9,12 @@
 
 - (NSString *)title
 {
-    return nil;
+    return @"iTunes Plug-in";
 }
 
 - (NSString *)information;
 {
-    return nil;
+    return @"Default MenuTunes plugin to control iTunes.";
 }
 
 - (NSImage *)icon
@@ -25,12 +24,20 @@
 
 - (BOOL)begin
 {
-    return NO;
+    iTunesPSN = [self iTunesPSN];
+    
+    //Register for application termination in NSWorkspace
+    
+    NSLog(@"iTunes Plugin loaded");
+    return YES;
 }
 
 - (BOOL)halt
 {
-    return NO;
+    iTunesPSN.highLongOfPSN = kNoProcess;
+    
+    //Unregister for application termination in NSWorkspace
+    return YES;
 }
 
 - (NSArray *)sources
@@ -50,46 +57,76 @@
 
 - (int)currentPlaylistIndex
 {
+    NSString *result;
+    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pidx"
+                fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
+    NSLog(@"result: %@", result);
     return nil;
 }
 
 - (NSString *)songTitleAtIndex
 {
-    return nil;
+    return nil; 
 }
 
 - (int)currentSongIndex
 {
+    NSString *result;
+    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pidx"
+                fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
+    NSLog(@"result: %@", result);
     return nil;
 }
 
 - (NSString *)currentSongTitle
 {
-    return nil;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam"
+                fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongArtist
 {
-    return nil;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt"
+                fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongAlbum
 {
-    return nil;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb"
+                fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongGenre
 {
-    return nil;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pGen"
+                fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongLength
 {
-    return nil;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pDur"
+                fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongRemaining
 {
+    NSString* duration = [[ITAppleEventCenter sharedCenter]
+                        sendTwoTierAEWithRequestedKey:@"pDur"
+                        fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
+                        appPSN:[self iTunesPSN]];
+    NSString* current = [[ITAppleEventCenter sharedCenter]
+                        sendAEWithRequestedKey:@"pPos"
+                        eventClass:@"core" eventID:@"getd"
+                        appPSN:[self iTunesPSN]];
+    NSLog(@"%@ %@", duration, current);
+    //return [[NSNumber numberWithInt:duration - current] stringValue];
     return nil;
 }
 
@@ -100,22 +137,30 @@
 
 - (BOOL)play
 {
-    return NO;
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Play"
+            appPSN:[self iTunesPSN]];
+    return YES;
 }
 
 - (BOOL)pause
 {
-    return NO;
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Paus"
+            appPSN:[self iTunesPSN]];
+    return YES;
 }
 
 - (BOOL)goToNextSong
 {
-    return NO;
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
+            appPSN:[self iTunesPSN]];
+    return YES;
 }
 
 - (BOOL)goToPreviousSong
 {
-    return NO;
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Prev"
+            appPSN:[self iTunesPSN]];
+    return YES;
 }
 
 - (BOOL)goToNextPlaylist
@@ -146,6 +191,27 @@
 - (BOOL)switchToEQAtIndex:(int)index
 {
     return NO;
+}
+
+- (ProcessSerialNumber)iTunesPSN
+{
+    NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
+    ProcessSerialNumber number;
+    int i;
+    
+    number.highLongOfPSN = kNoProcess;
+    
+    for (i = 0; i < [apps count]; i++)
+    {
+        NSDictionary *curApp = [apps objectAtIndex:i];
+        
+        if ([[curApp objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"])
+        {
+            number.highLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberHigh"] intValue];
+            number.lowLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberLow"] intValue];
+        }
+    }
+    return number;
 }
 
 @end
