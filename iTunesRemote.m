@@ -1,4 +1,4 @@
-#import "iTunesRemote.h"
+op#import "iTunesRemote.h"
 
 @implementation iTunesRemote
 
@@ -178,6 +178,16 @@
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } ",(long)rating*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
+}
+
+- (BOOL)equalizerEnabled
+{
+    return NO;
+}
+
+- (BOOL)setEqualizerEnabled:(BOOL)enabled
+{
+    return NO;
 }
 
 - (float)volume
