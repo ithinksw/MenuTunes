@@ -52,9 +52,9 @@
 - (BOOL)isAppRunning
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
-    int i;
+    int i,count = [apps count];
     
-    for (i = 0; i < [apps count]; i++) {
+    for (i = 0; i < count; i++) {
         if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
                 isEqualToString:@"iTunes"]) {
             return YES;
@@ -91,7 +91,7 @@
         [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of playlist %i", i]]];
     }
     
-    return [NSArray arrayWithArray:presets];
+    return [presets autorelease];
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
@@ -197,7 +197,7 @@
         [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of EQ preset %i", i]]];
     }
     
-    return [NSArray arrayWithArray:presets];
+    return [presets autorelease];
 }
 
 - (int)currentEQPresetIndex
