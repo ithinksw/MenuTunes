@@ -5,6 +5,13 @@
 
 void (*kvp)(NSString *,NSString *) = keyverify;
 
+- (void)registrationStart
+{
+    [NSBundle loadNibNamed:@"Registration" owner:self];
+    [f show];
+    [f center];
+}
+
 - (IBAction)verifyRegistration:(id)sender
 {
     //note: check name, key for basic validity. SO needs some of this as well.
@@ -20,6 +27,7 @@ void (*kvp)(NSString *,NSString *) = keyverify;
     else {
 	NSRunInformationalAlertPanel(@"Failure",@"Your registration key is incorrect. Try again.",@"Aww",nil,nil);
     }
+    [f close];
 }
 
 @end

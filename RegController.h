@@ -24,6 +24,5 @@
     IBOutlet NSWindow *n;
 }
 - (IBAction)verifyRegistration:(id)sender;
-- (IBAction)dismiss:(id)sender;
 @end
 #endif
