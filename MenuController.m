@@ -9,6 +9,7 @@
 #import "MenuController.h"
 #import "MainController.h"
 #import <ITKit/ITHotKeyCenter.h>
+#import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
 
 @interface MenuController (SubmenuMethods)
@@ -39,7 +40,8 @@
     NSString *nextObject;
     NSMenuItem *tempItem;
     NSEnumerator *itemEnum;
-    ITKeyCombo *keyCombo;
+    ITHotKey *hotKey;
+    NSArray *hotKeys = [[ITHotKeyCenter sharedCenter] allHotKeys];
     
     //Get the information
     _currentPlaylist = [currentRemote currentPlaylistIndex];
@@ -72,11 +74,15 @@
             [tempItem setTag:MTMenuPlayPauseItem];
             [tempItem setTarget:self];
             
-            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"PlayPause"]) ) {
-                [self setKeyEquivalentForCode:[keyCombo keyCode]
-                        andModifiers:[keyCombo modifiers]
-                        onItem:tempItem];
-            }*/ // FIX ME!
+            itemEnum = [hotKeys objectEnumerator];
+            while ( (hotKey = [itemEnum nextObject]) ) {
+                if ([[hotKey name] isEqualToString:@"PlayPause"]) {
+                    ITKeyCombo *combo = [hotKey keyCombo];
+                    [self setKeyEquivalentForCode:[combo keyCode]
+                          andModifiers:[combo modifiers]
+                          onItem:tempItem];
+                }
+            }
             
             switch ([currentRemote playerPlayingState]) {
                 case ITMTRemotePlayerPlaying:
@@ -94,11 +100,15 @@
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
-            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"NextTrack"]) ) {
-                [self setKeyEquivalentForCode:[keyCombo keyCode]
-                        andModifiers:[keyCombo modifiers]
-                        onItem:tempItem];
-            }*/ // FIX ME!
+            itemEnum = [hotKeys objectEnumerator];
+            while ( (hotKey = [itemEnum nextObject]) ) {
+                if ([[hotKey name] isEqualToString:@"NextTrack"]) {
+                    ITKeyCombo *combo = [hotKey keyCombo];
+                    [self setKeyEquivalentForCode:[combo keyCode]
+                          andModifiers:[combo modifiers]
+                          onItem:tempItem];
+                }
+            }
             
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuNextTrackItem];
@@ -109,11 +119,15 @@
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
-            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"PrevTrack"]) ) {
-                [self setKeyEquivalentForCode:[keyCombo keyCode]
-                        andModifiers:[keyCombo modifiers]
-                        onItem:tempItem];
-            }*/ // FIX ME!
+            itemEnum = [hotKeys objectEnumerator];
+            while ( (hotKey = [itemEnum nextObject]) ) {
+                if ([[hotKey name] isEqualToString:@"PrevTrack"]) {
+                    ITKeyCombo *combo = [hotKey keyCombo];
+                    [self setKeyEquivalentForCode:[combo keyCode]
+                          andModifiers:[combo modifiers]
+                          onItem:tempItem];
+                }
+            }
             
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuPreviousTrackItem];
@@ -142,11 +156,15 @@
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
-            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"ShowPlayer"]) ) {
-                [self setKeyEquivalentForCode:[keyCombo keyCode]
-                        andModifiers:[keyCombo modifiers]
-                        onItem:tempItem];
-            }*/ // FIX ME!
+            itemEnum = [hotKeys objectEnumerator];
+            while ( (hotKey = [itemEnum nextObject]) ) {
+                if ([[hotKey name] isEqualToString:@"ShowPlayer"]) {
+                    ITKeyCombo *combo = [hotKey keyCombo];
+                    [self setKeyEquivalentForCode:[combo keyCode]
+                          andModifiers:[combo modifiers]
+                          onItem:tempItem];
+                }
+            }
             
             [tempItem setTarget:self];
             [tempItem setTag:MTMenuShowPlayerItem];
