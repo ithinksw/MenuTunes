@@ -43,8 +43,9 @@
     
     MTBlingController *bling;
     NSTimer *registerTimer;
-    BOOL timerUpdating;
+    BOOL timerUpdating, _checkingForServer;
     BOOL blinged;
+    NSLock *_serverCheckLock;
 }
 + (MainController *)sharedController;
 

@@ -1138,7 +1138,15 @@ static MainController *sharedController;
 - (void)checkForRemoteServerAndConnectImmediately:(BOOL)connectImmediately
 {
     ITDebugLog(@"Checking for remote server.");
-    [NSThread detachNewThreadSelector:@selector(runRemoteServerCheck:) toTarget:self withObject:[NSNumber numberWithBool:connectImmediately]];
+    if (!_checkingForServer) {
+        if (!_serverCheckLock) {
+            _serverCheckLock = [[NSLock alloc] init];
+        }
+        [_serverCheckLock lock];
+        _checkingForServer = YES;
+        [_serverCheckLock unlock];
+        [NSThread detachNewThreadSelector:@selector(runRemoteServerCheck:) toTarget:self withObject:[NSNumber numberWithBool:connectImmediately]];
+    }
 }
 
 - (void)runRemoteServerCheck:(id)sender
@@ -1156,6 +1164,9 @@ static MainController *sharedController;
         ITDebugLog(@"Remote server not found.");
         [self performSelectorOnMainThread:@selector(remoteServerNotFound:) withObject:nil waitUntilDone:NO];
     }
+    [_serverCheckLock lock];
+    _checkingForServer = NO;
+    [_serverCheckLock unlock];
     [pool release];
 }
 
@@ -1288,6 +1299,7 @@ static MainController *sharedController;
     [statusWindowController release];
     [menuController release];
     [networkController release];
+    [_serverCheckLock release];
     [super dealloc];
 }
 

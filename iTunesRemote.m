@@ -512,7 +512,7 @@
     ITDebugLog(@"Getting equalizer enabled status.");
     int thingy = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:type('prop'), want:type('prop'), seld:type('pEQ '), from:() }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Done getting equalizer enabled status.");
-    return thingy;
+    return (thingy != 0) ? YES : NO;
 }
 
 - (BOOL)setEqualizerEnabled:(BOOL)enabled

@@ -471,9 +471,13 @@
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
     ITDebugLog(@"Releasing old submenus.");
+    ITDebugLog(@" - Rating menu");
     [_ratingMenu release];
+    ITDebugLog(@" - Upcoming songs menu");
     [_upcomingSongsMenu release];
+    ITDebugLog(@" - Playlists menu");
     [_playlistsMenu release];
+    ITDebugLog(@" - EQ menu");
     [_eqMenu release];
     ITDebugLog(@"Beginning Rebuild of \"Song Rating\" submenu.");
     _ratingMenu = [self ratingMenu];
