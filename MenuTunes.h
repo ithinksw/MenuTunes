@@ -31,7 +31,7 @@
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
-    int trackInfoIndex, lastSongIndex;
+    int trackInfoIndex, lastSongIndex, lastPlaylistIndex;
     BOOL isPlayingRadio;
     
     BOOL isAppRunning;
@@ -54,6 +54,9 @@
     PreferencesController *prefsController;
     StatusWindow *statusWindow; //Shows track info and upcoming songs.
 }
+
+- (void)iTunesLaunched:(NSNotification *)note;
+- (void)iTunesTerminated:(NSNotification *)note;
 
 - (void)registerDefaultsIfNeeded;
 - (void)rebuildMenu;

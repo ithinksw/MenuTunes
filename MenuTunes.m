@@ -53,22 +53,12 @@ Things to do:
     
     menu = [[NSMenu alloc] initWithTitle:@""];
     
-    isAppRunning = [currentRemote isAppRunning];
-    if (isAppRunning) {
-        [self rebuildMenu];
-        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5
-                            target:self
-                            selector:@selector(timerUpdate)
-                            userInfo:nil
-                            repeats:YES];
+    if ([currentRemote isAppRunning]) {
+        [self iTunesLaunched:nil];
     } else {
-        menu = [[NSMenu alloc] initWithTitle:@""];
-        [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
-        [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
-        [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
-        refreshTimer = nil;
+        [self iTunesTerminated:nil];
     }
-
+    
     statusItem = [[ITStatusItem alloc] initWithStatusBar:[NSStatusBar systemStatusBar]
                                               withLength:NSSquareStatusItemLength];
     
@@ -82,7 +72,7 @@ Things to do:
 - (ITMTRemote *)loadRemote
 {
     NSString *folderPath = [[NSBundle mainBundle] builtInPlugInsPath];
-
+    
     if (folderPath) {
         NSArray      *bundlePathList = [NSBundle pathsForResourcesOfType:@"remote" inDirectory:folderPath];
         NSEnumerator *enumerator     = [bundlePathList objectEnumerator];
@@ -209,6 +199,7 @@ Things to do:
     
     trackInfoIndex = -1;
     lastSongIndex = -1;
+    lastPlaylistIndex = -1;
     didHaveAlbumName = ([[currentRemote currentSongAlbum] length] > 0);
     didHaveArtistName = ([[currentRemote currentSongArtist] length] > 0);
     
@@ -265,37 +256,37 @@ Things to do:
             }
         } else if ([item isEqualToString:@"Fast Forward"]) {
             [[menu addItemWithTitle:@"Fast Forward"
-                             action:@selector(fastForward:)
-                      keyEquivalent:@""] setTarget:self];
+                    action:@selector(fastForward:)
+                    keyEquivalent:@""] setTarget:self];
         } else if ([item isEqualToString:@"Rewind"]) {
             [[menu addItemWithTitle:@"Rewind"
-                             action:@selector(rewind:)
-                      keyEquivalent:@""] setTarget:self];
+                    action:@selector(rewind:)
+                    keyEquivalent:@""] setTarget:self];
         } else if ([item isEqualToString:@"Upcoming Songs"]) {
             upcomingSongsItem = [menu addItemWithTitle:@"Upcoming Songs"
-                                                action:nil
-                                         keyEquivalent:@""];
+                    action:nil
+                    keyEquivalent:@""];
         } else if ([item isEqualToString:@"Playlists"]) {
             playlistItem = [menu addItemWithTitle:@"Playlists"
-                                           action:nil
-                                    keyEquivalent:@""];
+                    action:nil
+                    keyEquivalent:@""];
         } else if ([item isEqualToString:@"EQ Presets"]) {
             eqItem = [menu addItemWithTitle:@"EQ Presets"
-                                     action:nil
-                              keyEquivalent:@""];
+                    action:nil
+                    keyEquivalent:@""];
         } else if ([item isEqualToString:@"Preferences…"]) {
             [[menu addItemWithTitle:@"Preferences…"
-                             action:@selector(showPreferences:)
-                      keyEquivalent:@""] setTarget:self];
+                    action:@selector(showPreferences:)
+                    keyEquivalent:@""] setTarget:self];
         } else if ([item isEqualToString:@"Quit"]) {
             [[menu addItemWithTitle:@"Quit"
-                             action:@selector(quitMenuTunes:)
-                      keyEquivalent:@""] setTarget:self];
+                    action:@selector(quitMenuTunes:)
+                    keyEquivalent:@""] setTarget:self];
         } else if ([item isEqualToString:@"Current Track Info"]) {
             trackInfoIndex = [menu numberOfItems];
             [menu addItemWithTitle:@"No Song"
-                            action:nil
-                     keyEquivalent:@""];
+                    action:nil
+                    keyEquivalent:@""];
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         }
@@ -361,24 +352,24 @@ Things to do:
             if (!isPlayingRadio) {
                 if ([defaults boolForKey:@"showTime"]) {
                     menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", [currentRemote currentSongLength]]
-                                                        action:nil
-                                                        keyEquivalent:@""];
+                            action:nil
+                            keyEquivalent:@""];
                     [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
                     [menuItem release];
                 }
                 
                 if ([curArtistName length] > 0) {
                     menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curArtistName]
-                                                        action:nil
-                                                        keyEquivalent:@""];
+                            action:nil
+                            keyEquivalent:@""];
                     [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
                     [menuItem release];
                 }
                 
                 if ([curAlbumName length] > 0) {
                     menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName]
-                                                        action:nil
-                                                        keyEquivalent:@""];
+                            action:nil
+                            keyEquivalent:@""];
                     [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
                     [menuItem release];
                 }
@@ -386,8 +377,8 @@ Things to do:
             
             if ([defaults boolForKey:@"showName"]) {
                 menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
-                                                    action:nil
-                                                    keyEquivalent:@""];
+                            action:nil
+                            keyEquivalent:@""];
                 [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
                 [menuItem release];
             }
@@ -455,7 +446,7 @@ Things to do:
                     NSMenuItem *songItem;
                     songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
                     [songItem setTarget:self];
-                    [songItem setRepresentedObject:[NSNumber numberWithInt:i + 1]];
+                    [songItem setRepresentedObject:[NSNumber numberWithInt:i]];
                     [upcomingSongsMenu addItem:songItem];
                     [songItem release];
                 } else {
@@ -493,6 +484,7 @@ Things to do:
         [tempItem release];
     }
     [playlistItem setSubmenu:playlistMenu];
+    [playlistItem setEnabled:YES];
     
     if (curPlaylist) {
         [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOnState];
@@ -574,21 +566,26 @@ Things to do:
 //Called when the timer fires.
 - (void)timerUpdate
 {
-    NSLog(@"%i", [currentRemote playerState]);
-    if ([currentRemote playerState] != stopped) {
+    int playlist = [currentRemote currentPlaylistIndex];
+    PlayerState playerState = [currentRemote playerState];
+    
+    if ((playlist > 0) || playerState != stopped) {
         int trackPlayingIndex = [currentRemote currentSongIndex];
-        int playlist = [currentRemote currentPlaylistIndex];
         
         if (trackPlayingIndex != lastSongIndex) {
             BOOL wasPlayingRadio = isPlayingRadio;
             isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
+            
             if (isPlayingRadio && !wasPlayingRadio) {
                 int i;
                 for (i = 0; i < [playlistMenu numberOfItems]; i++)
                 {
                     [[playlistMenu itemAtIndex:i] setState:NSOffState];
                 }
+            } else {
+                [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
             }
+            
             if (wasPlayingRadio) {
                 NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
                 [menu insertItem:temp atIndex:trackInfoIndex + 1];
@@ -598,27 +595,40 @@ Things to do:
             [self updateMenu];
             lastSongIndex = trackPlayingIndex;
         } else {
-            if (playlist != [currentRemote currentPlaylistIndex]) {
+            if (playlist != lastPlaylistIndex) {
                 BOOL wasPlayingRadio = isPlayingRadio;
                 isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
+                
                 if (isPlayingRadio && !wasPlayingRadio) {
                     int i;
                     for (i = 0; i < [playlistMenu numberOfItems]; i++) {
                         [[playlistMenu itemAtIndex:i] setState:NSOffState];
                     }
                 }
+                
                 if (wasPlayingRadio) {
                     NSMenuItem *temp = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
                     [menu insertItem:temp atIndex:trackInfoIndex + 1];
                     [temp release];
                 }
+                
+                if (!isPlayingRadio) {
+                    int i;
+                    for (i = 0; i < [playlistMenu numberOfItems]; i++)
+                    {
+                        [[playlistMenu itemAtIndex:i] setState:NSOffState];
+                    }
+                    [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
+                }
+                
                 [self updateMenu];
                 lastSongIndex = trackPlayingIndex;
+                lastPlaylistIndex = playlist;
             }
         }
         //Update Play/Pause menu item
         if (playPauseMenuItem){
-            if ([currentRemote playerState] == playing) {
+            if (playerState == playing) {
                 [playPauseMenuItem setTitle:@"Pause"];
             } else {
                 [playPauseMenuItem setTitle:@"Play"];
@@ -632,9 +642,10 @@ Things to do:
     isAppRunning = YES;
     
     //Restart the timer
-    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
+    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
     
     [self rebuildMenu]; //Rebuild the menu since no songs will be playing
+    [self rebuildPlaylistMenu];
     [statusItem setMenu:menu]; //Set the menu back to the main one
 }
 
@@ -644,7 +655,9 @@ Things to do:
     
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
-    [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
+    [menu addItemWithTitle:@"Audio Player" action:NULL keyEquivalent:@""];
+    [menu addItemWithTitle:@"Not Running" action:NULL keyEquivalent:@""];
+    [menu addItem:[NSMenuItem separatorItem]];
     [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
     [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
     [statusItem setMenu:menu];
@@ -692,6 +705,7 @@ Things to do:
 - (void)playPause:(id)sender
 {
     PlayerState state = [currentRemote playerState];
+    
     if (state == playing) {
         [currentRemote pause];
         [playPauseMenuItem setTitle:@"Play"];
@@ -736,12 +750,6 @@ Things to do:
     [NSApp terminate:self];
 }
 
-//How is this going to work, now that we're pluginized?
-- (void)openiTunes:(id)sender
-{
-    [[NSWorkspace sharedWorkspace] launchApplication:@"iTunes"];
-}
-
 - (void)showPreferences:(id)sender
 {
     if (!prefsController) {
@@ -749,7 +757,6 @@ Things to do:
         [self clearHotKeys];
     }
 }
-
 
 - (void)closePreferences
 {
@@ -811,10 +818,10 @@ Things to do:
         
         [statusWindow setText:stringToShow];
         [NSTimer scheduledTimerWithTimeInterval:3.0
-                                    target:self
-                                    selector:@selector(fadeAndCloseStatusWindow)
-                                    userInfo:nil
-                                    repeats:NO];
+                    target:self
+                    selector:@selector(fadeAndCloseStatusWindow)
+                    userInfo:nil
+                    repeats:NO];
     }
 }
 
