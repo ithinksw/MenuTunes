@@ -11,7 +11,6 @@
 - (void)updateRatingMenu;
 - (void)setupHotKeys;
 - (void)timerUpdate;
-- (void)updateMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(NSMenuItem *)item;
 
@@ -185,7 +184,9 @@
 //Recreate the status item menu
 - (void)rebuildMenu
 {
-    NSArray *myMenu = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *myMenu = [defaults arrayForKey:@"menu"];
+    int playlist = [currentRemote currentPlaylistIndex];
     int i;
     
     trackInfoIndex = -1;
@@ -322,9 +323,84 @@
         }
     }
     
-    [statusItem setMenu:menu];
+    if ( (isAppRunning == ITMTRemotePlayerRunning) ) {
+        isPlayingRadio = ([currentRemote classOfPlaylistAtIndex:playlist] == ITMTRemotePlayerRadioPlaylist);
+        
+        if (upcomingSongsItem) {
+            [self rebuildUpcomingSongsMenu];
+        }
+        
+        if (playlistItem) {
+            [self rebuildPlaylistMenu];
+        }
+        
+        if (eqItem) {
+            [self rebuildEQPresetsMenu];
+        }
+        
+        if (ratingItem) {
+            if (isPlayingRadio || !playlist) {
+                [ratingItem setEnabled:NO];
+                if ([ratingItem submenu]) {
+                    [ratingItem setSubmenu:nil];
+                }
+            } else {
+                int currentSongRating = ([currentRemote currentSongRating] * 5);
+                [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
+                lastSongRating = currentSongRating;
+                [[ratingMenu itemAtIndex:lastSongRating] setState:NSOnState];
+                [ratingItem setEnabled:YES];
+                [ratingItem setSubmenu:ratingMenu];
+            }
+        }
+        
+        //Set the new unique song identifier
+        lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
+        
+        //If we're in a playlist or radio mode
+        if ( (trackInfoIndex > -1) && (playlist || isPlayingRadio) ) {
+            NSString *title, *album, *artist;
+            
+            if ( (i = [menu indexOfItemWithTitle:@"No Song"]) && (i > -1) ) {
+                [menu removeItemAtIndex:i];
+                [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:i];
+            }
+            
+            title = [currentRemote currentSongTitle];
+            
+            if (!isPlayingRadio) {
+                ([defaults boolForKey:@"showAlbum"]) ? (album = [currentRemote currentSongAlbum]) :
+                                                    (album = @"");
+                ([defaults boolForKey:@"showArtist"]) ? (artist = [currentRemote currentSongArtist]) :
+                                                        (artist = @"");
+                if ([defaults boolForKey:@"showTime"]) {
+                    [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", [currentRemote currentSongLength]] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+                }
+                
+                if ([artist length] > 0) {
+                    [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", artist] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+                }
+                
+                if ([album length] > 0) {
+                    [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", album] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+                }
+                
+                if ([defaults boolForKey:@"showArtist"]) {
+                    didHaveArtistName = (([artist length] > 0) ? YES : NO);
+                }
+                
+                if ([defaults boolForKey:@"showAlbum"]) {
+                    didHaveAlbumName = (([album length] > 0) ? YES : NO);
+                }
+            }
+            
+            if ([title length] > 0) {
+                [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", title] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+            }
+        }
+    }
     
-    [self updateMenu];
+    [statusItem setMenu:menu];
     
     [self clearHotKeys];
     [self setupHotKeys];
@@ -459,95 +535,6 @@
         }
     }
 }
-
-- (void)updateMenu
-{
-    NSUserDefaults *defaults;
-    int playlist = [currentRemote currentPlaylistIndex];
-    int temp;
-    
-    if ( (isAppRunning == ITMTRemotePlayerNotRunning) ) {
-        return;
-    }
-    
-    defaults = [NSUserDefaults standardUserDefaults];
-    isPlayingRadio = ([currentRemote classOfPlaylistAtIndex:playlist] == ITMTRemotePlayerRadioPlaylist);
-    
-    if (upcomingSongsItem) {
-        [self rebuildUpcomingSongsMenu];
-    }
-    
-    if (playlistItem) {
-        [self rebuildPlaylistMenu];
-    }
-    
-    if (eqItem) {
-        [self rebuildEQPresetsMenu];
-    }
-    
-    if (ratingItem) {
-        if (isPlayingRadio || !playlist) {
-            [ratingItem setEnabled:NO];
-            if ([ratingItem submenu]) {
-                [ratingItem setSubmenu:nil];
-            }
-        } else {
-            int currentSongRating = ([currentRemote currentSongRating] * 5);
-            [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
-            lastSongRating = currentSongRating;
-            [[ratingMenu itemAtIndex:lastSongRating] setState:NSOnState];
-            [ratingItem setEnabled:YES];
-            [ratingItem setSubmenu:ratingMenu];
-        }
-    }
-    
-    //Set the new unique song identifier
-    lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
-    
-    //If we're in a playlist or radio mode
-    if ( (trackInfoIndex > -1) && (playlist || isPlayingRadio) ) {
-        NSString *title, *album, *artist;
-        
-        if ( (temp = [menu indexOfItemWithTitle:@"No Song"]) && (temp > -1) ) {
-            [menu removeItemAtIndex:temp];
-            [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:temp];
-        }
-        
-        title = [currentRemote currentSongTitle];
-        
-        if (!isPlayingRadio) {
-            ([defaults boolForKey:@"showAlbum"]) ? (album = [currentRemote currentSongAlbum]) :
-                                                   (album = @"");
-            ([defaults boolForKey:@"showArtist"]) ? (artist = [currentRemote currentSongArtist]) :
-                                                    (artist = @"");
-            if ([defaults boolForKey:@"showTime"]) {
-                [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", [currentRemote currentSongLength]] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
-            }
-            
-            if ([artist length] > 0) {
-                [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", artist] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
-            }
-            
-            if ([album length] > 0) {
-                [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", album] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
-            }
-            
-            if ([defaults boolForKey:@"showArtist"]) {
-                didHaveArtistName = (([artist length] > 0) ? YES : NO);
-            }
-            
-            if ([defaults boolForKey:@"showAlbum"]) {
-                didHaveAlbumName = (([album length] > 0) ? YES : NO);
-            }
-        }
-        
-        if ([title length] > 0) {
-            [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", title] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
-        }
-    }
-    [menu update];
-}
-
 
 //
 //
