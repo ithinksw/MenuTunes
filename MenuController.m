@@ -491,7 +491,7 @@
     return [menu autorelease];
 }
 
-- (void)rebuildSubmenus
+- (BOOL)rebuildSubmenus
 {
     NSArray *menu = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
     ITDebugLog(@"Rebuilding all of the submenus.");
@@ -503,38 +503,48 @@
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
     ITDebugLog(@"Releasing old submenus.");
+	_continue = YES;
     ITDebugLog(@" - Rating menu");
     [_ratingMenu release];
+	_ratingMenu = nil;
     ITDebugLog(@" - Upcoming songs menu");
     [_upcomingSongsMenu release];
+	_upcomingSongsMenu = nil;
     ITDebugLog(@" - Playlists menu");
     [_playlistsMenu release];
+	_playlistsMenu = nil;
     ITDebugLog(@" - EQ menu");
     [_eqMenu release];
+	_eqMenu = nil;
     
     ITDebugLog(@"Beginning Rebuild of \"Song Rating\" submenu.");
     _ratingMenu = [self ratingMenu];
     ITDebugLog(@"Beginning Rebuild of \"Upcoming Songs\" submenu.");
     _upcomingSongsMenu = [self upcomingSongsMenu];
-    ITDebugLog(@"Beginning Rebuild of \"Playlists\" submenu.");
-    _playlistsMenu = [self playlistsMenu];
-    ITDebugLog(@"Beginning Rebuild of \"EQ Presets\" submenu.");
-    _eqMenu = [self eqMenu];
+	if (_continue) {
+		ITDebugLog(@"Beginning Rebuild of \"Playlists\" submenu.");
+		_playlistsMenu = [self playlistsMenu];
+	}
+	if (_continue) {
+		ITDebugLog(@"Beginning Rebuild of \"EQ Presets\" submenu.");
+		_eqMenu = [self eqMenu];
+	}
     
-    if ([menu containsObject:@"artists"]) {
+    if (_continue && [menu containsObject:@"artists"]) {
         ITDebugLog(@"Releasing artists menu");
         [_artistsMenu release];
         ITDebugLog(@"Beginning Rebuild of \"Artists\" submenu.");
         _artistsMenu = [self artistsMenu];
     }
     
-    if ([menu containsObject:@"albums"]) {
+    if (_continue && [menu containsObject:@"albums"]) {
         ITDebugLog(@"Releasing albums menu");
         [_albumsMenu release];
         ITDebugLog(@"Beginning Rebuild of \"Albums\" submenu.");
         _albumsMenu = [self albumsMenu];
     }
     ITDebugLog(@"Done rebuilding all of the submenus.");
+	return _continue;
 }
 
 - (NSMenu *)ratingMenu
@@ -576,6 +586,11 @@
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
     
+	if (numSongs == -1) {
+		[upcomingSongsMenu release];
+		return nil;
+	}
+	NS_DURING
     ITDebugLog(@"Building \"Upcoming Songs\" menu.");
     if (_currentPlaylist && !_playingRadio) {
         if (numSongs > 0) {
@@ -604,7 +619,12 @@
         }
     }
     ITDebugLog(@"Done Building \"Upcoming Songs\" menu.");
-    return upcomingSongsMenu;
+	NS_VALUERETURN(upcomingSongsMenu, NSMenu *);
+	NS_HANDLER
+		[upcomingSongsMenu release];
+		_continue = NO;
+		NS_VALUERETURN(nil, NSMenu *);
+	NS_ENDHANDLER
 }
 
 /*- (NSMenu *)playlistsMenu
@@ -661,6 +681,13 @@
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
+	
+	if (!playlists) {
+		[playlistsMenu release];
+		return nil;
+	}
+	
+	NS_DURING
     ITDebugLog(@"Building \"Playlists\" menu.");
     {
         NSArray *curPlaylist = [playlists objectAtIndex:0];
@@ -713,6 +740,7 @@
         }
     }
     ITDebugLog(@"Checking the current source.");
+	NS_DURING
     if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ) {
         tempItem = [playlistsMenu itemAtIndex:[playlistsMenu numberOfItems] + [indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] - [indices count]];
         [tempItem setState:NSOnState];
@@ -720,12 +748,19 @@
     } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
+	NS_HANDLER
+	NS_ENDHANDLER
     [indices release];
     tempItem = [playlistsMenu addItemWithTitle:NSLocalizedString(@"refresh", @"Refresh") action:@selector(rebuildSubmenus) keyEquivalent:@""];
     [tempItem setTarget:self];
     [tempItem setImage:[NSImage imageNamed:@"ChasingArrow"]];
     ITDebugLog(@"Done Building \"Playlists\" menu");
-    return playlistsMenu;
+    NS_VALUERETURN(playlistsMenu, NSMenu *);
+	NS_HANDLER
+		[playlistsMenu release];
+		_continue = NO;
+		NS_VALUERETURN(nil, NSMenu *);
+	NS_ENDHANDLER
 }
 
 - (NSMenu *)eqMenu

@@ -364,14 +364,14 @@ static MainController *sharedController;
 	if ([[self currentRemote] playerStateUniqueIdentifier] == nil) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
-			[self clearHotKeys];
+			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
 		}
 		[statusItem setEnabled:NO];
 		return;
 	} else if (![statusItem isEnabled]) {
 		[statusItem setEnabled:YES];
 		[statusItem setToolTip:_toolTip];
-		[self setupHotKeys];
+		[[ITHotKeyCenter sharedCenter] setEnabled:YES];
 		return;
 	}
 	
@@ -395,41 +395,40 @@ static MainController *sharedController;
         
         timerUpdating = YES;
         [statusItem setEnabled:NO];
-        
+		
         NS_DURING
             latestPlaylistClass = [[self currentRemote] currentPlaylistClass];
-            [menuController rebuildSubmenus];
-    
-            if ( [df boolForKey:@"showSongInfoOnChange"] ) {
-                [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
-            }
-            
-            [self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
-            
-            //Create the tooltip for the status item
-            if ( [df boolForKey:@"showToolTip"] ) {
-                NSString *artist = [[self currentRemote] currentSongArtist];
-                NSString *title = [[self currentRemote] currentSongTitle];
-                ITDebugLog(@"Creating status item tooltip.");
-                if (artist) {
-                    _toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
-                } else if (title) {
-                    _toolTip = title;
-                } else {
-                    _toolTip = @"No Song Playing";
-                }
-                [statusItem setToolTip:_toolTip];
-            } else {
-                [statusItem setToolTip:nil];
-            }
+			
+			if ([menuController rebuildSubmenus]) {
+				if ( [df boolForKey:@"showSongInfoOnChange"] ) {
+					[self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
+				}
+				
+				[self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
+				//Create the tooltip for the status item
+				if ( [df boolForKey:@"showToolTip"] ) {
+					NSString *artist = [[self currentRemote] currentSongArtist];
+					NSString *title = [[self currentRemote] currentSongTitle];
+					ITDebugLog(@"Creating status item tooltip.");
+					if (artist) {
+						_toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
+					} else if (title) {
+						_toolTip = title;
+					} else {
+						_toolTip = @"No Song Playing";
+					}
+					[statusItem setToolTip:_toolTip];
+				} else {
+					[statusItem setToolTip:nil];
+				}
+			}
         NS_HANDLER
             [self networkError:localException];
         NS_ENDHANDLER
-        
         timerUpdating = NO;
         [statusItem setEnabled:YES];
     }
-    
+	
     if ([networkController isConnectedToServer]) {
         [statusItem setMenu:([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) ? [menuController menu] : [menuController menuForNoPlayer]];
     }
@@ -442,14 +441,14 @@ static MainController *sharedController;
 	if ( ([[self currentRemote] playerStateUniqueIdentifier] == nil) && playerRunningState == ITMTRemotePlayerRunning ) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
-			[self clearHotKeys];
+			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
 		}
 		[statusItem setEnabled:NO];
 		return;
 	} else if (![statusItem isEnabled]) {
 		[statusItem setEnabled:YES];
 		[statusItem setToolTip:_toolTip];
-		[self setupHotKeys];
+		[[ITHotKeyCenter sharedCenter] setEnabled:YES];
 		return;
 	}
 	
@@ -1234,7 +1233,7 @@ static MainController *sharedController;
         [self setupHotKeys];
         //playerRunningState = ITMTRemotePlayerRunning;
         playerRunningState = [[self currentRemote] playerRunningState];
-        
+		
         [refreshTimer invalidate];
         refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
                                 target:self

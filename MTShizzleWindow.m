@@ -109,7 +109,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [regBenefits setEditable:NO];
     [regBenefits setSelectable:NO];
     [regBenefits setDrawsBackground:NO];
-    [regBenefits setFont:[NSFont fontWithName:@"Lucida Grande" size:11]];
+    [regBenefits setFont:[NSFont fontWithName:@"LucidaGrande" size:11]];
     [[box contentView] addSubview:regBenefits];
     
     enterInfo = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 148, 345, 17)];

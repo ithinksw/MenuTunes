@@ -45,12 +45,12 @@ typedef enum {
     NSMenu *_ratingMenu, *_upcomingSongsMenu, *_eqMenu, *_playlistsMenu, *_artistsMenu, *_albumsMenu; //Submenus
     
     int _currentPlaylist, _currentTrack;
-    BOOL _playingRadio;
+    BOOL _playingRadio, _continue;
 }
 
 - (NSMenu *)menu;
 - (NSMenu *)menuForNoPlayer;
-- (void)rebuildSubmenus;
+- (BOOL)rebuildSubmenus;
 
 // - (NSArray *)menuLayout;
 // - (void)setMenuLayout:(NSArray *)newLayoutArray;

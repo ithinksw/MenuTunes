@@ -168,6 +168,7 @@
     
     ITDebugLog(@"Getting playlists.");
     if (numSources == 0) {
+		[allSources release];
         ITDebugLog(@"No sources.");
         return nil;
     }
@@ -271,8 +272,10 @@
 		makePlaylistWithTerm:ofType: method.
 	*/
     int temp1;
+	NSAppleEventDescriptor *result;
     ITDebugLog(@"Getting number of songs in playlist at index %i", index);
-    temp1 = (int)[ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", index], 'core', 'cnte', &savedPSN) int32Value];
+	result = ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", index], 'core', 'cnte', &savedPSN);
+	temp1 = (result == nil) ? -1 : (int)[result int32Value];
     ITDebugLog(@"Getting number of songs in playlist at index %i done", index);
     return temp1;
 }

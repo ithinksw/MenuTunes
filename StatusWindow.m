@@ -218,7 +218,7 @@
             divisor = MINI_DIVISOR;
         }
 
-        font = [NSFont fontWithName:@"Lucida Grande Bold" size:(baseFontSize / divisor)];
+        font = [NSFont fontWithName:@"LucidaGrande-Bold" size:(baseFontSize / divisor)];
         attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
         
 //      Iterate over each line to get text width and height
@@ -285,7 +285,7 @@
             divisor = MINI_DIVISOR;
         }
         
-        font        = [NSFont fontWithName:@"Lucida Grande Bold" size:( size / divisor )];
+        font        = [NSFont fontWithName:@"LucidaGrande-Bold" size:( size / divisor )];
         attr        = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
         charSize    = [character sizeWithAttributes:attr];
         cellHeight  = ( charSize.height + 4.0 );  // Add 4.0 for shadow
@@ -375,9 +375,9 @@
             divisor = MINI_DIVISOR;
         }
         
-        font = [NSFont fontWithName:@"Lucida Grande Bold" size:(baseFontSize / divisor)];
+        font = [NSFont fontWithName:@"LucidaGrande-Bold" size:(baseFontSize / divisor)];
         attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-        buttonFont = [NSFont fontWithName:@"Lucida Grande Bold" size:(14 / divisor)];
+        buttonFont = [NSFont fontWithName:@"LucidaGrande-Bold" size:(14 / divisor)];
         buttonAttr = [NSDictionary dictionaryWithObjectsAndKeys:
             buttonFont , NSFontAttributeName,
             textColor  , NSForegroundColorAttributeName, 
