@@ -199,14 +199,15 @@ static PreferencesController *prefs = nil;
         //Set the server password
         const char *instring = [[sender stringValue] UTF8String];
         const char *password = "password";
-        unsigned char result;
+        unsigned char *result;
         NSData *hashedPass, *passwordStringHash;
-        SHA1(instring, strlen(instring), &result);
-        hashedPass = [NSData dataWithBytes:&result length:strlen(&result)];
-        SHA1(password, strlen(password), &result);
-        passwordStringHash = [NSData dataWithBytes:&result length:strlen(&result)];
+        result = SHA1(instring, strlen(instring), NULL);
+        hashedPass = [NSData dataWithBytes:result length:strlen(result)];
+        result = SHA1(password, strlen(password), NULL);
+        passwordStringHash = [NSData dataWithBytes:result length:strlen(result)];
         if (![hashedPass isEqualToData:passwordStringHash]) {
             [df setObject:hashedPass forKey:@"sharedPlayerPassword"];
+            [sender setStringValue:@"password"];
         }
     } else if ( [sender tag] == 5040 ) {
         BOOL state = SENDER_STATE;
@@ -249,9 +250,9 @@ static PreferencesController *prefs = nil;
         }
     } else if ( [sender tag] == 5150 ) {
         const char *instring = [[sender stringValue] UTF8String];
-        unsigned char result;
-        SHA1(instring, strlen(instring), &result);
-        [df setObject:[NSData dataWithBytes:&result length:strlen(&result)] forKey:@"connectPassword"];
+        unsigned char *result;
+        result = SHA1(instring, strlen(instring), NULL);
+        [df setObject:[NSData dataWithBytes:result length:strlen(result)] forKey:@"connectPassword"];
     } else if ( [sender tag] == 5110 ) {
         //Cancel
         [NSApp endSheet:selectPlayerSheet];
@@ -308,7 +309,6 @@ static PreferencesController *prefs = nil;
         } else if ( effectTag == 2103 ) {
             [sw setEntryEffect:[[[ITSlideHorizontallyWindowEffect alloc] initWithWindow:sw] autorelease]];
         } else if ( effectTag == 2104 ) {
-            NSLog(@"dflhgldf");
             [sw setEntryEffect:[[[ITPivotWindowEffect alloc] initWithWindow:sw] autorelease]];
         }
 
@@ -795,11 +795,7 @@ static PreferencesController *prefs = nil;
             return [[hotKeysDictionary objectForKey:[hotKeysArray objectAtIndex:rowIndex]] description];
         }
     } else {
-        if ([[aTableColumn identifier] isEqualToString:@"name"]) {
-            return [[[[NetworkController sharedController] remoteServices] objectAtIndex:rowIndex] name];
-        } else {
-            return @"X";
-        }
+        return [[[[NetworkController sharedController] remoteServices] objectAtIndex:rowIndex] name];
     }
 }
 

@@ -2,6 +2,7 @@
 #import "MenuController.h"
 #import "PreferencesController.h"
 #import "NetworkController.h"
+#import "NetworkObject.h"
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
@@ -947,8 +948,9 @@ static MainController *sharedController;
     ITDebugLog(@"Attempting to connect to shared remote.");
     //Connect
     if ([networkController connectToHost:[df stringForKey:@"sharedPlayerHost"]]) {
-        currentRemote = [[networkController networkObject] remote];
-        [refreshTimer invalidate];
+        currentRemote = [[[networkController networkObject] remote] retain];
+        [self timerUpdate];
+        //[refreshTimer invalidate];
         ITDebugLog(@"Connection successful.");
         return YES;
     } else {
@@ -962,6 +964,7 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Disconnecting from shared remote.");
     //Disconnect
+    [currentRemote release];
     currentRemote = [remoteArray objectAtIndex:0];
     [networkController disconnect];
     [self timerUpdate];
@@ -983,14 +986,13 @@ static MainController *sharedController;
 - (void)networkError:(NSException *)exception
 {
     ITDebugLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
-    NSLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
-    NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
-    if ([networkController isConnectedToServer] && [self disconnectFromServer]) {
-        if ([[exception name] isEqualToString:NSPortTimeoutException]) {
+    if ([[exception name] isEqualToString:NSPortTimeoutException]) {
+        NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
+        if ([networkController isConnectedToServer] && [self disconnectFromServer]) {
             [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
+        } else {
+            ITDebugLog(@"CRITICAL ERROR, DISCONNECTING!");
         }
-    } else {
-        ITDebugLog(@"CRITICAL ERROR, DISCONNECTING!");
     }
 }
 

@@ -25,4 +25,7 @@
 }
 - (ITMTRemote *)remote;
 - (NSString *)serverName;
+
+- (BOOL)requiresPassword;
+- (BOOL)sendPassword:(NSData *)password;
 @end

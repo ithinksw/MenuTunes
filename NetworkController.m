@@ -40,7 +40,6 @@ static NetworkController *sharedController;
 {
     [self disconnect];
     if (serverOn) {
-        [serverConnection invalidate];
         [serverConnection release];
     }
     [serverPass release];
@@ -78,8 +77,8 @@ static NetworkController *sharedController;
                                                      sendPort:serverPort];
             [serverConnection setRootObject:[[NetworkObject alloc] init]];
             [serverConnection registerName:@"ITMTPlayerHost"];
-            [serverConnection setDelegate:self];
         NS_HANDLER
+            [[serverConnection rootObject] release];
             [serverConnection release];
             [serverPort release];
             ITDebugLog(@"Error starting server!");
@@ -107,8 +106,6 @@ static NetworkController *sharedController;
         [service stop];
         [serverConnection registerName:nil];
         [[serverConnection rootObject] release];
-        [serverPort invalidate];
-        [serverConnection invalidate];
         [serverConnection release];
         ITDebugLog(@"Stopped server.");
         serverOn = NO;
@@ -120,6 +117,7 @@ static NetworkController *sharedController;
     NSData *fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"];
     unsigned char buffer;
     ITDebugLog(@"Connecting to host: %@", host);
+    [remoteHost release];
     remoteHost = [host copy];
     if (fullPass) {
         [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
@@ -132,7 +130,6 @@ static NetworkController *sharedController;
         clientPort = [[NSSocketPort alloc] initRemoteWithTCPPort:SERVER_PORT
                                            host:host];
         clientConnection = [[NSConnection connectionWithReceivePort:nil sendPort:clientPort] retain];
-        [clientConnection setDelegate:self];
         [clientConnection setReplyTimeout:5];
         clientProxy = [[clientConnection rootProxy] retain];
     NS_HANDLER
@@ -141,6 +138,26 @@ static NetworkController *sharedController;
         ITDebugLog(@"Connection to host failed: %@", host);
         return NO;
     NS_ENDHANDLER
+    
+    if (!clientProxy) {
+        ITDebugLog(@"Null proxy! Couldn't connect!");
+        [self disconnect];
+        return NO;
+    }
+    
+    if ([clientProxy requiresPassword]) {
+        ITDebugLog(@"Sending password.");
+        if (![clientProxy sendPassword:[[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"]]) {
+            ITDebugLog(@"Invalid password!");
+            [self disconnect];
+            if ( NSRunCriticalAlertPanel(@"Invalid Password", @"The MenuTunes server you attempted to connect to rejected your password. Would you like to try to reconnect?.", @"Yes", @"No", nil) == NSOKButton ) {
+                return [self connectToHost:host];
+            } else {
+                return NO;
+            }
+        }
+    }
+    
     ITDebugLog(@"Connected to host: %@", host);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnect) name:NSConnectionDidDieNotification object:clientConnection];
     connectedToServer = YES;
@@ -155,7 +172,6 @@ static NetworkController *sharedController;
     remoteHost = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [clientProxy release];
-    [clientConnection invalidate];
     [clientConnection release];
     return YES;
 }
@@ -178,20 +194,24 @@ static NetworkController *sharedController;
     
     NS_DURING
         testPort = [[NSSocketPort alloc] initRemoteWithTCPPort:SERVER_PORT
-                                           host:host];
+                                         host:host];
         testConnection = [[NSConnection connectionWithReceivePort:nil sendPort:testPort] retain];
         [testConnection setReplyTimeout:2];
-        tempProxy = [testConnection rootProxy];
-        [testConnection setDelegate:self];
+        tempProxy = (NetworkObject *)[testConnection rootProxy];
         [tempProxy serverName];
     NS_HANDLER
         ITDebugLog(@"Connection to host failed: %@", host);
-        [testConnection invalidate];
         [testConnection release];
         [testPort release];
         return NO;
     NS_ENDHANDLER
-    [testConnection invalidate];
+    
+    if (!clientProxy) {
+        ITDebugLog(@"Null proxy! Couldn't connect!");
+        [testConnection release];
+        [testPort release];
+        return NO;
+    }
     [testConnection release];
     [testPort release];
     return YES;
@@ -226,21 +246,6 @@ static NetworkController *sharedController;
 {
     return remoteServices;
 }
-
-/*- (BOOL)authenticateComponents:(NSArray*)components withData:(NSData *)authenticationData
-{
-    return YES;
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"enableSharingPassword"] || [authenticationData isEqualToData:serverPass]) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-- (NSData *)authenticationDataForComponents:(NSArray *)components
-{
-    return clientPass;
-}*/
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing
 {
