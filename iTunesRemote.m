@@ -85,21 +85,21 @@
     long i = 0;
     const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
     NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:numPlaylists];
-    
-    for (i = 1; i <= numPlaylists; i++) {
-        const long j = i;
-        NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
-        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN fixForAECrappiness:i];
-        [playlists addObject:theObj];
-    }
-    return [playlists autorelease];
+
+
+	   for (i = 1; i <= numPlaylists; i++) {
+		  const long j = i;
+		  NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
+		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+		  NSLog(@"sent event cur %d max %d",i,numPlaylists);
+		  [playlists addObject:theObj];
+	   }
+	   return [playlists autorelease];
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN]
-
-;
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
 }
 
 - (NSString *)classOfPlaylistAtIndex:(int)index
@@ -171,14 +171,12 @@
     int i;
     long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:iTunesPSN];
     NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
-    
-    for (i = 1; i <= numPresets; i++) {
-        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN fixForAECrappiness:i];
-        if (theObj) {
-            [presets addObject:theObj];
-        }
-    }
-    return [presets autorelease];
+
+	   for (i = 1; i <= numPresets; i++) {
+		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+		  if (theObj) [presets addObject:theObj];
+	   }
+	   return [presets autorelease];
 }
 
 - (int)currentEQPresetIndex
@@ -228,13 +226,13 @@
 
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'name', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"hook" eventID:@"Play" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'name', want:type('cPly'), seld:long(%lu), from:() }",index] eventClass:@"hook" eventID:@"Play" appPSN:iTunesPSN];
     return NO;
 }
 
 - (BOOL)switchToSongAtIndex:(int)index
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:iTunesPSN];
     return NO;
 }
 
