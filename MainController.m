@@ -10,6 +10,30 @@
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
 
+@interface NSImage (WeeAdditions)
+- (NSImage *)imageScaledSmoothlyToSize:(NSSize)scaledSize;
+@end
+
+@implementation NSImage (WeeAdditions)
+
+- (NSImage *)imageScaledSmoothlyToSize:(NSSize)scaledSize
+{
+    NSImage *newImage;
+    NSImageRep *rep = [self bestRepresentationForDevice:nil];
+    
+    newImage = [[NSImage alloc] initWithSize:scaledSize];
+    [newImage lockFocus];
+    {
+        [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+        [[NSGraphicsContext currentContext] setShouldAntialias:YES];
+        [rep drawInRect:NSMakeRect(3, 3, scaledSize.width - 6, scaledSize.height - 6)];
+    }
+    [newImage unlockFocus];
+    return [newImage autorelease];
+}
+
+@end
+
 @interface MainController(Private)
 - (ITMTRemote *)loadRemote;
 - (void)timerUpdate;
@@ -798,7 +822,6 @@ static MainController *sharedController;
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
     }
-
     [statusWindowController showSongInfoWindowWithSource:source
                                                    title:title
                                                    album:album
@@ -806,7 +829,7 @@ static MainController *sharedController;
                                                     time:time
                                                    track:track
                                                   rating:rating
-                                                   image:art];
+                                                   image:[[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:NSMakeSize(110,110)]];
 }
 
 - (void)showUpcomingSongs
