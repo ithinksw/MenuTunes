@@ -4,8 +4,7 @@
 
 - (id)initWithContentRect:(NSRect)rect styleMask:(unsigned int)mask backing:(NSBackingStoreType)type defer:(BOOL)flag
 {
-    if ( (self = [super initWithContentRect:rect styleMask:NSBorderlessWindowMask backing:type defer:flag]) )
-    {
+    if ( (self = [super initWithContentRect:rect styleMask:NSBorderlessWindowMask backing:type defer:flag]) ) {
         [self setHasShadow:NO];
         [self setOpaque:NO];
         [self setLevel:NSStatusWindowLevel];

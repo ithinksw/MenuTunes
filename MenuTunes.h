@@ -1,4 +1,16 @@
-/* MenuTunes */
+/*
+ *	MenuTunes
+ *  MenuTunes
+ *    App Controller Class
+ *
+ *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
+ *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
+ *
+ *  Copyright (c) 2002 The iThink Group.
+ *  All Rights Reserved
+ *
+ */
+
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
@@ -39,21 +51,8 @@
 }
 
 - (void)rebuildMenu;
-- (void)updateMenu;
-- (void)rebuildUpcomingSongsMenu;
-- (void)rebuildPlaylistMenu;
-- (void)rebuildEQPresetsMenu;
-
 - (void)clearHotKeys;
-- (void)setupHotKeys;
-
-- (NSString *)runScriptAndReturnResult:(NSString *)script;
-- (void)timerUpdate;
-
 - (ProcessSerialNumber)iTunesPSN;
-
-- (void)sendAEWithEventClass:(AEEventClass)eventClass andEventID:(AEEventID)eventID;
-
 - (void)closePreferences;
 
 @end

@@ -1,11 +1,3 @@
-//
-//  MenuTunesView.m
-//  MenuTunes
-//
-//  Created by Kent Sutherland on Tue Nov 19 2002.
-//  Copyright (c) 2002 Kent Sutherland. All rights reserved.
-//
-
 #import "MenuTunesView.h"
 
 
@@ -15,15 +7,17 @@
 {
     if ( (self = [super initWithFrame:frame]) )
     {
-        image = [NSImage imageNamed:@"menu"];
-        altImage = [NSImage imageNamed:@"selected_image"];
-	curImage = image;
+        images = [[NSDictionary alloc] initWithObjectsAndKeys:
+            [NSImage imageNamed:@"menu"], @"normal",
+            [NSImage imageNamed:@"selected_image"],	@"selected",
+            nil];
     }
     return self;
 }
 
 - (void)drawRect:(NSRect)rect
 {
+    NSImage *image
     [curImage compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
 }
 

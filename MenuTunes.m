@@ -1,10 +1,3 @@
-//
-//  MenuTunes.m
-//
-//  iThink Software, Copyright 2002
-//
-//
-
 /*
 Things to do:
 • Radio mode makes things act oddly
@@ -24,15 +17,31 @@ Things to do:
 #import "HotKeyCenter.h"
 #import "StatusWindowController.h"
 
+@interface MenuTunes(Private)
+- (void)registerDefaultsIfNeeded;
+- (void)updateMenu;
+- (void)rebuildUpcomingSongsMenu;
+- (void)rebuildPlaylistMenu;
+- (void)rebuildEQPresetsMenu;
+- (void)setupHotKeys;
+- (NSString *)runScriptAndReturnResult:(NSString *)script;
+- (void)timerUpdate;
+- (void)sendAEWithEventClass:(AEEventClass)eventClass andEventID:(AEEventID)eventID;
+
+@end
+
 @implementation MenuTunes
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark INITIALIZATION METHODS
+/*************************************************************************/
 
 - (void)applicationDidFinishLaunching:(NSNotification *)note
 {
     asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"menu"])
-    {
-        [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"Play/Pause", @"Next Track", @"Previous Track", @"Fast Forward", @"Rewind", @"<separator>", @"Upcoming Songs", @"Playlists", @"<separator>", @"Preferences…", @"Quit", @"<separator>", @"Current Track Info", nil] forKey:@"menu"];
-    }
+
+    [self registerDefaultsIfNeeded];
     
     menu = [[NSMenu alloc] initWithTitle:@""];
     iTunesPSN = [self iTunesPSN]; //Get PSN of iTunes if it's running
@@ -40,8 +49,11 @@ Things to do:
     if (!((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)))
     {
         [self rebuildMenu];
-        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5 
-target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
+        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5
+                                                        target:self
+                                                      selector:@selector(timerUpdate)
+                                                      userInfo:nil
+                                                       repeats:YES];
     }
     else
     {
@@ -62,23 +74,32 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     //[statusItem setView:view];
 }
 
-- (void)applicationWillTerminate:(NSNotification *)note
-{
-    [self clearHotKeys];
-    [[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
-}
 
-- (void)dealloc
+/*************************************************************************/
+#pragma mark -
+#pragma mark INSTANCE METHODS
+/*************************************************************************/
+
+- (void)registerDefaultsIfNeeded
 {
-    if (refreshTimer)
-    {
-        [refreshTimer invalidate];
+    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"menu"]) {
+        [[NSUserDefaults standardUserDefaults] setObject:
+            [NSArray arrayWithObjects:
+                @"Play/Pause",
+                @"Next Track",
+                @"Previous Track",
+                @"Fast Forward",
+                @"Rewind",
+                @"<separator>",
+                @"Upcoming Songs",
+                @"Playlists",
+                @"<separator>",
+                @"Preferences…",
+                @"Quit",
+                @"<separator>",
+                @"Current Track Info",
+                nil] forKey:@"menu"];
     }
-    CloseComponent(asComponent);
-    [statusItem release];
-    [menu release];
-    [view release];
-    [super dealloc];
 }
 
 //Recreate the status item menu
@@ -86,12 +107,11 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
 {
     NSArray *myMenu = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
     int i;
+    
     trackInfoIndex = -1;
-    
-    didHaveAlbumName = (([[self runScriptAndReturnResult:@"return album of current track"] length] > 0) ? YES : NO);
-    
-    while ([menu numberOfItems] > 0)
-    {
+    didHaveAlbumName = ([[self runScriptAndReturnResult:@"return album of current track"] length] > 0);
+
+    while ([menu numberOfItems] > 0) {
         [menu removeItemAtIndex:0];
     }
     
@@ -104,57 +124,55 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     [eqMenu release];
     eqMenu = nil;
     
-    for (i = 0; i < [myMenu count]; i++)
-    {
+    for (i = 0; i < [myMenu count]; i++) {
         NSString *item = [myMenu objectAtIndex:i];
-        if ([item isEqualToString:@"Play/Pause"])
-        {
-            playPauseMenuItem = [menu addItemWithTitle:@"Play" action:@selector(playPause:) keyEquivalent:@""];
+        if ([item isEqualToString:@"Play/Pause"]) {
+            playPauseMenuItem = [menu addItemWithTitle:@"Play"
+                                                action:@selector(playPause:)
+                                         keyEquivalent:@""];
             [playPauseMenuItem setTarget:self];
-        }
-        else if ([item isEqualToString:@"Next Track"])
-        {
-            [[menu addItemWithTitle:@"Next Track" action:@selector(nextSong:) keyEquivalent:@""] setTarget:self];
-        }
-        else if ([item isEqualToString:@"Previous Track"])
-        {
-            [[menu addItemWithTitle:@"Previous Track" action:@selector(prevSong:) keyEquivalent:@""] setTarget:self];
-        }
-        else if ([item isEqualToString:@"Fast Forward"])
-        {
-            [[menu addItemWithTitle:@"Fast Forward" action:@selector(fastForward:) keyEquivalent:@""] setTarget:self];
-        }
-        else if ([item isEqualToString:@"Rewind"])
-        {
-            [[menu addItemWithTitle:@"Rewind" action:@selector(rewind:) keyEquivalent:@""] setTarget:self];
-        }
-        else if ([item isEqualToString:@"Upcoming Songs"])
-        {
-            upcomingSongsItem = [menu addItemWithTitle:@"Upcoming Songs" action:NULL keyEquivalent:@""];
-        }
-        else if ([item isEqualToString:@"Playlists"])
-        {
-            playlistItem = [menu addItemWithTitle:@"Playlists" action:NULL keyEquivalent:@""];
-        }
-        else if ([item isEqualToString:@"EQ Presets"])
-        {
-            eqItem = [menu addItemWithTitle:@"EQ Presets" action:NULL keyEquivalent:@""];
-        }
-        else if ([item isEqualToString:@"Preferences…"])
-        {
-            [[menu addItemWithTitle:@"Preferences…" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
-        }
-        else if ([item isEqualToString:@"Quit"])
-        {
-            [[menu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""] setTarget:self];
-        }
-        else if ([item isEqualToString:@"Current Track Info"])
-        {
+        } else if ([item isEqualToString:@"Next Track"]) {
+            [[menu addItemWithTitle:@"Next Track"
+                             action:@selector(nextSong:)
+                      keyEquivalent:@""] setTarget:self];
+        } else if ([item isEqualToString:@"Previous Track"]) {
+            [[menu addItemWithTitle:@"Previous Track"
+                             action:@selector(prevSong:)
+                      keyEquivalent:@""] setTarget:self];
+        } else if ([item isEqualToString:@"Fast Forward"]) {
+            [[menu addItemWithTitle:@"Fast Forward"
+                             action:@selector(fastForward:)
+                      keyEquivalent:@""] setTarget:self];
+        } else if ([item isEqualToString:@"Rewind"]) {
+            [[menu addItemWithTitle:@"Rewind"
+                             action:@selector(rewind:)
+                      keyEquivalent:@""] setTarget:self];
+        } else if ([item isEqualToString:@"Upcoming Songs"]) {
+            upcomingSongsItem = [menu addItemWithTitle:@"Upcoming Songs"
+                                                action:nil
+                                         keyEquivalent:@""];
+        } else if ([item isEqualToString:@"Playlists"]) {
+            playlistItem = [menu addItemWithTitle:@"Playlists"
+                                           action:nil
+                                    keyEquivalent:@""];
+        } else if ([item isEqualToString:@"EQ Presets"]) {
+            eqItem = [menu addItemWithTitle:@"EQ Presets"
+                                     action:nil
+                              keyEquivalent:@""];
+        } else if ([item isEqualToString:@"Preferences…"]) {
+            [[menu addItemWithTitle:@"Preferences…"
+                             action:@selector(showPreferences:)
+                      keyEquivalent:@""] setTarget:self];
+        } else if ([item isEqualToString:@"Quit"]) {
+            [[menu addItemWithTitle:@"Quit"
+                             action:@selector(quitMenuTunes:)
+                      keyEquivalent:@""] setTarget:self];
+        } else if ([item isEqualToString:@"Current Track Info"]) {
             trackInfoIndex = [menu numberOfItems];
-            [menu addItemWithTitle:@"No Song" action:NULL keyEquivalent:@""];
-        }
-        else if ([item isEqualToString:@"<separator>"])
-        {
+            [menu addItemWithTitle:@"No Song"
+                            action:nil
+                     keyEquivalent:@""];
+        } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         }
     }
@@ -172,8 +190,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     NSString *curSongName, *curAlbumName;
     NSMenuItem *menuItem;
     
-    if ((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0))
-    {
+    if ((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)) {
         return;
     }
     
@@ -181,60 +198,57 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     curSongName = [self runScriptAndReturnResult:@"return name of current track"];
     curAlbumName = [self runScriptAndReturnResult:@"return album of current track"];
     
-    if (upcomingSongsItem)
-    {
+    if (upcomingSongsItem) {
         [self rebuildUpcomingSongsMenu];
     }
-    if (playlistItem)
-    {
+    if (playlistItem) {
         [self rebuildPlaylistMenu];
     }
-    if (eqItem)
-    {
+    if (eqItem) {
         [self rebuildEQPresetsMenu];
     }
     
-    if ([curSongName length] > 0)
-    {
+    if ([curSongName length] > 0) {
         int index = [menu indexOfItemWithTitle:@"Now Playing"];
         
-        if (index > -1)
-        {
+        if (index > -1) {
             [menu removeItemAtIndex:index + 1];
-            if (didHaveAlbumName)
-            {
+            
+            if (didHaveAlbumName) {
                 [menu removeItemAtIndex:index + 1];
             }
         }
         
-        if ([curAlbumName length] > 0)
-        {
-            menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName] action:NULL keyEquivalent:@""];
+        if ([curAlbumName length] > 0) {
+            menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curAlbumName]
+                                                  action:nil
+                                                  keyEquivalent:@""];
             [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
             [menuItem release];
         }
         
-        menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName] action:NULL keyEquivalent:@""];
+        menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"  %@", curSongName]
+                                              action:nil
+                                              keyEquivalent:@""];
         [menu insertItem:menuItem atIndex:trackInfoIndex + 1];
         [menuItem release];
         
-        if (index == -1)
-        {
-            menuItem = [[NSMenuItem alloc] initWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
+        if (index == -1) {
+            menuItem = [[NSMenuItem alloc] initWithTitle:@"Now Playing" action:nil keyEquivalent:@""];
             [menu removeItemAtIndex:[menu indexOfItemWithTitle:@"No Song"]];
             [menu insertItem:menuItem atIndex:trackInfoIndex];
             [menuItem release];
         }
-    }
-    else if ([menu indexOfItemWithTitle:@"No Song"] == -1)
-    {
+        
+    } else if ([menu indexOfItemWithTitle:@"No Song"] == -1) {
         [menu removeItemAtIndex:trackInfoIndex];
         [menu removeItemAtIndex:trackInfoIndex];
-        if (didHaveAlbumName)
-        {
+        
+        if (didHaveAlbumName) {
             [menu removeItemAtIndex:trackInfoIndex];
         }
-        menuItem = [[NSMenuItem alloc] initWithTitle:@"No Song" action:NULL keyEquivalent:@""];
+        
+        menuItem = [[NSMenuItem alloc] initWithTitle:@"No Song" action:nil keyEquivalent:@""];
         [menu insertItem:menuItem atIndex:trackInfoIndex];
         [menuItem release];
     }
@@ -248,18 +262,15 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     int numSongs = [[self runScriptAndReturnResult:@"return number of tracks in current playlist"] intValue];
     int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
     
-    if (numSongs > 0)
-    {
+    if (numSongs > 0) {
         int curTrack = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
         int i;
         
         [upcomingSongsMenu release];
         upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
         
-        for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++)
-        {
-            if (i <= numSongs)
-            {
+        for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
+            if (i <= numSongs) {
                 NSString *curSong = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of track %i of current playlist", i]];
                 NSMenuItem *songItem;
                 songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
@@ -267,10 +278,8 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
                 [songItem setRepresentedObject:[NSNumber numberWithInt:i]];
                 [upcomingSongsMenu addItem:songItem];
                 [songItem release];
-            }
-            else
-            {
-                [upcomingSongsMenu addItemWithTitle:@"End of playlist." action:NULL keyEquivalent:@""];
+            } else {
+                [upcomingSongsMenu addItemWithTitle:@"End of playlist." action:nil keyEquivalent:@""];
                 break;
             }
         }
@@ -290,8 +299,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     [playlistMenu release];
     playlistMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    for (i = 1; i <= numPlaylists; i++)
-    {
+    for (i = 1; i <= numPlaylists; i++) {
         NSString *playlistName = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of playlist %i", i]];
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:playlistName action:@selector(selectPlaylist:) keyEquivalent:@""];
@@ -302,8 +310,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     }
     [playlistItem setSubmenu:playlistMenu];
     
-    if (curPlaylist)
-    {
+    if (curPlaylist) {
         [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOnState];
     }
 }
@@ -320,8 +327,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     [eqMenu release];
     eqMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    for (i = 1; i <= numSets; i++)
-    {
+    for (i = 1; i <= numSets; i++) {
         NSString *setName = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of EQ preset %i", i]];
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:setName action:@selector(selectEQPreset:) keyEquivalent:@""];
@@ -348,36 +354,31 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if ([defaults objectForKey:@"PlayPause"] != nil)
-    {
+    if ([defaults objectForKey:@"PlayPause"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"PlayPause"
                 combo:[defaults keyComboForKey:@"PlayPause"]
                 target:self action:@selector(playPause:)];
     }
     
-    if ([defaults objectForKey:@"NextTrack"] != nil)
-    {
+    if ([defaults objectForKey:@"NextTrack"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"NextTrack"
                 combo:[defaults keyComboForKey:@"NextTrack"]
                 target:self action:@selector(nextSong:)];
     }
     
-    if ([defaults objectForKey:@"PrevTrack"] != nil)
-    {
+    if ([defaults objectForKey:@"PrevTrack"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
                 combo:[defaults keyComboForKey:@"PrevTrack"]
                 target:self action:@selector(prevSong:)];
     }
     
-    if ([defaults objectForKey:@"TrackInfo"] != nil)
-    {
+    if ([defaults objectForKey:@"TrackInfo"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo"
                 combo:[defaults keyComboForKey:@"TrackInfo"]
                 target:self action:@selector(showCurrentTrackInfo)];
     }
     
-    if ([defaults objectForKey:@"UpcomingSongs"] != nil)
-    {
+    if ([defaults objectForKey:@"UpcomingSongs"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
                combo:[defaults keyComboForKey:@"UpcomingSongs"]
                target:self action:@selector(showUpcomingSongs)];
@@ -406,14 +407,13 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     AEDisposeDesc(&scriptDesc);
     AEDisposeDesc(&resultDesc);
     result = [NSString stringWithCString:buffer length:length];
-    if (![result isEqualToString:@""] &&
-        ([result characterAtIndex:0] == '\"') &&
-        ([result characterAtIndex:[result length] - 1] == '\"'))
-    {
+    if ( (! [result isEqualToString:@""])      &&
+         ([result characterAtIndex:0] == '\"') &&
+         ([result characterAtIndex:[result length] - 1] == '\"') ) {
         result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
     }
     free(buffer);
-    buffer = NULL;
+    buffer = nil;
     return result;
 }
 
@@ -422,31 +422,23 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
 {
     int pid;
     
-    if (GetProcessPID(&iTunesPSN, &pid) == noErr)
-    {
+    if (GetProcessPID(&iTunesPSN, &pid) == noErr) {
         int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
         
-        if (trackPlayingIndex != curTrackIndex)
-        {
+        if (trackPlayingIndex != curTrackIndex) {
             [self updateMenu];
             curTrackIndex = trackPlayingIndex;
         }
        	
         //Update Play/Pause menu item
-        if (playPauseMenuItem)
-        {
-            if ([[self runScriptAndReturnResult:@"return player state"] isEqualToString:@"playing"])
-            {
+        if (playPauseMenuItem){
+            if ([[self runScriptAndReturnResult:@"return player state"] isEqualToString:@"playing"]) {
                 [playPauseMenuItem setTitle:@"Pause"];
-            }
-            else
-            {
+            } else {
                 [playPauseMenuItem setTitle:@"Play"];
             }
         }
-    }
-    else
-    {
+    } else {
         [menu release];
         menu = [[NSMenu alloc] initWithTitle:@""];
         [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
@@ -483,13 +475,10 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     procNum.highLongOfPSN = kNoProcess;
     procNum.lowLongOfPSN = 0;
     
-    while ( (GetNextProcess(&procNum) == noErr) ) 
-    {
+    while ( (GetNextProcess(&procNum) == noErr) ) {
         CFStringRef procName;
-        if ( (CopyProcessName(&procNum, &procName) == noErr) )
-        {
-            if ([(NSString *)procName isEqualToString:@"iTunes"])
-            {
+        if ( (CopyProcessName(&procNum, &procName) == noErr) ) {
+            if ([(NSString *)procName isEqualToString:@"iTunes"]) {
                 return procNum;
             }
             [(NSString *)procName release];
@@ -505,7 +494,7 @@ andEventID:(AEEventID)eventID
     OSType iTunesType = 'hook';
     AppleEvent event, reply;
     
-    AEBuildAppleEvent(eventClass, eventID, typeApplSignature, &iTunesType, sizeof(iTunesType), kAutoGenerateReturnID, kAnyTransactionID, &event, NULL, "");
+    AEBuildAppleEvent(eventClass, eventID, typeApplSignature, &iTunesType, sizeof(iTunesType), kAutoGenerateReturnID, kAnyTransactionID, &event, nil, "");
     
     AESend(&event, &reply, kAENoReply, kAENormalPriority, kAEDefaultTimeout, nil, nil);
     AEDisposeDesc(&event);
@@ -543,19 +532,14 @@ andEventID:(AEEventID)eventID
 - (void)playPause:(id)sender
 {
     NSString *state = [self runScriptAndReturnResult:@"return player state"];
-    if ([state isEqualToString:@"playing"])
-    {
+    if ([state isEqualToString:@"playing"]) {
         [self sendAEWithEventClass:'hook' andEventID:'Paus'];
         [playPauseMenuItem setTitle:@"Play"];
-    }
-    else if ([state isEqualToString:@"fast forwarding"] || [state 
-isEqualToString:@"rewinding"])
-    {
+    } else if ([state isEqualToString:@"fast forwarding"] || [state 
+isEqualToString:@"rewinding"]) {
         [self sendAEWithEventClass:'hook' andEventID:'Paus'];
         [self sendAEWithEventClass:'hook' andEventID:'Play'];
-    }
-    else
-    {
+    } else {
         [self sendAEWithEventClass:'hook' andEventID:'Play'];
         [playPauseMenuItem setTitle:@"Pause"];
     }
@@ -593,8 +577,7 @@ isEqualToString:@"rewinding"])
 
 - (void)showPreferences:(id)sender
 {
-    if (!prefsController)
-    {
+    if (!prefsController) {
         prefsController = [[PreferencesController alloc] initWithMenuTunes:self];
         [self clearHotKeys];
     }
@@ -603,8 +586,7 @@ isEqualToString:@"rewinding"])
 
 - (void)closePreferences
 {
-    if (!((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0)))
-    {
+    if (!((iTunesPSN.highLongOfPSN == kNoProcess) && (iTunesPSN.lowLongOfPSN == 0))) {
         [self setupHotKeys];
     }
     [prefsController release];
@@ -620,44 +602,36 @@ isEqualToString:@"rewinding"])
 - (void)showCurrentTrackInfo
 {
     NSString *trackName = [self runScriptAndReturnResult:@"return name of current track"];
-    if (!statusController && [trackName length])
-    {
+    if (!statusController && [trackName length]) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *stringToShow = @"";
         int lines = 1;
         
-        if ([defaults boolForKey:@"showName"])
-        {
-            if ([defaults boolForKey:@"showArtist"])
-            {
+        if ([defaults boolForKey:@"showName"]) {
+            if ([defaults boolForKey:@"showArtist"]) {
                 NSString *trackArtist = [self runScriptAndReturnResult:@"return artist of current track"];
                 trackName = [NSString stringWithFormat:@"%@ - %@", trackArtist, trackName];
             }
             stringToShow = [stringToShow stringByAppendingString:trackName];
             stringToShow = [stringToShow stringByAppendingString:@"\n"];
-            if ([trackName length] > 38)
-            {
+            if ([trackName length] > 38) {
                 lines++;
             }
             lines++;
         }
         
-        if ([defaults boolForKey:@"showAlbum"])
-        {
+        if ([defaults boolForKey:@"showAlbum"]) {
             NSString *trackAlbum = [self runScriptAndReturnResult:@"return album of current track"];
-            if ([trackAlbum length])
-            {
+            if ([trackAlbum length]) {
                 stringToShow = [stringToShow stringByAppendingString:trackAlbum];
                 stringToShow = [stringToShow stringByAppendingString:@"\n"];
                 lines++;
             }
         }
         
-        if ([defaults boolForKey:@"showTime"])
-        {
+        if ([defaults boolForKey:@"showTime"]) {
             NSString *trackTime = [self runScriptAndReturnResult:@"return time of current track"];
-            if ([trackTime length])
-            {
+            if ([trackTime length]) {
                 stringToShow = [NSString stringWithFormat:@"%@Total Time: %@\n", stringToShow, trackTime];
                 lines++;
             }
@@ -666,13 +640,10 @@ isEqualToString:@"rewinding"])
         {
             int trackTimeLeft = [[self runScriptAndReturnResult:@"return (duration of current track) - player position"] intValue];
             int minutes = trackTimeLeft / 60, seconds = trackTimeLeft % 60;
-            if (seconds < 10)
-            {
+            if (seconds < 10) {
                 stringToShow = [stringToShow stringByAppendingString:
                             [NSString stringWithFormat:@"Time Remaining: %i:0%i", minutes, seconds]];
-            }
-            else
-            {
+            } else {
                 stringToShow = [stringToShow stringByAppendingString:
                             [NSString stringWithFormat:@"Time Remaining: %i:%i", minutes, seconds]];
             }
@@ -680,35 +651,40 @@ isEqualToString:@"rewinding"])
         
         statusController = [[StatusWindowController alloc] init];
         [statusController setTrackInfo:stringToShow lines:lines];
-        [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(fadeAndCloseStatusWindow) userInfo:nil repeats:NO];
+        [NSTimer scheduledTimerWithTimeInterval:3.0
+                                         target:self
+                                       selector:@selector(fadeAndCloseStatusWindow)
+                                       userInfo:nil
+                                        repeats:NO];
     }
 }
 
 - (void)showUpcomingSongs
 {
-    if (!statusController)
-    {
+    if (!statusController) {
         int numSongs = [[self runScriptAndReturnResult:@"return number of tracks in current playlist"] intValue];
         
-        if (numSongs > 0)
-        {
+        if (numSongs > 0) {
             int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
             int curTrack = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
             int i;
             NSString *songs = @"";
             
             statusController = [[StatusWindowController alloc] init];
-            for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++)
-            {
-                if (i <= numSongs)
-                {
-                    NSString *curSong = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of track %i of current playlist", i]];
+            for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
+                if (i <= numSongs) {
+                    NSString *curSong = [self runScriptAndReturnResult:
+                        [NSString stringWithFormat:@"return name of track %i of current playlist", i]];
                     songs = [songs stringByAppendingString:curSong];
                     songs = [songs stringByAppendingString:@"\n"];
                 }
             }
             [statusController setUpcomingSongs:songs numSongs:numSongsInAdvance];
-            [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(fadeAndCloseStatusWindow) userInfo:nil repeats:NO];
+            [NSTimer scheduledTimerWithTimeInterval:3.0
+                                             target:self
+                                           selector:@selector(fadeAndCloseStatusWindow)
+                                           userInfo:nil
+                                            repeats:NO];
         }
     }
 }
@@ -719,5 +695,36 @@ isEqualToString:@"rewinding"])
     [statusController release];
     statusController = nil;
 }
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark NSApplication DELEGATE METHODS
+/*************************************************************************/
+
+- (void)applicationWillTerminate:(NSNotification *)note
+{
+    [self clearHotKeys];
+    [[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
+}
+
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark DEALLOCATION METHODS
+/*************************************************************************/
+
+- (void)dealloc
+{
+    if (refreshTimer) {
+        [refreshTimer invalidate];
+        refreshTimer = nil;
+    }
+    CloseComponent(asComponent);
+    [statusItem release];
+    [menu release];
+    [view release];
+    [super dealloc];
+}
+
 
 @end

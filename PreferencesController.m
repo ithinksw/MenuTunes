@@ -6,8 +6,7 @@
 
 - (id)initWithMenuTunes:(MenuTunes *)tunes;
 {
-    if ( (self = [super init]) )
-    {
+    if ( (self = [super init]) ) {
         int i;
         NSImageCell *imgCell = [[[NSImageCell alloc] init] autorelease];
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -44,8 +43,7 @@
         }
         
         //Delete items in the availableItems array that are already part of the menu
-        for (i = 0; i < [myItems count]; i++)
-        {
+        for (i = 0; i < [myItems count]; i++) {
             NSString *item = [myItems objectAtIndex:i];
             if (![item isEqualToString:@"<separator>"])
             {
@@ -57,89 +55,63 @@
         submenuItems = [[NSArray alloc] initWithObjects:@"Upcoming Songs", @"Playlists", @"EQ Presets", nil];
         
         //Fill in the number of songs in advance to show field
-        if ([defaults integerForKey:@"SongsInAdvance"])
-        {
+        if ([defaults integerForKey:@"SongsInAdvance"]) {
             [songsInAdvance setIntValue:[defaults integerForKey:@"SongsInAdvance"]];
-        }
-        else
-        {
+        } else {
             [songsInAdvance setIntValue:5];
         }
         
         //Fill in hot key buttons
-        if ([defaults objectForKey:@"PlayPause"])
-        {
+        if ([defaults objectForKey:@"PlayPause"]){
             playPauseCombo = [defaults keyComboForKey:@"PlayPause"];
             [playPauseButton setTitle:[playPauseCombo userDisplayRep]];
-        }
-        else
-        {
+        } else {
             playPauseCombo = [[KeyCombo alloc] init];
         }
         
-        if ([defaults objectForKey:@"NextTrack"])
-        {
+        if ([defaults objectForKey:@"NextTrack"]) {
             nextTrackCombo = [defaults keyComboForKey:@"NextTrack"];
             [nextTrackButton setTitle:[nextTrackCombo userDisplayRep]];
-        }
-        else
-        {
+        } else {
             nextTrackCombo = [[KeyCombo alloc] init];
         }
         
-        if ([defaults objectForKey:@"PrevTrack"])
-        {
+        if ([defaults objectForKey:@"PrevTrack"]) {
             prevTrackCombo = [defaults keyComboForKey:@"PrevTrack"];
             [previousTrackButton setTitle:[prevTrackCombo userDisplayRep]];
-        }
-        else
-        {
+        } else {
             prevTrackCombo = [[KeyCombo alloc] init];
         }
         
-        if ([defaults objectForKey:@"TrackInfo"])
-        {
+        if ([defaults objectForKey:@"TrackInfo"]) {
             trackInfoCombo = [defaults keyComboForKey:@"TrackInfo"];
             [trackInfoButton setTitle:[trackInfoCombo userDisplayRep]];
-        }
-        else
-        {
+        } else {
             trackInfoCombo = [[KeyCombo alloc] init];
         }
         
-        if ([defaults objectForKey:@"UpcomingSongs"])
-        {
+        if ([defaults objectForKey:@"UpcomingSongs"]) {
             upcomingSongsCombo = [defaults keyComboForKey:@"UpcomingSongs"];
             [upcomingSongsButton setTitle:[upcomingSongsCombo userDisplayRep]];
-        }
-        else
-        {
+        } else {
             upcomingSongsCombo = [[KeyCombo alloc] init];
         }
         
         //Check current track info buttons
         
         //Album and name get special treatment because they are defaults
-        if ( (temp = [defaults stringForKey:@"showAlbum"]) )
-        {
-            if ((temp == nil) || [temp isEqualToString:@"1"])
-            {
+        if ( (temp = [defaults stringForKey:@"showAlbum"]) ) {
+            if ((temp == nil) || [temp isEqualToString:@"1"]) {
                 [albumCheckbox setState:NSOnState];
-            }
-            else
-            {
+            } else {
                 [albumCheckbox setState:NSOffState];
             }
         }
         
-        if ( (temp = [defaults stringForKey:@"showName"]) )
-        {
-            if ((temp == nil) || [temp isEqualToString:@"1"])
-            {
+        if ( (temp = [defaults stringForKey:@"showName"]) ) {
+            if ((temp == nil) || [temp isEqualToString:@"1"]) {
                 [nameCheckbox setState:NSOnState];
-            }
-            else
-            {
+            } else {
                 [nameCheckbox setState:NSOffState];
             }
         }
@@ -157,15 +129,13 @@
             loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
             loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
             
-            for (i = 0; i < [loginarray count]; i++)
-            {
+            for (i = 0; i < [loginarray count]; i++) {
                 NSDictionary *tempDict = [loginarray objectAtIndex:i];
                 
                 //Here we are seeing if our program is already in loginwindow.plist.
                 //See the problem below for this problem here. We will do the same thing.
                 
-                if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"])
-                {
+                if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"]) {
                     [launchAtLoginCheckbox setState:NSOnState];
                 }
             }
@@ -211,8 +181,7 @@
     [defaults setBool:[trackTimeCheckbox state] forKey:@"showTime"];
     
     //Here we set whether we will launch at login by modifying loginwindow.plist
-    if ([launchAtLoginCheckbox state] == NSOnState)
-    {
+    if ([launchAtLoginCheckbox state] == NSOnState) {
         NSMutableDictionary *loginwindow;
         NSMutableArray *loginarray;
         int i;
@@ -222,29 +191,24 @@
         loginwindow = [[defaults persistentDomainForName:@"loginwindow"] mutableCopy];
         loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
         
-        for (i = 0; i < [loginarray count]; i++)
-        {
+        for (i = 0; i < [loginarray count]; i++) {
             NSDictionary *tempDict = [loginarray objectAtIndex:i];
             
             //Here we are seeing if our program is already in loginwindow.plist.
             //See the problem below for this problem here. We will do the same thing.
             
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"])
-            {
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"]) {
                 skip = YES;
             }
         }
         
-        if (!skip)
-        {
+        if (!skip) {
             [loginarray addObject:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], @"Hide", [[NSBundle mainBundle] bundlePath], @"Path", nil]];
             
             [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
             [defaults synchronize];
         }
-    }
-    else
-    {
+    } else {
         NSMutableDictionary *loginwindow;
         NSMutableArray *loginarray;
         int i;
@@ -253,12 +217,10 @@
         loginwindow = [[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"loginwindow"] mutableCopy];
         loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
         
-        for (i = 0; i < [loginarray count]; i++)
-        {
+        for (i = 0; i < [loginarray count]; i++) {
             NSDictionary *tempDict = [loginarray objectAtIndex:i];
             
-            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"])
-            {
+            if ([[[tempDict objectForKey:@"Path"] lastPathComponent] isEqualToString:@"VocabularyBuilder.app"]) {
                 [loginarray removeObjectAtIndex:i];
                 [defaults setPersistentDomain:loginwindow forName:@"loginwindow"];
                 [defaults synchronize];
@@ -268,18 +230,14 @@
     }
     
     //Set songs in advance
-    if ([songsInAdvance intValue])
-    {
+    if ([songsInAdvance intValue]) {
         [defaults setInteger:[songsInAdvance intValue] forKey:@"SongsInAdvance"];
-    }
-    else
-    {
+    } else {
         [defaults setInteger:5 forKey:@"SongsInAdvance"];
     }
     
     psn = [mt iTunesPSN];
-    if (!((psn.highLongOfPSN == kNoProcess) && (psn.lowLongOfPSN == 0)))
-    {
+    if (!((psn.highLongOfPSN == kNoProcess) && (psn.lowLongOfPSN == 0))) {
         [mt rebuildMenu];
     }
     [mt clearHotKeys];
@@ -306,8 +264,7 @@
 - (IBAction)okHotKey:(id)sender
 {
     NSString *string;
-    if (([combo modifiers] <= 0) && ([combo keyCode] >= 0))
-    {
+    if (([combo modifiers] <= 0) && ([combo keyCode] >= 0)) {
         [window setLevel:NSNormalWindowLevel];
         NSRunAlertPanel(@"Bad Key Combo", @"Please enter a valid key combo. A valid combo must have a modifier key in it. (Command, option, shift, control).", @"OK", nil, nil, nil);
         [window setLevel:NSStatusWindowLevel];
@@ -316,16 +273,14 @@
     
     string = [combo userDisplayRep];
     
-    if (string == nil)
-    {
+    if (string == nil) {
         string = @"None";
     }
-    if ([setHotKey isEqualToString:@"PlayPause"])
-    {
+    if ([setHotKey isEqualToString:@"PlayPause"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
-            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
-            !(([combo modifiers] == -1) && ([combo keyCode] == -1)))
-        {
+            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) &&
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
             [window setLevel:NSNormalWindowLevel];
             NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
             [window setLevel:NSStatusWindowLevel];
@@ -338,8 +293,8 @@
     {
         if (([combo isEqual:playPauseCombo] || [combo isEqual:prevTrackCombo] ||
             [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
-            !(([combo modifiers] == -1) && ([combo keyCode] == -1)))
-        {
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
             [window setLevel:NSNormalWindowLevel];
             NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
             [window setLevel:NSStatusWindowLevel];
@@ -352,8 +307,8 @@
     {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:playPauseCombo] ||
             [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
-            !(([combo modifiers] == -1) && ([combo keyCode] == -1)))
-        {
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
             [window setLevel:NSNormalWindowLevel];
             NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
             [window setLevel:NSStatusWindowLevel];
@@ -366,8 +321,8 @@
     {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
             [combo isEqual:playPauseCombo] || [combo isEqual:upcomingSongsCombo]) && 
-            !(([combo modifiers] == -1) && ([combo keyCode] == -1)))
-        {
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
             [window setLevel:NSNormalWindowLevel];
             NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
             [window setLevel:NSStatusWindowLevel];
@@ -380,8 +335,8 @@
     {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
             [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo]) && 
-            !(([combo modifiers] == -1) && ([combo keyCode] == -1)))
-        {
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
             [window setLevel:NSNormalWindowLevel];
             NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
             [window setLevel:NSStatusWindowLevel];
@@ -458,8 +413,7 @@
     combo = [newCombo copy];
     
     string = [combo userDisplayRep];
-    if (string == nil)
-    {
+    if (string == nil) {
         string = @"";
     }
     [keyComboField setStringValue:string];
@@ -484,50 +438,33 @@
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-    if (aTableView == menuTableView)
-    {
+    if (aTableView == menuTableView) {
         return [myItems count];
-    }
-    else
-    {
+    } else {
         return [availableItems count];
     }
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
-    if (aTableView == menuTableView)
-    {
-        if ([[aTableColumn identifier] isEqualToString:@"name"])
-        {
+    if (aTableView == menuTableView) {
+        if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             return [myItems objectAtIndex:rowIndex];
-        }
-        else
-        {
+        } else {
             if ([submenuItems containsObject:[myItems objectAtIndex:rowIndex]])
             {
                 return [NSImage imageNamed:@"submenu"];
-            }
-            else
-            {
+            } else {
                 return nil;
             }
         }
-    }
-    else
-    {
-        if ([[aTableColumn identifier] isEqualToString:@"name"])
-        {
+    } else {
+        if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             return [availableItems objectAtIndex:rowIndex];
-        }
-        else
-        {
-            if ([submenuItems containsObject:[availableItems objectAtIndex:rowIndex]])
-            {
+        } else {
+            if ([submenuItems containsObject:[availableItems objectAtIndex:rowIndex]]) {
                 return [NSImage imageNamed:@"submenu"];
-            }
-            else
-            {
+            } else {
                 return nil;
             }
         }
@@ -536,15 +473,13 @@
 
 - (BOOL)tableView:(NSTableView *)tableView writeRows:(NSArray*)rows toPasteboard:(NSPasteboard*)pboard
 {
-    if (tableView == menuTableView)
-    {
+    if (tableView == menuTableView) {
         [pboard declareTypes:[NSArray arrayWithObjects:@"MenuTableViewPboardType", nil] owner:self];
         [pboard setString:[[rows objectAtIndex:0] stringValue] forType:@"MenuTableViewPboardType"];
         return YES;
     }
     
-    if (tableView == allTableView)
-    {
+    if (tableView == allTableView) {
         [pboard declareTypes:[NSArray arrayWithObjects:@"AllTableViewPboardType", nil] owner:self];
         [pboard setString:[[rows objectAtIndex:0] stringValue] forType:@"AllTableViewPboardType"];
         return YES;
@@ -560,40 +495,29 @@
     
     pb = [info draggingPasteboard];
     
-    if ([[pb types] containsObject:@"MenuTableViewPboardType"])
-    {
+    if ([[pb types] containsObject:@"MenuTableViewPboardType"]) {
         dragData = [pb stringForType:@"MenuTableViewPboardType"];
         dragRow = [dragData intValue];
         temp = [myItems objectAtIndex:dragRow];
         [myItems removeObjectAtIndex:dragRow];
         
-        if (tableView == menuTableView)
-        {
-            if (row > dragRow)
-            {
+        if (tableView == menuTableView) {
+            if (row > dragRow) {
                 [myItems insertObject:temp atIndex:row - 1];
-            }
-            else
-            {
+            } else {
                 [myItems insertObject:temp atIndex:row];
             }
-        }
-        else
-        {
-            if (![temp isEqualToString:@"<separator>"])
-            {
+        } else {
+            if (![temp isEqualToString:@"<separator>"]) {
                 [availableItems addObject:temp];
             }
         }
-    }
-    else if ([[pb types] containsObject:@"AllTableViewPboardType"])
-    {
+    } else if ([[pb types] containsObject:@"AllTableViewPboardType"]) {
         dragData = [pb stringForType:@"AllTableViewPboardType"];
         dragRow = [dragData intValue];
         temp = [availableItems objectAtIndex:dragRow];
         
-        if (![temp isEqualToString:@"<separator>"])
-        {
+        if (![temp isEqualToString:@"<separator>"]) {
             [availableItems removeObjectAtIndex:dragRow];
         }
         [myItems insertObject:temp atIndex:row];
@@ -606,18 +530,14 @@
 
 - (NSDragOperation)tableView:(NSTableView*)tableView validateDrop:(id <NSDraggingInfo>)info proposedRow:(int)row proposedDropOperation:(NSTableViewDropOperation)operation
 {
-    if (tableView == allTableView)
-    {
-        if ([[[info draggingPasteboard] types] containsObject:@"AllTableViewPboardType"])
-        {
+    if (tableView == allTableView) {
+        if ([[[info draggingPasteboard] types] containsObject:@"AllTableViewPboardType"]) {
             return NSDragOperationNone;
         }
         
-        if ([[[info draggingPasteboard] types] containsObject:@"MenuTableViewPboardType"])
-        {
+        if ([[[info draggingPasteboard] types] containsObject:@"MenuTableViewPboardType"]) {
             NSString *item = [myItems objectAtIndex:[[[info draggingPasteboard] stringForType:@"MenuTableViewPboardType"] intValue]];
-            if ([item isEqualToString:@"Preferences…"] || [item isEqualToString:@"Quit"])
-            {
+            if ([item isEqualToString:@"Preferences…"] || [item isEqualToString:@"Quit"]) {
                 return NSDragOperationNone;
             }
         }

@@ -5,8 +5,7 @@
 
 - (id)init
 {
-    if ( (self = [super init]) )
-    {
+    if ( (self = [super init]) ) {
         [NSBundle loadNibNamed:@"StatusWindow" owner:self];
         [statusWindow center];
     }
@@ -38,8 +37,7 @@
 {
     NSAutoreleasePool *p00l = [[NSAutoreleasePool alloc] init];
     float i;
-    for (i = 1.0; i > 0; i -= .003)
-    {
+    for (i = 1.0; i > 0; i -= .003) {
         [statusWindow setAlphaValue:i];
     }
     [statusWindow close];
