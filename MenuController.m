@@ -593,9 +593,15 @@
         }
     }
     
-    [playlistsMenu addItem:[NSMenuItem separatorItem]];
+    if ( (source == ITMTRemoteRadioSource) || ([playlists count] - 2 > 0) ) {
+        [playlistsMenu addItem:[NSMenuItem separatorItem]];
+    }
     
-    for (i = 1; i < [playlists count]; i++) {
+    if (source == ITMTRemoteRadioSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:@selector(performPlaylistMenuAction:) keyEquivalent:@""] setState:NSOnState];
+    }
+    
+    for (i = 2; i < [playlists count]; i++) {
         NSArray *curPlaylist = [playlists objectAtIndex:i];
         NSString *name = [curPlaylist objectAtIndex:0];
         NSMenu *submenu = [[NSMenu alloc] init];
@@ -603,24 +609,19 @@
         for (j = 1; j < [curPlaylist count]; j++) {
             ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
             tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-            [tempItem setTag:(j * 1000) + (j + 1)];
+            [tempItem setTag:(i * 1000) + (j + 1)];
             [tempItem setTarget:self];
         }
         [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
     }
-    /*if (source == ITMTRemoteRadioSource) {
-        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:NULL keyEquivalent:@""] setState:NSOnState];
-    } else if (source == ITMTRemoteGenericDeviceSource) {
-        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"genericDevice", @"Generic Device") action:NULL keyEquivalent:@""] setState:NSOnState];
-    } else if (source == ITMTRemoteiPodSource) {
-        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"iPod", @"iPod") action:NULL keyEquivalent:@""] setState:NSOnState];
-    } else if (source == ITMTRemoteCDSource) {
-        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"cd", @"CD") action:NULL keyEquivalent:@""] setState:NSOnState];
-    } else if (source == ITMTRemoteSharedLibrarySource) {
-        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"sharedLibrary", @"Shared Library") action:NULL keyEquivalent:@""] setState:NSOnState];
+    
+    if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ){
+        tempItem = [playlistsMenu itemAtIndex:(int)[[[MainController sharedController] currentRemote] currentSourceIndex] + [playlistsMenu numberOfItems] - 6];
+        [tempItem setState:NSOnState];
+        [[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
-    }*/
+    }
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
 }

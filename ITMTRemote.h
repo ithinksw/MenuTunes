@@ -215,6 +215,11 @@ er's process managment.
 - (ITMTRemotePlayerSource)currentSource;
 
 /*!
+ * @method currentSourceIndex
+ */
+- (int)currentSourceIndex;
+
+/*!
  * @method currentPlaylistClass
  */
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass;
@@ -373,6 +378,11 @@ er's process managment.
  * @method switchToPlaylistAtIndex:
  */
 - (BOOL)switchToPlaylistAtIndex:(int)index;
+
+/*!
+ * @method switchToPlaylistAtIndex:
+ */
+- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2;
 
 /*!
  * @method switchToSongAtIndex:

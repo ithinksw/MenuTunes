@@ -209,6 +209,12 @@
     }
 }
 
+- (int)currentSourceIndex
+{
+    ITDebugLog(@"Getting current source.");   
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }"] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+}
+
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
     int realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
@@ -587,7 +593,7 @@
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
     ITDebugLog(@"Switching to playlist at index %i", index);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:() }",index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:() }", index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
     ITDebugLog(@"Done switching to playlist at index %i", index);
     return YES;
 }
@@ -595,8 +601,8 @@
 - (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
 {
     ITDebugLog(@"Switching to playlist at index %i of source %i", index, index2);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'indx', want:type('cSrc'), seld:long('%lu'), from:() } }",index, index2] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
-    //[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }, data:obj { form:'indx', want:type('cSrc'), seld:long('%lu'), from:'null'() }",index, index2]
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from: obj { form:'indx', want:type('cSrc'), seld:long(%lu), from:'null'() } }", index - 1, index2 + 1] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+    //{ form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'indx', want:type('cSrc'), seld:long('%lu'), from:'null'() } } -- obj { form:'indx', want:type('cSrc'), seld:long(1), from:'null'() }
     ITDebugLog(@"Done switching to playlist at index %i of source %i", index, index2);
     return YES;
 }

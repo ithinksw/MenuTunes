@@ -89,6 +89,11 @@
     return nil;
 }
 
+- (int)currentSourceIndex
+{
+    return nil;
+}
+
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
     return nil;
@@ -255,6 +260,11 @@
 }
 
 - (BOOL)switchToPlaylistAtIndex:(int)index
+{
+    return NO;
+}
+
+- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
 {
     return NO;
 }
