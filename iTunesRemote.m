@@ -168,7 +168,7 @@
 
 - (NSString *)currentSongUniqueIdentifier
 {
-    return @"BBQ";
+    return [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN]];
 }
 
 - (int)currentSongIndex
