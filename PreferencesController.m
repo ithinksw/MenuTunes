@@ -14,8 +14,7 @@
         mt = [tunes retain];
         [mt registerDefaults];
         
-        //Load the nib
-        [NSBundle loadNibNamed:@"Preferences" owner:self];
+        [NSBundle loadNibNamed:@"Preferences" owner:self]; //Load the nib
         
         //Set the table view cells up
         [imgCell setImageScaling:NSScaleNone];
