@@ -251,7 +251,7 @@ static MainController *sharedController;
         [currentRemote showPrimaryInterface];
     } else {
         if (![[NSWorkspace sharedWorkspace] launchApplication:[currentRemote playerFullName]]) {
-            NSLog(@"Error Launching Player");
+            NSLog(@"MenuTunes: Error Launching Player");
         }
     }
 }
@@ -420,7 +420,7 @@ static MainController *sharedController;
                                              trackTotal:trackTotal
                                                  rating:rating];
     } else {
-        title = @"No song is playing.";
+        title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
         [statusWindowController showSongWindowWithTitle:title
                                                   album:nil
                                                  artist:nil
@@ -451,7 +451,7 @@ static MainController *sharedController;
         [statusWindowController showUpcomingSongsWithTitles:songList];
         
     } else {
-        [statusWindowController showUpcomingSongsWithTitles:[NSArray arrayWithObject:@"No upcoming songs."]];
+        [statusWindowController showUpcomingSongsWithTitles:[NSArray arrayWithObject:NSLocalizedString(@"noUpcomingSongs", @"No upcoming songs.")]];
     }
 }
 

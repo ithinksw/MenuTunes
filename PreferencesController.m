@@ -207,21 +207,22 @@ static PreferencesController *prefs = nil;
     id anItem;
 
     [df setObject:[NSArray arrayWithObjects:
-        @"Play/Pause",
-        @"Next Track",
-        @"Previous Track",
-        @"Fast Forward",
-        @"Rewind",
-        @"Show Player",
-        @"<separator>",
-        @"Upcoming Songs",
-        @"Playlists",
-        @"Song Rating",
-        @"<separator>",
-        @"Preferences",
-        @"Quit",
-        @"<separator>",
-        @"Current Track Info",
+        @"playPause",
+        @"nextTrack",
+        @"prevTrack",
+        @"fastForward",
+        @"rewind",
+        @"showPlayer",
+        @"separator",
+        @"songRating",
+        @"eqPresets",
+        @"playlists",
+        @"upcomingSongs",
+        @"separator",
+        @"preferences",
+        @"quit",
+        @"separator",
+        @"trackInfo",
         nil] forKey:@"menu"];
 
     [df setInteger:5 forKey:@"SongsInAdvance"];
@@ -247,7 +248,7 @@ static PreferencesController *prefs = nil;
     // This is teh sux
     // We must fix it so it is no longer suxy
     if (!found) {
-        if (NSRunInformationalAlertPanel(@"Auto-launch MenuTunes", @"Would you like MenuTunes to automatically launch at login?", @"Yes", @"No", nil) == NSOKButton) {
+        if (NSRunInformationalAlertPanel(NSLocalizedString(@"autolaunch", @"Auto-launch MenuTunes"), NSLocalizedString(@"autolaunch_msg", @"Would you like MenuTunes to automatically launch at login?"), @"Yes", @"No", nil) == NSOKButton) {
             AEDesc scriptDesc, resultDesc;
             NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
             ComponentInstance asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
@@ -292,7 +293,7 @@ static PreferencesController *prefs = nil;
             if (![combo isEqual:[KeyCombo clearKeyCombo]] &&
                  [combo isEqual:[hotKeysDictionary objectForKey:enumKey]]) {
                 [window setLevel:NSNormalWindowLevel];
-                if ( NSRunAlertPanel(@"Duplicate Key Combo", @"The specified key combo is already in use...", @"Replace", @"Cancel", nil) ) {
+                if ( NSRunAlertPanel(NSLocalizedString(@"duplicateCombo", @"Duplicate Key Combo") , NSLocalizedString(@"duplicateCombo_msg", @"The specified key combo is already in use..."), NSLocalizedString(@"replace", @"Replace"), NSLocalizedString(@"cancel", @"Cancel"), nil) ) {
                     [hotKeysDictionary setObject:[KeyCombo clearKeyCombo] forKey:currentHotKey];
                     if ([enumKey isEqualToString:@"PlayPause"]) {
                         [playPauseButton setTitle:@""];
@@ -421,8 +422,8 @@ static PreferencesController *prefs = nil;
 
 - (void)setupWindow
 {
-    if ( ! [NSBundle loadNibNamed:@"Preferences" owner:self] ) {
-        NSLog( @"Failed to load Preferences.nib" );
+    if (![NSBundle loadNibNamed:@"Preferences" owner:self]) {
+        NSLog(@"MenuTunes: Failed to load Preferences.nib");
         NSBeep();
         return;
     }
@@ -454,18 +455,18 @@ static PreferencesController *prefs = nil;
     id            anItem;
     // Set the list of items you can have.
     availableItems = [[NSMutableArray alloc] initWithObjects:
-        @"Current Track Info",
-        @"Upcoming Songs",
-        @"Playlists",
-        @"EQ Presets",
-        @"Song Rating",
-        @"Play/Pause",
-        @"Next Track",
-        @"Previous Track",
-        @"Fast Forward",
-        @"Rewind",
-        @"Show Player",
-        @"<separator>",
+        @"trackInfo",
+        @"upcomingSongs",
+        @"playlists",
+        @"eqPresets",
+        @"songRating",
+        @"playPause",
+        @"nextTrack",
+        @"prevTrack",
+        @"fastForward",
+        @"rewind",
+        @"showPlayer",
+        @"separator",
         nil];
     
     // Get our preferred menu
@@ -474,17 +475,17 @@ static PreferencesController *prefs = nil;
     // Delete items in the availableItems array that are already part of the menu
     itemEnum = [myItems objectEnumerator];
     while ( (anItem = [itemEnum nextObject]) ) {
-        if ( ! [anItem isEqualToString:@"<separator>"] ) {
+        if (![anItem isEqualToString:@"separator"]) {
             [availableItems removeObject:anItem];
         }
     }
     
     // Items that show should a submenu image
     submenuItems = [[NSArray alloc] initWithObjects:
-        @"Upcoming Songs",
-        @"Playlists",
-        @"EQ Presets",
-        @"Song Rating",
+        @"upcomingSongs",
+        @"playlists",
+        @"eqPresets",
+        @"songRating",
         nil];
 }
 
@@ -499,7 +500,7 @@ static PreferencesController *prefs = nil;
     [songsInAdvance setIntValue:[df integerForKey:@"SongsInAdvance"]];
     
     // Fill in hot key buttons
-    if ([df objectForKey:@"PlayPause"]){
+    if ([df objectForKey:@"PlayPause"]) {
         anItem = [df keyComboForKey:@"PlayPause"];
         [hotKeysDictionary setObject:anItem forKey:@"PlayPause"];
         [playPauseButton setTitle:[anItem userDisplayRep]];
@@ -709,9 +710,9 @@ static PreferencesController *prefs = nil;
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             NSString *object = [myItems objectAtIndex:rowIndex];
             if ([object isEqualToString:@"Show Player"]) {
-                return [NSString stringWithFormat:@"Show %@", [[controller currentRemote] playerSimpleName]];
+                return [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
             }
-            return object;
+            return NSLocalizedString(object, @"ERROR");
         } else {
             if ([submenuItems containsObject:[myItems objectAtIndex:rowIndex]])
             {
@@ -722,7 +723,7 @@ static PreferencesController *prefs = nil;
         }
     } else {
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
-            return [availableItems objectAtIndex:rowIndex];
+            return NSLocalizedString([availableItems objectAtIndex:rowIndex], @"ERROR");
         } else {
             if ([submenuItems containsObject:[availableItems objectAtIndex:rowIndex]]) {
                 return [NSImage imageNamed:@"submenu"];
@@ -770,7 +771,7 @@ static PreferencesController *prefs = nil;
                 [myItems insertObject:temp atIndex:row];
             }
         } else {
-            if (![temp isEqualToString:@"<separator>"]) {
+            if (![temp isEqualToString:@"separator"]) {
                 [availableItems addObject:temp];
             }
         }
@@ -779,7 +780,7 @@ static PreferencesController *prefs = nil;
         dragRow = [dragData intValue];
         temp = [availableItems objectAtIndex:dragRow];
         
-        if (![temp isEqualToString:@"<separator>"]) {
+        if (![temp isEqualToString:@"separator"]) {
             [availableItems removeObjectAtIndex:dragRow];
         }
         [myItems insertObject:temp atIndex:row];

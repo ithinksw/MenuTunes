@@ -65,8 +65,8 @@
     //create our menu
     while ( (nextObject = [enumerator nextObject]) ) {
         //Main menu items
-        if ([nextObject isEqualToString:@"Play/Pause"]) {
-            tempItem = [menu addItemWithTitle:@"Play"
+        if ([nextObject isEqualToString:@"playPause"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"play", @"Play")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             [tempItem setTag:MTMenuPlayPauseItem];
@@ -80,17 +80,17 @@
             
             switch ([currentRemote playerPlayingState]) {
                 case ITMTRemotePlayerPlaying:
-                    [tempItem setTitle:@"Pause"];
+                    [tempItem setTitle:NSLocalizedString(@"pause", @"Pause")];
                 break;
                 case ITMTRemotePlayerRewinding:
                 case ITMTRemotePlayerForwarding:
-                    [tempItem setTitle:@"Resume"];
+                    [tempItem setTitle:NSLocalizedString(@"resume", @"Resume")];
                 break;
                 default:
                 break;
             }
-        } else if ([nextObject isEqualToString:@"Next Track"]) {
-            tempItem = [menu addItemWithTitle:@"Next Track"
+        } else if ([nextObject isEqualToString:@"nextTrack"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"nextTrack", @"Next Track")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
@@ -104,8 +104,8 @@
                 [tempItem setTag:MTMenuNextTrackItem];
                 [tempItem setTarget:self];
             }
-        } else if ([nextObject isEqualToString:@"Previous Track"]) {
-            tempItem = [menu addItemWithTitle:@"Previous Track"
+        } else if ([nextObject isEqualToString:@"prevTrack"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"prevTrack", @"Previous Track")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
@@ -119,24 +119,28 @@
                 [tempItem setTag:MTMenuPreviousTrackItem];
                 [tempItem setTarget:self];
             }
-        } else if ([nextObject isEqualToString:@"Fast Forward"]) {
-            tempItem = [menu addItemWithTitle:@"Fast Forward"
+        } else if ([nextObject isEqualToString:@"fastForward"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"fastForward", @"Fast Forward")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuFastForwardItem];
                 [tempItem setTarget:self];
             }
-        } else if ([nextObject isEqualToString:@"Rewind"]) {
-            tempItem = [menu addItemWithTitle:@"Rewind"
+        } else if ([nextObject isEqualToString:@"rewind"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"rewind", @"Rewind")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuRewindItem];
                 [tempItem setTarget:self];
             }
-        } else if ([nextObject isEqualToString:@"Show Player"]) {
-            tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"Show %@", [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+        } else if ([nextObject isEqualToString:@"showPlayer"]) {
+            tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@",
+                            NSLocalizedString(@"show", @"Show"),
+                            [[[MainController sharedController] currentRemote] playerSimpleName]]
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
             
             if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"ShowPlayer"]) ) {
                 [self setKeyEquivalentForCode:[keyCombo keyCode]
@@ -146,24 +150,24 @@
             
             [tempItem setTarget:self];
             [tempItem setTag:MTMenuShowPlayerItem];
-        } else if ([nextObject isEqualToString:@"Preferences"]) {
-            tempItem = [menu addItemWithTitle:@"Preferences..."
+        } else if ([nextObject isEqualToString:@"preferences"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"preferences", @"Preferences...")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             [tempItem setTag:MTMenuPreferencesItem];
             [tempItem setTarget:self];
-        } else if ([nextObject isEqualToString:@"Quit"]) {
-            tempItem = [menu addItemWithTitle:@"Quit"
+        } else if ([nextObject isEqualToString:@"quit"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit")
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             [tempItem setTag:MTMenuQuitItem];
             [tempItem setTarget:self];
-        } else if ([nextObject isEqualToString:@"Current Track Info"]) {
+        } else if ([nextObject isEqualToString:@"trackInfo"]) {
             //Handle playing radio too
             if (_currentPlaylist) {
                 NSString *title = [currentRemote currentSongTitle];
                 
-                [menu addItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
+                [menu addItemWithTitle:NSLocalizedString(@"nowPlaying", @"Now Playing") action:NULL keyEquivalent:@""];
                 
                 if ([title length] > 0) {
                     [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title]
@@ -186,7 +190,7 @@
                 if ([defaults boolForKey:@"showTrackNumber"]) {
                     int track = [currentRemote currentSongTrack];
                     if (track) {
-                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 Track %i", track]
+                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@ %i", NSLocalizedString(@"track", @"Track"), track]
                             action:nil
                             keyEquivalent:@""];
                     }
@@ -200,13 +204,13 @@
                             keyEquivalent:@""];
                 }
             } else {
-                [menu addItemWithTitle:@"No Song" action:NULL keyEquivalent:@""];
+                [menu addItemWithTitle:NSLocalizedString(@"noSong", @"No Song") action:NULL keyEquivalent:@""];
             }
-        } else if ([nextObject isEqualToString:@"<separator>"]) {
+        } else if ([nextObject isEqualToString:@"separator"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         //Submenu items
-        } else if ([nextObject isEqualToString:@"Song Rating"]) {
-            tempItem = [menu addItemWithTitle:@"Song Rating"
+        } else if ([nextObject isEqualToString:@"songRating"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"songRating", @"Song Rating")
                     action:nil
                     keyEquivalent:@""];
             [tempItem setSubmenu:_ratingMenu];
@@ -221,8 +225,8 @@
             }
             
             [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
-        } else if ([nextObject isEqualToString:@"Upcoming Songs"]) {
-            tempItem = [menu addItemWithTitle:@"Upcoming Songs"
+        } else if ([nextObject isEqualToString:@"upcomingSongs"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"upcomingSongs", @"Upcoming Songs")
                     action:nil
                     keyEquivalent:@""];
             [tempItem setSubmenu:_upcomingSongsMenu];
@@ -230,14 +234,14 @@
             if (_playingRadio || !_currentPlaylist) {
                 [tempItem setEnabled:NO];
             }
-        } else if ([nextObject isEqualToString:@"Playlists"]) {
-            tempItem = [menu addItemWithTitle:@"Playlists"
+        } else if ([nextObject isEqualToString:@"playlists"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"playlists", @"Playlists")
                     action:nil
                     keyEquivalent:@""];
             [tempItem setSubmenu:_playlistsMenu];
             [tempItem setTag:3];
-        } else if ([nextObject isEqualToString:@"EQ Presets"]) {
-            tempItem = [menu addItemWithTitle:@"EQ Presets"
+        } else if ([nextObject isEqualToString:@"eqPresets"]) {
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"eqPresets", @"EQ Presets")
                     action:nil
                     keyEquivalent:@""];
             [tempItem setSubmenu:_eqMenu];
@@ -259,14 +263,14 @@
 {
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
     NSMenuItem *tempItem;
-    tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"Open %@", [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"open", @"Open"), [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
     [tempItem setTag:MTMenuShowPlayerItem];
     [tempItem setTarget:self];
     [menu addItem:[NSMenuItem separatorItem]];
-    tempItem = [menu addItemWithTitle:@"Preferences" action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    tempItem = [menu addItemWithTitle:NSLocalizedString(@"preferences", @"Preferences...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
     [tempItem setTag:MTMenuPreferencesItem];
     [tempItem setTarget:self];
-    tempItem = [menu addItemWithTitle:@"Quit" action:@selector(performMainMenuAction:) keyEquivalent:@""];
+    tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit") action:@selector(performMainMenuAction:) keyEquivalent:@""];
     [tempItem setTag:MTMenuQuitItem];
     [tempItem setTarget:self];
     return [menu autorelease];
