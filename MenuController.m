@@ -36,22 +36,36 @@
     // dynamically create menu from supplied data and layout information.
     while ( (nextObject = [enumerator nextObject]) ) {
         if ([nextObject isEqualToString:@"Play/Pause"]) {
-            if ([currentRemote playerPlayingState] == ITMTRemotePlayerPlaying) {
-                tempItem = [menu addItemWithTitle:@"Pause"
-                        action:@selector(performMainMenuAction:)
-                        keyEquivalent:@""];
-                [tempItem setTag:MTMenuPlayPauseItem];
-                [tempItem setTarget:self];
-            } else {
-                tempItem = [menu addItemWithTitle:@"Play"
-                        action:@selector(performMainMenuAction:)
-                        keyEquivalent:@""];
-                [tempItem setTag:MTMenuPlayPauseItem];
-                [tempItem setTarget:self];
+            tempItem = [menu addItemWithTitle:@"Play"
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuPlayPauseItem];
+            [tempItem setTarget:self];
+            
+            switch ([currentRemote playerPlayingState]) {
+                case ITMTRemotePlayerPlaying:
+                    [tempItem setTitle:@"Pause"];
+                break;
+                case ITMTRemotePlayerRewinding:
+                case ITMTRemotePlayerForwarding:
+                    [tempItem setTitle:@"Resume"];
+                break;
+                default:
+                break;
             }
-        }
-        
-        if ([nextObject isEqualToString:@"Current Track Info"]) {
+        } else if ([nextObject isEqualToString:@"Next Track"]) {
+            tempItem = [menu addItemWithTitle:@"Next Track"
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuNextTrackItem];
+            [tempItem setTarget:self];
+        } else if ([nextObject isEqualToString:@"Previous Track"]) {
+            tempItem = [menu addItemWithTitle:@"Previous Track"
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuPreviousTrackItem];
+            [tempItem setTarget:self];
+        } else if ([nextObject isEqualToString:@"Current Track Info"]) {
             NSString *title = [currentRemote currentSongTitle];
             [menu addItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
             
