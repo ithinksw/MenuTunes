@@ -133,9 +133,7 @@
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
-        
         [self rebuildMenu];
-        [statusItem setMenu:menu];
         [self setupHotKeys];
         isAppRunning = ITMTRemotePlayerRunning;
         return;
