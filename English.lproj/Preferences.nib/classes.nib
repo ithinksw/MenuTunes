@@ -11,6 +11,7 @@
                 clearHotKey = id; 
                 editHotKey = id; 
                 showPrefsWindow = id; 
+                showTestWindow = id; 
             }; 
             CLASS = PreferencesController; 
             LANGUAGE = ObjC; 
@@ -20,6 +21,8 @@
                 appearanceEffectPopup = NSPopUpButton; 
                 appearanceSpeedSlider = NSSlider; 
                 artistCheckbox = NSButton; 
+                backgroundColorWell = NSColorWell; 
+                backgroundStylePopup = NSPopUpButton; 
                 clientPasswordTextField = NSTextField; 
                 hostTextField = NSTextField; 
                 hotKeysTableView = NSTableView; 

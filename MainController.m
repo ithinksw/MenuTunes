@@ -244,7 +244,7 @@ static MainController *sharedController;
 
 - (BOOL)songIsPlaying
 {
-    NSString *identifier;
+    NSString *identifier = nil;
     NS_DURING
         identifier = [[self currentRemote] playerStateUniqueIdentifier];
     NS_HANDLER
@@ -255,7 +255,7 @@ static MainController *sharedController;
 
 - (BOOL)radioIsPlaying
 {
-    ITMTRemotePlayerPlaylistClass class;
+    ITMTRemotePlayerPlaylistClass class = nil;
     NS_DURING
         class = [[self currentRemote] currentPlaylistClass];
     NS_HANDLER
@@ -266,7 +266,7 @@ static MainController *sharedController;
 
 - (BOOL)songChanged
 {
-    NSString *identifier;
+    NSString *identifier = nil;
     NS_DURING
         identifier = [[self currentRemote] playerStateUniqueIdentifier];
     NS_HANDLER
@@ -476,6 +476,11 @@ static MainController *sharedController;
     [[PreferencesController sharedPrefs] showPrefsWindow:self];
 }
 
+- (void)showTestWindow
+{
+    [self showCurrentTrackInfo];
+}
+
 - (void)quitMenuTunes
 {
     ITDebugLog(@"Quitting MenuTunes.");
@@ -648,8 +653,8 @@ static MainController *sharedController;
 
 - (void)showCurrentTrackInfo
 {
-    ITMTRemotePlayerSource  source;
-    NSString               *title;
+    ITMTRemotePlayerSource  source      = 0;
+    NSString               *title       = nil;
     NSString               *album       = nil;
     NSString               *artist      = nil;
     NSString               *time        = nil;
@@ -695,8 +700,8 @@ static MainController *sharedController;
         }
 
         if ( [df boolForKey:@"showTrackNumber"] ) {
-            int trackNo;
-            int trackCount;
+            int trackNo    = 0;
+            int trackCount = 0;
             
             NS_DURING
                 trackNo    = [[self currentRemote] currentSongTrack];
@@ -712,7 +717,7 @@ static MainController *sharedController;
         }
 
         if ( [df boolForKey:@"showTrackRating"] ) {
-            float currentRating;
+            float currentRating = 0;
             
             NS_DURING
                 currentRating = [[self currentRemote] currentSongRating];
@@ -740,7 +745,7 @@ static MainController *sharedController;
 
 - (void)showUpcomingSongs
 {
-    int numSongs;
+    int numSongs = 0;
     NS_DURING
         numSongs = [[self currentRemote] numberOfSongsInPlaylistAtIndex:[[self currentRemote] currentPlaylistIndex]];
     NS_HANDLER

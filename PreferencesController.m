@@ -16,6 +16,7 @@
 #import <ITKit/ITWindowPositioning.h>
 #import <ITKit/ITKeyBroadcaster.h>
 
+#import <ITKit/ITTSWBackgroundView.h>
 #import <ITKit/ITCutWindowEffect.h>
 #import <ITKit/ITDissolveWindowEffect.h>
 #import <ITKit/ITSlideHorizontallyWindowEffect.h>
@@ -100,6 +101,7 @@ static PreferencesController *prefs = nil;
         controller = nil;
         
         [self setupWindow];  // Load in the nib, and perform any initial setup.
+        [[NSColorPanel sharedColorPanel] setShowsAlpha:YES];
     }
     return self;
 }
@@ -182,6 +184,11 @@ static PreferencesController *prefs = nil;
     [window center];
     [NSApp activateIgnoringOtherApps:YES];
     [window performSelector:@selector(makeKeyAndOrderFront:) withObject:self afterDelay:0.0];
+}
+
+- (IBAction)showTestWindow:(id)sender
+{
+    [controller showTestWindow];
 }
 
 - (IBAction)changeGeneralSetting:(id)sender
@@ -421,7 +428,28 @@ static PreferencesController *prefs = nil;
         [sw setExitDelay:[sender floatValue]];
     } else if ( [sender tag] == 2080) {
         [df setBool:SENDER_STATE forKey:@"showSongInfoOnChange"];
+    } else if ( [sender tag] == 2090) {
+        
+        int setting = [sender indexOfSelectedItem];
+        
+        if ( setting == 0 ) {
+            [(ITTSWBackgroundView *)[sw contentView] setBackgroundMode:ITTSWBackgroundApple];
+            [backgroundColorWell setEnabled:NO];
+        } else if ( setting == 1 ) {
+            [(ITTSWBackgroundView *)[sw contentView] setBackgroundMode:ITTSWBackgroundReadable];
+            [backgroundColorWell setEnabled:NO];
+        } else if ( setting == 2 ) {
+            [(ITTSWBackgroundView *)[sw contentView] setBackgroundMode:ITTSWBackgroundColored];
+            [backgroundColorWell setEnabled:YES];
+        }
+
+        [df setInteger:setting forKey:@"statusWindowBackgroundMode"];
+        
+    } else if ( [sender tag] == 2091) {
+        [(ITTSWBackgroundView *)[sw contentView] setBackgroundColor:[sender color]];
+        [df setObject:[NSArchiver archivedDataWithRootObject:[sender color]] forKey:@"statusWindowBackgroundColor"];
     }
+    
     [df synchronize];
 }
 
@@ -668,6 +696,7 @@ static PreferencesController *prefs = nil;
     NSMutableArray *loginarray;
     NSEnumerator *loginEnum, *keyArrayEnum;
     NSString *serverName;
+    int selectedBGStyle;
     id anItem;
     
     ITDebugLog(@"Setting up preferences UI.");
@@ -721,8 +750,21 @@ static PreferencesController *prefs = nil;
     [appearanceSpeedSlider setFloatValue:-([df floatForKey:@"statusWindowAppearanceSpeed"])];
     [vanishSpeedSlider     setFloatValue:-([df floatForKey:@"statusWindowVanishSpeed"])];
     [vanishDelaySlider     setFloatValue:[df floatForKey:@"statusWindowVanishDelay"]];
-    [showOnChangeCheckbox  setState:([df boolForKey:@"showSongInfoOnChange"] ? NSOnState : NSOffState)];
+
+    // Setup General Controls
     
+    selectedBGStyle = [df integerForKey:@"statusWindowBackgroundMode"];
+    [backgroundStylePopup selectItem:[backgroundStylePopup itemAtIndex:[backgroundStylePopup indexOfItemWithTag:selectedBGStyle]]];
+
+    if ( selectedBGStyle == ITTSWBackgroundColored ) {
+        [backgroundColorWell setEnabled:YES];
+    } else {
+        [backgroundColorWell setEnabled:NO];
+    }
+
+    [backgroundColorWell setColor:(NSColor *)[NSUnarchiver unarchiveObjectWithData:[df dataForKey:@"statusWindowBackgroundColor"]]];
+    [showOnChangeCheckbox setState:([df boolForKey:@"showSongInfoOnChange"] ? NSOnState : NSOffState)];
+
     // Setup the sharing controls
     if ([df boolForKey:@"enableSharing"]) {
         [shareMenuTunesCheckbox setState:NSOnState];
@@ -851,7 +893,7 @@ static PreferencesController *prefs = nil;
         NSString *object = [myItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             if ([object isEqualToString:@"showPlayer"]) {
-                NSString *string;
+                NSString *string = nil;
                 NS_DURING
                     string = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
                 NS_HANDLER
@@ -872,7 +914,7 @@ static PreferencesController *prefs = nil;
         NSString *object = [availableItems objectAtIndex:rowIndex];
         if ([[aTableColumn identifier] isEqualToString:@"name"]) {
             if ([object isEqualToString:@"showPlayer"]) {
-                NSString *string;
+                NSString *string = nil;
                 NS_DURING
                     string = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"show", @"Show"), [[controller currentRemote] playerSimpleName]];
                 NS_HANDLER

@@ -23,6 +23,8 @@
     IBOutlet NSPopUpButton *appearanceEffectPopup;
     IBOutlet NSSlider *appearanceSpeedSlider;
     IBOutlet NSButton *artistCheckbox;
+    IBOutlet NSPopUpButton *backgroundStylePopup;
+    IBOutlet NSColorWell *backgroundColorWell;
     IBOutlet NSTextField *clientPasswordTextField;
     IBOutlet NSTextField *hostTextField;
     IBOutlet NSTableView *hotKeysTableView;
@@ -85,6 +87,7 @@
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)editHotKey:(id)sender;
 - (IBAction)showPrefsWindow:(id)sender;
+- (IBAction)showTestWindow:(id)sender;
 
 - (void)registerDefaults;
 - (void)deletePressedInTableView:(NSTableView *)tableView;

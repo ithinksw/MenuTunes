@@ -65,6 +65,7 @@
 - (void)selectEQPresetAtIndex:(int)index;
 - (void)showPlayer;
 - (void)showPreferences;
+- (void)showTestWindow;
 - (void)quitMenuTunes;
 
 //

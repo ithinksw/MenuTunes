@@ -3,6 +3,7 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 
+#import <ITKit/ITTSWBackgroundView.h>
 #import <ITKit/ITWindowEffect.h>
 #import <ITKit/ITCutWindowEffect.h>
 #import <ITKit/ITDissolveWindowEffect.h>
@@ -85,6 +86,12 @@ static StatusWindowController *sharedController;
 
         [[_window entryEffect] setEffectTime:(entrySpeed ? entrySpeed : 0.8)];
         [[_window exitEffect]  setEffectTime:(exitSpeed  ? exitSpeed  : 0.8)];
+        
+        [(ITTSWBackgroundView *)[_window contentView]setBackgroundMode:
+            (ITTSWBackgroundMode)[df integerForKey:@"statusWindowBackgroundMode"]];
+            
+        [(ITTSWBackgroundView *)[_window contentView]setBackgroundColor:
+            (NSColor *)[NSUnarchiver unarchiveObjectWithData:[df dataForKey:@"statusWindowBackgroundColor"]]];
     }
     
     return self;
