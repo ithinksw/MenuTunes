@@ -42,6 +42,7 @@
     IBOutlet NSTextField *passwordPanelTextField;
     IBOutlet NSTextField *passwordPanelTitle;
     IBOutlet NSTextField *passwordTextField;
+    IBOutlet NSMatrix *positionMatrix;
     IBOutlet NSButton *ratingCheckbox;
     IBOutlet NSTextField *selectedPlayerTextField;
     IBOutlet NSBox *selectPlayerBox;
@@ -68,6 +69,7 @@
     NSMutableArray *availableItems;
     NSMutableArray *myItems;
     NSArray        *submenuItems;
+    NSArray        *effectClasses;
     
     NSArray *hotKeysArray, *hotKeyNamesArray;
     NSMutableDictionary *hotKeysDictionary;

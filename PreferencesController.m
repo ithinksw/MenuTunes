@@ -39,7 +39,11 @@
 - (void)setupCustomizationTables;
 - (void)setupMenuItems;
 - (void)setupUI;
+- (void)setStatusWindowEntryEffect:(Class)effectClass;
+- (void)setStatusWindowExitEffect:(Class)effectClass;
 - (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update;
+- (void)repopulateEffectPopupsForVerticalPosition:(ITVerticalWindowPosition)vPos horizontalPosition:(ITHorizontalWindowPosition)hPos;
+- (BOOL)effect:(Class)effectClass supportsVerticalPosition:(ITVerticalWindowPosition)vPos withHorizontalPosition:(ITHorizontalWindowPosition)hPos;
 - (IBAction)changeMenus:(id)sender;
 - (void)setLaunchesAtLogin:(BOOL)flag;
 @end
@@ -74,6 +78,9 @@ static PreferencesController *prefs = nil;
     if ( (self = [super init]) ) {
         ITDebugLog(@"Preferences initialized.");
         df = [[NSUserDefaults standardUserDefaults] retain];
+        
+        effectClasses = [[ITWindowEffect effectClasses] retain];
+        
         hotKeysArray = [[NSArray alloc] initWithObjects:@"PlayPause",
                                                        @"NextTrack",
                                                        @"PrevTrack",
@@ -372,36 +379,64 @@ static PreferencesController *prefs = nil;
 {
     StatusWindow *sw = [StatusWindow sharedWindow];
     ITDebugLog(@"Changing status window setting of tag %i", [sender tag]);
+    
     if ( [sender tag] == 2010) {
+    
+        BOOL entryEffectValid = YES;
+        BOOL exitEffectValid  = YES;
+        
         [df setInteger:[sender selectedRow] forKey:@"statusWindowVerticalPosition"];
         [df setInteger:[sender selectedColumn] forKey:@"statusWindowHorizontalPosition"];
-        [sw setHorizontalPosition:[sender selectedColumn]];
         [sw setVerticalPosition:[sender selectedRow]];
-        // update the window's position here
-    } else if ( [sender tag] == 2020) {
-        // update screen selection
-    } else if ( [sender tag] == 2030) {
-        Class selectedClass = [[sender selectedItem] representedObject];
-        float time = ([df floatForKey:@"statusWindowAppearanceSpeed"] ? [df floatForKey:@"statusWindowAppearanceSpeed"] : 0.8);
-        [df setObject:NSStringFromClass(selectedClass) forKey:@"statusWindowAppearanceEffect"];
+        [sw setHorizontalPosition:[sender selectedColumn]];
+        
+        // Enable/disable the items in the popups.
+        [self repopulateEffectPopupsForVerticalPosition:[sw verticalPosition]
+                                     horizontalPosition:[sw horizontalPosition]];
 
-        [sw setEntryEffect:[[[selectedClass alloc] initWithWindow:sw] autorelease]];
-        [[sw entryEffect] setEffectTime:time];
+        // Make sure the effects support the new position.  
+        entryEffectValid = ( [self effect:[[sw entryEffect] class] 
+                 supportsVerticalPosition:[sw verticalPosition]
+                   withHorizontalPosition:[sw horizontalPosition]] );
+        exitEffectValid  = ( [self effect:[[sw exitEffect] class] 
+                 supportsVerticalPosition:[sw verticalPosition]
+                   withHorizontalPosition:[sw horizontalPosition]] );
+        
+        if ( ! entryEffectValid ) {
+            [appearanceEffectPopup selectItemAtIndex:[[appearanceEffectPopup menu] indexOfItemWithRepresentedObject:NSClassFromString(@"ITCutWindowEffect")]];
+            [self setStatusWindowEntryEffect:NSClassFromString(@"ITCutWindowEffect")];
+        } else {
+            [appearanceEffectPopup selectItemAtIndex:[[appearanceEffectPopup menu] indexOfItemWithRepresentedObject:[[sw entryEffect] class]]];
+        }
+        
+        if ( ! exitEffectValid ) {
+            [vanishEffectPopup selectItemAtIndex:[[vanishEffectPopup menu] indexOfItemWithRepresentedObject:NSClassFromString(@"ITDissolveWindowEffect")]];
+            [self setStatusWindowExitEffect:NSClassFromString(@"ITDissolveWindowEffect")];
+        } else {
+            [vanishEffectPopup selectItemAtIndex:[[vanishEffectPopup menu] indexOfItemWithRepresentedObject:[[sw exitEffect] class]]];
+        }
+        
+        // Update the window's position.
+        // Yeah, do that.
+        
+    } else if ( [sender tag] == 2020) {
+    
+        // Update screen selection.
+        
+    } else if ( [sender tag] == 2030) {
+    
+        [self setStatusWindowEntryEffect:[[sender selectedItem] representedObject]];
         
     } else if ( [sender tag] == 2040) {
-        Class selectedClass = [[sender selectedItem] representedObject];
-        float time = ([df floatForKey:@"statusWindowVanishSpeed"] ? [df floatForKey:@"statusWindowVanishSpeed"] : 0.8);
-        [df setObject:NSStringFromClass(selectedClass) forKey:@"statusWindowVanishEffect"];
+    
+        [self setStatusWindowExitEffect:[[sender selectedItem] representedObject]];
         
-        [sw setExitEffect:[[[selectedClass alloc] initWithWindow:sw] autorelease]];
-        [[sw exitEffect] setEffectTime:time];
-
     } else if ( [sender tag] == 2050) {
-        float newTime = (-([sender floatValue]));
+        float newTime = ( -([sender floatValue]) );
         [df setFloat:newTime forKey:@"statusWindowAppearanceSpeed"];
         [[sw entryEffect] setEffectTime:newTime];
     } else if ( [sender tag] == 2060) {
-        float newTime = (-([sender floatValue]));
+        float newTime = ( -([sender floatValue]) );
         [df setFloat:newTime forKey:@"statusWindowVanishSpeed"];
         [[sw exitEffect] setEffectTime:newTime];
     } else if ( [sender tag] == 2070) {
@@ -455,16 +490,6 @@ static PreferencesController *prefs = nil;
     }
     
     [df synchronize];
-}
-
-- (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update
-{
-    [(ITTSWBackgroundView *)[[StatusWindow sharedWindow] contentView] setBackgroundColor:color];
-    [df setObject:[NSArchiver archivedDataWithRootObject:color] forKey:@"statusWindowBackgroundColor"];
-    
-    if ( update ) {
-        [backgroundColorWell setColor:color];
-    }
 }
 
 - (void)registerDefaults
@@ -716,8 +741,6 @@ static PreferencesController *prefs = nil;
     NSEnumerator   *keyArrayEnum;
     NSString       *serverName;
     NSData         *colorData;
-    NSArray        *effectClasses = [ITWindowEffect effectClasses];
-    NSEnumerator   *effectEnum = [effectClasses objectEnumerator];
     int selectedBGStyle;
     id anItem;
     
@@ -765,18 +788,15 @@ static PreferencesController *prefs = nil;
     [launchPlayerAtLaunchCheckbox setState:[df boolForKey:@"LaunchPlayerWithMT"] ? NSOnState : NSOffState];
     
     // Setup the positioning controls
+    [positionMatrix selectCellAtRow:[df integerForKey:@"statusWindowVerticalPosition"]
+                             column:[df integerForKey:@"statusWindowHorizontalPosition"]];
     
     // Setup effects controls
     // Populate the effects popups
-    [appearanceEffectPopup removeItemAtIndex:0];
-    [vanishEffectPopup     removeItemAtIndex:0];
-    
-    while ( (anItem = [effectEnum nextObject]) ) {
-        [appearanceEffectPopup addItemWithTitle:[anItem effectName]];
-        [vanishEffectPopup     addItemWithTitle:[anItem effectName]];
-        [[appearanceEffectPopup lastItem] setRepresentedObject:anItem];
-        [[vanishEffectPopup     lastItem] setRepresentedObject:anItem];
-    }
+    [appearanceEffectPopup setAutoenablesItems:NO];
+    [vanishEffectPopup     setAutoenablesItems:NO];
+    [self repopulateEffectPopupsForVerticalPosition:[df integerForKey:@"statusWindowVerticalPosition"] 
+                                 horizontalPosition:[df integerForKey:@"statusWindowHorizontalPosition"]];
     
     // Attempt to find the pref'd effect in the list.
     // If it's not there, use cut/dissolve.
@@ -792,8 +812,8 @@ static PreferencesController *prefs = nil;
         [vanishEffectPopup selectItemAtIndex:[effectClasses indexOfObject:NSClassFromString(@"ITCutWindowEffect")]];
     }
     
-    [appearanceSpeedSlider setFloatValue:-([df floatForKey:@"statusWindowAppearanceSpeed"])];
-    [vanishSpeedSlider     setFloatValue:-([df floatForKey:@"statusWindowVanishSpeed"])];
+    [appearanceSpeedSlider setFloatValue:( -([df floatForKey:@"statusWindowAppearanceSpeed"]) )];
+    [vanishSpeedSlider     setFloatValue:( -([df floatForKey:@"statusWindowVanishSpeed"]) )];
     [vanishDelaySlider     setFloatValue:[df floatForKey:@"statusWindowVanishDelay"]];
 
     // Setup General Controls
@@ -858,6 +878,97 @@ static PreferencesController *prefs = nil;
         [selectedPlayerTextField setStringValue:@"No shared player selected."];
         [locationTextField setStringValue:@"-"];
     }
+}
+
+- (void)setStatusWindowEntryEffect:(Class)effectClass
+{
+    StatusWindow *sw = [StatusWindow sharedWindow];
+    
+    float time = ([df floatForKey:@"statusWindowAppearanceSpeed"] ? [df floatForKey:@"statusWindowAppearanceSpeed"] : 0.8);
+    [df setObject:NSStringFromClass(effectClass) forKey:@"statusWindowAppearanceEffect"];
+    
+    [sw setEntryEffect:[[[effectClass alloc] initWithWindow:sw] autorelease]];
+    [[sw entryEffect] setEffectTime:time];
+}
+
+- (void)setStatusWindowExitEffect:(Class)effectClass
+{
+    StatusWindow *sw = [StatusWindow sharedWindow];
+    
+    float time = ([df floatForKey:@"statusWindowVanishSpeed"] ? [df floatForKey:@"statusWindowVanishSpeed"] : 0.8);
+    [df setObject:NSStringFromClass(effectClass) forKey:@"statusWindowVanishEffect"];
+    
+    [sw setExitEffect:[[[effectClass alloc] initWithWindow:sw] autorelease]];
+    [[sw exitEffect] setEffectTime:time];
+}
+
+- (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update
+{
+    [(ITTSWBackgroundView *)[[StatusWindow sharedWindow] contentView] setBackgroundColor:color];
+    [df setObject:[NSArchiver archivedDataWithRootObject:color] forKey:@"statusWindowBackgroundColor"];
+    
+    if ( update ) {
+        [backgroundColorWell setColor:color];
+    }
+}
+
+- (void)repopulateEffectPopupsForVerticalPosition:(ITVerticalWindowPosition)vPos horizontalPosition:(ITHorizontalWindowPosition)hPos
+{
+    NSEnumerator *effectEnum = [effectClasses objectEnumerator];
+    id anItem;
+    
+    [appearanceEffectPopup removeAllItems];
+    [vanishEffectPopup     removeAllItems];
+    
+    while ( (anItem = [effectEnum nextObject]) ) {
+        [appearanceEffectPopup addItemWithTitle:[anItem effectName]];
+        [vanishEffectPopup     addItemWithTitle:[anItem effectName]];
+        
+        [[appearanceEffectPopup lastItem] setRepresentedObject:anItem];
+        [[vanishEffectPopup     lastItem] setRepresentedObject:anItem];
+        
+        if ( [self effect:anItem supportsVerticalPosition:vPos withHorizontalPosition:hPos] ) {
+            [[appearanceEffectPopup lastItem] setEnabled:YES];
+            [[vanishEffectPopup     lastItem] setEnabled:YES];
+        } else {
+            [[appearanceEffectPopup lastItem] setEnabled:NO];
+            [[vanishEffectPopup     lastItem] setEnabled:NO];
+        }
+    }
+    
+}
+
+- (BOOL)effect:(Class)effectClass supportsVerticalPosition:(ITVerticalWindowPosition)vPos withHorizontalPosition:(ITHorizontalWindowPosition)hPos
+{
+    BOOL valid = NO;
+    
+    if ( vPos == ITWindowPositionTop ) {
+        if ( hPos == ITWindowPositionLeft ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Top"] objectForKey:@"Left"] boolValue] ) ;
+        } else if ( hPos == ITWindowPositionCenter ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Top"] objectForKey:@"Center"] boolValue] );
+        } else if ( hPos == ITWindowPositionRight ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Top"] objectForKey:@"Right"] boolValue] );
+        }
+    } else if ( vPos == ITWindowPositionMiddle ) {
+        if ( hPos == ITWindowPositionLeft ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Middle"] objectForKey:@"Left"] boolValue] );
+        } else if ( hPos == ITWindowPositionCenter ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Middle"] objectForKey:@"Center"] boolValue] );
+        } else if ( hPos == ITWindowPositionRight ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Middle"] objectForKey:@"Right"] boolValue] );
+        }
+    } else if ( vPos == ITWindowPositionBottom ) {
+        if ( hPos == ITWindowPositionLeft ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Bottom"] objectForKey:@"Left"] boolValue] );
+        } else if ( hPos == ITWindowPositionCenter ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Bottom"] objectForKey:@"Center"] boolValue] );
+        } else if ( hPos == ITWindowPositionRight ) {
+            valid = ( [[[[effectClass supportedPositions] objectForKey:@"Bottom"] objectForKey:@"Right"] boolValue] );
+        }
+    }
+    
+    return valid;
 }
 
 - (IBAction)changeMenus:(id)sender
@@ -1091,6 +1202,7 @@ static PreferencesController *prefs = nil;
 {
     [hotKeysArray release];
     [hotKeysDictionary release];
+    [effectClasses release];
     [menuTableView setDataSource:nil];
     [allTableView setDataSource:nil];
     [controller release];

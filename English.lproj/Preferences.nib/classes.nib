@@ -40,6 +40,7 @@
                 passwordPanelTextField = NSTextField; 
                 passwordPanelTitle = NSTextField; 
                 passwordTextField = NSTextField; 
+                positionMatrix = NSMatrix; 
                 ratingCheckbox = NSButton; 
                 selectPlayerBox = NSBox; 
                 selectPlayerSheet = NSPanel; 
