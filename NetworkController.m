@@ -141,7 +141,7 @@ static NetworkController *sharedController;
         clientPort = [[NSSocketPort alloc] initRemoteWithTCPPort:SERVER_PORT
                                            host:host];
         clientConnection = [[NSConnection connectionWithReceivePort:nil sendPort:clientPort] retain];
-        [clientConnection setReplyTimeout:5];
+        [clientConnection setReplyTimeout:10];
         clientProxy = [[clientConnection rootProxy] retain];
         connectedToServer = YES;
     NS_HANDLER
@@ -219,8 +219,8 @@ static NetworkController *sharedController;
         testPort = [[NSSocketPort alloc] initRemoteWithTCPPort:SERVER_PORT
                                          host:host];
         testConnection = [[NSConnection connectionWithReceivePort:nil sendPort:testPort] retain];
-        [testConnection setReplyTimeout:2];
-        [testConnection setRequestTimeout:2];
+        [testConnection setReplyTimeout:5];
+        [testConnection setRequestTimeout:5];
         tempProxy = (NetworkObject *)[testConnection rootProxy];
         [tempProxy serverName];
         valid = [tempProxy isValid];
