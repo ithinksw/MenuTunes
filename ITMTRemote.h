@@ -28,7 +28,13 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef enum {stopped = -1, paused, playing, rewinding, forwarding} PlayerState;
+typedef enum {
+    stopped = -1,
+    paused,
+    playing,
+    rewinding,
+    forwarding
+} PlayerState;
 
 /*! @protocol ITMTRemote
  *  @abstract Declares what a MenuTunes Remote must be able to do.
@@ -50,7 +56,7 @@ typedef enum {stopped = -1, paused, playing, rewinding, forwarding} PlayerState;
 + (id)remote;
 
 /*! @method title:
- *  @abstract Returns an autoreleased instance of the remote.
+ *  @abstract Returns the title of the plugin, which should be player name.
  *  @result An NSString containing the title.
  */
 - (NSString *)title;
