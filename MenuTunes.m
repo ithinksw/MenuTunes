@@ -460,7 +460,7 @@ Things to do:
                     NSMenuItem *songItem;
                     songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
                     [songItem setTarget:self];
-                    [songItem setRepresentedObject:[NSNumber numberWithInt:i]];
+                    [songItem setRepresentedObject:[NSNumber numberWithInt:i + 1]];
                     [upcomingSongsMenu addItem:songItem];
                     [songItem release];
                 } else {
@@ -494,7 +494,7 @@ Things to do:
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:playlistName action:@selector(selectPlaylist:) keyEquivalent:@""];
         [tempItem setTarget:self];
-        [tempItem setRepresentedObject:[NSNumber numberWithInt:i]];
+        [tempItem setRepresentedObject:[NSNumber numberWithInt:i + 1]];
         [playlistMenu addItem:tempItem];
         [tempItem release];
     }
