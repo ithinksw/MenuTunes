@@ -157,6 +157,26 @@
     return NO;
 }
 
+- (BOOL)shuffleEnabled
+{
+    return NO;
+}
+
+- (BOOL)setShuffleEnabled:(BOOL)enabled
+{
+    return NO;
+}
+
+- (ITMTRemotePlayerRepeatMode)repeatMode
+{
+    return ITMTRemotePlayerRepeatOff;
+}
+
+- (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode
+{
+    return NO;
+}
+
 - (BOOL)play
 {
     return NO;

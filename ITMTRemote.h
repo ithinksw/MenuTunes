@@ -22,12 +22,12 @@
 #import <Cocoa/Cocoa.h>
 
 /*!
-  @enum ITMTRemotePlayerRunningState
-  @abstract Possible running states for the remote's player.
-  @discussion Used in fuctions that report or take the running state of the remote's player application.
-  @constant ITMTRemotePlayerNotRunning The remote's player isn't running.
-  @constant ITMTRemotePlayerLaunching The remote's player is starting up, or is running, but not yet accepting remote commands.
-  @constant ITMTRemotePlayerRunning The remote's player is running, and as such, is accepting remote commands.
+ * @enum ITMTRemotePlayerRunningState
+ * @abstract Possible running states for the remote's player.
+ * @discussion Used in fuctions that report or take the running state of the remote's player application.
+ * @constant ITMTRemotePlayerNotRunning The remote's player isn't running.
+ * @constant ITMTRemotePlayerLaunching The remote's player is starting up, or is running, but not yet accepting remote commands.
+ * @constant ITMTRemotePlayerRunning The remote's player is running, and as such, is accepting remote commands.
  */
 typedef enum {
     ITMTRemotePlayerNotRunning = -1,
@@ -36,14 +36,14 @@ typedef enum {
 } ITMTRemotePlayerRunningState;
 
 /*!
-  @enum ITMTRemotePlayerPlayingState
-  @abstract Possible playing states for the remote's player.
-  @discussion Used in functions that report or take the playing state of the remote's player application.
-  @constant ITMTRemotePlayerStopped The remote's player is stopped.
-  @constant ITMTRemotePlayerPaused The remote's player is paused.
-  @constant ITMTRemotePlayerPlaying The remote's player is playing.
-  @constant ITMTRemotePlayerRewinding The remote's player is rewinding.
-  @constant ITMTRemotePlayerForwarding The remote's player is forwarding.
+ * @enum ITMTRemotePlayerPlayingState
+ * @abstract Possible playing states for the remote's player.
+ * @discussion Used in functions that report or take the playing state of the remote's player application.
+ * @constant ITMTRemotePlayerStopped The remote's player is stopped.
+ * @constant ITMTRemotePlayerPaused The remote's player is paused.
+ * @constant ITMTRemotePlayerPlaying The remote's player is playing.
+ * @constant ITMTRemotePlayerRewinding The remote's player is rewinding.
+ * @constant ITMTRemotePlayerForwarding The remote's player is forwarding.
  */
 typedef enum {
     ITMTRemotePlayerStopped = -1,
@@ -52,6 +52,20 @@ typedef enum {
     ITMTRemotePlayerRewinding,
     ITMTRemotePlayerForwarding
 } ITMTRemotePlayerPlayingState;
+
+/*!
+ * @enum ITMTRemotePlayerRepeatMode
+ * @abstract Possible repeat modes for the remote's player.
+ * @discussion Used in functions that report or set the remote's player's repeat mode.
+ * @constant ITMTRemotePlayerRepeatOff The player plays all of the songs in a playlist through to the end, and then stops.
+ * @constant ITMTRemotePlayerRepeatAll The player plays all of the songs in a playlist through to the end, and then starts over again from the beginning.
+ * @constant ITMTRemotePlayerRepeatOne The player loops playing the selected song.
+ */
+typedef enum {
+    ITMTRemotePlayerRepeatOff = -1,
+    ITMTRemotePlayerRepeatAll,
+    ITMTRemotePlayerRepeatOne
+} ITMTRemotePlayerRepeatMode;
 
 /*!
  * @protocol ITMTRemote
@@ -248,6 +262,26 @@ typedef enum {
  * @method setVolume:
  */
 - (BOOL)setVolume:(float)volume;
+
+/*!
+ * @method shuffleEnabled
+ */
+- (BOOL)shuffleEnabled;
+
+/*!
+ * @method setShuffleEnabled:
+ */
+- (BOOL)setShuffleEnabled:(BOOL)enabled;
+
+/*!
+ * @method repeatMode
+ */
+- (ITMTRemotePlayerRepeatMode)repeatMode;
+
+/*!
+ * @method setRepeatMode:
+ */
+- (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode;
 
 /*!
  * @method play
