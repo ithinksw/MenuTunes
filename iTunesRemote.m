@@ -322,6 +322,9 @@
 {
     int temp1;
     ITDebugLog(@"Getting current song index.");
+    
+    if ([self currentSource] == ITMTRemoteRadioSource)
+    
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     ITDebugLog(@"Getting current song index done.");
     return temp1;
@@ -331,7 +334,13 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current song title.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    
+    //If we're listening to the radio.
+    if ([[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 'cURT') {
+        temp1 = [[[ITAppleEventCenter sharedCenter] sendAEWithRequestedKey:@"pStT" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] stringByAppendingString:@" (Stream)"];
+    } else {
+        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    }
     ITDebugLog(@"Getting current song title done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
