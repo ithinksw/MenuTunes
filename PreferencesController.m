@@ -180,12 +180,6 @@ NSLog(@"bar");
     [controller clearHotKeys];
 }
 
-- (IBAction)cancel:(id)sender
-{
-    [window close];
-    [controller closePreferences];
-}
-
 - (IBAction)cancelHotKey:(id)sender
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -203,7 +197,7 @@ NSLog(@"bar");
     NSString *string = [combo userDisplayRep];
     
     if (string == nil) {
-        string = @"None";
+        string = @"";
     }
     if ([setHotKey isEqualToString:@"PlayPause"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
@@ -269,13 +263,6 @@ NSLog(@"bar");
     [self cancelHotKey:sender];
 }
 
-- (IBAction)save:(id)sender
-{
-    [self apply:nil];
-    [window close];
-    [controller closePreferences];
-}
-
 - (IBAction)setCurrentTrackInfo:(id)sender
 {
     [self setKeyCombo:trackInfoCombo];
@@ -305,6 +292,12 @@ NSLog(@"bar");
     [self setKeyCombo:upcomingSongsCombo];
     [self setHotKey:@"UpcomingSongs"];
 }
+
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark HOTKEY SUPPORT METHODS
+/*************************************************************************/
 
 - (void)setHotKey:(NSString *)key
 {

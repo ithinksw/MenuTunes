@@ -99,7 +99,7 @@
 - (NSString *)userDisplayRep
 {
     if ( ! [self isValid] ) {
-        return @"None";
+        return @"";
     } else {
         return [NSString stringWithFormat: @"%@%@",
             [KeyCombo _stringForModifiers: mModifiers],

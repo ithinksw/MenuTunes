@@ -58,12 +58,9 @@
 
 - (IBAction)showPrefsWindow:(id)sender;
 
-- (IBAction)apply:(id)sender;
-- (IBAction)cancel:(id)sender;
 - (IBAction)cancelHotKey:(id)sender;
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)okHotKey:(id)sender;
-- (IBAction)save:(id)sender;
 - (IBAction)setCurrentTrackInfo:(id)sender;
 - (IBAction)setNextTrack:(id)sender;
 - (IBAction)setPlayPause:(id)sender;
