@@ -1091,6 +1091,10 @@ static MainController *sharedController;
     if (result == 1) {
         [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
         currentRemote = [[[networkController networkObject] remote] retain];
+        
+        [self setupHotKeys];
+        playerRunningState = ITMTRemotePlayerRunning;
+        
         [refreshTimer invalidate];
         refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
                                 target:self
