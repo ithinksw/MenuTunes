@@ -25,6 +25,7 @@
     IBOutlet NSButton *artistCheckbox;
     IBOutlet NSPopUpButton *backgroundStylePopup;
     IBOutlet NSColorWell *backgroundColorWell;
+    IBOutlet NSPopUpButton *backgroundColorPopup;
     IBOutlet NSTextField *clientPasswordTextField;
     IBOutlet NSTextField *hostTextField;
     IBOutlet NSTableView *hotKeysTableView;

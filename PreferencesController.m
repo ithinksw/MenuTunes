@@ -36,6 +36,7 @@
 - (void)setupCustomizationTables;
 - (void)setupMenuItems;
 - (void)setupUI;
+- (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update;
 - (IBAction)changeMenus:(id)sender;
 - (void)setLaunchesAtLogin:(BOOL)flag;
 @end
@@ -434,23 +435,53 @@ static PreferencesController *prefs = nil;
         
         if ( setting == 0 ) {
             [(ITTSWBackgroundView *)[sw contentView] setBackgroundMode:ITTSWBackgroundApple];
-            [backgroundColorWell setEnabled:NO];
+            [backgroundColorWell  setEnabled:NO];
+            [backgroundColorPopup setEnabled:NO];
         } else if ( setting == 1 ) {
             [(ITTSWBackgroundView *)[sw contentView] setBackgroundMode:ITTSWBackgroundReadable];
-            [backgroundColorWell setEnabled:NO];
+            [backgroundColorWell  setEnabled:NO];
+            [backgroundColorPopup setEnabled:NO];
         } else if ( setting == 2 ) {
             [(ITTSWBackgroundView *)[sw contentView] setBackgroundMode:ITTSWBackgroundColored];
-            [backgroundColorWell setEnabled:YES];
+            [backgroundColorWell  setEnabled:YES];
+            [backgroundColorPopup setEnabled:YES];
         }
 
         [df setInteger:setting forKey:@"statusWindowBackgroundMode"];
         
     } else if ( [sender tag] == 2091) {
-        [(ITTSWBackgroundView *)[sw contentView] setBackgroundColor:[sender color]];
-        [df setObject:[NSArchiver archivedDataWithRootObject:[sender color]] forKey:@"statusWindowBackgroundColor"];
+        [self setCustomColor:[sender color] updateWell:NO];
+    } else if ( [sender tag] == 2092) {
+        
+        int selectedItem = [sender indexOfSelectedItem];
+        
+        if ( selectedItem == 1 ) { // An NSPopUpButton in PullDown mode uses item 0 as its title.  Its first selectable item is 1.
+            [self setCustomColor:[NSColor colorWithCalibratedRed:0.92549 green:0.686275 blue:0.0 alpha:1.0] updateWell:YES];
+        } else if ( selectedItem == 2 ) {
+            [self setCustomColor:[NSColor colorWithCalibratedRed:0.380392 green:0.670588 blue:0.0 alpha:1.0] updateWell:YES];
+        } else if ( selectedItem == 3 ) {
+            [self setCustomColor:[NSColor colorWithCalibratedRed:0.443137 green:0.231373 blue:0.619608 alpha:1.0] updateWell:YES];
+        } else if ( selectedItem == 4 ) {
+            [self setCustomColor:[NSColor colorWithCalibratedRed:0.831373 green:0.12549 blue:0.509804 alpha:1.0] updateWell:YES];
+        } else if ( selectedItem == 5 ) {
+            [self setCustomColor:[NSColor colorWithCalibratedRed:0.00784314 green:0.611765 blue:0.662745 alpha:1.0] updateWell:YES];
+        } else {
+            [self setCustomColor:[NSColor colorWithCalibratedWhite:0.15 alpha:0.70] updateWell:YES];
+        }
+
     }
     
     [df synchronize];
+}
+
+- (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update
+{
+    [(ITTSWBackgroundView *)[[StatusWindow sharedWindow] contentView] setBackgroundColor:color];
+    [df setObject:[NSArchiver archivedDataWithRootObject:color] forKey:@"statusWindowBackgroundColor"];
+    
+    if ( update ) {
+        [backgroundColorWell setColor:color];
+    }
 }
 
 - (void)registerDefaults
@@ -757,9 +788,11 @@ static PreferencesController *prefs = nil;
     [backgroundStylePopup selectItem:[backgroundStylePopup itemAtIndex:[backgroundStylePopup indexOfItemWithTag:selectedBGStyle]]];
 
     if ( selectedBGStyle == ITTSWBackgroundColored ) {
-        [backgroundColorWell setEnabled:YES];
+        [backgroundColorWell  setEnabled:YES];
+        [backgroundColorPopup setEnabled:YES];
     } else {
-        [backgroundColorWell setEnabled:NO];
+        [backgroundColorWell  setEnabled:NO];
+        [backgroundColorPopup setEnabled:NO];
     }
 
     [backgroundColorWell setColor:(NSColor *)[NSUnarchiver unarchiveObjectWithData:[df dataForKey:@"statusWindowBackgroundColor"]]];

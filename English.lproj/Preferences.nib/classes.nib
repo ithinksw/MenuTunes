@@ -21,6 +21,7 @@
                 appearanceEffectPopup = NSPopUpButton; 
                 appearanceSpeedSlider = NSSlider; 
                 artistCheckbox = NSButton; 
+                backgroundColorPopup = NSPopUpButton; 
                 backgroundColorWell = NSColorWell; 
                 backgroundStylePopup = NSPopUpButton; 
                 clientPasswordTextField = NSTextField; 
