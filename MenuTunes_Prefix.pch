@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'MenuTunes' target in the 'MenuTunes' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
