@@ -13,7 +13,7 @@
         
         mt = [tunes retain];
         [mt registerDefaultsIfNeeded];
-        
+
         //Load the nib
         [NSBundle loadNibNamed:@"Preferences" owner:self];
         
