@@ -812,9 +812,13 @@ static MainController *sharedController;
         }
         
         if ( [df boolForKey:@"showAlbumArtwork"] ) {
+	    NSSize oldSize, newSize;
              NS_DURING
-                art = [[self currentRemote] currentSongAlbumArt];
-                art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:NSMakeSize(110,110)];
+		 art = [[self currentRemote] currentSongAlbumArt];
+		 oldSize = [art size];
+		 if (oldSize.width > oldSize.height) newSize = NSMakeSize(110,oldSize.height * (110.0f / oldSize.width));
+		 else newSize = NSMakeSize(oldSize.width * (110.0f / oldSize.height),110);
+                art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
             NS_HANDLER
                 [self networkError:localException];
             NS_ENDHANDLER
