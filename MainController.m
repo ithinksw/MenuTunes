@@ -358,12 +358,16 @@ static MainController *sharedController;
 - (void)timerUpdate
 {
 	if ([[self currentRemote] playerStateUniqueIdentifier] == nil) {
+		if ([statusItem isEnabled]) {
+			[statusItem setToolTip:@"iTunes not responding."];
+			[self clearHotKeys];
+		}
 		[statusItem setEnabled:NO];
-		[statusItem setToolTip:@"iTunes not responding."];
 		return;
 	} else if (![statusItem isEnabled]) {
 		[statusItem setEnabled:YES];
 		[statusItem setToolTip:_toolTip];
+		[self setupHotKeys];
 		return;
 	}
 	
