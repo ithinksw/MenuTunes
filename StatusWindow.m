@@ -187,7 +187,7 @@
         id            aCell       = nil;
         int           activeCount = 0;
         NSColor      *onColor     = [NSColor whiteColor];
-        NSColor      *offColor    = [NSColor colorWithCalibratedWhite:0.0 alpha:0.50];
+        NSColor      *offColor    = [NSColor colorWithCalibratedWhite:0.15 alpha:0.50];
         NSMatrix     *volMatrix   = [[[NSMatrix alloc] initWithFrame:dataRect
                                                                 mode:NSHighlightModeMatrix
                                                            cellClass:NSClassFromString(@"ITTextFieldCell")

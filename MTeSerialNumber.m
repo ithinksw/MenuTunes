@@ -19,7 +19,7 @@
                      extra:(NSString *)extra
                  publisher:(NSString *)publisher
 {
-    if ( self = [super init] ) {
+    if ( (self = [super init]) ) {
         _serialNumber = serial;
         _nameBasedKey = name;
         _extraDataKey = nil;       //extra data is currently unused.
