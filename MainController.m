@@ -533,7 +533,10 @@ static MainController *sharedController;
         }
 
         if ( [df boolForKey:@"showTrackRating"] ) {
-            rating = ( [currentRemote currentSongRating] * 5 );
+            float currentRating = [currentRemote currentSongRating];
+            if (currentRating >= 0.0) {
+                rating = ( currentRating * 5 );
+            }
         }
         
     } else {
