@@ -32,6 +32,7 @@
                 toggleLoopButton = NSButton; 
                 toggleShuffleButton = NSButton; 
                 trackInfoButton = NSButton; 
+                trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
                 upcomingSongsButton = NSButton; 
                 visualizerButton = NSButton; 

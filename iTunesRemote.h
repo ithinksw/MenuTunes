@@ -14,6 +14,7 @@
 
 @interface iTunesRemote : ITMTRemote <ITMTRemote>
 {
+    ProcessSerialNumber savedPSN;
 }
 - (ProcessSerialNumber)iTunesPSN;
 @end

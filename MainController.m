@@ -11,7 +11,6 @@
 - (void)timerUpdate;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
 - (void)showCurrentTrackInfo;
-
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
 @end
@@ -161,9 +160,12 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    if ( ( [self songChanged] ) ||
+    //This huge if statement is being nasty
+    /*if ( ( [self songChanged] ) ||
          ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
-         ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) ) {
+         ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) )*/
+    
+    if ([self songChanged]) {
         [self setLatestSongIdentifier:[currentRemote currentSongUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
@@ -528,6 +530,7 @@ static MainController *sharedController;
 - (void)applicationLaunched:(NSNotification *)note
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
+        [currentRemote begin];
         [self setLatestSongIdentifier:@""];
         [self timerUpdate];
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
@@ -539,11 +542,12 @@ static MainController *sharedController;
  - (void)applicationTerminated:(NSNotification *)note
  {
      if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
-         [refreshTimer invalidate];
-         [refreshTimer release];
-         refreshTimer = nil;
-         [self clearHotKeys];
-         playerRunningState = ITMTRemotePlayerNotRunning;
+        [currentRemote halt];
+        [refreshTimer invalidate];
+        [refreshTimer release];
+        refreshTimer = nil;
+        [self clearHotKeys];
+        playerRunningState = ITMTRemotePlayerNotRunning;
      }
  }
 
@@ -567,13 +571,7 @@ static MainController *sharedController;
 
 - (void)dealloc
 {
-    if (refreshTimer) {
-        [refreshTimer invalidate];
-        [refreshTimer release];
-        refreshTimer = nil;
-    }
-    
-    [currentRemote halt];
+    [self applicationTerminated:nil];
     [statusItem release];
     [statusWindowController release];
     [menuController release];

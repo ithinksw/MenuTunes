@@ -35,6 +35,7 @@
     IBOutlet NSButton *toggleLoopButton;
     IBOutlet NSButton *toggleShuffleButton;
     IBOutlet NSButton *trackInfoButton;
+    IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
     IBOutlet NSButton *upcomingSongsButton;
     IBOutlet NSButton *visualizerButton;

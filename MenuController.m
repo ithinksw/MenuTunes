@@ -33,7 +33,8 @@
 - (NSMenu *)menu
 {
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
-    NSArray *menuArray = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *menuArray = [defaults arrayForKey:@"menu"];
     NSEnumerator *enumerator = [menuArray objectEnumerator];
     NSString *nextObject;
     NSMenuItem *tempItem;
@@ -154,9 +155,36 @@
                 [menu addItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@""];
                 
                 if ([title length] > 0) {
-                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title] action:nil keyEquivalent:@""];
+                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", title]
+                            action:nil
+                            keyEquivalent:@""];
                 }
-                //Gotta add artist, album, track, time, etc, blah, blah, blah...
+                
+                if ([defaults boolForKey:@"showAlbum"]) {
+                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", [currentRemote currentSongAlbum]]
+                            action:nil
+                            keyEquivalent:@""];
+                }
+                
+                if ([defaults boolForKey:@"showArtist"]) {
+                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@", [currentRemote currentSongArtist]]
+                            action:nil
+                            keyEquivalent:@""];
+                }
+                
+                if ([defaults boolForKey:@"showTrackNumber"]) {
+                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 Track %i", [currentRemote currentSongTrack]]
+                            action:nil
+                            keyEquivalent:@""];
+                }
+                
+                if ([defaults boolForKey:@"showTime"]) {
+                    int left = [[currentRemote currentSongRemaining] intValue];
+                    NSString *remaining = [NSString stringWithFormat:@"%i:%02i", left / 60, left % 60];
+                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 %@/%@", remaining, [currentRemote currentSongLength]]
+                            action:nil
+                            keyEquivalent:@""];
+                }
             } else {
                 [menu addItemWithTitle:@"No Song" action:NULL keyEquivalent:@""];
             }
