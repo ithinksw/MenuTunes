@@ -14,9 +14,7 @@
 
 @interface iTunesRemote : ITMTRemote <ITMTRemote>
 {
-    ComponentInstance asComponent; //We will remove this when we are all AEs
     ProcessSerialNumber iTunesPSN;
 }
 - (ProcessSerialNumber)iTunesPSN;
-- (NSString *)runScriptAndReturnResult:(NSString *)script;
 @end

@@ -26,9 +26,6 @@
 {
     iTunesPSN = [self iTunesPSN];
 
-    //We won't need this once we're pure AEs
-    asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
-
     //Register for application termination in NSWorkspace
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
@@ -39,9 +36,6 @@
 - (BOOL)halt
 {
     iTunesPSN.highLongOfPSN = kNoProcess;
-
-    //We won't need this once we're pure AEs
-    CloseComponent(asComponent);
 
     //Unregister for application termination in NSWorkspace
     [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
@@ -65,49 +59,54 @@
 
 - (PlayerState)playerState
 {
-    NSString *result = [self runScriptAndReturnResult:@"get player state"];
+    long result = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 
-    if ([result isEqualToString:@"playing"]) {
-        return playing;
-    } else if ([result isEqualToString:@"paused"]) {
-        return paused;
-    } else if ([result isEqualToString:@"stopped"]) {
-        return stopped;
-    } else if ([result isEqualToString:@"rewinding"]) {
-        return rewinding;
-    } else if ([result isEqualToString:@"fast forwarding"]) {
-        return forwarding;
-    }
+    switch (result)
+	   {
+	   default:
+	   case 'kPSS':
+		  return stopped;
+	   case 'kPSP':
+		  return paused;
+	   case 'kPSp':
+		  return playing;
+	   case 'kPSR':
+		  return rewinding;
+	   case 'kPSF':
+		  return forwarding;
+	   }
 
     return stopped;
 }
 
 - (NSArray *)playlists
 {
-    int i;
-    int numPresets = [[self runScriptAndReturnResult:@"get number of playlists"] intValue];
-    NSMutableArray *presets = [[NSMutableArray alloc] init];
-    for (i = 1; i <= numPresets; i++) {
-        [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of playlist %i", i]]];
-    }
-    return [presets autorelease];
+    long i = 0;
+    const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:[self iTunesPSN]];
+    NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:numPlaylists];
+    NSLog(@"entered playlist");
+
+	   for (i = 1; i <= numPlaylists; i++) {
+		  const long j = i;
+		  NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:%lu, from:'null'() } }",(unsigned long)j];
+		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
+		  NSLog(@"sent event cur %d max %d",i,numPlaylists);
+		  [playlists addObject:theObj];
+	   }
+	   NSLog(@"playlists end");
+	   return [playlists autorelease];
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    NSString *result = [self runScriptAndReturnResult:[NSString stringWithFormat:@"get number of tracks in playlist %i", index]];
-    return [result intValue];
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:'cTrk', '----':obj { form:'indx', want:type('cPly'), seld:%i, from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)classOfPlaylistAtIndex:(int)index
 {
-    //Not working yet. It returns the 4 character code instead of a name.
     int realResult = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pcls"
-						fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd"
-													  appPSN:[self iTunesPSN]];
+                sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 
-    //result = [self runScriptAndReturnResult:[NSString stringWithFormat:@"get class of playlist %i", index]];
     if (realResult == 'cRTP') return @"radio tuner playlist";
     else return @"playlist";
 }
@@ -116,73 +115,53 @@
 {
     int result;
     result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
-							    fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd"
-									   appPSN:[self iTunesPSN]];
+                sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
     return result;
 }
 
 - (NSString *)songTitleAtIndex:(int)index
 {
-    NSString *result = [self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of track %i of current playlist", index]];
-    return result;
+    return [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:%i, from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 }
 
 - (int)currentSongIndex
 {
     int result;
-    result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
-							    fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-									   appPSN:[self iTunesPSN]];
+    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
     return result;
 }
 
 - (NSString *)currentSongTitle
 {
-    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam"
-												fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-													    appPSN:[self iTunesPSN]];
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongArtist
 {
-    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt"
-												fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-													    appPSN:[self iTunesPSN]];
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongAlbum
 {
-    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb"
-												fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-													    appPSN:[self iTunesPSN]];
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongGenre
 {
-    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pGen"
-												fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-													    appPSN:[self iTunesPSN]];
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pGen" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongLength
 {
-    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim"
-												fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-													    appPSN:[self iTunesPSN]];
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 }
 
 - (NSString *)currentSongRemaining
 {
     long duration = [[ITAppleEventCenter sharedCenter]
-                        sendTwoTierAEWithRequestedKeyForNumber:@"pDur"
-									  fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
-											 appPSN:[self iTunesPSN]];
+                        sendTwoTierAEWithRequestedKeyForNumber:@"pDur" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
     long current = [[ITAppleEventCenter sharedCenter]
-                        sendAEWithRequestedKeyForNumber:@"pPos"
-									eventClass:@"core" eventID:@"getd"
-									    appPSN:[self iTunesPSN]];
+                        sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
 
     return [[NSNumber numberWithLong:duration - current] stringValue];
 }
@@ -190,14 +169,15 @@
 - (NSArray *)eqPresets;
 {
     int i;
-    int numPresets = [[self runScriptAndReturnResult:@"get number of EQ presets"] intValue];
-    NSMutableArray *presets = [[NSMutableArray alloc] init];
+    long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:[self iTunesPSN]];
+    NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
 
-    for (i = 1; i <= numPresets; i++) {
-        [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of EQ preset %i", i]]];
-    }
 
-    return [presets autorelease];
+	   for (i = 0; i < numPresets; i++) {
+		  NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:%d, from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:[self iTunesPSN]];
+		  [presets addObject:theObj];
+	   }
+	   return [presets autorelease];
 }
 
 - (int)currentEQPresetIndex
@@ -205,73 +185,70 @@
     int result;
     result = [[ITAppleEventCenter sharedCenter]
                 sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
-							    fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd"
-									   appPSN:[self iTunesPSN]];
+													  fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd"
+																    appPSN:[self iTunesPSN]];
     return result;
 }
 
 - (BOOL)play
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Play"
-										   appPSN:[self iTunesPSN]];
+																		   appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)pause
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Paus"
-										   appPSN:[self iTunesPSN]];
+																		   appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)goToNextSong
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
-										   appPSN:[self iTunesPSN]];
+																		   appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)goToPreviousSong
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Prev"
-										   appPSN:[self iTunesPSN]];
+																		   appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)fastForward
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Fast"
-										   appPSN:[self iTunesPSN]];
+																		   appPSN:[self iTunesPSN]];
     return YES;
 }
 
 - (BOOL)rewind
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Rwnd"
-										   appPSN:[self iTunesPSN]];
+																		   appPSN:[self iTunesPSN]];
     return YES;
 }
 
 
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
-    [self runScriptAndReturnResult:[NSString stringWithFormat:
-        @"play playlist %i", index]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'name', want:type('cPly'), seld:%i, from:'null'() }",index] eventClass:@"hook" eventID:@"Play" appPSN:[self iTunesPSN]];
     return NO;
 }
 
 - (BOOL)switchToSongAtIndex:(int)index
 {
-    [self runScriptAndReturnResult:[NSString stringWithFormat:
-        @"play track %i of current playlist", index]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:%i, from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:[self iTunesPSN]];
     return NO;
 }
 
 - (BOOL)switchToEQAtIndex:(int)index
 {
-    [self runScriptAndReturnResult:[NSString stringWithFormat:
-        @"set current EQ preset to EQ preset %i", index]];
-    [self runScriptAndReturnResult:@"set EQ enabled to 1"];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:obj { form:'name', want:type('cEQP'), seld:%i, from:'null'() }, '----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }",index] eventClass:@"core" eventID:@"setd" appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:1, '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:[self iTunesPSN]];
     return NO;
 }
 
@@ -281,20 +258,19 @@
     ProcessSerialNumber number;
     int i, count = [apps count];
 
-    number.highLongOfPSN = kNoProcess;
+	       number.highLongOfPSN = kNoProcess;
 
-    for (i = 0; i < count; i++)
-    {
-        NSDictionary *curApp = [apps objectAtIndex:i];
-
-        if ([[curApp objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"])
-        {
-            number.highLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberHigh"] intValue];
-            number.lowLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberLow"] intValue];
-        }
-    }
-    return number;
-}
+	       for (i = 0; i < count; i++)
+		      {
+			  NSDictionary *curApp = [apps objectAtIndex:i];
+			 
+				 if ([[curApp objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"])
+				     {
+					        number.highLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberHigh"] intValue];
+					        number.lowLongOfPSN = [[curApp objectForKey:@"NSApplicationProcessSerialNumberLow"] intValue];
+					    }
+			     }
+    return number;}
 
 - (void)applicationLaunched:(NSNotification *)note
 {
@@ -316,41 +292,6 @@
         iTunesPSN.highLongOfPSN = kNoProcess;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTRemoteAppDidTerminateNotification" object:nil];
     }
-}
-
-//This is just temporary
-- (NSString *)runScriptAndReturnResult:(NSString *)script
-{
-    AEDesc scriptDesc, resultDesc;
-    Size length;
-    NSString *result;
-    Ptr buffer;
-
-    script = [NSString stringWithFormat:@"tell application \"iTunes\"\n%@\nend tell", script];
-
-    //NSLog(@"I say \"%@\"",script);
-
-    AECreateDesc(typeChar, [script cString], [script cStringLength],
-			  &scriptDesc);
-
-    OSADoScript(asComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
-
-    length = AEGetDescDataSize(&resultDesc);
-    buffer = malloc(length);
-
-    AEGetDescData(&resultDesc, buffer, length);
-    AEDisposeDesc(&scriptDesc);
-    AEDisposeDesc(&resultDesc);
-    result = [NSString stringWithCString:buffer length:length];
-    if ( (! [result isEqualToString:@""])      &&
-         ([result characterAtIndex:0] == '\"') &&
-         ([result characterAtIndex:[result length] - 1] == '\"') ) {
-        result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
-    }
-    free(buffer);
-    buffer = nil;
-    //NSLog(@"You say \"%@\"",result);
-    return result;
 }
 
 @end
