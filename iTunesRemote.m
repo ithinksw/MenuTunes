@@ -214,7 +214,7 @@
 - (float)currentSongRating
 {
     return [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN] / 100;
+                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN] / 100.0;
 }
 
 - (BOOL)setCurrentSongRating:(float)rating
@@ -232,7 +232,8 @@
 
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
-[[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    return YES;
 }
 
 - (NSArray *)eqPresets
@@ -280,6 +281,7 @@
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    return YES;
 }
 
 - (ITMTRemotePlayerRepeatMode)repeatMode
@@ -322,7 +324,7 @@
 	   }
 
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
-
+    return YES;
 }
 
 - (BOOL)play

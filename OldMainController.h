@@ -30,8 +30,10 @@
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
     int      trackInfoIndex;
+    
     int      lastPlaylistIndex;
     NSString *lastSongIdentifier;
+    int      lastSongRating;
     BOOL     isPlayingRadio;
     
     ITMTRemotePlayerRunningState isAppRunning;

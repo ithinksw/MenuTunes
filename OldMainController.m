@@ -8,6 +8,7 @@
 - (void)rebuildUpcomingSongsMenu;
 - (void)rebuildPlaylistMenu;
 - (void)rebuildEQPresetsMenu;
+- (void)updateRatingMenu;
 - (void)setupHotKeys;
 - (void)timerUpdate;
 - (void)updateMenu;
@@ -448,10 +449,7 @@
 - (void)rebuildPlaylistMenu
 {
     NSArray *playlists = [currentRemote playlists];
-    int i, curPlaylist = [currentRemote currentPlaylistIndex];
-    
-    if (playlistMenu && ([playlists count] == [playlistMenu numberOfItems]))
-        return;
+    int i, currentPlaylist = [currentRemote currentPlaylistIndex];
     
     [playlistMenu release];
     playlistMenu = [[NSMenu alloc] initWithTitle:@""];
@@ -460,15 +458,15 @@
         NSString *playlistName = [playlists objectAtIndex:i];
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:playlistName action:@selector(selectPlaylist:) keyEquivalent:@""];
-        [tempItem setRepresentedObject:[NSNumber numberWithInt:i + 1]];
+        [tempItem setTag:i + 1];
         [playlistMenu addItem:tempItem];
         [tempItem release];
     }
     [playlistItem setSubmenu:playlistMenu];
     [playlistItem setEnabled:YES];
     
-    if (!isPlayingRadio) {
-        [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOnState];
+    if (!isPlayingRadio && currentPlaylist) {
+        [[playlistMenu itemAtIndex:currentPlaylist - 1] setState:NSOnState];
     }
 }
 
@@ -478,9 +476,6 @@
     NSArray *eqPresets = [currentRemote eqPresets];
     NSMenuItem *enabledItem;
     int i;
-    
-    if (eqMenu && ([[currentRemote eqPresets] count] == [eqMenu numberOfItems]))
-        return;
     
     [eqMenu release];
     eqMenu = [[NSMenu alloc] initWithTitle:@""];
@@ -497,28 +492,43 @@
     [eqMenu addItem:[NSMenuItem separatorItem]];
     
     for (i = 0; i < [eqPresets count]; i++) {
-        NSString *setName = [eqPresets objectAtIndex:i];
+        NSString *name = [eqPresets objectAtIndex:i];
         NSMenuItem *tempItem;
-	if (setName) {
-        tempItem = [[NSMenuItem alloc] initWithTitle:setName action:@selector(selectEQPreset:) keyEquivalent:@""];
-        [tempItem setTag:i];
-        [eqMenu addItem:tempItem];
-        [tempItem release];
+	if (name) {
+            tempItem = [[NSMenuItem alloc] initWithTitle:name action:@selector(selectEQPreset:) keyEquivalent:@""];
+            [tempItem setTag:i];
+            [eqMenu addItem:tempItem];
+            [tempItem release];
 	}
     }
     [eqItem setSubmenu:eqMenu];
+    [eqItem setEnabled:YES];
     
     [[eqMenu itemAtIndex:[currentRemote currentEQPresetIndex] + 1] setState:NSOnState];
+}
+
+- (void)updateRatingMenu
+{
+    int currentSongRating = ([currentRemote currentSongRating] * 5);
+    if ([currentRemote currentPlaylistIndex] && (currentSongRating != lastSongRating)) {
+        if ([currentRemote classOfPlaylistAtIndex:[currentRemote currentPlaylistIndex]] == ITMTRemotePlayerRadioPlaylist) {
+            return;
+        }
+        [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
+        lastSongRating = currentSongRating;
+        [[ratingMenu itemAtIndex:lastSongRating] setState:NSOnState];
+    }
 }
 
 - (void)timerUpdate
 {
     NSString *currentIdentifier = [currentRemote currentSongUniqueIdentifier];
-    if (![lastSongIdentifier isEqualToString:currentIdentifier]) {
-        [self updateMenu];
-    } else if (!isPlayingRadio && ([currentRemote classOfPlaylistAtIndex:[currentRemote currentPlaylistIndex]] == ITMTRemotePlayerRadioPlaylist)) {
+    if (![lastSongIdentifier isEqualToString:currentIdentifier] ||
+       (!isPlayingRadio && ([currentRemote classOfPlaylistAtIndex:[currentRemote currentPlaylistIndex]] == ITMTRemotePlayerRadioPlaylist))) {
         [self rebuildMenu];
     }
+    
+    [self updateRatingMenu];
     
     //Update Play/Pause menu item
     if (playPauseItem){
@@ -534,50 +544,56 @@
 {
     NSUserDefaults *defaults;
     int playlist = [currentRemote currentPlaylistIndex];
-    BOOL wasPlayingRadio = isPlayingRadio;
+    int temp;
     
     if ( (isAppRunning == ITMTRemotePlayerNotRunning) ) {
         return;
     }
     
     defaults = [NSUserDefaults standardUserDefaults];
-    
     isPlayingRadio = ([currentRemote classOfPlaylistAtIndex:playlist] == ITMTRemotePlayerRadioPlaylist);
     
-    //
-    //
-    //rebuild submenus, make them properly enabled for once...
-    //
-    //
+    if (upcomingSongsItem) {
+        [self rebuildUpcomingSongsMenu];
+    }
     
-    if ( (trackInfoIndex > -1) && (playlist) ) {
+    if (playlistItem) {
+        [self rebuildPlaylistMenu];
+    }
+    
+    if (eqItem) {
+        [self rebuildEQPresetsMenu];
+    }
+    
+    if (ratingItem) {
+        if (isPlayingRadio || !playlist) {
+            [ratingItem setEnabled:NO];
+            if ([ratingItem submenu]) {
+                [ratingItem setSubmenu:nil];
+            }
+        } else {
+            int currentSongRating = ([currentRemote currentSongRating] * 5);
+            [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
+            lastSongRating = currentSongRating;
+            [[ratingMenu itemAtIndex:lastSongRating] setState:NSOnState];
+            [ratingItem setEnabled:YES];
+            [ratingItem setSubmenu:ratingMenu];
+        }
+    }
+    
+    //Set the new unique song identifier
+    lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
+    
+    //If we're in a playlist or radio mode
+    if ( (trackInfoIndex > -1) && (playlist || isPlayingRadio) ) {
         NSString *title, *album, *artist;
-        int temp;
-        
-        lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
         
         if ( (temp = [menu indexOfItemWithTitle:@"No Song"]) && (temp > -1) ) {
             [menu removeItemAtIndex:temp];
             [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:temp];
-        } else {
-            if ([defaults boolForKey:@"showName"]) {
-                [menu removeItemAtIndex:trackInfoIndex + 1];
-            }
         }
         
         title = [currentRemote currentSongTitle];
-        
-        if (!wasPlayingRadio && (temp == -1)) {
-            if (didHaveAlbumName && [defaults boolForKey:@"showAlbum"]) {
-                [menu removeItemAtIndex:trackInfoIndex + 1];
-            }
-            if (didHaveArtistName && [defaults boolForKey:@"showArtist"]) {
-                [menu removeItemAtIndex:trackInfoIndex + 1];
-            }
-            if ([defaults boolForKey:@"showTime"]) {
-                [menu removeItemAtIndex:trackInfoIndex + 1];
-            }
-        }
         
         if (!isPlayingRadio) {
             ([defaults boolForKey:@"showAlbum"]) ? (album = [currentRemote currentSongAlbum]) :
@@ -609,6 +625,7 @@
             [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", title] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
         }
     }
+    [menu update];
 }
 
 
@@ -625,16 +642,8 @@
 
 - (void)selectPlaylist:(id)sender
 {
-    int playlist = [[sender representedObject] intValue];
-    if (!isPlayingRadio) {
-        int curPlaylist = [currentRemote currentPlaylistIndex];
-        if (curPlaylist > 0) {
-            [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
-        }
-    }
+    int playlist = [sender tag];
     [currentRemote switchToPlaylistAtIndex:playlist];
-    [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
-    [self updateMenu];
 }
 
 - (void)selectEQPreset:(id)sender
@@ -654,9 +663,11 @@
 
 - (void)selectSongRating:(id)sender
 {
-    [[ratingMenu itemAtIndex:([currentRemote currentSongRating] / 20)] setState:NSOffState];
-    [currentRemote setCurrentSongRating:(float)[sender tag] / 100.0];
+    int newRating = [sender tag];
+    [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
     [sender setState:NSOnState];
+    [currentRemote setCurrentSongRating:(float)newRating / 100.0];
+    lastSongRating = newRating / 20;
 }
 
 - (void)playPause:(id)sender
