@@ -1,6 +1,7 @@
 #import "StatusWindowController.h"
 #import "StatusWindow.h"
 #import "PreferencesController.h"
+#import "MainController.h"
 
 #import <ITKit/ITWindowEffect.h>
 #import <ITKit/ITCutWindowEffect.h>
@@ -219,6 +220,23 @@ static StatusWindowController *sharedController;
                                    target:[PreferencesController sharedPrefs]
                             defaultAction:@selector(autoLaunchOK)
                           alternateAction:@selector(autoLaunchCancel)];
+
+    [_window appear:self];
+    [_window setLocked:YES];
+}
+
+
+- (void)showRegistrationQueryWindow
+{
+    NSString *message = @"xxjghsdkfj\nHAHA";
+
+    [_window setImage:[NSImage imageNamed:@"Register"]];
+    [_window buildDialogWindowWithMessage:message
+                            defaultButton:@"Register Now"
+                          alternateButton:@"Quit MenuPrefs"
+                                   target:[MainController sharedController]
+                            defaultAction:@selector(registerNowOK)
+                          alternateAction:@selector(registerNowCancel)];
 
     [_window appear:self];
     [_window setLocked:YES];

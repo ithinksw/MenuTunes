@@ -292,6 +292,10 @@
 //      Make the buttons, set the titles, and size them to fit their titles
         okButton     = [[ITButton alloc] initWithFrame:NSMakeRect(0, 0, 300, 24)];
         cancelButton = [[ITButton alloc] initWithFrame:NSMakeRect(0, 0, 300, 24)];
+        [okButton     setTarget:target];
+        [cancelButton setTarget:target];
+        [okButton     setAction:okAction];
+        [cancelButton setAction:alternateAction];
         [okButton     setBezelStyle:ITGrayRoundedBezelStyle];
         [cancelButton setBezelStyle:ITGrayRoundedBezelStyle];
         [okButton     setAlignment:NSRightTextAlignment];
@@ -359,7 +363,6 @@
                                            24.0)];
         [[self contentView] addSubview:okButton];
         [[self contentView] addSubview:cancelButton];
-        NSLog(@"%@", [[self contentView] description]);
 
         [self setIgnoresMouseEvents:NO];
   

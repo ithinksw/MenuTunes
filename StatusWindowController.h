@@ -40,6 +40,7 @@ typedef enum {
 - (void)showShuffleWindow:(BOOL)shuffle;
 - (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode;
 - (void)showSetupQueryWindow;
+- (void)showRegistrationQueryWindow;
 
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
                                title:            (NSString *)title
