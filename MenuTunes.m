@@ -158,6 +158,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
             [menu addItem:[NSMenuItem separatorItem]];
         }
     }
+    
     curTrackIndex = -1; //Force update of everything
     [self timerUpdate]; //Updates dynamic info in the menu
     
@@ -412,7 +413,6 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     {
         result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
     }
-    [script release];
     free(buffer);
     buffer = NULL;
     return result;
@@ -422,15 +422,17 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
 - (void)timerUpdate
 {
     int pid;
+    
     if (GetProcessPID(&iTunesPSN, &pid) == noErr)
     {
         int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
+        
         if (trackPlayingIndex != curTrackIndex)
         {
             [self updateMenu];
             curTrackIndex = trackPlayingIndex;
         }
-        
+       	
         //Update Play/Pause menu item
         if (playPauseMenuItem)
         {
