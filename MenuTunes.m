@@ -44,7 +44,7 @@
     
     menu = [[NSMenu alloc] initWithTitle:@""];
     
-    if ( ( [currentRemote playerRunningStatus] == ITMTRemotePlayerRunning ) ) {
+    if ( ( [currentRemote playerRunningState] == ITMTRemotePlayerRunning ) ) {
         [self remotePlayerLaunched:nil];
     } else {
         [self remotePlayerTerminated:nil];
@@ -607,9 +607,9 @@
 - (void)timerUpdate
 {
     int playlist = [currentRemote currentPlaylistIndex];
-    ITMTRemotePlayerState playerState = [currentRemote playerState];
+    ITMTRemotePlayerPlayingState playerPlayingState = [currentRemote playerPlayingState];
     
-    if ((playlist > 0) || playerState != ITMTRemotePlayerStopped) {
+    if ((playlist > 0) || playerPlayingState != ITMTRemotePlayerStopped) {
         int trackPlayingIndex = [currentRemote currentSongIndex];
         
         if (trackPlayingIndex != lastSongIndex) {
@@ -668,7 +668,7 @@
         }
         //Update Play/Pause menu item
         if (playPauseMenuItem){
-            if (playerState == ITMTRemotePlayerPlaying) {
+            if (playerPlayingState == ITMTRemotePlayerPlaying) {
                 [playPauseMenuItem setTitle:@"Pause"];
             } else {
                 [playPauseMenuItem setTitle:@"Play"];
@@ -799,7 +799,7 @@
 
 - (void)playPause:(id)sender
 {
-    ITMTRemotePlayerState state = [currentRemote playerState];
+    ITMTRemotePlayerPlayingState state = [currentRemote playerPlayingState];
     
     if (state == ITMTRemotePlayerPlaying) {
         [currentRemote pause];
