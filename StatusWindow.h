@@ -21,16 +21,23 @@
 #define SW_MINW   211.0
 #define SW_BORDER 32.0
 
+typedef enum {
+    StatusWindowTextMode,
+    StatusWindowVolumeMode
+} StatusWindowMode;
 
 @interface StatusWindow : ITTransientStatusWindow {
-    NSImage      *image;
-    NSString     *text;
-    NSImageView  *imageView;
-    ITTextField  *textField;
+    NSImage          *image;
+    NSString         *text;
+    NSImageView      *imageView;
+    ITTextField      *textField;
+    NSMatrix         *volMatrix;
+    StatusWindowMode  windowMode;
+    float             volumeLevel;
 }
 
 - (void)setImage:(NSImage *)newImage;
 - (void)setText:(NSString *)newText;
-
+- (void)setVolume:(float)level;
 
 @end

@@ -104,9 +104,11 @@
 
 }
 
-- (void)showVolumeWindowWithLevel:(int)level
+- (void)showVolumeWindowWithLevel:(float)level
 {
-
+    [_window setImage:[NSImage imageNamed:@"Volume"]];
+    [_window setVolume:level];
+    [_window appear:self];
 }
 
 - (void)showRatingWindowWithLevel:(int)level

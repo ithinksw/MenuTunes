@@ -173,13 +173,13 @@ static MainController *sharedController;
          ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
          ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) )*/
     
-    if ([self songChanged]) {
+    if ( [self songChanged] ) {
         [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
 
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
-            [self showCurrentTrackInfo];
+//            [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
         }
     }
 }
@@ -518,28 +518,40 @@ static MainController *sharedController;
 
 - (void)incrementVolume
 {
-    float volume = [currentRemote volume];
-    volume += 0.2;
-    if (volume > 1.0) {
-        volume = 1.0;
-    }
-    [currentRemote setVolume:volume];
+    float volume  = [currentRemote volume];
+    float dispVol = volume;
     
-    //Show volume status window
-    [statusWindowController showVolumeWindowWithLevel:volume];
+    volume  += 0.110;
+    dispVol += 0.100;
+    
+    if (volume > 1.0) {
+        volume  = 1.0;
+        dispVol = 1.0;
+    }
+
+    [currentRemote setVolume:volume];
+
+ // Show volume status window
+    [statusWindowController showVolumeWindowWithLevel:dispVol];
 }
 
 - (void)decrementVolume
 {
-    float volume = [currentRemote volume];
-    volume -= 0.2;
+    float volume  = [currentRemote volume];
+    float dispVol = volume;
+    
+    volume  -= 0.090;
+    dispVol -= 0.100;
+
     if (volume < 0.0) {
-        volume = 0.0;
+        volume  = 0.0;
+        dispVol = 0.0;
     }
+    
     [currentRemote setVolume:volume];
     
     //Show volume status window
-    [statusWindowController showVolumeWindowWithLevel:volume];
+    [statusWindowController showVolumeWindowWithLevel:dispVol];
 }
 
 - (void)incrementRating
