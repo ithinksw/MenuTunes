@@ -306,17 +306,46 @@ static PreferencesController *prefs = nil;
         if (![enumKey isEqualToString:currentHotKey]) {
             if (![combo isEqual:[KeyCombo clearKeyCombo]] &&
                  [combo isEqual:[hotKeysDictionary objectForKey:enumKey]]) {
-                //Ask if we want to clear duplicate key and set this one
                 [window setLevel:NSNormalWindowLevel];
-                NSLog(@"Duplicate Combo! Ask what to do!");
+                if ( NSRunAlertPanel(@"Duplicate Key Combo", @"The specified key combo is already in use...", @"Replace", @"Cancel", nil) ) {
+                    [hotKeysDictionary setObject:[KeyCombo clearKeyCombo] forKey:currentHotKey];
+                    if ([enumKey isEqualToString:@"PlayPause"]) {
+                        [playPauseButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"NextTrack"]) {
+                        [nextTrackButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"PrevTrack"]) {
+                        [previousTrackButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"ToggleVisualizer"]) {
+                        [visualizerButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"TrackInfo"]) {
+                        [trackInfoButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"UpcomingSongs"]) {
+                        [upcomingSongsButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"IncrementVolume"]) {
+                        [volumeIncrementButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"DecrementVolume"]) {
+                        [volumeDecrementButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"IncrementRating"]) {
+                        [ratingIncrementButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"DecrementRating"]) {
+                        [ratingDecrementButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"ToggleShuffle"]) {
+                        [toggleShuffleButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"ToggleLoop"]) {
+                        [toggleLoopButton setTitle:@""];
+                    }
+                    [df setKeyCombo:[KeyCombo clearKeyCombo] forKey:enumKey];
+                } else {
+                    return;
+                }
                 [window setLevel:NSStatusWindowLevel];
-                duplicateCombo = YES;
             }
         }
     }
     
     if (!duplicateCombo) {
         [hotKeysDictionary setObject:combo forKey:currentHotKey];
+        [df setKeyCombo:combo forKey:currentHotKey];
         
         if ([currentHotKey isEqualToString:@"PlayPause"]) {
             [playPauseButton setTitle:string];
@@ -343,11 +372,8 @@ static PreferencesController *prefs = nil;
         } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
             [toggleLoopButton setTitle:string];
         }
-        
-        [df setKeyCombo:combo forKey:currentHotKey];
         //[controller rebuildMenu];
     }
-    
     [self cancelHotKey:sender];
 }
 
