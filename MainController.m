@@ -89,7 +89,7 @@ static MainController *sharedController;
     if ([df boolForKey:@"enableSharing"]) {
         [self setServerStatus:YES];
     } else if ([df boolForKey:@"useSharedPlayer"]) {
-        [self checkForRemoteServer];
+        [self checkForRemoteServerAndConnectImmediately:YES];
     }
     
     //Setup for notification of the remote player launching or quitting
@@ -1132,8 +1132,13 @@ static MainController *sharedController;
 
 - (void)checkForRemoteServer
 {
+    [self checkForRemoteServerAndConnectImmediately:NO];
+}
+
+- (void)checkForRemoteServerAndConnectImmediately:(BOOL)connectImmediately
+{
     ITDebugLog(@"Checking for remote server.");
-    [NSThread detachNewThreadSelector:@selector(runRemoteServerCheck:) toTarget:self withObject:nil];
+    [NSThread detachNewThreadSelector:@selector(runRemoteServerCheck:) toTarget:self withObject:[NSNumber numberWithBool:connectImmediately]];
 }
 
 - (void)runRemoteServerCheck:(id)sender
@@ -1142,7 +1147,11 @@ static MainController *sharedController;
     ITDebugLog(@"Remote server check running.");
     if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
         ITDebugLog(@"Remote server found.");
-        [self performSelectorOnMainThread:@selector(remoteServerFound:) withObject:nil waitUntilDone:NO];
+        if ([sender boolValue]) {
+            [self performSelectorOnMainThread:@selector(connectToServer) withObject:nil waitUntilDone:NO];
+        } else {
+            [self performSelectorOnMainThread:@selector(remoteServerFound:) withObject:nil waitUntilDone:NO];
+        }
     } else {
         ITDebugLog(@"Remote server not found.");
         [self performSelectorOnMainThread:@selector(remoteServerNotFound:) withObject:nil waitUntilDone:NO];
@@ -1159,7 +1168,9 @@ static MainController *sharedController;
 
 - (void)remoteServerNotFound:(id)sender
 {
-    [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
+    if (![[NetworkController sharedController] isConnectedToServer]) {
+        [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
+    }
 }
 
 - (void)networkError:(NSException *)exception
@@ -1179,9 +1190,10 @@ static MainController *sharedController;
 
 - (void)reconnect
 {
-    if ([self connectToServer] == 0) {
+    /*if ([self connectToServer] == 0) {
         [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
-    }
+    }*/
+    [self checkForRemoteServerAndConnectImmediately:YES];
     [[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];

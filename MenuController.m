@@ -47,7 +47,7 @@
     NSEnumerator *itemEnum;
     ITHotKey *hotKey;
     NSArray *hotKeys = [[ITHotKeyCenter sharedCenter] allHotKeys];
-    int currentSongRating;
+    int currentSongRating = 0;
     
     //Get the information
     NS_DURING
@@ -226,7 +226,7 @@
             ITDebugLog(@"Check to see if a Track is playing...");
             //Handle playing radio too
             if (_currentPlaylist) {
-                NSString *title;
+                NSString *title = nil;
                 NS_DURING
                     title = [[[MainController sharedController] currentRemote] currentSongTitle];
                 NS_HANDLER
@@ -244,7 +244,7 @@
                 
                 if (!_playingRadio) {
                     if ([defaults boolForKey:@"showAlbum"]) {
-                        NSString *curAlbum;
+                        NSString *curAlbum = nil;
                         NS_DURING
                             curAlbum = [[[MainController sharedController] currentRemote] currentSongAlbum];
                         NS_HANDLER
@@ -258,7 +258,7 @@
                     }
                     
                     if ([defaults boolForKey:@"showArtist"]) {
-                        NSString *curArtist;
+                        NSString *curArtist = nil;
                         NS_DURING
                             curArtist = [[[MainController sharedController] currentRemote] currentSongArtist];
                         NS_HANDLER
@@ -272,7 +272,7 @@
                     }
                     
                     if ([defaults boolForKey:@"showComposer"]) {
-                        NSString *curComposer;
+                        NSString *curComposer = nil;
                         NS_DURING
                             curComposer = [[[MainController sharedController] currentRemote] currentSongComposer];
                         NS_HANDLER
@@ -286,7 +286,7 @@
                     }
                     
                     if ([defaults boolForKey:@"showTrackNumber"]) {
-                        int track;
+                        int track = 0;
                         NS_DURING
                             track = [[[MainController sharedController] currentRemote] currentSongTrack];
                         NS_HANDLER
@@ -431,7 +431,7 @@
 - (NSMenu *)menuForNoPlayer
 {
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
-    id <NSMenuItem> tempItem;
+    id <NSMenuItem> tempItem = nil;
     ITDebugLog(@"Creating menu for when player isn't running.");
     NS_DURING
         ITDebugLog(@"Add \"Open %@\" menu item.", [[[MainController sharedController] currentRemote] playerSimpleName]);
@@ -518,7 +518,7 @@
 - (NSMenu *)upcomingSongsMenu
 {
     NSMenu *upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
-    int numSongs, numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
+    int numSongs = 0, numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
     
     NS_DURING
         numSongs = [[[MainController sharedController] currentRemote] numberOfSongsInPlaylistAtIndex:_currentPlaylist];
@@ -532,7 +532,7 @@
             int i;
             for (i = _currentTrack + 1; i <= _currentTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
-                    NSString *curSong;
+                    NSString *curSong = nil;
                     NS_DURING
                         curSong = [[[MainController sharedController] currentRemote] songTitleAtIndex:i];
                     NS_HANDLER
@@ -601,7 +601,7 @@
 - (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
-    NSArray *playlists;
+    NSArray *playlists = nil;
     id <NSMenuItem> tempItem;
     ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
     int i, j;
@@ -678,7 +678,7 @@
 - (NSMenu *)eqMenu
 {
     NSMenu *eqMenu = [[NSMenu alloc] initWithTitle:@""];
-    NSArray *eqPresets;
+    NSArray *eqPresets = nil;
     id <NSMenuItem> tempItem;
     int i;
     

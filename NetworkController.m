@@ -154,7 +154,7 @@ static NetworkController *sharedController;
     if (!clientProxy) {
         ITDebugLog(@"Null proxy! Couldn't connect!");
         [self disconnect];
-        return NO;
+        return 0;
     }
     
     if ([clientProxy requiresPassword]) {
@@ -202,8 +202,8 @@ static NetworkController *sharedController;
 {
     NSData *fullPass = [[NSUserDefaults standardUserDefaults] dataForKey:@"connectPassword"];
     unsigned char buffer;
-    NSConnection *testConnection;
-    NSSocketPort *testPort;
+    NSConnection *testConnection = nil;
+    NSSocketPort *testPort = nil;
     NetworkObject *tempProxy;
     BOOL valid;
     ITDebugLog(@"Checking for shared remote at %@.", host);
@@ -309,7 +309,7 @@ static NetworkController *sharedController;
     ITDebugLog(@"Resolved service named %@.", [sender name]);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"useSharedPlayer"] && !connectedToServer) {
-        [[MainController sharedController] checkForRemoteServer];
+        [[MainController sharedController] checkForRemoteServerAndConnectImmediately:NO];
     }
     [sender stop];
 }
