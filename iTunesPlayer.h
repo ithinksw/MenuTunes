@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
 
 @interface iTunesPlayer : ITMTPlayer <ITMTPlayer> {

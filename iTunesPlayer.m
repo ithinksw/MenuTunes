@@ -47,12 +47,21 @@ static iTunesPlayer *_sharediTunesPlayer = nil;
 }
 
 - (ITMTPlaylist *)currentPlaylist {
-    // return dynamically from an AE
-    // (ie - [iTunesPlaylist playlistForIndex:<get index from an AE>]
+    int tIndex;
+    if ( ( tIndex = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] ) ) {
+        return [iTunesPlaylist playlistWithIndex:tIndex];
+    } else {
+        return nil;
+    }
 }
 
 - (ITMTTrack *)currentTrack {
-    // return dynamically from an AE
+    int tDIndex;
+    if ( ( tDindex = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] ) ) {
+        return [iTunesTrack trackWithDatabaseIndex:tDIndex];
+    } else {
+        return nil;
+    }
 }
 
 - (ITMTEqualizer *)currentEqualizer {
