@@ -79,13 +79,9 @@ static MainController *sharedController;
         [self applicationLaunched:nil];
     } else {
         if ([df boolForKey:@"LaunchPlayerWithMT"])
-        {
             [self showPlayer];
-        }
         else
-        {
             [self applicationTerminated:nil];
-        }
     }
     
     [statusItem setImage:[NSImage imageNamed:@"MenuNormal"]];
@@ -95,7 +91,7 @@ static MainController *sharedController;
 - (ITMTRemote *)loadRemote
 {
     NSString *folderPath = [[NSBundle mainBundle] builtInPlugInsPath];
-    
+    ITDebugLog(@"Gathering remotes.");
     if (folderPath) {
         NSArray      *bundlePathList = [NSBundle pathsForResourcesOfType:@"remote" inDirectory:folderPath];
         NSEnumerator *enumerator     = [bundlePathList objectEnumerator];
@@ -109,8 +105,8 @@ static MainController *sharedController;
 
                 if ([remoteClass conformsToProtocol:@protocol(ITMTRemote)] &&
                     [remoteClass isKindOfClass:[NSObject class]]) {
-
                     id remote = [remoteClass remote];
+                    ITDebugLog(@"Adding remote at path %@", bundlePath);
                     [remoteArray addObject:remote];
                 }
             }
@@ -132,7 +128,7 @@ static MainController *sharedController;
 #pragma mark INSTANCE METHODS
 /*************************************************************************/
 
-- (void)startTimerInNewThread
+/*- (void)startTimerInNewThread
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
@@ -142,8 +138,9 @@ static MainController *sharedController;
                              userInfo:nil
                              repeats:YES] retain];
     [runLoop run];
+    ITDebugLog(@"Timer started.");
     [pool release];
-}
+}*/
 
 - (BOOL)songIsPlaying
 {
@@ -167,18 +164,15 @@ static MainController *sharedController;
 
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier
 {
+    ITDebugLog(@"Setting latest song identifier to %@", newIdentifier);
     [_latestSongIdentifier autorelease];
     _latestSongIdentifier = [newIdentifier copy];
 }
 
 - (void)timerUpdate
 {
-    //This huge if statement is being nasty
-    /*if ( ( [self songChanged] ) ||
-         ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
-         ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) )*/
-    
     if ( [self songChanged] ) {
+        ITDebugLog(@"The song changed.");
         [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
@@ -191,6 +185,7 @@ static MainController *sharedController;
 
 - (void)menuClicked
 {
+    ITDebugLog(@"Menu clicked.");
     if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
         [statusItem setMenu:[menuController menu]];
     } else {
@@ -207,7 +202,7 @@ static MainController *sharedController;
 - (void)playPause
 {
     ITMTRemotePlayerPlayingState state = [currentRemote playerPlayingState];
-    
+    ITDebugLog(@"Play/Pause toggled");
     if (state == ITMTRemotePlayerPlaying) {
         [currentRemote pause];
     } else if ((state == ITMTRemotePlayerForwarding) || (state == ITMTRemotePlayerRewinding)) {
@@ -216,85 +211,90 @@ static MainController *sharedController;
     } else {
         [currentRemote play];
     }
-    
     [self timerUpdate];
 }
 
 - (void)nextSong
 {
+    ITDebugLog(@"Going to next song.");
     [currentRemote goToNextSong];
-    
     [self timerUpdate];
 }
 
 - (void)prevSong
 {
+    ITDebugLog(@"Going to previous song.");
     [currentRemote goToPreviousSong];
-    
     [self timerUpdate];
 }
 
 - (void)fastForward
 {
+    ITDebugLog(@"Fast forwarding.");
     [currentRemote forward];
-    
     [self timerUpdate];
 }
 
 - (void)rewind
 {
+    ITDebugLog(@"Rewinding.");
     [currentRemote rewind];
-    
     [self timerUpdate];
 }
 
 - (void)selectPlaylistAtIndex:(int)index
 {
+    ITDebugLog(@"Selecting playlist %i", index);
     [currentRemote switchToPlaylistAtIndex:index];
-    
     [self timerUpdate];
 }
 
 - (void)selectSongAtIndex:(int)index
 {
+    ITDebugLog(@"Selecting song %i", index);
     [currentRemote switchToSongAtIndex:index];
-    
     [self timerUpdate];
 }
 
 - (void)selectSongRating:(int)rating
 {
+    ITDebugLog(@"Selecting song rating %i", rating);
     [currentRemote setCurrentSongRating:(float)rating / 100.0];
-    
     [self timerUpdate];
 }
 
 - (void)selectEQPresetAtIndex:(int)index
 {
+    ITDebugLog(@"Selecting EQ preset %i", index);
     [currentRemote switchToEQAtIndex:index];
-    
     [self timerUpdate];
 }
 
 - (void)showPlayer
 {
+    ITDebugLog(@"Beginning show player.");
     if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
+        ITDebugLog(@"Showing player interface.");
         [currentRemote showPrimaryInterface];
     } else {
+        ITDebugLog(@"Launching player.");
         if (![[NSWorkspace sharedWorkspace] launchApplication:[currentRemote playerFullName]]) {
-            NSLog(@"MenuTunes: Error Launching Player");
+            ITDebugLog(@"Error Launching Player");
         }
     }
+    ITDebugLog(@"Finished show player.");
 }
 
 - (void)showPreferences
 {
+    ITDebugLog(@"Show preferences.");
     [[PreferencesController sharedPrefs] setController:self];
     [[PreferencesController sharedPrefs] showPrefsWindow:self];
 }
 
 - (void)quitMenuTunes
 {
+    ITDebugLog(@"Quitting MenuTunes.");
     [NSApp terminate:self];
 }
 
@@ -303,6 +303,7 @@ static MainController *sharedController;
 
 - (void)closePreferences
 {
+    ITDebugLog(@"Preferences closed.");
     if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
         [self setupHotKeys];
     }
@@ -323,17 +324,19 @@ static MainController *sharedController;
 {
     NSEnumerator *hotKeyEnumerator = [[[ITHotKeyCenter sharedCenter] allHotKeys] objectEnumerator];
     ITHotKey *nextHotKey;
-    
+    ITDebugLog(@"Clearing hot keys.");
     while ( (nextHotKey = [hotKeyEnumerator nextObject]) ) {
         [[ITHotKeyCenter sharedCenter] unregisterHotKey:nextHotKey];
     }
+    ITDebugLog(@"Done clearing hot keys.");
 }
 
 - (void)setupHotKeys
 {
     ITHotKey *hotKey;
-    
+    ITDebugLog(@"Setting up hot keys.");
     if ([df objectForKey:@"PlayPause"] != nil) {
+        ITDebugLog(@"Setting up play pause hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"PlayPause"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PlayPause"]]];
@@ -343,6 +346,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"NextTrack"] != nil) {
+        ITDebugLog(@"Setting up next track hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"NextTrack"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"NextTrack"]]];
@@ -352,6 +356,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"PrevTrack"] != nil) {
+        ITDebugLog(@"Setting up previous track hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"PrevTrack"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PrevTrack"]]];
@@ -361,6 +366,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"ShowPlayer"] != nil) {
+        ITDebugLog(@"Setting up show player hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"ShowPlayer"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ShowPlayer"]]];
@@ -370,6 +376,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"TrackInfo"] != nil) {
+        ITDebugLog(@"Setting up track info hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"TrackInfo"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"TrackInfo"]]];
@@ -379,6 +386,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"UpcomingSongs"] != nil) {
+        ITDebugLog(@"Setting up upcoming songs hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"UpcomingSongs"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"UpcomingSongs"]]];
@@ -388,6 +396,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"ToggleLoop"] != nil) {
+        ITDebugLog(@"Setting up toggle loop hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"ToggleLoop"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleLoop"]]];
@@ -397,6 +406,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"ToggleShuffle"] != nil) {
+        ITDebugLog(@"Setting up toggle shuffle hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"ToggleShuffle"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleShuffle"]]];
@@ -406,6 +416,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"IncrementVolume"] != nil) {
+        ITDebugLog(@"Setting up increment volume hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"IncrementVolume"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"IncrementVolume"]]];
@@ -415,6 +426,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"DecrementVolume"] != nil) {
+        ITDebugLog(@"Setting up decrement volume hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"DecrementVolume"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"DecrementVolume"]]];
@@ -424,6 +436,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"IncrementRating"] != nil) {
+        ITDebugLog(@"Setting up increment rating hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"IncrementRating"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"IncrementRating"]]];
@@ -433,6 +446,7 @@ static MainController *sharedController;
     }
     
     if ([df objectForKey:@"DecrementRating"] != nil) {
+        ITDebugLog(@"Setting up decrement rating hot key.");
         hotKey = [[ITHotKey alloc] init];
         [hotKey setName:@"DecrementRating"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"DecrementRating"]]];
@@ -440,6 +454,7 @@ static MainController *sharedController;
         [hotKey setAction:@selector(decrementRating)];
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
+    ITDebugLog(@"Finished setting up hot keys.");
 }
 
 - (void)showCurrentTrackInfo
@@ -452,7 +467,7 @@ static MainController *sharedController;
     int                     trackNumber = 0;
     int                     trackTotal  = 0;
     int                     rating      = -1;
-    
+    ITDebugLog(@"Showing track info status window.");
     if ( title ) {
 
         if ( [df boolForKey:@"showAlbum"] ) {
@@ -494,7 +509,7 @@ static MainController *sharedController;
 {
     int curPlaylist = [currentRemote currentPlaylistIndex];
     int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:curPlaylist];
-
+    ITDebugLog(@"Showing upcoming songs status window.");
     if (numSongs > 0) {
         NSMutableArray *songList = [NSMutableArray arrayWithCapacity:5];
         int numSongsInAdvance = [df integerForKey:@"SongsInAdvance"];
@@ -518,7 +533,7 @@ static MainController *sharedController;
 {
     float volume  = [currentRemote volume];
     float dispVol = volume;
-    
+    ITDebugLog(@"Incrementing volume.");
     volume  += 0.110;
     dispVol += 0.100;
     
@@ -527,9 +542,10 @@ static MainController *sharedController;
         dispVol = 1.0;
     }
 
+    ITDebugLog(@"Setting volume to %f", volume);
     [currentRemote setVolume:volume];
 
- // Show volume status window
+    // Show volume status window
     [statusWindowController showVolumeWindowWithLevel:dispVol];
 }
 
@@ -537,7 +553,7 @@ static MainController *sharedController;
 {
     float volume  = [currentRemote volume];
     float dispVol = volume;
-    
+    ITDebugLog(@"Decrementing volume.");
     volume  -= 0.090;
     dispVol -= 0.100;
 
@@ -546,6 +562,7 @@ static MainController *sharedController;
         dispVol = 0.0;
     }
     
+    ITDebugLog(@"Setting volume to %f", volume);
     [currentRemote setVolume:volume];
     
     //Show volume status window
@@ -555,10 +572,12 @@ static MainController *sharedController;
 - (void)incrementRating
 {
     float rating = [currentRemote currentSongRating];
+    ITDebugLog(@"Incrementing rating.");
     rating += 0.2;
     if (rating > 1.0) {
         rating = 1.0;
     }
+    ITDebugLog(@"Setting rating to %f", rating);
     [currentRemote setCurrentSongRating:rating];
     
     //Show rating status window
@@ -568,10 +587,12 @@ static MainController *sharedController;
 - (void)decrementRating
 {
     float rating = [currentRemote currentSongRating];
+    ITDebugLog(@"Decrementing rating.");
     rating -= 0.2;
     if (rating < 0.0) {
         rating = 0.0;
     }
+    ITDebugLog(@"Setting rating to %f", rating);
     [currentRemote setCurrentSongRating:rating];
     
     //Show rating status window
@@ -581,6 +602,7 @@ static MainController *sharedController;
 - (void)toggleLoop
 {
     ITMTRemotePlayerRepeatMode repeatMode = [currentRemote repeatMode];
+    ITDebugLog(@"Toggling repeat mode.");
     switch (repeatMode) {
         case ITMTRemotePlayerRepeatOff:
             repeatMode = ITMTRemotePlayerRepeatAll;
@@ -592,6 +614,7 @@ static MainController *sharedController;
             repeatMode = ITMTRemotePlayerRepeatOff;
         break;
     }
+    ITDebugLog(@"Setting repeat mode to %i", repeatMode);
     [currentRemote setRepeatMode:repeatMode];
     
     //Show loop status window
@@ -601,8 +624,10 @@ static MainController *sharedController;
 - (void)toggleShuffle
 {
     bool newShuffleEnabled = ![currentRemote shuffleEnabled];
+    ITDebugLog(@"Toggling shuffle mode.");
     [currentRemote setShuffleEnabled:newShuffleEnabled];
     //Show shuffle status window
+    ITDebugLog(@"Setting shuffle mode to %i", newShuffleEnabled);
     [statusWindowController showRepeatWindowWithMode:newShuffleEnabled];
 }
 
@@ -614,6 +639,7 @@ static MainController *sharedController;
 - (void)applicationLaunched:(NSNotification *)note
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
+        ITDebugLog(@"Remote application launched.");
         [currentRemote begin];
         [self setLatestSongIdentifier:@""];
         [self timerUpdate];
@@ -631,6 +657,7 @@ static MainController *sharedController;
  - (void)applicationTerminated:(NSNotification *)note
  {
      if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
+        ITDebugLog(@"Remote application terminated.");
         [currentRemote halt];
         [refreshTimer invalidate];
         [refreshTimer release];
