@@ -36,6 +36,8 @@ static StatusWindowController *sharedController;
         NSArray  *classList = [ITWindowEffect effectClasses];
         float entrySpeed;
         float exitSpeed;
+		NSArray *screens = [NSScreen screens];
+		int screenIndex;
         
         NSData *colorData;
         
@@ -50,7 +52,13 @@ static StatusWindowController *sharedController;
         exitClass  = [df stringForKey:@"statusWindowVanishEffect"];
         entrySpeed = [df floatForKey:@"statusWindowAppearanceSpeed"];
         exitSpeed  = [df floatForKey:@"statusWindowVanishSpeed"];
-        
+		
+		screenIndex = [df integerForKey:@"statusWindowScreenIndex"];
+		if (screenIndex >= [screens count]) {
+			screenIndex = 0;
+		}
+		[_window setScreen:[screens objectAtIndex:screenIndex]];
+		
         [_window setExitMode:ITTransientStatusWindowExitAfterDelay];
         [_window setExitDelay:(exitDelay ? exitDelay : 4.0)];
         

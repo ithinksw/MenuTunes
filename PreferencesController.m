@@ -42,6 +42,7 @@
 - (void)setupCustomizationTables;
 - (void)setupMenuItems;
 - (void)setupUI;
+- (void)setupScreenPopup;
 - (void)setStatusWindowEntryEffect:(Class)effectClass;
 - (void)setStatusWindowExitEffect:(Class)effectClass;
 - (void)setCustomColor:(NSColor *)color updateWell:(BOOL)update;
@@ -220,7 +221,9 @@ static PreferencesController *prefs = nil;
     [self resetRemotePlayerTextFields];
     [launchAtLoginCheckbox becomeFirstResponder];
     [NSApp activateIgnoringOtherApps:YES];
-    [window center];
+	if (![window isVisible]) {
+		[window center];
+	}
     [window orderFrontRegardless];
     [window makeKeyWindow];
 }
@@ -465,6 +468,7 @@ static PreferencesController *prefs = nil;
     
         // Update screen selection.
 		[[StatusWindow sharedWindow] setScreen:[[NSScreen screens] objectAtIndex:[sender indexOfSelectedItem]]];
+		[df setInteger:[sender indexOfSelectedItem] forKey:@"statusWindowScreenIndex"];
         [(MainController *)controller showCurrentTrackInfo];
 		
     } else if ( [sender tag] == 2030) {
@@ -575,6 +579,7 @@ static PreferencesController *prefs = nil;
     [df setFloat:4.0 forKey:@"statusWindowVanishDelay"];
     [df setInteger:(int)ITWindowPositionBottom forKey:@"statusWindowVerticalPosition"];
     [df setInteger:(int)ITWindowPositionLeft forKey:@"statusWindowHorizontalPosition"];
+	[df setInteger:0 forKey:@"statusWindowScreenIndex"];
     [[StatusWindow sharedWindow] setVerticalPosition:(int)ITWindowPositionBottom];
     [[StatusWindow sharedWindow] setHorizontalPosition:(int)ITWindowPositionLeft];
     [df setBool:YES forKey:@"showSongInfoOnChange"];
@@ -783,7 +788,6 @@ static PreferencesController *prefs = nil;
     NSData         *colorData;
     int selectedBGStyle;
     id anItem;
-    NSArray *screens = [NSScreen screens];
 	
     [df setInteger:MT_CURRENT_VERSION forKey:@"appVersion"];
     
@@ -803,17 +807,8 @@ static PreferencesController *prefs = nil;
         }
     }
     
-	ITDebugLog(@"Setting up screen popup");
-	if ([screens count] > 1) {
-		int i;
-		[screenPopup setEnabled:YES];
-		for (i = 0; i < [screens count]; i++) {
-			NSScreen *screen = [screens objectAtIndex:i];
-			if (![screen isEqual:[NSScreen mainScreen]]) {
-				[screenPopup addItemWithTitle:[NSString stringWithFormat:@"Screen %i", i + 1]];
-			}
-		}
-	}
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupScreenPopup) name:NSApplicationDidChangeScreenParametersNotification object:nil];
+	[self setupScreenPopup];
 	
     ITDebugLog(@"Setting up track info checkboxes.");
     // Check current track info buttons
@@ -936,6 +931,30 @@ static PreferencesController *prefs = nil;
         [selectedPlayerTextField setStringValue:@"No shared player selected."];
         [locationTextField setStringValue:@"-"];
     }
+}
+
+- (void)setupScreenPopup
+{
+	ITDebugLog(@"Setting up screen popup");
+	NSArray *screens = [NSScreen screens];
+	if ([screens count] > 1) {
+		int i, index = [df integerForKey:@"statusWindowScreenIndex"];
+		[screenPopup setEnabled:YES];
+		for (i = 0; i < [screens count]; i++) {
+			NSScreen *screen = [screens objectAtIndex:i];
+			if (![screen isEqual:[NSScreen mainScreen]]) {
+				[screenPopup addItemWithTitle:[NSString stringWithFormat:@"Screen %i", i + 1]];
+			}
+		}
+		[screenPopup selectItemAtIndex:index];
+		[[StatusWindow sharedWindow] setScreen:[[NSScreen screens] objectAtIndex:index]];
+	} else {
+		while ([screenPopup numberOfItems] > 1) {
+			[screenPopup removeItemAtIndex:1];
+		}
+		[screenPopup setEnabled:NO];
+		[[StatusWindow sharedWindow] setScreen:[NSScreen mainScreen]];
+	}
 }
 
 - (void)setStatusWindowEntryEffect:(Class)effectClass
@@ -1235,6 +1254,7 @@ static PreferencesController *prefs = nil;
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [hotKeysArray release];
     [hotKeysDictionary release];
     [effectClasses release];
