@@ -238,7 +238,7 @@
         } else if ([nextObject isEqualToString:@"trackInfo"]) {
             ITDebugLog(@"Check to see if a Track is playing...");
             //Handle playing radio too
-            if (_currentTrack != -1 && _currentPlaylist > 1) {
+            if (_currentTrack != -1 && _currentPlaylist > 0) {
                 NSString *title = nil;
                 NS_DURING
                     title = [mtr currentSongTitle];
