@@ -498,7 +498,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-framework Foundation -framework AppKit";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = iTunesRemote;
+				PRODUCT_NAME = iTunes;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost";
 				WRAPPER_EXTENSION = remote;
@@ -543,7 +543,7 @@
 			explicitFileType = wrapper.cfbundle;
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = iTunesRemote.remote;
+			path = iTunes.remote;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
