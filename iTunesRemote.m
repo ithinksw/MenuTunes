@@ -42,27 +42,41 @@
 
 - (NSArray *)sources
 {
+    //This is probably unneeded
     return nil;
 }
 
 - (int)currentSourceIndex
 {
+    //This is probably unneeded
     return nil;
 }
 
 - (NSArray *)playlistsForCurrentSource
 {
+    //This is probably unneeded
     return nil;
+}
+
+- (NSString *)sourceTypeOfCurrentPlaylist
+{
+    //Not working yet. It returns the 4 character code instead of a name.
+    NSString *result;
+    result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKey:@"pcls"
+                fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
+    return result;
 }
 
 - (int)currentPlaylistIndex
 {
-    NSString *result;
-    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pidx"
+    int result;
+    result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
                 fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd"
                 appPSN:[self iTunesPSN]];
-    NSLog(@"result: %@", result);
-    return nil;
+    return result;
 }
 
 - (NSString *)songTitleAtIndex
@@ -72,12 +86,12 @@
 
 - (int)currentSongIndex
 {
-    NSString *result;
-    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pidx"
+    int result;
+    result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
                 fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
                 appPSN:[self iTunesPSN]];
-    NSLog(@"result: %@", result);
-    return nil;
+    return result;
 }
 
 - (NSString *)currentSongTitle
@@ -152,7 +166,6 @@
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
             appPSN:[self iTunesPSN]];
-    
     return YES;
 }
 
@@ -165,16 +178,19 @@
 
 - (BOOL)goToNextPlaylist
 {
+    //This is probably unneeded
     return NO;
 }
 
 - (BOOL)goToPreviousPlaylist
 {
+    //This is probably unneeded
     return NO;
 }
 
 - (BOOL)switchToSourceAtIndex:(int)index
 {
+    //This is probably unneeded
     return NO;
 }
 

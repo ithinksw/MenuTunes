@@ -43,6 +43,11 @@
     return nil;
 }
 
+- (NSString *)sourceTypeOfCurrentPlaylist
+{
+    return nil;
+}
+
 - (NSArray *)playlistsForCurrentSource
 {
     return nil;

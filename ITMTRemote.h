@@ -79,6 +79,7 @@
 
 - (NSArray *)sources;
 - (int)currentSourceIndex;
+- (NSString *)sourceTypeOfCurrentPlaylist;
 
 - (NSArray *)playlistsForCurrentSource;
 - (int)currentPlaylistIndex;
