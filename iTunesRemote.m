@@ -224,7 +224,7 @@
 - (BOOL)equalizerEnabled
 {
     int thingy = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:type('prop'), want:type('prop'), seld:type('pEQ '), from:() }" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-    NSLog(@"%i", thingy);
+    NSLog(@"Debug equalizerEnabled: %i", thingy);
     return thingy;    
 }
 
