@@ -321,19 +321,7 @@
                         sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
                         
     final = duration - current;
-    if (final > 60) {
-        if (final > 3600) {
-            if (final > 216000) {
-                finalString = [NSString stringWithFormat:@"%i:%i:%i:%i",(final / 216000),((final % 216000) / 3600),(((final / 216000) % 3600) / 60),(((final / 216000) % 3600) % 60)];
-            } else {
-                finalString = [NSString stringWithFormat:@"%i:%i:%i",(final / 3600),((final % 3600) / 60),((final % 3600) % 60)];
-            }
-        } else {
-            finalString = [NSString stringWithFormat:@"%i:%i",(final / 60),(final % 60)];
-        }
-    } else {
-        finalString = [[NSNumber numberWithLong:final] stringValue];
-    }
+    finalString = [self formatTimeInSeconds:final];
     
     ITDebugLog(@"Getting current song remaining time done.");
     
@@ -350,19 +338,7 @@
     final = [[ITAppleEventCenter sharedCenter]
                         sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
                         
-    if (final > 60) {
-        if (final > 3600) {
-            if (final > 216000) {
-                finalString = [NSString stringWithFormat:@"%i:%i:%i:%i",(final / 216000),((final % 216000) / 3600),(((final / 216000) % 3600) / 60),(((final / 216000) % 3600) % 60)];
-            } else {
-                finalString = [NSString stringWithFormat:@"%i:%i:%i",(final / 3600),((final % 3600) / 60),((final % 3600) % 60)];
-            }
-        } else {
-            finalString = [NSString stringWithFormat:@"%i:%i",(final / 60),(final % 60)];
-        }
-    } else {
-        finalString = [[NSNumber numberWithLong:final] stringValue];
-    }
+    finalString = [self formatTimeInSeconds:final];
     ITDebugLog(@"Getting current song elapsed time done.");
     return finalString;
 }
@@ -632,6 +608,30 @@
     }
     ITDebugLog(@"Failed getting iTunes' PSN.");
     return number;
+}
+
+- (NSString*)formatTimeInSeconds:(long)seconds {
+    long final = seconds;
+    NSString *finalString;
+    if (final > 60) {
+        if (final > 3600) {
+            finalString = [NSString stringWithFormat:@"%i:%@:%@",(final / 3600),[self zeroSixty:(int)((final % 3600) / 60)],[self zeroSixty:(int)((final % 3600) % 60)]];
+        } else {
+            finalString = [NSString stringWithFormat:@"%i:%@",(final / 60),[self zeroSixty:(int)(final % 60)]];
+        }
+    } else {
+        finalString = [NSString stringWithFormat:@"0:%@",[self zeroSixty:(int)final]];
+    }
+    return finalString;
+}
+- (NSString*)zeroSixty:(int)seconds {
+    if ( (seconds < 10) && (seconds > 0) ) {
+        return [NSString stringWithFormat:@"0%i",seconds];
+    } else if ( (seconds == 0) ) {
+        return [NSString stringWithFormat:@"00"];
+    } else {
+        return [NSString stringWithFormat:@"%i",seconds];
+    }
 }
 
 @end
