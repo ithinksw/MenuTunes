@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "ITMTRemote.h"
 
 // Internal: To be used with NSMenuItems as their tag, for use with the NSMenuValidation stuff.
 // Also will be used in supplying the controller with the layout to use for the MenuItems, unless
@@ -32,6 +33,7 @@ typedef enum {
     MTMenuRewindItem,
     MTMenuPreviousTrackItem,
     MTMenuNextTrackItem,
+    MTMenuShowPlayerItem,
     MTMenuPreferencesItem,
     MTMenuQuitItem
 } MTMenuItemTag;
@@ -40,6 +42,10 @@ typedef enum {
 {
     NSMutableArray *_menuLayout;
     NSMenu *_currentMenu;
+    
+    ITMTRemote *currentRemote;
+    int _currentPlaylist, _currentTrack;
+    BOOL _playingRadio;
 }
 
 - (NSMenu *)menu;

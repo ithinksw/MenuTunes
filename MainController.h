@@ -51,6 +51,7 @@
 - (void)selectSongAtIndex:(int)index;
 - (void)selectSongRating:(int)rating;
 - (void)selectEQPresetAtIndex:(int)index;
+- (void)showPlayer;
 - (void)showPreferences;
 - (void)quitMenuTunes;
 

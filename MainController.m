@@ -11,6 +11,9 @@
 - (void)timerUpdate;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
 - (void)showCurrentTrackInfo;
+
+- (void)applicationLaunched:(NSNotification *)note;
+- (void)applicationTerminated:(NSNotification *)note;
 @end
 
 static MainController *sharedController;
@@ -58,7 +61,7 @@ static MainController *sharedController;
             selector:@selector(applicationLaunched:)
             name:NSWorkspaceDidLaunchApplicationNotification
             object:nil];
-
+    
     if ( ! [df objectForKey:@"menu"] ) {  // If this is nil, defaults have never been registered.
         [[PreferencesController sharedPrefs] registerDefaults];
     }
@@ -67,6 +70,12 @@ static MainController *sharedController;
     statusItem = [[ITStatusItem alloc]
             initWithStatusBar:[NSStatusBar systemStatusBar]
             withLength:NSSquareStatusItemLength];
+    
+    if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
+        [self applicationLaunched:nil];
+    } else {
+        [self applicationTerminated:nil];
+    }
     
     [statusItem setImage:[NSImage imageNamed:@"menu"]];
     [statusItem setAlternateImage:[NSImage imageNamed:@"selected_image"]];
@@ -153,7 +162,8 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    if ( ( [self songChanged] ) ||
+    //We're quite worthless now, aren't we? Just used to showing the status windows.
+    /*if ( ( [self songChanged] ) ||
          ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
          ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) ) {
         [self setLatestSongIdentifier:[currentRemote currentSongUniqueIdentifier]];
@@ -162,7 +172,7 @@ static MainController *sharedController;
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
             [self showCurrentTrackInfo];
         }
-    }
+    }*/
 }
 
 - (void)menuClicked
@@ -234,6 +244,17 @@ static MainController *sharedController;
     [currentRemote switchToEQAtIndex:index];
 }
 
+- (void)showPlayer
+{
+    if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
+        [currentRemote showPrimaryInterface];
+    } else {
+        if (![[NSWorkspace sharedWorkspace] launchApplication:[currentRemote playerFullName]]) {
+            NSLog(@"Error Launching Player");
+        }
+    }
+}
+
 - (void)showPreferences
 {
     [[PreferencesController sharedPrefs] setController:self];
@@ -247,17 +268,6 @@ static MainController *sharedController;
 
 //
 //
-
-- (void)showPlayer:(id)sender
-{
-    if ( ( playerRunningState == ITMTRemotePlayerRunning) ) {
-        [currentRemote showPrimaryInterface];
-    } else {
-        if (![[NSWorkspace sharedWorkspace] launchApplication:[currentRemote playerFullName]]) {
-            NSLog(@"Error Launching Player");
-        }
-    }
-}
 
 - (void)closePreferences
 {
@@ -297,19 +307,19 @@ static MainController *sharedController;
     if ([df objectForKey:@"PlayPause"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"PlayPause"
                 combo:[df keyComboForKey:@"PlayPause"]
-                target:self action:@selector(playPause:)];
+                target:self action:@selector(playPause)];
     }
     
     if ([df objectForKey:@"NextTrack"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"NextTrack"
                 combo:[df keyComboForKey:@"NextTrack"]
-                target:self action:@selector(nextSong:)];
+                target:self action:@selector(nextSong)];
     }
     
     if ([df objectForKey:@"PrevTrack"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
                 combo:[df keyComboForKey:@"PrevTrack"]
-                target:self action:@selector(prevSong:)];
+                target:self action:@selector(prevSong)];
     }
     
     if ([df objectForKey:@"TrackInfo"] != nil) {
@@ -324,41 +334,41 @@ static MainController *sharedController;
                target:self action:@selector(showUpcomingSongs)];
     }
     
-    if ([df objectForKey:@"ToggleLoop"] != nil) {
+/*    if ([df objectForKey:@"ToggleLoop"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
                combo:[df keyComboForKey:@"ToggleLoop"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:NULL];
     }
     
     if ([df objectForKey:@"ToggleShuffle"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
                combo:[df keyComboForKey:@"ToggleShuffle"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:NULL];
     }
     
     if ([df objectForKey:@"IncrementVolume"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
                combo:[df keyComboForKey:@"IncrementVolume"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:NULL];
     }
     
     if ([df objectForKey:@"DecrementVolume"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
                combo:[df keyComboForKey:@"DecrementVolume"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:NULL];
     }
     
     if ([df objectForKey:@"IncrementRating"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
                combo:[df keyComboForKey:@"IncrementRating"]
-               target:self action:NULL/*Set this to something*/];
+               target:self action:NULL];
     }
     
     if ([df objectForKey:@"DecrementRating"] != nil) {
         [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
                combo:[df keyComboForKey:@"DecrementRating"]
-               target:self action:NULL/*Set this to something*/];
-    }
+               target:self action:NULL];
+    }*/
 }
 
 - (void)showCurrentTrackInfo
@@ -454,13 +464,6 @@ static MainController *sharedController;
  - (void)applicationTerminated:(NSNotification *)note
  {
      if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
-/*
-         NSMenu *notRunningMenu = [[NSMenu alloc] initWithTitle:@""];
-         [notRunningMenu addItemWithTitle:[NSString stringWithFormat:@"Open %@", [currentRemote playerSimpleName]] action:@selector(showPlayer:) keyEquivalent:@""];
-         [notRunningMenu addItem:[NSMenuItem separatorItem]];
-         [notRunningMenu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""];
-         [notRunningMenu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""];
-*/
          [refreshTimer invalidate];
          [refreshTimer release];
          refreshTimer = nil;
