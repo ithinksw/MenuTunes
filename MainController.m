@@ -352,7 +352,7 @@ static MainController *sharedController;
             while ( (nextScript = [scriptsEnum nextObject]) ) {
                 NSDictionary *error;
                 NSAppleScript *currentScript = [[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] stringByAppendingPathComponent:nextScript]] error:&error];
-                NSLog(@"Running script: %@", nextScript);
+                ITDebugLog(@"Running script: %@", nextScript);
                 if (!currentScript || ![currentScript executeAndReturnError:nil]) {
                     ITDebugLog(@"Error running script %@.", nextScript);
                 }

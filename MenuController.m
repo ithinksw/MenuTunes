@@ -607,35 +607,42 @@
         ITDebugLog(@"Adding index to the index array.");
         [indices addObject:[curPlaylist objectAtIndex:2]];
     }
-    [indices addObject:[[playlists objectAtIndex:1] objectAtIndex:2]];
-    if ( (source == ITMTRemoteRadioSource) || ([playlists count] - 2 > 0) ) {
-        [playlistsMenu addItem:[NSMenuItem separatorItem]];
-    }
-    
-    if (source == ITMTRemoteRadioSource) {
-        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:@selector(performPlaylistMenuAction:) keyEquivalent:@""] setState:NSOnState];
-    }
-    
-    for (i = 2; i < [playlists count]; i++) {
-        NSArray *curPlaylist = [playlists objectAtIndex:i];
-        NSString *name = [curPlaylist objectAtIndex:0];
-        NSMenu *submenu = [[NSMenu alloc] init];
-        ITDebugLog(@"Adding source: %@", name);
-        
-        if ( ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
-            ITDebugLog(@"Invalid iPod source.");
-            [playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""];
-        } else {
-            for (j = 3; j < [curPlaylist count]; j++) {
-                ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
-                tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-                [tempItem setTag:(i * 1000) + j - 1];
-                [tempItem setTarget:self];
+    if ([playlists count] > 1) {
+        if ([[[playlists objectAtIndex:1] objectAtIndex:1] intValue] == ITMTRemoteRadioSource) {
+            [indices addObject:[[playlists objectAtIndex:1] objectAtIndex:2]];
+            if (source == ITMTRemoteRadioSource) {
+                [playlistsMenu addItem:[NSMenuItem separatorItem]];
+                [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:@selector(performPlaylistMenuAction:) keyEquivalent:@""] setState:NSOnState];
             }
-            [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
+        } else {
+            [playlistsMenu addItem:[NSMenuItem separatorItem]];
         }
-        ITDebugLog(@"Adding index to the index array.");
-        [indices addObject:[curPlaylist objectAtIndex:2]];
+    }
+    
+    if ([playlists count] > 1) {
+        for (i = 1; i < [playlists count]; i++) {
+            NSArray *curPlaylist = [playlists objectAtIndex:i];
+            if ([[curPlaylist objectAtIndex:1] intValue] != ITMTRemoteRadioSource) {
+                NSString *name = [curPlaylist objectAtIndex:0];
+                NSMenu *submenu = [[NSMenu alloc] init];
+                ITDebugLog(@"Adding source: %@", name);
+                
+                if ( ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
+                    ITDebugLog(@"Invalid iPod source.");
+                    [playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""];
+                } else {
+                    for (j = 3; j < [curPlaylist count]; j++) {
+                        ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
+                        tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+                        [tempItem setTag:(i * 1000) + j - 1];
+                        [tempItem setTarget:self];
+                    }
+                    [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
+                }
+                ITDebugLog(@"Adding index to the index array.");
+                [indices addObject:[curPlaylist objectAtIndex:2]];
+            }
+        }
     }
     ITDebugLog(@"Checking the current source.");
     if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ) {

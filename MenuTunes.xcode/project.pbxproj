@@ -1513,7 +1513,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build /Volumes/Data/Desktop/ITFoundation/build /Users/kent/Programming/iThink/MenuTunes";
+				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build /Volumes/Data/Desktop/ITFoundation/build";
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

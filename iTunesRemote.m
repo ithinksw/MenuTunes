@@ -741,7 +741,7 @@
         {
             if ([(NSString *)name isEqualToString:@"iTunes"])
             {
-                ITDebugLog(@"iTunes' highLongOfPSN: %lu.", number.highLongOfPSN);
+                ITDebugLog(@"iTunes' highLPongOfPSN: %lu.", number.highLongOfPSN);
                 ITDebugLog(@"iTunes' lowLongOfPSN: %lu.", number.lowLongOfPSN);
                 ITDebugLog(@"Done getting iTunes' PSN.");
                 return number;
