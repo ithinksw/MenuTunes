@@ -8,6 +8,7 @@
 
 #import "MenuController.h"
 #import "MainController.h"
+#import <ITFoundation/ITDebug.h>
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
@@ -410,39 +411,39 @@
     switch ( [sender tag] )
     {
         case MTMenuPlayPauseItem:
-            NSLog(@"MenuController: Play/Pause");
+            ITDebugLog(@"MenuController: Play/Pause");
             [[MainController sharedController] playPause];
             break;
         case MTMenuFastForwardItem:
-            NSLog(@"MenuController: Fast Forward");
+            ITDebugLog(@"MenuController: Fast Forward");
             [[MainController sharedController] fastForward];
             break;
         case MTMenuRewindItem:
-            NSLog(@"MenuController: Rewind");
+            ITDebugLog(@"MenuController: Rewind");
             [[MainController sharedController] rewind];
             break;
         case MTMenuPreviousTrackItem:
-            NSLog(@"MenuController: Previous Track");
+            ITDebugLog(@"MenuController: Previous Track");
             [[MainController sharedController] prevSong];
             break;
         case MTMenuNextTrackItem:
-            NSLog(@"MenuController: Next Track");
+            ITDebugLog(@"MenuController: Next Track");
             [[MainController sharedController] nextSong];
             break;
         case MTMenuShowPlayerItem:
-            NSLog(@"MainController: Show Main Interface");
+            ITDebugLog(@"MainController: Show Main Interface");
             [[MainController sharedController] showPlayer];
             break;
         case MTMenuPreferencesItem:
-            NSLog(@"MenuController: Preferences...");
+            ITDebugLog(@"MenuController: Preferences...");
             [[MainController sharedController] showPreferences];
             break;
         case MTMenuQuitItem:
-            NSLog(@"MenuController: Quit");
+            ITDebugLog(@"MenuController: Quit");
             [[MainController sharedController] quitMenuTunes];
             break;
         default:
-            NSLog(@"MenuController: Unimplemented Menu Item OR Child-bearing Menu Item");
+            ITDebugLog(@"MenuController: Unimplemented Menu Item OR Child-bearing Menu Item");
             break;
     }
 }
@@ -538,7 +539,7 @@
             [[NSString stringWithString:@"Space"] getCharacters:&buffer];
             charcode = buffer;
             /*MenuRef menuRef = _NSGetCarbonMenu([item menu]);
-            NSLog(@"%@", menuRef);
+            ITDebugLog(@"%@", menuRef);
             SetMenuItemCommandKey(menuRef, 0, NO, 49);
             SetMenuItemModifiers(menuRef, 0, kMenuNoCommandModifier);
             SetMenuItemKeyGlyph(menuRef, 0, kMenuBlankGlyph);

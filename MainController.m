@@ -211,46 +211,64 @@ static MainController *sharedController;
     } else {
         [currentRemote play];
     }
+    
+    [self timerUpdate];
 }
 
 - (void)nextSong
 {
     [currentRemote goToNextSong];
+    
+    [self timerUpdate];
 }
 
 - (void)prevSong
 {
     [currentRemote goToPreviousSong];
+    
+    [self timerUpdate];
 }
 
 - (void)fastForward
 {
     [currentRemote forward];
+    
+    [self timerUpdate];
 }
 
 - (void)rewind
 {
     [currentRemote rewind];
+    
+    [self timerUpdate];
 }
 
 - (void)selectPlaylistAtIndex:(int)index
 {
     [currentRemote switchToPlaylistAtIndex:index];
+    
+    [self timerUpdate];
 }
 
 - (void)selectSongAtIndex:(int)index
 {
     [currentRemote switchToSongAtIndex:index];
+    
+    [self timerUpdate];
 }
 
 - (void)selectSongRating:(int)rating
 {
     [currentRemote setCurrentSongRating:(float)rating / 100.0];
+    
+    [self timerUpdate];
 }
 
 - (void)selectEQPresetAtIndex:(int)index
 {
     [currentRemote switchToEQAtIndex:index];
+    
+    [self timerUpdate];
 }
 
 - (void)showPlayer
