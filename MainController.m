@@ -166,14 +166,8 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    //This huge if statement is being nasty
-    /*if ( ( [self songChanged] ) ||
-         ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
-         ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) )*/
-    
     if ([self songChanged]) {
         [self setLatestSongIdentifier:[currentRemote currentSongUniqueIdentifier]];
-        latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
         
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {

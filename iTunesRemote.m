@@ -7,6 +7,404 @@
     return [[[iTunesRemote alloc] init] autorelease];
 }
 
+//What should this do?
+- (NSString *)informationString:(ITMTRemoteInformationString)string
+{
+    return @"";
+}
+
+- (NSImage *)icon
+{
+    return nil;
+}
+
+- (BOOL)begin
+{
+    savedPSN = [self iTunesPSN];
+    return YES;
+}
+
+- (BOOL)halt
+{
+    return YES;
+}
+
+- (BOOL)supportsControlAction:(ITMTRemoteControlAction)action
+{
+    switch (action)
+    {
+        case ITMTRemoteStop:
+        case ITMTRemotePause:
+        case ITMTRemotePlay:
+        case ITMTRemoteRewind:
+        case ITMTRemoteFastForward:
+        case ITMTRemotePreviousTrack:
+        case ITMTRemoteNextTrack:
+            return YES;
+        break;
+        default:
+            return NO;
+        break;
+    }
+}
+
+- (BOOL)sendControlAction:(ITMTRemoteControlAction)action
+{
+    NSString *eventID;
+    switch (action)
+    {
+        case ITMTRemoteStop:
+            eventID = @"Stop";
+            return NO;
+        break;
+        case ITMTRemotePause:
+            eventID = @"Paus";
+        break;
+        case ITMTRemotePlay:
+            eventID = @"Play";
+        break;
+        case ITMTRemoteRewind:
+            eventID = @"Rwnd";
+        break;
+        case ITMTRemoteFastForward:
+            eventID = @"Fast";
+        break;
+        case ITMTRemotePreviousTrack:
+            eventID = @"Prev";
+        break;
+        case ITMTRemoteNextTrack:
+            eventID = @"Next";
+        break;
+        default:
+            return NO;
+        break;
+    }
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:eventID appPSN:savedPSN];
+    return YES;
+}
+
+- (ITMTRemoteControlState)controlState
+{
+    long result = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    
+    switch (result)
+    {
+        default:
+        case 'kPSS':
+            return ITMTRemotePlayerStopped;
+        case 'kPSP':
+            return ITMTRemotePlayerPlaying;
+        case 'kPSp':
+            return ITMTRemotePlayerPaused;
+        case 'kPSR':
+            return ITMTRemotePlayerRewinding;
+        case 'kPSF':
+            return ITMTRemotePlayerForwarding;
+    }
+    return ITMTRemotePlayerStopped;
+}
+
+- (ITMTRemotePlaylistMode)playlistMode
+{
+    return ITMTRemoteLibraryAndPlaylists;
+}
+
+- (NSArray *)playlistNames
+{
+    long i;
+    const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cPly'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    NSMutableArray *playlists = [[NSMutableArray alloc] initWithCapacity:numPlaylists];
+    
+    for (i = 1; i <= numPlaylists; i++) {
+        const long j = i;
+        NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } }",(unsigned long)j];
+        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        [playlists addObject:theObj];
+    }
+    return [playlists autorelease];
+}
+
+- (BOOL)switchToPlaylist:(int)playlistIndex
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:() }",index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+    return YES;
+}
+
+- (BOOL)switchToTrackAtIndex:(int)index
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+    return YES;
+}
+
+//What do this?
+- (int)indexForTrack:(int)identifier inPlaylist:(int)playlistIndex
+{
+    return 0;
+}
+
+//What do this?
+- (int)identifierForTrackAtIndex:(int)index inPlaylist:(int)playlistIndex
+{
+    return 0;
+}
+
+- (BOOL)supportsTrackProperty:(ITMTRemoteTrackProperty)property
+{
+    switch (property)
+    {
+        case ITMTRemoteTrackName:
+        case ITMTRemoteTrackArtist:
+        case ITMTRemoteTrackAlbum:
+        case ITMTRemoteTrackComposer:
+        case ITMTRemoteTrackNumber:
+        case ITMTRemoteTrackTotal:
+        case ITMTRemoteTrackComment:
+        case ITMTRemoteTrackGenre:
+        case ITMTRemoteTrackYear:
+        case ITMTRemoteTrackRating:
+        case ITMTRemoteTrackArt:
+            return YES;
+        break;
+        default:
+            return NO;
+        break;
+    }
+}
+
+//Somebody else do this
+- (id)trackProperty:(ITMTRemoteTrackProperty)property atIndex:(int)index
+{
+    switch (property)
+    {
+        case ITMTRemoteTrackName:
+        break;
+        case ITMTRemoteTrackArtist:
+        break;
+        case ITMTRemoteTrackAlbum:
+        break;
+        case ITMTRemoteTrackComposer:
+        break;
+        case ITMTRemoteTrackNumber:
+        break;
+        case ITMTRemoteTrackTotal:
+        break;
+        case ITMTRemoteTrackComment:
+        break;
+        case ITMTRemoteTrackGenre:
+        break;
+        case ITMTRemoteTrackYear:
+        break;
+        case ITMTRemoteTrackRating:
+        break;
+        case ITMTRemoteTrackArt:
+        break;
+    }
+    return nil;
+}
+
+//Somebody else do this
+- (BOOL)setTrackProperty:(ITMTRemoteTrackProperty)property toValue:(id)value atIndex:(int)index
+{
+    switch (property)
+    {
+        case ITMTRemoteTrackName:
+        break;
+        case ITMTRemoteTrackArtist:
+        break;
+        case ITMTRemoteTrackAlbum:
+        break;
+        case ITMTRemoteTrackComposer:
+        break;
+        case ITMTRemoteTrackNumber:
+        break;
+        case ITMTRemoteTrackTotal:
+        break;
+        case ITMTRemoteTrackComment:
+        break;
+        case ITMTRemoteTrackGenre:
+        break;
+        case ITMTRemoteTrackYear:
+        break;
+        case ITMTRemoteTrackRating:
+        break;
+        case ITMTRemoteTrackArt:
+        break;
+    }
+    return NO;
+}
+
+- (BOOL)supportsShuffle
+{
+    return YES;
+}
+
+//This doesn't work
+- (BOOL)setShuffle:(BOOL)toggle
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigned long)toggle] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    return YES;
+}
+
+- (BOOL)shuffle
+{
+    int result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pShf" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    return result;
+}
+
+- (BOOL)supportsRepeatMode:(ITMTRemoteRepeatMode)repeatMode
+{
+    switch (repeatMode)
+    {
+        case ITMTRemoteRepeatNone:
+        case ITMTRemoteRepeatAll:
+        case ITMTRemoteRepeatOne:
+            return YES;
+        break;
+        default:
+            return NO;
+        break;
+    }
+}
+
+- (BOOL)setRepeatMode:(ITMTRemoteRepeatMode)repeatMode
+{
+    char *m00f = NULL;
+    switch (repeatMode)
+    {
+        case ITMTRemoteRepeatNone:
+            m00f = "kRp0";
+        break;
+        case ITMTRemoteRepeatOne:
+            m00f = "kRp1";
+        break;
+        case ITMTRemoteRepeatAll:
+            m00f = "kRpA";
+        break;
+    }
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s') ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    return YES;
+}
+
+- (BOOL)repeatMode
+{
+    FourCharCode m00f = 0;
+    int result = 0;
+    m00f = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pRpt" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    
+    switch (m00f)
+    {
+        case 'kRp0':
+            result = ITMTRemoteRepeatNone;
+        break;
+        case 'kRp1':
+            result = ITMTRemoteRepeatOne;
+        break;
+        case 'kRpA':
+            result = ITMTRemoteRepeatAll;
+        break;
+    }
+    return result;
+}
+
+- (BOOL)supportsVolume
+{
+    return YES;
+}
+
+- (BOOL)setVolume:(float)volume
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)(volume*100)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    return NO;
+}
+
+- (float)volume
+{
+    return (float)[[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pVol" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] / 100;
+}
+
+- (BOOL)supportsCustomEqualizer
+{
+    return YES;
+}
+
+- (BOOL)showEqualizerWindow
+{
+    //Do this Alex, please :D
+    return YES;
+}
+
+- (BOOL)supportsEqualizerPresets
+{
+    return YES;
+}
+
+- (NSArray *)equalizerPresetNames
+{
+    int i;
+    long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
+    
+    for (i = 1; i <= numPresets; i++) {
+        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        if (theObj) {
+            [presets addObject:theObj];
+        }
+    }
+    return [presets autorelease];
+}
+
+- (BOOL)switchToEqualizerPreset:(int)index
+{
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }",(index+1)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    return YES;
+}
+
+- (BOOL)supportsExternalWindow
+{
+    return YES;
+}
+
+- (NSString *)externalWindowName
+{
+    return @"iTunes";
+}
+
+- (BOOL)showExternalWindow
+{
+    //Do this Alex
+    return YES;
+}
+
+- (ProcessSerialNumber)iTunesPSN
+{
+    ProcessSerialNumber number;
+    number.highLongOfPSN = kNoProcess;
+    number.lowLongOfPSN = 0;
+    
+    while ( (GetNextProcess(&number) == noErr) ) 
+    {
+        CFStringRef name;
+        if ( (CopyProcessName(&number, &name) == noErr) )
+        {
+            if ([(NSString *)name isEqualToString:@"iTunes"])
+            {
+                return number;
+            }
+            [(NSString *)name release];
+        }
+    }
+    return number;
+}
+
+//Below is old
+/*
++ (id)remote
+{
+    return [[[iTunesRemote alloc] init] autorelease];
+}
+
 - (NSString *)remoteTitle
 {
     return @"iTunes Remote";
@@ -237,7 +635,7 @@
     return YES;
 } */
 
-- (NSArray *)eqPresets
+/*- (NSArray *)eqPresets
 {
     int i;
     long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
@@ -403,7 +801,7 @@
                 @"NSApplicationProcessSerialNumberLow"] intValue];
         }
     }
-    return number;*/
+    return number;*//*
     ProcessSerialNumber number;
     number.highLongOfPSN = kNoProcess;
     number.lowLongOfPSN = 0;
@@ -421,6 +819,6 @@
         }
     }
     return number;
-}
+}*/
 
 @end
