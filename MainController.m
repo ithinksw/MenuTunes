@@ -14,7 +14,6 @@
 - (ITMTRemote *)loadRemote;
 - (void)timerUpdate;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
-- (void)showCurrentTrackInfo;
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
 @end

@@ -69,17 +69,20 @@ static NetworkController *sharedController;
 {
     if (!serverOn && status) {
         NSString *name = [[NSUserDefaults standardUserDefaults] stringForKey:@"sharedPlayerName"];
+        NSPort *serverPort;
         unsigned char buffer;
         NSData *fullPass;
         //Turn on
         NS_DURING
-            serverPort = [[NSSocketPort alloc] initWithTCPPort:SERVER_PORT];
+            serverPort = [[[NSSocketPort alloc] initWithTCPPort:SERVER_PORT] autorelease];
             serverConnection = [[NSConnection alloc] initWithReceivePort:serverPort
                                                      sendPort:serverPort];
-            [serverConnection setRootObject:[[NetworkObject alloc] init]];
+            clientProxy = [[NetworkObject alloc] init];
+            [serverConnection setRootObject:[clientProxy autorelease]];
             [serverConnection registerName:@"ITMTPlayerHost"];
         NS_HANDLER
             [[serverConnection rootObject] release];
+            [serverConnection setRootObject:nil];
             [serverConnection release];
             [serverPort release];
             ITDebugLog(@"Error starting server!");
@@ -108,8 +111,8 @@ static NetworkController *sharedController;
         //Turn off
         [service stop];
         [serverConnection registerName:nil];
-        [[serverConnection rootObject] release];
         [serverConnection release];
+        [clientProxy release];
         ITDebugLog(@"Stopped server.");
         serverOn = NO;
     }

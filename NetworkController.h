@@ -24,7 +24,7 @@
     NSMutableArray *remoteServices;
     
     NSConnection *serverConnection, *clientConnection;
-    NSSocketPort *serverPort, *clientPort;
+    NSSocketPort *clientPort;
     NSString *remoteHost;
     BOOL serverOn, clientConnected, connectedToServer;
     NSData *serverPass, *clientPass;

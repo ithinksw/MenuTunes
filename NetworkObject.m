@@ -35,10 +35,11 @@
 
 - (ITMTRemote *)remote
 {
-    if (_authenticated)
+    if (_authenticated) {
         return [[MainController sharedController] currentRemote];
-    else
+    } else {
         return nil;
+    }
 }
 
 - (NSString *)serverName

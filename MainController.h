@@ -82,4 +82,6 @@
 - (void)setupHotKeys;
 - (void)closePreferences;
 
+- (void)showCurrentTrackInfo;
+
 @end
