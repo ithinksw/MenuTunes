@@ -195,10 +195,6 @@
     [menu autorelease];
     menu = [[NSMenu alloc] initWithTitle:@""];
     
-    /*while ([menu numberOfItems] > 0) {
-        [menu removeItemAtIndex:0];
-    }*/
-    
     playPauseItem = nil;
     lastSongIdentifier = @"0-0";
     
