@@ -358,6 +358,7 @@ static MainController *sharedController;
         }
         
         timerUpdating = YES;
+        [_statusItem setEnabled:NO];
         
         NS_DURING
             latestPlaylistClass = [[self currentRemote] currentPlaylistClass];
@@ -391,6 +392,7 @@ static MainController *sharedController;
         NS_ENDHANDLER
         
         timerUpdating = NO;
+        [_statusItem setEnabled:YES];
     }
 }
 
