@@ -294,14 +294,14 @@ static MainController *sharedController;
         timerUpdating = YES;
         
         NS_DURING
-        latestPlaylistClass = [[self currentRemote] currentPlaylistClass];
-        [menuController rebuildSubmenus];
-
-        if ( [df boolForKey:@"showSongInfoOnChange"] ) {
-            [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
-        }
-        
-        [self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
+            latestPlaylistClass = [[self currentRemote] currentPlaylistClass];
+            [menuController rebuildSubmenus];
+    
+            if ( [df boolForKey:@"showSongInfoOnChange"] ) {
+                [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
+            }
+            
+            [self setLatestSongIdentifier:[[self currentRemote] playerStateUniqueIdentifier]];
         NS_HANDLER
             [self networkError:localException];
         NS_ENDHANDLER

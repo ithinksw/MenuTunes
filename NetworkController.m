@@ -13,8 +13,6 @@
 
 #import "NetworkController.h"
 #import "MainController.h"
-#import "netinet/in.h"
-#import "arpa/inet.h"
 #import <ITFoundation/ITDebug.h>
 #import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
@@ -159,9 +157,19 @@ static NetworkController *sharedController;
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing
 {
+    ITDebugLog(@"Found service named %@.", [aNetService name]);
+    [remoteServices addObject:aNetService];
     [aNetService setDelegate:self];
     [aNetService resolve];
-    ITDebugLog(@"Found service named %@.", [aNetService name]);
+    if (!moreComing) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
+    }
+}
+
+- (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didRemoveService:(NSNetService*)aNetService moreComing:(BOOL)moreComing
+{
+    ITDebugLog(@"Removed service named %@.", [aNetService name]);
+    [remoteServices removeObject:aNetService];
     if (!moreComing) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
     }
@@ -169,11 +177,8 @@ static NetworkController *sharedController;
 
 - (void)netServiceDidResolveAddress:(NSNetService *)sender
 {
-    [remoteServices addObject:[NSDictionary dictionaryWithObjectsAndKeys:[sender name], @"name",
-                                                                         [NSString stringWithCString:inet_ntoa((*(struct sockaddr_in*)[[[sender addresses] objectAtIndex:0] bytes]).sin_addr)], @"ip",
-                                                                         nil, nil]];
     ITDebugLog(@"Resolved service named %@.", [sender name]);
-    NSLog(@"found!");
+    NSLog(@"Resolved service named %@.", [sender name]);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
 }
 
