@@ -17,6 +17,7 @@
 #import <ITKit/ITKit.h>
 #import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
+#import "MTBlingController.h"
 
 @class StatusWindowController, MenuController;
 
@@ -36,12 +37,19 @@
     StatusWindowController *statusWindowController; //Shows status windows
     MenuController *menuController;
     NSUserDefaults *df;
+    
+    NSDate *blingDate;
+    MTBlingController *bling;
 }
 + (MainController *)sharedController;
 
 - (void)menuClicked;
 
 //Methods called from MenuController by menu items
+- (void)blingTime;
+- (void)blingNow;
+- (BOOL)blingBling;
+
 - (void)playPause;
 - (void)nextSong;
 - (void)prevSong;

@@ -50,6 +50,9 @@ static MainController *sharedController;
         SetITDebugMode(YES);
     }
     
+    bling = [[MTBlingController alloc] init];
+    blingDate = nil;
+    
     currentRemote = [self loadRemote];
     [currentRemote begin];
     
@@ -141,6 +144,32 @@ static MainController *sharedController;
     ITDebugLog(@"Timer started.");
     [pool release];
 }*/
+
+- (void)blingTime
+{
+    NSDate *now = [NSDate date];
+    if ( (! blingDate) || ([now timeIntervalSinceDate:blingDate] >= 86400) ) {
+        [bling showPanelIfNeeded];
+        [blingDate autorelease];
+        blingDate = [now retain];
+    }
+}
+
+- (void)blingNow
+{
+    [bling showPanel];
+    [blingDate autorelease];
+    blingDate = [[NSDate date] retain];
+}
+
+- (BOOL)blingBling
+{
+    if ( ! ([bling checkDone] == 2475) ) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
 
 - (BOOL)songIsPlaying
 {
@@ -688,6 +717,7 @@ static MainController *sharedController;
 - (void)dealloc
 {
     [self applicationTerminated:nil];
+    [bling release];
     [statusItem release];
     [statusWindowController release];
     [menuController release];
