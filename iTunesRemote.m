@@ -230,6 +230,7 @@
     int temp1;
     ITDebugLog(@"Getting current album track count.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pTrC" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = 0; }
     ITDebugLog(@"Getting current album track count done.");
     return temp1;
 }
@@ -239,6 +240,7 @@
     int temp1;
     ITDebugLog(@"Getting current song track.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pTrN" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = 0; }
     ITDebugLog(@"Getting current song track done.");
     return temp1;
 }
@@ -274,7 +276,11 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current song artist.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( [self currentPlaylistClass] != ITMTRemotePlayerRadioPlaylist ) {
+        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    } else {
+        temp1 = @"";
+    }
     ITDebugLog(@"Getting current song artist done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
@@ -283,7 +289,11 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current song album.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( [self currentPlaylistClass] != ITMTRemotePlayerRadioPlaylist ) {
+        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    } else {
+        temp1 = @"";
+    }
     ITDebugLog(@"Getting current song album done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
@@ -302,6 +312,7 @@
     NSString *temp1;
     ITDebugLog(@"Getting current song length.");
     temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = nil; }
     ITDebugLog(@"Getting current song length done.");
     return temp1;
 }
@@ -323,6 +334,8 @@
     final = duration - current;
     finalString = [self formatTimeInSeconds:final];
     
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { finalString = nil; }
+    
     ITDebugLog(@"Getting current song remaining time done.");
     
     return finalString;
@@ -339,6 +352,7 @@
                         sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
                         
     finalString = [self formatTimeInSeconds:final];
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { finalString = nil; }
     ITDebugLog(@"Getting current song elapsed time done.");
     return finalString;
 }
@@ -349,6 +363,7 @@
     ITDebugLog(@"Getting current song rating.");
     temp1 = ((float)[[ITAppleEventCenter sharedCenter]
                 sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] / 100.0);
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = -1.0; }
     ITDebugLog(@"Getting current song rating done.");
     return temp1;
 }
@@ -356,6 +371,7 @@
 - (BOOL)setCurrentSongRating:(float)rating
 {
     ITDebugLog(@"Setting current song rating to %f.", rating);
+    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { return NO; }
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self currentSongIndex]] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     ITDebugLog(@"Setting current song rating to %f done.", rating);
     return YES;
