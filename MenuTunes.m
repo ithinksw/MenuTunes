@@ -701,8 +701,8 @@ Things to do:
         [currentRemote pause];
         [playPauseMenuItem setTitle:@"Play"];
     } else if ((state == forwarding) || (state == rewinding)) {
-        [currentRemote play];
         [currentRemote pause];
+        [currentRemote play];
     } else {
         [currentRemote play];
         [playPauseMenuItem setTitle:@"Pause"];
@@ -722,11 +722,13 @@ Things to do:
 - (void)fastForward:(id)sender
 {
     [currentRemote fastForward];
+    [playPauseMenuItem setTitle:@"Play"];
 }
 
 - (void)rewind:(id)sender
 {
     [currentRemote rewind];
+    [playPauseMenuItem setTitle:@"Play"];
 }
 
 //
