@@ -527,14 +527,13 @@
     return upcomingSongsMenu;
 }
 
-- (NSMenu *)playlistsMenu
+/*- (NSMenu *)playlistsMenu
 {
     NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
     NSArray *playlists;
     NSMenuItem *tempItem;
     ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
     int i;
-    
     NS_DURING
         playlists = [[[MainController sharedController] currentRemote] playlists];
     NS_HANDLER
@@ -564,6 +563,64 @@
     } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
+    ITDebugLog(@"Done Building \"Playlists\" menu");
+    return playlistsMenu;
+}*/
+
+
+- (NSMenu *)playlistsMenu
+{
+    NSMenu *playlistsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSArray *playlists;
+    NSMenuItem *tempItem;
+    ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
+    int i, j;
+    NS_DURING
+        playlists = [[[MainController sharedController] currentRemote] playlists];
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
+    ITDebugLog(@"Building \"Playlists\" menu.");
+    {
+        NSArray *curPlaylist = [playlists objectAtIndex:0];
+        NSString *name = [curPlaylist objectAtIndex:0];
+        ITDebugLog(@"Adding main source: %@", name);
+        for (i = 1; i < [curPlaylist count]; i++) {
+            ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:i]);
+            tempItem = [playlistsMenu addItemWithTitle:[curPlaylist objectAtIndex:i] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+            [tempItem setTag:i + 1];
+            [tempItem setTarget:self];
+        }
+    }
+    
+    [playlistsMenu addItem:[NSMenuItem separatorItem]];
+    
+    for (i = 1; i < [playlists count]; i++) {
+        NSArray *curPlaylist = [playlists objectAtIndex:i];
+        NSString *name = [curPlaylist objectAtIndex:0];
+        NSMenu *submenu = [[NSMenu alloc] init];
+        ITDebugLog(@"Adding source: %@", name);
+        for (j = 1; j < [curPlaylist count]; j++) {
+            ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
+            tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+            [tempItem setTag:(j * 1000) + (j + 1)];
+            [tempItem setTarget:self];
+        }
+        [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
+    }
+    /*if (source == ITMTRemoteRadioSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteGenericDeviceSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"genericDevice", @"Generic Device") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteiPodSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"iPod", @"iPod") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteCDSource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"cd", @"CD") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteSharedLibrarySource) {
+        [[playlistsMenu addItemWithTitle:NSLocalizedString(@"sharedLibrary", @"Shared Library") action:NULL keyEquivalent:@""] setState:NSOnState];
+    } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
+        [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
+    }*/
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
 }
