@@ -237,15 +237,7 @@
 
 - (IBAction)okHotKey:(id)sender
 {
-    NSString *string;
-    if (([combo modifiers] <= 0) && ([combo keyCode] >= 0)) {
-        [window setLevel:NSNormalWindowLevel];
-        NSRunAlertPanel(@"Bad Key Combo", @"Please enter a valid key combo. A valid combo must have a modifier key in it. (Command, option, shift, control).", @"OK", nil, nil, nil);
-        [window setLevel:NSStatusWindowLevel];
-        return;
-    }
-    
-    string = [combo userDisplayRep];
+    NSString *string = [combo userDisplayRep];
     
     if (string == nil) {
         string = @"None";

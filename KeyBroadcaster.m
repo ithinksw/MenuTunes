@@ -16,7 +16,9 @@
     modifiers = [event modifierFlags];
     
     modifiers = [KeyBroadcaster cocoaToCarbonModifiers:modifiers];
-    [self _broadcastKeyCode:keyCode andModifiers:modifiers];
+    if (modifiers > 0) {
+        [self _broadcastKeyCode:keyCode andModifiers:modifiers];
+    }
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent *)event
