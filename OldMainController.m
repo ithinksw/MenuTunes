@@ -144,16 +144,11 @@
         [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:60];
         [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:80];
         [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, fullStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:100];
-        
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
-        [self rebuildMenu];
         [self setupHotKeys];
+        [self rebuildMenu];
         isAppRunning = ITMTRemotePlayerRunning;
-        return;
     }
-    
-    isAppRunning = ITMTRemotePlayerRunning;
-    NSLog(@"applicationTerminated");
 }
 
 - (void)applicationTerminated:(NSNotification *)note
@@ -347,13 +342,13 @@
     lastSongIdentifier = [[currentRemote currentSongUniqueIdentifier] retain];
     
     //If we're in a playlist or radio mode
-    if ( (trackInfoIndex > -1) ) {
+    if ( ![lastSongIdentifier isEqualToString:@"0-0"] && (trackInfoIndex > -1) ) {
         NSString *title;
         
         if ( (i = [menu indexOfItemWithTitle:@"No Song"]) ) {
             if ( (i > -1) ) {
                 [menu removeItemAtIndex:i];
-                [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:i-1];
+                [menu insertItemWithTitle:@"Now Playing" action:NULL keyEquivalent:@"" atIndex:i];
             }
         }
         
@@ -487,9 +482,9 @@
             [tempItem autorelease];
 	}
     }
+    
     [eqItem setSubmenu:eqMenu];
     [eqItem setEnabled:YES];
-    
     [[eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
 }
 

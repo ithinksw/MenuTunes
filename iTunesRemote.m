@@ -25,10 +25,6 @@
 - (BOOL)begin
 {
     iTunesPSN = [self iTunesPSN];
-    
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(applicationTerminated:) name:NSWorkspaceDidTerminateApplicationNotification object:nil];
-    
     return YES;
 }
 

@@ -459,6 +459,8 @@ static PreferencesController *prefs = nil;
         toggleShuffleCombo = [combo copy];
         [toggleShuffleButton setTitle:string];
     }
+    [df setKeyCombo:combo forKey:setHotKey];
+    [controller rebuildMenu];
     [self cancelHotKey:sender];
 }
 
