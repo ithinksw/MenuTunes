@@ -6,7 +6,6 @@ Things to do:
 */
 
 #import "MenuTunes.h"
-// #import "MenuTunesView.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
 #import "StatusWindowController.h"
@@ -68,8 +67,6 @@ Things to do:
     // Below line of code is for creating builds for Beta Testers
     // [statusItem setToolTip:@"This Nontransferable Beta (Built on __DATE__) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com)."];
     [statusItem retain];
-//  view = [[MenuTunesView alloc] initWithFrame:[[statusItem view] frame]];
-//  [statusItem setView:view];
 }
 
 
