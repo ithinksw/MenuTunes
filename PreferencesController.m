@@ -85,6 +85,10 @@ static PreferencesController *prefs = nil;
         [self setupMenuItems];  // Setup the arrays of menu items
         [self setupUI]; // Sets up additional UI
         [window setDelegate:self];
+        [menuTableView reloadData];
+        
+        //Change the launch player checkbox to the proper name
+        [launchPlayerAtLaunchCheckbox setTitle:[NSString stringWithFormat:@"Launch %@ when MenuTunes launches", [[controller currentRemote] playerSimpleName]]]; //This isn't localized...
     }
     
     [window setLevel:NSStatusWindowLevel];
@@ -764,6 +768,7 @@ static PreferencesController *prefs = nil;
         dragData = [pb stringForType:@"MenuTableViewPboardType"];
         dragRow = [dragData intValue];
         temp = [myItems objectAtIndex:dragRow];
+        
         if (tableView == menuTableView) {
             [myItems insertObject:temp atIndex:row];
             if (row > dragRow) {
@@ -774,8 +779,8 @@ static PreferencesController *prefs = nil;
         } else {
             if (![temp isEqualToString:@"separator"]) {
                 [availableItems addObject:temp];
-                [myItems removeObjectAtIndex:dragRow];
             }
+            [myItems removeObjectAtIndex:dragRow];
         }
     } else if ([[pb types] containsObject:@"AllTableViewPboardType"]) {
         dragData = [pb stringForType:@"AllTableViewPboardType"];

@@ -21,6 +21,7 @@
                 keyComboField = NSTextField; 
                 keyComboPanel = NSPanel; 
                 launchAtLoginCheckbox = NSButton; 
+                launchPlayerAtLaunchCheckbox = NSButton; 
                 menuTableView = NSTableView; 
                 nameCheckbox = NSButton; 
                 nextTrackButton = NSButton; 

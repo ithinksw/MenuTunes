@@ -24,6 +24,7 @@
     IBOutlet NSTextField *keyComboField;
     IBOutlet NSPanel *keyComboPanel;
     IBOutlet NSButton *launchAtLoginCheckbox;
+    IBOutlet NSButton *launchPlayerAtLaunchCheckbox;
     IBOutlet NSTableView *menuTableView;
     IBOutlet NSButton *nameCheckbox;
     IBOutlet NSButton *nextTrackButton;
