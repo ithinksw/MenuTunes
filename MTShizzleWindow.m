@@ -76,11 +76,11 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     unichar returnChar = '\r';
     
     [self setReleasedWhenClosed:NO];
-    [self setTitle:[NSString stringWithFormat:@"Register %@", @"MenuTunes"]];
+    [self setTitle:NSLocalizedString(@"registerMenuTunes", @"Register MenuTunes")];
     contentView = [self contentView];
     
     regMessage = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 282, 345, 51)];
-    [regMessage setStringValue:[NSString stringWithFormat:@"%@ is shareware.  If you find it to be a valuable tool, please click the button below to buy your copy.  Your support is greatly appreciated.", @"MenuTunes"]];
+    [regMessage setStringValue:NSLocalizedString(@"sharewareMessage", @"MenuTunes is shareware.  If you find it to be a valuable tool, please click the button below to buy your copy.  Your support is greatly appreciated.")];
     [regMessage setBordered:NO];
     [regMessage setBezeled:NO];
     [regMessage setEditable:NO];
@@ -104,7 +104,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [[box contentView] addSubview:registerButton];
     
     regBenefits = [[NSTextField alloc] initWithFrame:NSMakeRect(152, 16, 175, 42)];
-    [regBenefits setStringValue:[NSString stringWithUTF8String:"• Register instantly and easily.\n• Fast, secure transaction.\n• Major credit cards accepted."]];
+    [regBenefits setStringValue:NSLocalizedString(@"regPoints", @"Registration Points")];
     [regBenefits setBordered:NO];
     [regBenefits setBezeled:NO];
     [regBenefits setEditable:NO];
@@ -114,7 +114,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [[box contentView] addSubview:regBenefits];
     
     enterInfo = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 148, 345, 17)];
-    [enterInfo setStringValue:@"Please enter your registration information below."];
+    [enterInfo setStringValue:NSLocalizedString(@"regInfo", @"Please enter your registration information below.")];
     [enterInfo setBordered:NO];
     [enterInfo setBezeled:NO];
     [enterInfo setEditable:NO];
@@ -124,7 +124,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [contentView addSubview:enterInfo];
     
     owner = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 126, 345, 14)];
-    [owner setStringValue:@"License Owner:"];
+    [owner setStringValue:NSLocalizedString(@"licenseOwner", @"License Owner:")];
     [owner setBordered:NO];
     [owner setBezeled:NO];
     [owner setEditable:NO];
@@ -134,7 +134,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [contentView addSubview:owner];
     
     key = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 82, 345, 14)];
-    [key setStringValue:@"License Key:"];
+    [key setStringValue:NSLocalizedString(@"licenseKey", @"License Key:")];
     [key setBordered:NO];
     [key setBezeled:NO];
     [key setEditable:NO];
@@ -154,7 +154,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [contentView addSubview:keyEntry];
     
     regLater = [[NSButton alloc] initWithFrame:NSMakeRect(138, 16, 116, 25)];
-    [regLater setTitle:@"Register Later"];
+    [regLater setTitle:NSLocalizedString(@"registerLater", @"Register Later")];
     [regLater setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
     [regLater setTarget:_sender];
     [regLater setAction:@selector(registerLater:)];
@@ -162,7 +162,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     [contentView addSubview:regLater];
     
     verifyKey = [[NSButton alloc] initWithFrame:NSMakeRect(255, 16, 116, 25)];
-    [verifyKey setTitle:@"Verify Key"];
+    [verifyKey setTitle:NSLocalizedString(@"verifyKey", @"Verify Key")];
     [verifyKey setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
     [verifyKey setTarget:_sender];
     [verifyKey setAction:@selector(verifyKey:)];

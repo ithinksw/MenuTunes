@@ -438,7 +438,7 @@ static MainController *sharedController;
 					} else if (title) {
 						_toolTip = title;
 					} else {
-						_toolTip = @"No Song Playing";
+						_toolTip = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
 					}
 					[statusItem setToolTip:_toolTip];
 				} else {
@@ -464,13 +464,13 @@ static MainController *sharedController;
 	if (([[self currentRemote] playerStateUniqueIdentifier] == nil) && playerRunningState == ITMTRemotePlayerRunning) {
 		if (refreshTimer) {
 			if ([statusItem isEnabled]) {
-				[statusItem setToolTip:@"iTunes not responding."];
+				[statusItem setToolTip:NSLocalizedString(@"iTunesNotResponding", @"iTunes is not responding.")];
 				[[ITHotKeyCenter sharedCenter] setEnabled:NO];
 			}
 			[statusItem setEnabled:NO];
 		} else {
 			NSMenu *menu = [[NSMenu alloc] init];
-			[menu addItemWithTitle:@"iTunes Not Responding" action:nil keyEquivalent:@""];
+			[menu addItemWithTitle:NSLocalizedString(@"iTunesNotResponding", @"iTunes is not responding.") action:nil keyEquivalent:@""];
 			[statusItem setMenu:[menu autorelease]];
 		}
 		return;
@@ -554,7 +554,7 @@ static MainController *sharedController;
 				} else if (title) {
 					_toolTip = title;
 				} else {
-					_toolTip = @"No Song Playing";
+					_toolTip = NSLocalizedString(@"noSongPlaying", @"No song is playing.");;
 				}
 				[statusItem setToolTip:_toolTip];
 			} else {

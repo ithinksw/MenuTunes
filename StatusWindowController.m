@@ -155,7 +155,7 @@ static StatusWindowController *sharedController;
         text = [text stringByAppendingString:[@"\n" stringByAppendingString:track]];
     }
     if (playCount > -1) {
-        text = [text stringByAppendingString:[NSString stringWithFormat:@"\nPlay Count: %i", playCount]];
+        text = [text stringByAppendingString:[NSString stringWithFormat:@"\n%@: %i", NSLocalizedString(@"playCount", @"Play Count"), playCount]];
     }
     if ( rating > -1 ) {
 
@@ -218,7 +218,7 @@ static StatusWindowController *sharedController;
 {
     [_window setImage:[NSImage imageNamed:@"Shuffle"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
-    [_window buildTextWindowWithString:( shuffle ? @"Shuffle On" : @"Shuffle Off")];
+    [_window buildTextWindowWithString:( shuffle ? NSLocalizedString(@"shuffleOn", @"Shuffle On") : NSLocalizedString(@"shuffleOff", @"Shuffle Off"))];
     [_window appear:self];
 }
 
@@ -227,11 +227,11 @@ static StatusWindowController *sharedController;
     NSString *string = nil;
     
     if ( mode == StatusWindowRepeatNone ) {
-        string = @"Repeat Off";
+        string = NSLocalizedString(@"repeatOff", @"Repeat Off");
     } else if ( mode == StatusWindowRepeatGroup ) {
-        string = @"Repeat Playlist";
+        string = NSLocalizedString(@"repeatPlaylist", @"Repeat Playlist");
     } else if ( mode == StatusWindowRepeatTrack ) {
-        string = @"Repeat One Track";
+        string = NSLocalizedString(@"repeatOneTrack", @"Repeat One Track");;
     }
     
     [_window setImage:[NSImage imageNamed:@"Repeat"]];
