@@ -145,6 +145,7 @@ static PreferencesController *prefs = nil;
 
 - (IBAction)changeHotKey:(id)sender
 {
+    [controller clearHotKeys];
     switch ([sender tag])
     {
         case 4010:
@@ -334,41 +335,42 @@ static PreferencesController *prefs = nil;
     
     if ([currentHotKey isEqualToString:@"PlayPause"]) {
         [playPauseButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"PlayPause" combo:combo target:[MainController sharedController] action:@selector(playPause)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"PlayPause" combo:combo target:[MainController sharedController] action:@selector(playPause)];
     } else if ([currentHotKey isEqualToString:@"NextTrack"]) {
         [nextTrackButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"NextTrack" combo:combo target:[MainController sharedController] action:@selector(nextSong)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"NextTrack" combo:combo target:[MainController sharedController] action:@selector(nextSong)];
     } else if ([currentHotKey isEqualToString:@"PrevTrack"]) {
         [previousTrackButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack" combo:combo target:[MainController sharedController] action:@selector(prevSong)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack" combo:combo target:[MainController sharedController] action:@selector(prevSong)];
     } else if ([currentHotKey isEqualToString:@"ShowPlayer"]) {
         [showPlayerButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"ShowPlayer" combo:combo target:[MainController sharedController] action:@selector(showPlayer)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"ShowPlayer" combo:combo target:[MainController sharedController] action:@selector(showPlayer)];
     } else if ([currentHotKey isEqualToString:@"TrackInfo"]) {
         [trackInfoButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo" combo:combo target:[MainController sharedController] action:@selector(showCurrentTrackInfo)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo" combo:combo target:[MainController sharedController] action:@selector(showCurrentTrackInfo)];
     } else if ([currentHotKey isEqualToString:@"UpcomingSongs"]) {
         [upcomingSongsButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs" combo:combo target:[MainController sharedController] action:@selector(showUpcomingSongs)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs" combo:combo target:[MainController sharedController] action:@selector(showUpcomingSongs)];
     } else if ([currentHotKey isEqualToString:@"IncrementVolume"]) {
         [volumeIncrementButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume" combo:combo target:[MainController sharedController] action:@selector(incrementVolume)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume" combo:combo target:[MainController sharedController] action:@selector(incrementVolume)];
     } else if ([currentHotKey isEqualToString:@"DecrementVolume"]) {
         [volumeDecrementButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume" combo:combo target:[MainController sharedController] action:@selector(decrementVolume)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume" combo:combo target:[MainController sharedController] action:@selector(decrementVolume)];
     } else if ([currentHotKey isEqualToString:@"IncrementRating"]) {
         [ratingIncrementButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating" combo:combo target:[MainController sharedController] action:@selector(incrementRating)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating" combo:combo target:[MainController sharedController] action:@selector(incrementRating)];
     } else if ([currentHotKey isEqualToString:@"DecrementRating"]) {
         [ratingDecrementButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating" combo:combo target:[MainController sharedController] action:@selector(decrementRating)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating" combo:combo target:[MainController sharedController] action:@selector(decrementRating)];
     } else if ([currentHotKey isEqualToString:@"ToggleShuffle"]) {
         [toggleShuffleButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle" combo:combo target:[MainController sharedController] action:@selector(toggleShuffle)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle" combo:combo target:[MainController sharedController] action:@selector(toggleShuffle)];
     } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
         [toggleLoopButton setTitle:string];
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop" combo:combo target:[MainController sharedController] action:@selector(toggleLoop)];
+        //[[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop" combo:combo target:[MainController sharedController] action:@selector(toggleLoop)];
     }
+    [controller setupHotKeys];
     [self cancelHotKey:sender];
 }
 

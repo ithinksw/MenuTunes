@@ -59,6 +59,7 @@
 
 - (ITMTRemote *)currentRemote;
 - (void)clearHotKeys;
+- (void)setupHotKeys;
 - (void)closePreferences;
 
 @end

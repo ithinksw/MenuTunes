@@ -7,7 +7,6 @@
 
 @interface MainController(Private)
 - (ITMTRemote *)loadRemote;
-- (void)setupHotKeys;
 - (void)timerUpdate;
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
 - (void)showCurrentTrackInfo;
