@@ -34,7 +34,7 @@
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
-    NSString *_latestSongIdentifier;
+    NSString *_latestSongIdentifier, *_toolTip;
 
     StatusWindowController *statusWindowController; //Shows status windows
     MenuController *menuController;

@@ -10,7 +10,9 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
-    [[MainController sharedController] menuClicked];
+	if ([self isEnabled]) {
+		[[MainController sharedController] menuClicked];
+	}
     [super mouseDown:event];
 }
 

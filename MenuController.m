@@ -403,7 +403,6 @@
             NS_DURING
                 [[_eqMenu itemAtIndex:0] setState:[mtr equalizerEnabled] ? NSOnState : NSOffState];
                 [[_eqMenu itemAtIndex:([mtr currentEQPresetIndex] + 1)] setState:NSOnState];
-                [[_eqMenu itemAtIndex:([mtr currentEQPresetIndex] - 1)] setState:NSOnState];
             NS_HANDLER
                 [[MainController sharedController] networkError:localException];
             NS_ENDHANDLER
@@ -748,11 +747,6 @@
     tempItem = [eqMenu addItemWithTitle:@"Enabled" action:@selector(performEqualizerMenuAction:) keyEquivalent:@""];
     [tempItem setTag:-1];
     [tempItem setTarget:self];
-    NS_DURING
-        [tempItem setState:[[[MainController sharedController] currentRemote] equalizerEnabled] ? NSOnState : NSOffState];
-    NS_HANDLER
-        [[MainController sharedController] networkError:localException];
-    NS_ENDHANDLER
     [eqMenu addItem:[NSMenuItem separatorItem]];
     
     for (i = 0; i < [eqPresets count]; i++) {

@@ -357,7 +357,17 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
+	if ([[self currentRemote] playerStateUniqueIdentifier] == nil) {
+		[statusItem setEnabled:NO];
+		[statusItem setToolTip:@"iTunes not responding."];
+		return;
+	} else if (![statusItem isEnabled]) {
+		[statusItem setEnabled:YES];
+		[statusItem setToolTip:_toolTip];
+		return;
+	}
+	
+	if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"The song changed.");
         if ([df boolForKey:@"runScripts"]) {
             NSArray *scripts = [[NSFileManager defaultManager] directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
@@ -392,16 +402,15 @@ static MainController *sharedController;
             if ( [df boolForKey:@"showToolTip"] ) {
                 NSString *artist = [[self currentRemote] currentSongArtist];
                 NSString *title = [[self currentRemote] currentSongTitle];
-                NSString *toolTip;
                 ITDebugLog(@"Creating status item tooltip.");
                 if (artist) {
-                    toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
+                    _toolTip = [NSString stringWithFormat:@"%@ - %@", artist, title];
                 } else if (title) {
-                    toolTip = title;
+                    _toolTip = title;
                 } else {
-                    toolTip = @"No Song Playing";
+                    _toolTip = @"No Song Playing";
                 }
-                [statusItem setToolTip:toolTip];
+                [statusItem setToolTip:_toolTip];
             } else {
                 [statusItem setToolTip:nil];
             }

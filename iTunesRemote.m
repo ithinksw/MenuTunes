@@ -376,10 +376,17 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current unique identifier.");
-    SInt32 cls = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+	NSAppleEventDescriptor *descriptor = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN);
+	if (descriptor == nil) {
+		return nil;
+	}
+    SInt32 cls = [descriptor int32Value];
     if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (cls == 'cURT') ) {
+		NSString *bad = [NSString stringWithUTF8String:"浳湧"];
         temp1 = [ITSendAEWithKey('pStT', 'core', 'getd', &savedPSN) stringValue];
-		NSLog(@"%@", temp1);
+        if ([temp1 isEqualToString:bad]) {
+            temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
+        }
     } else {
         temp1 = [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pDID'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value]];
     }
@@ -406,7 +413,6 @@
         NSString *bad = [NSString stringWithUTF8String:"浳湧"];
         temp1 = [ITSendAEWithKey('pStT', 'core', 'getd', &savedPSN) stringValue];
         if ([temp1 isEqualToString:bad]) {
-			NSLog(@"arrrr");
             temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
         }
         temp1 = [temp1 stringByAppendingString:@" (Stream)"];
@@ -502,7 +508,7 @@
     NSString *finalString;
     
     ITDebugLog(@"Getting current song elapsed time.");
-    final = (long)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPos'), from:'null'() }", 'core', 'getd', &savedPSN) int32Value];
+	final = (long)[ITSendAEWithKey('pPos', 'core', 'getd', &savedPSN) int32Value];
     finalString = [self formatTimeInSeconds:final];
     ITDebugLog(@"Getting current song elapsed time done.");
     return finalString;
