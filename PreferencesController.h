@@ -18,22 +18,28 @@
 
 @interface PreferencesController : NSObject
 {
-    IBOutlet NSButton    *albumCheckbox;
+    IBOutlet NSButton *albumCheckbox;
     IBOutlet NSTableView *allTableView;
-    IBOutlet NSButton    *artistCheckbox;
+    IBOutlet NSButton *artistCheckbox;
     IBOutlet NSTextField *keyComboField;
-    IBOutlet NSPanel     *keyComboPanel;
-    IBOutlet NSButton    *launchAtLoginCheckbox;
+    IBOutlet NSPanel *keyComboPanel;
+    IBOutlet NSButton *launchAtLoginCheckbox;
     IBOutlet NSTableView *menuTableView;
-    IBOutlet NSButton    *nameCheckbox;
-    IBOutlet NSButton    *nextTrackButton;
-    IBOutlet NSButton    *playPauseButton;
-    IBOutlet NSButton    *previousTrackButton;
+    IBOutlet NSButton *nameCheckbox;
+    IBOutlet NSButton *nextTrackButton;
+    IBOutlet NSButton *playPauseButton;
+    IBOutlet NSButton *previousTrackButton;
+    IBOutlet NSButton *ratingDecrementButton;
+    IBOutlet NSButton *ratingIncrementButton;
     IBOutlet NSTextField *songsInAdvance;
-    IBOutlet NSButton    *trackInfoButton;
-    IBOutlet NSButton    *trackTimeCheckbox;
-    IBOutlet NSButton    *upcomingSongsButton;
-    IBOutlet NSWindow    *window;
+    IBOutlet NSButton *toggleLoopButton;
+    IBOutlet NSButton *toggleShuffleButton;
+    IBOutlet NSButton *trackInfoButton;
+    IBOutlet NSButton *trackTimeCheckbox;
+    IBOutlet NSButton *upcomingSongsButton;
+    IBOutlet NSButton *volumeDecrementButton;
+    IBOutlet NSButton *volumeIncrementButton;
+    IBOutlet NSWindow *window;
     
     MainController *controller;
     NSUserDefaults *df;
@@ -47,6 +53,12 @@
     KeyCombo *prevTrackCombo;
     KeyCombo *trackInfoCombo;
     KeyCombo *upcomingSongsCombo;
+    KeyCombo *volumeIncrementCombo;
+    KeyCombo *volumeDecrementCombo;
+    KeyCombo *ratingIncrementCombo;
+    KeyCombo *ratingDecrementCombo;
+    KeyCombo *toggleLoopCombo;
+    KeyCombo *toggleShuffleCombo;
     
     NSString *setHotKey;
 }
@@ -62,11 +74,7 @@
 - (IBAction)cancelHotKey:(id)sender;
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)okHotKey:(id)sender;
-- (IBAction)setCurrentTrackInfo:(id)sender;
-- (IBAction)setNextTrack:(id)sender;
-- (IBAction)setPlayPause:(id)sender;
-- (IBAction)setPreviousTrack:(id)sender;
-- (IBAction)setUpcomingSongs:(id)sender;
+- (IBAction)setNewHotKey:(id)sender;
 
 - (void)setHotKey:(NSString *)key;
 - (void)setKeyCombo:(KeyCombo *)newCombo;

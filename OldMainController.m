@@ -257,6 +257,10 @@
             [menu addItemWithTitle:@"Rewind"
                     action:@selector(rewind:)
                     keyEquivalent:@""];
+        } else if ([item isEqualToString:@"Show Player"]) {
+            [menu addItemWithTitle:[NSString stringWithFormat:@"Show %@", [currentRemote playerSimpleName]]
+                    action:@selector(showPlayer:)
+                    keyEquivalent:@""];
         } else if ([item isEqualToString:@"Upcoming Songs"]) {
             upcomingSongsItem = [menu addItemWithTitle:@"Upcoming Songs"
                     action:nil
@@ -740,12 +744,16 @@
             }
         }
         
-        [statusWindow setText:stringToShow];
+        //
+        //SHOW THE STATUS WINDOW HERE WITH STRING stringToShow
+        //
+        
+        /*[statusWindow setText:stringToShow];
         [NSTimer scheduledTimerWithTimeInterval:3.0
                     target:self
                     selector:@selector(fadeAndCloseStatusWindow)
                     userInfo:nil
-                    repeats:NO];
+                    repeats:NO];*/
     }
 }
 
@@ -761,7 +769,6 @@
             int i;
             NSString *songs = @"";
             
-            statusWindow = [ITTransientStatusWindow sharedWindow];
             for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
                     NSString *curSong = [currentRemote songTitleAtIndex:i];
@@ -769,12 +776,17 @@
                     songs = [songs stringByAppendingString:@"\n"];
                 }
             }
-            [statusWindow setText:songs];
+            
+            //
+            //SHOW STATUS WINDOW HERE WITH STRING songs
+            //
+            
+            /*[statusWindow setText:songs];
             [NSTimer scheduledTimerWithTimeInterval:3.0
                         target:self
                         selector:@selector(fadeAndCloseStatusWindow)
                         userInfo:nil
-                        repeats:NO];
+                        repeats:NO];*/
         }
     }
 }

@@ -97,6 +97,12 @@ static PreferencesController *prefs = nil;
     [df setKeyCombo:prevTrackCombo forKey:@"PrevTrack"];
     [df setKeyCombo:trackInfoCombo forKey:@"TrackInfo"];
     [df setKeyCombo:upcomingSongsCombo forKey:@"UpcomingSongs"];
+    [df setKeyCombo:volumeIncrementCombo forKey:@"IncrementVolume"];
+    [df setKeyCombo:volumeDecrementCombo forKey:@"DecrementVolume"];
+    [df setKeyCombo:ratingIncrementCombo forKey:@"IncrementRating"];
+    [df setKeyCombo:ratingDecrementCombo forKey:@"DecrementRating"];
+    [df setKeyCombo:toggleLoopCombo forKey:@"ToggleLoop"];
+    [df setKeyCombo:toggleShuffleCombo forKey:@"ToggleShuffle"];
     
     //Set info checkboxes
     [df setBool:[albumCheckbox state] forKey:@"showAlbum"];
@@ -191,6 +197,7 @@ static PreferencesController *prefs = nil;
         @"Previous Track",
         @"Fast Forward",
         @"Rewind",
+        @"Show Player",
         @"<separator>",
         @"Upcoming Songs",
         @"Playlists",
@@ -264,7 +271,10 @@ static PreferencesController *prefs = nil;
     }
     if ([setHotKey isEqualToString:@"PlayPause"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
-            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) &&
+            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) &&
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
             
             [window setLevel:NSNormalWindowLevel];
@@ -276,7 +286,10 @@ static PreferencesController *prefs = nil;
         [playPauseButton setTitle:string];
     } else if ([setHotKey isEqualToString:@"NextTrack"]) {
         if (([combo isEqual:playPauseCombo] || [combo isEqual:prevTrackCombo] ||
-            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
+            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
             
             [window setLevel:NSNormalWindowLevel];
@@ -288,7 +301,10 @@ static PreferencesController *prefs = nil;
         [nextTrackButton setTitle:string];
     } else if ([setHotKey isEqualToString:@"PrevTrack"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:playPauseCombo] ||
-            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo]) && 
+            [combo isEqual:trackInfoCombo] || [combo isEqual:upcomingSongsCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
             
             [window setLevel:NSNormalWindowLevel];
@@ -300,7 +316,10 @@ static PreferencesController *prefs = nil;
         [previousTrackButton setTitle:string];
     } else if ([setHotKey isEqualToString:@"TrackInfo"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
-            [combo isEqual:playPauseCombo] || [combo isEqual:upcomingSongsCombo]) && 
+            [combo isEqual:playPauseCombo] || [combo isEqual:upcomingSongsCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
             
             [window setLevel:NSNormalWindowLevel];
@@ -312,7 +331,10 @@ static PreferencesController *prefs = nil;
         [trackInfoButton setTitle:string];
     } else if ([setHotKey isEqualToString:@"UpcomingSongs"]) {
         if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
-            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo]) && 
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
             !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
             
             [window setLevel:NSNormalWindowLevel];
@@ -322,38 +344,150 @@ static PreferencesController *prefs = nil;
         }
         upcomingSongsCombo = [combo copy];
         [upcomingSongsButton setTitle:string];
+    //THE NEW COMBOS!
+    } else if ([setHotKey isEqualToString:@"IncrementVolume"]) {
+        if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:upcomingSongsCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
+            [window setLevel:NSNormalWindowLevel];
+            NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
+            [window setLevel:NSStatusWindowLevel];
+            return;
+        }
+        volumeIncrementCombo = [combo copy];
+        [volumeIncrementButton setTitle:string];
+    } else if ([setHotKey isEqualToString:@"DecrementVolume"]) {
+        if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:upcomingSongsCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
+            [window setLevel:NSNormalWindowLevel];
+            NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
+            [window setLevel:NSStatusWindowLevel];
+            return;
+        }
+        volumeDecrementCombo = [combo copy];
+        [volumeDecrementButton setTitle:string];
+    } else if ([setHotKey isEqualToString:@"IncrementRating"]) {
+        if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:upcomingSongsCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
+            [window setLevel:NSNormalWindowLevel];
+            NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
+            [window setLevel:NSStatusWindowLevel];
+            return;
+        }
+        ratingIncrementCombo = [combo copy];
+        [ratingIncrementButton setTitle:string];
+    } else if ([setHotKey isEqualToString:@"DecrementRating"]) {
+        if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:upcomingSongsCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:toggleShuffleCombo]) && 
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
+            [window setLevel:NSNormalWindowLevel];
+            NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
+            [window setLevel:NSStatusWindowLevel];
+            return;
+        }
+        ratingDecrementCombo = [combo copy];
+        [ratingDecrementButton setTitle:string];
+    } else if ([setHotKey isEqualToString:@"ToggleLoop"]) {
+        if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:upcomingSongsCombo] || [combo isEqual:toggleShuffleCombo]) && 
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
+            [window setLevel:NSNormalWindowLevel];
+            NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
+            [window setLevel:NSStatusWindowLevel];
+            return;
+        }
+        toggleLoopCombo = [combo copy];
+        [toggleLoopButton setTitle:string];
+    } else if ([setHotKey isEqualToString:@"ToggleShuffle"]) {
+        if (([combo isEqual:nextTrackCombo] || [combo isEqual:prevTrackCombo] ||
+            [combo isEqual:trackInfoCombo] || [combo isEqual:playPauseCombo] ||
+            [combo isEqual:ratingIncrementCombo] || [combo isEqual:ratingDecrementCombo] ||
+            [combo isEqual:volumeIncrementCombo] || [combo isEqual:volumeDecrementCombo] ||
+            [combo isEqual:toggleLoopCombo] || [combo isEqual:upcomingSongsCombo]) && 
+            !(([combo modifiers] == -1) && ([combo keyCode] == -1))) {
+            
+            [window setLevel:NSNormalWindowLevel];
+            NSRunAlertPanel(@"Duplicate Key Combo", @"Please choose a unique key combo.", @"OK", nil, nil, nil);
+            [window setLevel:NSStatusWindowLevel];
+            return;
+        }
+        toggleShuffleCombo = [combo copy];
+        [toggleShuffleButton setTitle:string];
     }
     [self cancelHotKey:sender];
 }
 
-- (IBAction)setCurrentTrackInfo:(id)sender
+- (IBAction)setNewHotKey:(id)sender
 {
-    [self setKeyCombo:trackInfoCombo];
-    [self setHotKey:@"TrackInfo"];
-}
-
-- (IBAction)setNextTrack:(id)sender
-{
-    [self setKeyCombo:nextTrackCombo];
-    [self setHotKey:@"NextTrack"];
-}
-
-- (IBAction)setPlayPause:(id)sender
-{
-    [self setKeyCombo:playPauseCombo];
-    [self setHotKey:@"PlayPause"];
-}
-
-- (IBAction)setPreviousTrack:(id)sender
-{
-    [self setKeyCombo:prevTrackCombo];
-    [self setHotKey:@"PrevTrack"];
-}
-
-- (IBAction)setUpcomingSongs:(id)sender
-{
-    [self setKeyCombo:upcomingSongsCombo];
-    [self setHotKey:@"UpcomingSongs"];
+    switch ([sender tag])
+    {
+        case 401:
+            [self setKeyCombo:playPauseCombo];
+            [self setHotKey:@"PlayPause"];
+        break;
+        case 402:
+            [self setKeyCombo:nextTrackCombo];
+            [self setHotKey:@"NextTrack"];
+        break;
+        case 403:
+            [self setKeyCombo:prevTrackCombo];
+            [self setHotKey:@"PrevTrack"];
+        break;
+        case 404:
+            [self setKeyCombo:toggleLoopCombo];
+            [self setHotKey:@"ToggleLoop"];
+        break;
+        case 405:
+            [self setKeyCombo:toggleShuffleCombo];
+            [self setHotKey:@"ToggleShuffle"];
+        break;
+        case 406:
+            [self setKeyCombo:trackInfoCombo];
+            [self setHotKey:@"TrackInfo"];
+        break;
+        case 407:
+            [self setKeyCombo:upcomingSongsCombo];
+            [self setHotKey:@"UpcomingSongs"];
+        break;
+        case 408:
+            [self setKeyCombo:volumeIncrementCombo];
+            [self setHotKey:@"IncrementVolume"];
+        break;
+        case 409:
+            [self setKeyCombo:volumeDecrementCombo];
+            [self setHotKey:@"DecrementVolume"];
+        break;
+        case 410:
+            [self setKeyCombo:ratingIncrementCombo];
+            [self setHotKey:@"IncrementRating"];
+        break;
+        case 411:
+            [self setKeyCombo:ratingDecrementCombo];
+            [self setHotKey:@"DecrementRating"];
+        break;
+    }
 }
 
 
@@ -447,6 +581,7 @@ static PreferencesController *prefs = nil;
         @"Previous Track",
         @"Fast Forward",
         @"Rewind",
+        @"Show Player",
         @"<separator>",
         nil];
     
@@ -487,33 +622,75 @@ static PreferencesController *prefs = nil;
     } else {
         playPauseCombo = [[KeyCombo alloc] init];
     }
-
+    
     if ([df objectForKey:@"NextTrack"]) {
         nextTrackCombo = [df keyComboForKey:@"NextTrack"];
         [nextTrackButton setTitle:[nextTrackCombo userDisplayRep]];
     } else {
         nextTrackCombo = [[KeyCombo alloc] init];
     }
-
+    
     if ([df objectForKey:@"PrevTrack"]) {
         prevTrackCombo = [df keyComboForKey:@"PrevTrack"];
         [previousTrackButton setTitle:[prevTrackCombo userDisplayRep]];
     } else {
         prevTrackCombo = [[KeyCombo alloc] init];
     }
-
+    
     if ([df objectForKey:@"TrackInfo"]) {
         trackInfoCombo = [df keyComboForKey:@"TrackInfo"];
         [trackInfoButton setTitle:[trackInfoCombo userDisplayRep]];
     } else {
         trackInfoCombo = [[KeyCombo alloc] init];
     }
-
+    
     if ([df objectForKey:@"UpcomingSongs"]) {
         upcomingSongsCombo = [df keyComboForKey:@"UpcomingSongs"];
         [upcomingSongsButton setTitle:[upcomingSongsCombo userDisplayRep]];
     } else {
         upcomingSongsCombo = [[KeyCombo alloc] init];
+    }
+    
+    if ([df objectForKey:@"IncrementVolume"]) {
+        volumeIncrementCombo = [df keyComboForKey:@"IncrementVolume"];
+        [volumeIncrementButton setTitle:[volumeIncrementCombo userDisplayRep]];
+    } else {
+        volumeIncrementCombo = [[KeyCombo alloc] init];
+    }
+    
+    if ([df objectForKey:@"DecrementVolume"]) {
+        volumeDecrementCombo = [df keyComboForKey:@"DecrementVolume"];
+        [volumeDecrementButton setTitle:[volumeDecrementCombo userDisplayRep]];
+    } else {
+        volumeDecrementCombo = [[KeyCombo alloc] init];
+    }
+    
+    if ([df objectForKey:@"IncrementRating"]) {
+        ratingIncrementCombo = [df keyComboForKey:@"IncrementRating"];
+        [ratingIncrementButton setTitle:[ratingIncrementCombo userDisplayRep]];
+    } else {
+        ratingIncrementCombo = [[KeyCombo alloc] init];
+    }
+    
+    if ([df objectForKey:@"DecrementRating"]) {
+        ratingDecrementCombo = [df keyComboForKey:@"DecrementRating"];
+        [ratingDecrementButton setTitle:[ratingDecrementCombo userDisplayRep]];
+    } else {
+        ratingDecrementCombo = [[KeyCombo alloc] init];
+    }
+    
+    if ([df objectForKey:@"ToggleLoop"]) {
+        toggleLoopCombo = [df keyComboForKey:@"ToggleLoop"];
+        [toggleLoopButton setTitle:[toggleLoopCombo userDisplayRep]];
+    } else {
+        toggleLoopCombo = [[KeyCombo alloc] init];
+    }
+    
+    if ([df objectForKey:@"ToggleShuffle"]) {
+        toggleShuffleCombo = [df keyComboForKey:@"ToggleShuffle"];
+        [toggleShuffleButton setTitle:[toggleShuffleCombo userDisplayRep]];
+    } else {
+        toggleShuffleCombo = [[KeyCombo alloc] init];
     }
     
     // Check current track info buttons
@@ -526,7 +703,7 @@ static PreferencesController *prefs = nil;
     [df synchronize];
     loginwindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
     loginarray = [loginwindow objectForKey:@"AutoLaunchedApplicationDictionary"];
-
+    
     loginEnum = [loginarray objectEnumerator];
     while ( (anItem = [loginEnum nextObject]) ) {
         if ([[[anItem objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]]) {
