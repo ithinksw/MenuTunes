@@ -110,6 +110,7 @@ static NetworkController *sharedController;
     } else if (serverOn && !status && [serverConnection isValid]) {
         //Turn off
         [service stop];
+        [clientProxy invalidate];
         [serverConnection registerName:nil];
         [serverConnection release];
         ITDebugLog(@"Stopped server.");

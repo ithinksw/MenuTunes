@@ -1011,8 +1011,7 @@ static MainController *sharedController;
 - (void)networkError:(NSException *)exception
 {
     ITDebugLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
-    NSLog(@"%@", [exception reason]);
-    if ([[exception name] isEqualToString:NSPortTimeoutException] && [networkController isConnectedToServer]) {
+    if ( ((exception == nil) || [[exception name] isEqualToString:NSPortTimeoutException]) && [networkController isConnectedToServer]) {
         NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
         if ([self disconnectFromServer]) {
             [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
