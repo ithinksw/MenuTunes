@@ -93,6 +93,14 @@ static StatusWindowController *sharedController;
     [super dealloc];
 }
 
+- (void)readDefaults
+{
+    ITHorizontalWindowPosition horizontalPosition = [[NSUserDefaults standardUserDefaults] integerForKey:@"statusWindowHorizontalPosition"];
+    ITVerticalWindowPosition verticalPosition = [[NSUserDefaults standardUserDefaults] integerForKey:@"statusWindowVerticalPosition"];
+    [_window setHorizontalPosition:horizontalPosition];
+    [_window setVerticalPosition:verticalPosition];
+}
+
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
                                title:            (NSString *)title
                                album:            (NSString *)album

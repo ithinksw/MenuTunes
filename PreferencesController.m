@@ -364,6 +364,7 @@ static PreferencesController *prefs = nil;
     if ( [sender tag] == 2010) {
         [df setInteger:[sender selectedRow] forKey:@"statusWindowVerticalPosition"];
         [df setInteger:[sender selectedColumn] forKey:@"statusWindowHorizontalPosition"];
+        [[StatusWindowController sharedController] readDefaults];
         // update the window's position here
     } else if ( [sender tag] == 2020) {
         // update screen selection
