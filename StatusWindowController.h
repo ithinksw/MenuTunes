@@ -33,8 +33,6 @@ typedef enum {
 
 + (StatusWindowController *)sharedController;
 
-- (void)readDefaults;
-
 - (void)showUpcomingSongsWindowWithTitles:(NSArray *)titleStrings;
 
 - (void)showVolumeWindowWithLevel:(float)level;

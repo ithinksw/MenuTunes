@@ -52,6 +52,9 @@ static StatusWindowController *sharedController;
         [_window setExitMode:ITTransientStatusWindowExitAfterDelay];
         [_window setExitDelay:(exitDelay ? exitDelay : 4.0)];
 
+        [_window setHorizontalPosition:[df integerForKey:@"statusWindowHorizontalPosition"]];
+        [_window setVerticalPosition:[df integerForKey:@"statusWindowVerticalPosition"]];
+
         if ( entryTag == 2101 ) {
             entryEffect = [[[ITDissolveWindowEffect alloc] initWithWindow:_window] autorelease];
         } else if ( entryTag == 2102 ) {
@@ -91,14 +94,6 @@ static StatusWindowController *sharedController;
 {
     [_window release];
     [super dealloc];
-}
-
-- (void)readDefaults
-{
-    ITHorizontalWindowPosition horizontalPosition = [[NSUserDefaults standardUserDefaults] integerForKey:@"statusWindowHorizontalPosition"];
-    ITVerticalWindowPosition verticalPosition = [[NSUserDefaults standardUserDefaults] integerForKey:@"statusWindowVerticalPosition"];
-    [_window setHorizontalPosition:horizontalPosition];
-    [_window setVerticalPosition:verticalPosition];
 }
 
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
