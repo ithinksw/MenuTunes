@@ -7,7 +7,7 @@
  *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
  *     Contributors : Matt Judy <matt@nibfile.com>
  *
- *  Copyright (c) 2002 The iThink Group.
+ *  Copyright (c) 2002 iThink Software.
  *  All Rights Reserved
  *
  */
@@ -19,7 +19,7 @@
 {
     NSImage *image;
     NSImage *altImage;
-    NSImage *curImage;
+    BOOL     mouseIsPressed;
 }
 
 @end

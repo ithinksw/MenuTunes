@@ -1,5 +1,7 @@
 #import "MenuTunesView.h"
 
+extern NSColor* _NSGetThemePartColorPattern(int, int, int);
+// extern NSColor* _NSGetThemePartColorPattern(int imageID, _NSThemeState state, int color);
 
 @implementation MenuTunesView
 
@@ -9,26 +11,39 @@
     {
         image = [NSImage imageNamed:@"menu"];
         altImage = [NSImage imageNamed:@"selected_image"];
-        curImage = image;
+        mouseIsPressed = NO;
     }
     return self;
 }
 
 - (void)drawRect:(NSRect)rect
 {
-    [curImage compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
+    NSImage *icon;
+    NSColor *background;
+    
+    if ( mouseIsPressed ) {
+        icon = altImage;
+        background = _NSGetThemePartColorPattern(44, 2, 0);
+    } else {
+        icon = image;
+        background = [NSColor clearColor];
+    }
+    [background set];
+    NSRectFill(rect);
+    [icon compositeToPoint:NSMakePoint(((rect.size.width - [icon size].width) / 2), 0)
+                 operation:NSCompositeSourceOver];
 }
 
 - (void)mouseDown:(NSEvent *)event
 {
-    curImage = altImage;
+    mouseIsPressed = YES;
     [self setNeedsDisplay:YES];
     [super mouseDown:event];
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-    curImage = image;
+    mouseIsPressed = NO;
     [self setNeedsDisplay:YES];
     [super mouseUp:event];
 }

@@ -6,7 +6,7 @@
  *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
  *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
  *
- *  Copyright (c) 2002 The iThink Group.
+ *  Copyright (c) 2002 iThink Software.
  *  All Rights Reserved
  *
  */
@@ -15,13 +15,14 @@
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 
-@class MenuTunesView, PreferencesController, StatusWindowController;
+//@class MenuTunesView;
+@class PreferencesController, StatusWindowController;
 
 @interface MenuTunes : NSObject
 {
     NSStatusItem *statusItem;
     NSMenu *menu;
-    MenuTunesView *view;
+//  MenuTunesView *view;
     ComponentInstance asComponent;
     
     //Used in updating the menu automatically

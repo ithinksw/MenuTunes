@@ -12,7 +12,7 @@ Things to do:
 */
 
 #import "MenuTunes.h"
-#import "MenuTunesView.h"
+// #import "MenuTunesView.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
 #import "StatusWindowController.h"
@@ -66,12 +66,14 @@ Things to do:
     }
     
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
-    [statusItem setImage:[NSImage imageNamed:@"menu.tiff"]];
+    [[[statusItem _button] cell] setType:0];
+    [statusItem setImage:[NSImage imageNamed:@"menu"]];
+    [[statusItem _button] setAlternateImage:[NSImage imageNamed:@"selected_image"]];
     [statusItem setHighlightMode:YES];
     [statusItem setMenu:menu];
     [statusItem retain];
-    view = [[MenuTunesView alloc] initWithFrame:[[statusItem view] frame]];
-    //[statusItem setView:view];
+//  view = [[MenuTunesView alloc] initWithFrame:[[statusItem view] frame]];
+//  [statusItem setView:view];
 }
 
 
@@ -722,7 +724,7 @@ isEqualToString:@"rewinding"]) {
     CloseComponent(asComponent);
     [statusItem release];
     [menu release];
-    [view release];
+//  [view release];
     [super dealloc];
 }
 
