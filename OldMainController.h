@@ -37,8 +37,6 @@
     BOOL     isPlayingRadio;
     
     ITMTRemotePlayerRunningState isAppRunning;
-    BOOL didHaveAlbumName;
-    BOOL didHaveArtistName; //Helper variable for creating the menu
     
     //For upcoming songs
     NSMenuItem *upcomingSongsItem;

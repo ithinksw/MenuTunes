@@ -132,6 +132,19 @@
 - (void)applicationLaunched:(NSNotification *)note
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
+        unichar fullstar = 0x2605;
+        unichar emptystar = 0x2606;
+        NSString *fullStarChar = [NSString stringWithCharacters:&fullstar length:1];
+        NSString *emptyStarChar = [NSString stringWithCharacters:&emptystar length:1];
+        //Build the song rating menu
+        ratingMenu = [[NSMenu alloc] initWithTitle:@""];
+        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:0];
+        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:20];
+        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:40];
+        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:60];
+        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:80];
+        [[ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, fullStarChar] action:@selector(selectSongRating:) keyEquivalent:@""] setTag:100];
+        
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
         [self rebuildMenu];
         [self setupHotKeys];
@@ -156,6 +169,8 @@
         refreshTimer = nil;
         [self clearHotKeys];
         isAppRunning = ITMTRemotePlayerNotRunning;
+        
+        [ratingMenu release];
         
         [statusItem setMenu:[notRunningMenu autorelease]];
     }
@@ -193,8 +208,6 @@
     
     trackInfoIndex = -1;
     lastPlaylistIndex = -1;
-    didHaveAlbumName = ([[currentRemote currentSongAlbum] length] > 0);
-    didHaveArtistName = ([[currentRemote currentSongArtist] length] > 0);
     
     [menu release];
     menu = [[NSMenu alloc] initWithTitle:@""];
@@ -205,9 +218,9 @@
     [upcomingSongsMenu release];
     upcomingSongsMenu = nil;
     
-    ratingItem = nil;
-    [ratingMenu release];
-    ratingMenu = nil;
+    if (ratingItem) {
+        [ratingItem setSubmenu:nil];
+    }
     
     playlistItem = nil;
     [playlistMenu release];
@@ -217,6 +230,7 @@
     [eqMenu release];
     eqMenu = nil;
     
+    //Build the custom menu
     for (i = 0; i < [myMenu count]; i++) {
         NSString *item = [myMenu objectAtIndex:i];
         if ([item isEqualToString:@"Play/Pause"]) {
@@ -293,36 +307,9 @@
                     action:nil
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Song Rating"]) {
-            unichar fullstar = 0x2605;
-            unichar emptystar = 0x2606;
-            NSString *fullStarChar = [NSString stringWithCharacters:&fullstar length:1];
-            NSString *emptyStarChar = [NSString stringWithCharacters:&emptystar length:1];
-            NSMenuItem *item;
-            
             ratingItem = [menu addItemWithTitle:@"Song Rating"
                     action:nil
                     keyEquivalent:@""];
-            
-            ratingMenu = [[NSMenu alloc] initWithTitle:@""];
-            
-            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""];
-            [item setTag:0];
-            
-            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""];
-            [item setTag:20];
-            
-            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, emptyStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""];
-            [item setTag:40];
-            
-            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, emptyStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""];
-            [item setTag:60];
-            
-            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, emptyStarChar] action:@selector(selectSongRating:) keyEquivalent:@""];
-            [item setTag:80];
-            
-            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", fullStarChar, fullStarChar, fullStarChar, fullStarChar, fullStarChar] action:@selector(selectSongRating:) keyEquivalent:@""];
-            [item setTag:100];
-            
             [ratingItem setSubmenu:ratingMenu];
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
@@ -378,22 +365,21 @@
                 }
             }
             
+            if ([defaults boolForKey:@"showTrackRating"]) {
+                [menu insertItemWithTitle:[NSString stringWithFormat:@"	 %@", [[ratingMenu itemAtIndex:[currentRemote currentSongRating] * 5] title]] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
+            }
+            
             if ([defaults boolForKey:@"showArtist"]) {
                 NSString *artist = [currentRemote currentSongArtist];
-                
                 if ([artist length] > 0) {
                     [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", artist] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
                 }
-                
-                didHaveArtistName = (([artist length] > 0) ? YES : NO);
             }
             
             if ([defaults boolForKey:@"showAlbum"]) {
                 NSString *album = [currentRemote currentSongAlbum];
-                
                 if ([album length] > 0) {
                     [menu insertItemWithTitle:[NSString stringWithFormat:@"  %@", album] action:nil keyEquivalent:@"" atIndex:trackInfoIndex + 1];
-                    didHaveAlbumName = (([album length]) ? YES : NO);
                 }
             }
         }
