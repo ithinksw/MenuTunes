@@ -384,7 +384,7 @@ static PreferencesController *prefs = nil;
     
         BOOL entryEffectValid = YES;
         BOOL exitEffectValid  = YES;
-        
+                
         [df setInteger:[sender selectedRow] forKey:@"statusWindowVerticalPosition"];
         [df setInteger:[sender selectedColumn] forKey:@"statusWindowHorizontalPosition"];
         [sw setVerticalPosition:[sender selectedRow]];
@@ -416,8 +416,7 @@ static PreferencesController *prefs = nil;
             [vanishEffectPopup selectItemAtIndex:[[vanishEffectPopup menu] indexOfItemWithRepresentedObject:[[sw exitEffect] class]]];
         }
         
-        // Update the window's position.
-        // Yeah, do that.
+        [(MainController *)controller showCurrentTrackInfo];
         
     } else if ( [sender tag] == 2020) {
     
@@ -485,8 +484,8 @@ static PreferencesController *prefs = nil;
         }
 
     } else if ( [sender tag] == 2095) {
-        [sw vanish:self];
         [df setInteger:[sender indexOfSelectedItem] forKey:@"statusWindowSizing"];
+        [(MainController *)controller showCurrentTrackInfo];
     }
     
     [df synchronize];
