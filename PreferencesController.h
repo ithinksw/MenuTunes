@@ -47,22 +47,10 @@
     NSMutableArray *availableItems;
     NSMutableArray *myItems;
     NSArray        *submenuItems;
-
-    KeyCombo *combo;
-    KeyCombo *playPauseCombo;
-    KeyCombo *nextTrackCombo;
-    KeyCombo *prevTrackCombo;
-    KeyCombo *visualizerCombo;
-    KeyCombo *trackInfoCombo;
-    KeyCombo *upcomingSongsCombo;
-    KeyCombo *volumeIncrementCombo;
-    KeyCombo *volumeDecrementCombo;
-    KeyCombo *ratingIncrementCombo;
-    KeyCombo *ratingDecrementCombo;
-    KeyCombo *toggleLoopCombo;
-    KeyCombo *toggleShuffleCombo;
     
-    NSString *setHotKey;
+    KeyCombo *combo;
+    NSString *currentHotKey;
+    NSMutableDictionary *hotKeysDictionary;
 }
 
 + (PreferencesController *)sharedPrefs;
@@ -82,6 +70,6 @@
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)okHotKey:(id)sender;
 
-- (void)setHotKey:(NSString *)key;
+- (void)setCurrentHotKey:(NSString *)key;
 - (void)setKeyCombo:(KeyCombo *)newCombo;
 @end
