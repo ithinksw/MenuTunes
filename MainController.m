@@ -814,6 +814,7 @@ static MainController *sharedController;
         if ( [df boolForKey:@"showAlbumArtwork"] ) {
              NS_DURING
                 art = [[self currentRemote] currentSongAlbumArt];
+                art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:NSMakeSize(110,110)];
             NS_HANDLER
                 [self networkError:localException];
             NS_ENDHANDLER
@@ -829,7 +830,7 @@ static MainController *sharedController;
                                                     time:time
                                                    track:track
                                                   rating:rating
-                                                   image:[[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:NSMakeSize(110,110)]];
+                                                   image:art];
 }
 
 - (void)showUpcomingSongs
