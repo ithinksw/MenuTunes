@@ -46,6 +46,7 @@ typedef enum {
                                title:            (NSString *)title
                                album:            (NSString *)album
                               artist:            (NSString *)artist
+                            composer:            (NSString *)composer
                                 time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
                                track:            (NSString *)track
                               rating:                   (int)rating

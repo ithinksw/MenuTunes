@@ -139,6 +139,11 @@
     return nil;
 }
 
+- (NSString *)currentSongComposer
+{
+    return nil;
+}
+
 - (NSString *)currentSongAlbum
 {
     return nil;

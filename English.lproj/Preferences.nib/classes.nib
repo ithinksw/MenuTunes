@@ -11,7 +11,6 @@
                 clearHotKey = id; 
                 editHotKey = id; 
                 showPrefsWindow = id; 
-                showTestWindow = id; 
             }; 
             CLASS = PreferencesController; 
             LANGUAGE = ObjC; 
@@ -26,6 +25,7 @@
                 backgroundColorWell = NSColorWell; 
                 backgroundStylePopup = NSPopUpButton; 
                 clientPasswordTextField = NSTextField; 
+                composerCheckbox = NSButton; 
                 hostTextField = NSTextField; 
                 hotKeysTableView = NSTableView; 
                 launchAtLoginCheckbox = NSButton; 
@@ -53,7 +53,6 @@
                 sharingTableView = NSTableView; 
                 showOnChangeCheckbox = NSButton; 
                 showScriptsButton = NSButton; 
-                showToolTipCheckbox = NSButton; 
                 songsInAdvance = NSTextField; 
                 trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 

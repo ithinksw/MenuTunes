@@ -1,5 +1,6 @@
 #import "PreferencesController.h"
 #import "MainController.h"
+#import "MenuController.h"
 #import "NetworkController.h"
 #import "NetworkObject.h"
 #import "StatusWindow.h"
@@ -206,11 +207,6 @@ static PreferencesController *prefs = nil;
     [window makeKeyWindow];
 }
 
-- (IBAction)showTestWindow:(id)sender
-{
-    [controller showTestWindow];
-}
-
 - (IBAction)changeGeneralSetting:(id)sender
 {
     ITDebugLog(@"Changing general setting of tag %i.", [sender tag]);
@@ -220,12 +216,14 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
     } else if ( [sender tag] == 1030) {
         [df setInteger:[sender intValue] forKey:@"SongsInAdvance"];
-
+        [[controller menuController] rebuildSubmenus];
     } else if ( [sender tag] == 1040) {
         // This will not be executed.  Song info always shows the title of the song.
         // [df setBool:SENDER_STATE forKey:@"showName"];
     } else if ( [sender tag] == 1050) {
         [df setBool:SENDER_STATE forKey:@"showArtist"];
+    } else if ( [sender tag] == 1055) {
+        [df setBool:SENDER_STATE forKey:@"showComposer"];
     } else if ( [sender tag] == 1060) {
         [df setBool:SENDER_STATE forKey:@"showAlbum"];
     } else if ( [sender tag] == 1070) {
@@ -236,8 +234,6 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
     } else if ( [sender tag] == 1100) {
         [df setBool:SENDER_STATE forKey:@"showAlbumArtwork"];
-    } else if ( [sender tag] == 1105) {
-        [df setBool:SENDER_STATE forKey:@"showToolTip"];
     } else if ( [sender tag] == 1110) {
         [df setBool:SENDER_STATE forKey:@"runScripts"];
         if (SENDER_STATE) {
@@ -450,10 +446,12 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 2030) {
     
         [self setStatusWindowEntryEffect:[[sender selectedItem] representedObject]];
+        [(MainController *)controller showCurrentTrackInfo];
         
     } else if ( [sender tag] == 2040) {
     
         [self setStatusWindowExitEffect:[[sender selectedItem] representedObject]];
+        [(MainController *)controller showCurrentTrackInfo];
         
     } else if ( [sender tag] == 2050) {
         float newTime = ( -([sender floatValue]) );
@@ -487,9 +485,11 @@ static PreferencesController *prefs = nil;
         }
 
         [df setInteger:setting forKey:@"statusWindowBackgroundMode"];
+        [(MainController *)controller showCurrentTrackInfo];
         
     } else if ( [sender tag] == 2091) {
         [self setCustomColor:[sender color] updateWell:NO];
+        [(MainController *)controller showCurrentTrackInfo];
     } else if ( [sender tag] == 2092) {
         
         int selectedItem = [sender indexOfSelectedItem];
@@ -507,6 +507,7 @@ static PreferencesController *prefs = nil;
         } else {
             [self setCustomColor:[NSColor colorWithCalibratedWhite:0.15 alpha:0.70] updateWell:YES];
         }
+        [(MainController *)controller showCurrentTrackInfo];
 
     } else if ( [sender tag] == 2095) {
         [df setInteger:[sender indexOfSelectedItem] forKey:@"statusWindowSizing"];
@@ -544,7 +545,9 @@ static PreferencesController *prefs = nil;
     [df setBool:YES forKey:@"showArtist"];
     [df setBool:YES forKey:@"showAlbumArtwork"];
     [df setBool:NO forKey:@"showAlbum"];
+    [df setBool:NO forKey:@"showComposer"];
     [df setBool:NO forKey:@"showTime"];
+    [df setBool:NO forKey:@"showToolTip"];
 
     [df setObject:@"ITCutWindowEffect" forKey:@"statusWindowAppearanceEffect"];
     [df setObject:@"ITDissolveWindowEffect" forKey:@"statusWindowVanishEffect"];
@@ -796,12 +799,11 @@ static PreferencesController *prefs = nil;
     [nameCheckbox setState:NSOnState];  // Song info will ALWAYS show song title.
     [nameCheckbox setEnabled:NO];  // Song info will ALWAYS show song title.
     [artistCheckbox setState:[df boolForKey:@"showArtist"] ? NSOnState : NSOffState];
+    [composerCheckbox setState:[df boolForKey:@"showComposer"] ? NSOnState : NSOffState];
     [trackTimeCheckbox setState:[df boolForKey:@"showTime"] ? NSOnState : NSOffState];
     [trackNumberCheckbox setState:[df boolForKey:@"showTrackNumber"] ? NSOnState : NSOffState];
     [ratingCheckbox setState:[df boolForKey:@"showTrackRating"] ? NSOnState : NSOffState];
     [albumArtworkCheckbox setState:[df boolForKey:@"showAlbumArtwork"] ? NSOnState : NSOffState];
-    
-    [showToolTipCheckbox setState:[df boolForKey:@"showToolTip"] ? NSOnState : NSOffState];
     
     if ([df boolForKey:@"runScripts"]) {
         [runScriptsCheckbox setState:NSOnState];

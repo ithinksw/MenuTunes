@@ -588,6 +588,11 @@ static MainController *sharedController;
 //
 //
 
+- (MenuController *)menuController
+{
+    return menuController;
+}
+
 - (void)closePreferences
 {
     ITDebugLog(@"Preferences closed.");
@@ -759,6 +764,7 @@ static MainController *sharedController;
     NSString               *title       = nil;
     NSString               *album       = nil;
     NSString               *artist      = nil;
+    NSString               *composer    = nil;
     NSString               *time        = nil;
     NSString               *track       = nil;
     NSImage                *art         = nil;
@@ -786,6 +792,14 @@ static MainController *sharedController;
         if ( [df boolForKey:@"showArtist"] ) {
             NS_DURING
                 artist = [[self currentRemote] currentSongArtist];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
+        }
+
+        if ( [df boolForKey:@"showComposer"] ) {
+            NS_DURING
+                composer = [[self currentRemote] currentSongComposer];
             NS_HANDLER
                 [self networkError:localException];
             NS_ENDHANDLER
@@ -853,6 +867,7 @@ static MainController *sharedController;
                                                    title:title
                                                    album:album
                                                   artist:artist
+                                                composer:composer
                                                     time:time
                                                    track:track
                                                   rating:rating

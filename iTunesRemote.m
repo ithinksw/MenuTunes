@@ -377,6 +377,19 @@
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
+- (NSString *)currentSongComposer
+{
+    NSString *temp1;
+    ITDebugLog(@"Getting current song artist.");
+    if ( [self currentPlaylistClass] != ITMTRemotePlayerRadioPlaylist ) {
+        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pCmp" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    } else {
+        temp1 = @"";
+    }
+    ITDebugLog(@"Getting current song artist done.");
+    return ( ([temp1 length]) ? temp1 : nil ) ;
+}
+
 - (NSString *)currentSongAlbum
 {
     NSString *temp1;

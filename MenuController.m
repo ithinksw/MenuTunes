@@ -270,6 +270,20 @@
                         }
                     }
                     
+                    if ([defaults boolForKey:@"showComposer"]) {
+                        NSString *curComposer;
+                        NS_DURING
+                            curComposer = [[[MainController sharedController] currentRemote] currentSongComposer];
+                        NS_HANDLER
+                            [[MainController sharedController] networkError:localException];
+                        NS_ENDHANDLER
+                        ITDebugLog(@"Add Track Composer (\"%@\") menu item.", curComposer);
+                        if ( curComposer ) {
+                            [menu indentItem:
+                                [menu addItemWithTitle:curComposer action:nil keyEquivalent:@""]];
+                        }
+                    }
+                    
                     if ([defaults boolForKey:@"showTrackNumber"]) {
                         int track;
                         NS_DURING
@@ -608,15 +622,9 @@
         NSMenu *submenu = [[NSMenu alloc] init];
         ITDebugLog(@"Adding source: %@", name);
         
-        if ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) {
-            NSLog(@"We have an iPod!");
-            NSLog(@"This iPod is named %@!", name);
-            NSLog(@"Does it update automagically?");
-            NSLog(@"Result: %i", [self iPodWithNameAutomaticallyUpdates:name]);
-        }
-        
         if ( ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
             ITDebugLog(@"Invalid iPod source.");
+            [playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""];
         } else {
             for (j = 3; j < [curPlaylist count]; j++) {
                 ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
@@ -1000,7 +1008,8 @@
     NSString *nextVolume;
     ITDebugLog(@"Looking for an iPod named %@", name);
     while ( (nextVolume = [volEnum nextObject]) ) {
-        if ([nextVolume rangeOfString:name options:nil range:NSMakeRange(0, [name length] - 1)].location != NSNotFound) {
+        ITDebugLog(@"- %@", nextVolume);
+        if ([nextVolume rangeOfString:name options:nil /*range:NSMakeRange(0, [name length] - 1)*/].location != NSNotFound) {
             NSFileHandle *handle;
             NSData *data;
             NSString *path = [nextVolume stringByAppendingPathComponent:@"/iPod_Control/iTunes/iTunesPrefs"];
@@ -1008,9 +1017,11 @@
                 ITDebugLog(@"Error, path isn't an iPod! %@", path);
                 return NO;
             }
-            handle = [NSFileHandle fileHandleForReadingAtPath:name];
+            handle = [NSFileHandle fileHandleForReadingAtPath:path];
+            ITDebugLog(@"File handle: %@", handle);
             [handle seekToFileOffset:10];
             data = [handle readDataOfLength:1];
+            ITDebugLog(@"Data: %@", data);
             if ( (*((unsigned char*)[data bytes]) == 0x00) ) {
                 ITDebugLog(@"iPod is manually updated. %@", path);
                 return NO;
@@ -1023,7 +1034,7 @@
             }
         }
     }
-    return NO;
+    return YES;
 }
 
 @end

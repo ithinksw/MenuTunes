@@ -265,6 +265,11 @@ er's process managment.
 - (NSString *)currentSongArtist;
 
 /*!
+ * @method currentSongComposer
+ */
+- (NSString *)currentSongComposer;
+
+/*!
  * @method currentSongAlbum
  */
 - (NSString *)currentSongAlbum;

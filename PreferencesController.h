@@ -28,6 +28,7 @@
     IBOutlet NSColorWell *backgroundColorWell;
     IBOutlet NSPopUpButton *backgroundColorPopup;
     IBOutlet NSTextField *clientPasswordTextField;
+    IBOutlet NSButton *composerCheckbox;
     IBOutlet NSTextField *hostTextField;
     IBOutlet NSTableView *hotKeysTableView;
     IBOutlet NSButton *launchAtLoginCheckbox;
@@ -55,7 +56,6 @@
     IBOutlet NSTableView *sharingTableView;
     IBOutlet NSButton *showOnChangeCheckbox;
     IBOutlet NSButton *showScriptsButton;
-    IBOutlet NSButton *showToolTipCheckbox;
     IBOutlet NSTextField *songsInAdvance;
     IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
@@ -94,7 +94,6 @@
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)editHotKey:(id)sender;
 - (IBAction)showPrefsWindow:(id)sender;
-- (IBAction)showTestWindow:(id)sender;
 
 - (void)registerDefaults;
 - (void)deletePressedInTableView:(NSTableView *)tableView;

@@ -103,6 +103,7 @@ static StatusWindowController *sharedController;
                                title:            (NSString *)title
                                album:            (NSString *)album
                               artist:            (NSString *)artist
+                            composer:            (NSString *)composer
                                 time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
                                track:            (NSString *)track
                               rating:                   (int)rating
@@ -134,6 +135,9 @@ static StatusWindowController *sharedController;
     }
     if ( artist ) {
         text = [text stringByAppendingString:[@"\n" stringByAppendingString:artist]];
+    }
+    if ( composer ) {
+        text = [text stringByAppendingString:[@"\n" stringByAppendingString:composer]];
     }
     if ( time ) {
         text = [text stringByAppendingString:[@"\n" stringByAppendingString:time]];

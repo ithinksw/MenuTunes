@@ -85,6 +85,7 @@
 - (void)clearHotKeys;
 - (void)setupHotKeys;
 - (void)closePreferences;
+- (MenuController *)menuController;
 
 - (void)showCurrentTrackInfo;
 
