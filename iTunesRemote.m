@@ -129,11 +129,14 @@
 {
     int realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     
-    if (realResult == 'cRTP') {
-        return @"radio tuner playlist";
-    } else {
-        return @"playlist";
-    }
+    switch (realResult)
+	   {
+	   case 'cRTP':
+		  return @"radio tuner playlist";
+		  break;
+	   default:
+		  return @"playlist";
+	   }
 }
 
 - (int)currentPlaylistIndex
@@ -200,7 +203,7 @@
 
 - (BOOL)setCurrentSongRating:(float)rating
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } ",(long)rating*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() } } }",(long)rating*100,[self currentSongIndex],[self currentPlaylistIndex]] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
 }
 
@@ -251,22 +254,57 @@
 
 - (BOOL)shuffleEnabled
 {
-    return NO;
+    int result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pShf" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    return result;
 }
 
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
-    return NO;
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
 }
 
 - (ITMTRemotePlayerRepeatMode)repeatMode
 {
-    return ITMTRemotePlayerRepeatOff;
+    FourCharCode m00f;
+    int result;
+    m00f = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pRpt" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+
+    switch (m00f)
+	   {
+	   case 'kRp0':
+		  result = ITMTRemotePlayerRepeatOff;
+		  break;
+	   case 'kRp1':
+		  result = ITMTRemotePlayerRepeatOne;
+		  break;
+	   case 'kRpA':
+		  result = ITMTRemotePlayerRepeatAll;
+		  break;
+	   }
+    
+    return result;
 }
 
 - (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode
 {
-    return NO;
+    FourCharCode m00f;
+    switch (repeatMode)
+	   {
+	   case ITMTRemotePlayerRepeatOff:
+		  m00f = 'kRp0';
+		  break;
+	   case ITMTRemotePlayerRepeatOne:
+		  m00f = 'kRp1';
+		  break;
+	   case ITMTRemotePlayerRepeatAll:
+		  m00f = 'kRpA';
+		  break;
+	   }
+
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+
 }
 
 - (BOOL)play
