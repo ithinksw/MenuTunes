@@ -290,6 +290,9 @@ static MainController *sharedController;
 {
     if ([networkController isConnectedToServer]) {
         [statusItem setMenu:[menuController menu]];
+        if ([[networkController networkObject] remote] == nil) {
+            [self networkError:nil];
+        }
     }
     
     if ( [self songChanged] && (timerUpdating != YES) ) {
@@ -997,7 +1000,7 @@ static MainController *sharedController;
     if ([networkController checkForServerAtHost:[df stringForKey:@"sharedPlayerHost"]]) {
         ITDebugLog(@"Remote server found.");
         [timer invalidate];
-        if (![networkController isConnectedToServer]) {
+        if (![networkController isServerOn] && ![networkController isConnectedToServer]) {
             [[StatusWindowController sharedController] showReconnectQueryWindow];
         }
     } else {

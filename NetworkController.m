@@ -112,7 +112,6 @@ static NetworkController *sharedController;
         [service stop];
         [serverConnection registerName:nil];
         [serverConnection release];
-        [clientProxy release];
         ITDebugLog(@"Stopped server.");
         serverOn = NO;
     }
@@ -200,6 +199,7 @@ static NetworkController *sharedController;
     NSConnection *testConnection;
     NSSocketPort *testPort;
     NetworkObject *tempProxy;
+    BOOL valid;
     ITDebugLog(@"Checking for shared remote at %@.", host);
     if (fullPass) {
         [fullPass getBytes:&buffer range:NSMakeRange(6, 4)];
@@ -216,6 +216,7 @@ static NetworkController *sharedController;
         [testConnection setReplyTimeout:2];
         tempProxy = (NetworkObject *)[testConnection rootProxy];
         [tempProxy serverName];
+        valid = [tempProxy isValid];
     NS_HANDLER
         ITDebugLog(@"Connection to host failed: %@", host);
         [testConnection release];
@@ -231,7 +232,7 @@ static NetworkController *sharedController;
     }
     [testConnection release];
     [testPort release];
-    return YES;
+    return valid;
 }
 
 - (BOOL)isServerOn

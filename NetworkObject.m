@@ -24,6 +24,7 @@
 - (id)init
 {
     if ( (self = [super init]) ) {
+        _valid = YES;
         if (![self requiresPassword]) {
             _authenticated = YES;
         } else {
@@ -35,7 +36,7 @@
 
 - (ITMTRemote *)remote
 {
-    if (_authenticated) {
+    if (_authenticated && _valid) {
         return [[MainController sharedController] currentRemote];
     } else {
         return nil;
@@ -64,6 +65,16 @@
         _authenticated = NO;
         return NO;
     }
+}
+
+- (void)invalidate
+{
+    _valid = NO;
+}
+
+- (BOOL)isValid
+{
+    return _valid;
 }
 
 @end

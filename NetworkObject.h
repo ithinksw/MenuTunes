@@ -21,11 +21,14 @@
 
 @interface NetworkObject : NSObject
 {
-    BOOL _authenticated;
+    BOOL _authenticated, _valid;
 }
 - (ITMTRemote *)remote;
 - (NSString *)serverName;
 
 - (BOOL)requiresPassword;
 - (BOOL)sendPassword:(NSData *)password;
+
+- (void)invalidate;
+- (BOOL)isValid;
 @end
