@@ -69,19 +69,19 @@
     if ([self playerRunningState] == ITMTRemotePlayerRunning) {
         ITDebugLog(@"Showing player interface.");
         //If not minimized and visible
-        if ( ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 0) &&
-             ([[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] != 0) &&
+        if ( ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'getd', &savedPSN) booleanValue] == 0) &&
+			 ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'getd', &savedPSN) booleanValue] != 0) &&
              [[[[NSWorkspace sharedWorkspace] activeApplication] objectForKey:@"NSApplicationName"] isEqualToString:@"iTunes"] ) {
             //set minimized of browser window 1 to true
-            [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+			ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'setd', &savedPSN);
         } else {
             //set minimized of browser window 1 to false
-            [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+			ITSendAEWithString(@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'setd', &savedPSN);
         }
         //set visible of browser window 1 to true
-        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+		ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }", 'core', 'setd', &savedPSN);
         //active iTunes
-        [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+		ITSendAEWithString(@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }", 'core', 'setd', &savedPSN);
         ITDebugLog(@"Done showing player primary interface.");
         return YES;
     } else {
@@ -117,12 +117,10 @@
 
 - (ITMTRemotePlayerPlayingState)playerPlayingState
 {
-    long result;
+    SInt32 result;
     
     ITDebugLog(@"Getting player playing state");
-    
-    result = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-    
+    result = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }", 'core', 'getd', &savedPSN) int32Value];
     switch (result)
     {
         case 'kPSP':
@@ -165,7 +163,7 @@
 - (NSArray *)playlists
 {
     unsigned long i, k;
-    const signed long numSources = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cSrc'), '----':()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    SInt32 numSources = [ITSendAEWithString(@"kocl:type('cSrc'), '----':()", 'core', 'cnte', &savedPSN) int32Value];
     NSMutableArray *allSources = [[NSMutableArray alloc] init];
     
     ITDebugLog(@"Getting playlists.");
@@ -175,10 +173,10 @@
     }
     
     for (k = 1; k <= numSources ; k++) {
-        const signed long numPlaylists = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cPly'), '----':obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() }",k] eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];;
-        unsigned long fourcc = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-        NSString *sourceName = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-        unsigned long index = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        SInt32 numPlaylists = [ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cPly'), '----':obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() }",k], 'core', 'cnte', &savedPSN) int32Value];
+        SInt32 fourcc = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k], 'core', 'getd', &savedPSN) int32Value];
+        NSString *sourceName = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k], 'core', 'getd', &savedPSN) stringValue];
+        SInt32 index = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } }",k], 'core', 'getd', &savedPSN) int32Value];
         unsigned long class;
         if (sourceName) {
             NSMutableArray *aSource = [[NSMutableArray alloc] init];
@@ -211,7 +209,7 @@
             [aSource addObject:[NSNumber numberWithInt:index]];
             for (i = 1; i <= numPlaylists; i++) {
                 NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%u), from:obj { form:'indx', want:type('cSrc'), seld:long(%u), from:() } } }",i,k];
-                NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:sendStr eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+                NSString *theObj = [ITSendAEWithString(sendStr, 'core', 'getd', &savedPSN) stringValue];
                 ITDebugLog(@" - Adding playlist %@", theObj);
                 if (theObj) {
                     [aSource addObject:theObj];
@@ -266,18 +264,18 @@
 {
     int temp1;
     ITDebugLog(@"Getting number of songs in playlist at index %i", index);
-    temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index], 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting number of songs in playlist at index %i done", index);
     return temp1;
 }
 
 - (ITMTRemotePlayerSource)currentSource
 {
-    unsigned long fourcc;
+    SInt32 fourcc;
 
     ITDebugLog(@"Getting current source.");   
     
-    fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber :[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }"] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    fourcc = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value];
     
     switch (fourcc) {
         case 'kTun':
@@ -311,15 +309,15 @@
 
 - (int)currentSourceIndex
 {
-    ITDebugLog(@"Getting current source.");   
-    return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }"] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    ITDebugLog(@"Getting current source.");
+    return [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value];
 }
 
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
-    int realResult;
+    SInt32 realResult;
     ITDebugLog(@"Getting current playlist class");
-    realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    realResult = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     switch (realResult)
 	   {
 	   case 'cLiP':
@@ -340,7 +338,7 @@
 {  
     int temp1;
     ITDebugLog(@"Getting current playlist index.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting current playlist index done.");
     return temp1;
 }
@@ -349,7 +347,7 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting song title at index %i.", index);
-    temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index], 'core', 'getd', &savedPSN) stringValue];
     ITDebugLog(@"Getting song title at index %i done.", index);
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
@@ -358,7 +356,7 @@
 {
     int temp1;
     ITDebugLog(@"Getting current album track count.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pTrC" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pTrC'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = 0; }
     ITDebugLog(@"Getting current album track count done.");
     return temp1;
@@ -368,7 +366,7 @@
 {
     int temp1;
     ITDebugLog(@"Getting current song track.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pTrN" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pTrN'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = 0; }
     ITDebugLog(@"Getting current song track done.");
     return temp1;
@@ -378,11 +376,12 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current unique identifier.");
-    int cls = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    SInt32 cls = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (cls == 'cURT') ) {
-        temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKey:@"pStT" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        temp1 = [ITSendAEWithKey('pStT', 'core', 'getd', &savedPSN) stringValue];
+		NSLog(@"%@", temp1);
     } else {
-        temp1 = [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pDID" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN]];
+        temp1 = [NSString stringWithFormat:@"%i-%i", [self currentPlaylistIndex], [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pDID'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value]];
     }
     ITDebugLog(@"Getting current unique identifier done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
@@ -392,7 +391,7 @@
 {
     int temp1;
     ITDebugLog(@"Getting current song index.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting current song index done.");
     return temp1;
 }
@@ -403,15 +402,16 @@
     ITDebugLog(@"Getting current song title.");
     
     //If we're listening to the radio.
-    if ([[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] == 'cURT') {
+    if ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] == 'cURT') {
         NSString *bad = [NSString stringWithUTF8String:"浳湧"];
-        temp1 = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKey:@"pStT" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        temp1 = [ITSendAEWithKey('pStT', 'core', 'getd', &savedPSN) stringValue];
         if ([temp1 isEqualToString:bad]) {
-            temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+			NSLog(@"arrrr");
+            temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
         }
         temp1 = [temp1 stringByAppendingString:@" (Stream)"];
     } else {
-        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pnam" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     }
     ITDebugLog(@"Getting current song title done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
@@ -422,7 +422,7 @@
     NSString *temp1;
     ITDebugLog(@"Getting current song artist.");
     if ( [self currentPlaylistClass] != ITMTRemotePlayerRadioPlaylist ) {
-        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pArt" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pArt'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     } else {
         temp1 = @"";
     }
@@ -435,7 +435,7 @@
     NSString *temp1;
     ITDebugLog(@"Getting current song artist.");
     if ( [self currentPlaylistClass] != ITMTRemotePlayerRadioPlaylist ) {
-        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pCmp" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pCmp'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     } else {
         temp1 = @"";
     }
@@ -448,7 +448,7 @@
     NSString *temp1;
     ITDebugLog(@"Getting current song album.");
     if ( [self currentPlaylistClass] != ITMTRemotePlayerRadioPlaylist ) {
-        temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pAlb" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pAlb'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     } else {
         temp1 = @"";
     }
@@ -460,18 +460,18 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current song genre.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pGen" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pGen'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     ITDebugLog(@"Getting current song genre done.");
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
 - (NSString *)currentSongLength
 {
-    int temp1;
+    SInt32 temp1;
     NSString *temp2;
     ITDebugLog(@"Getting current song length.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-    temp2 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    temp2 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pTim'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) stringValue];
     if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (temp1 == 'cURT') ) { temp2 = @"Continuous"; }
     ITDebugLog(@"Getting current song length done.");
     return temp2;
@@ -479,18 +479,13 @@
 
 - (NSString *)currentSongRemaining
 {
-    long duration;
-    long current;
-    long final;
+    SInt32 duration, current, final;
     NSString *finalString;
     
     ITDebugLog(@"Getting current song remaining time.");
     
-    duration = [[ITAppleEventCenter sharedCenter]
-                        sendTwoTierAEWithRequestedKeyForNumber:@"pDur" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-    current = [[ITAppleEventCenter sharedCenter]
-                        sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-                        
+    duration = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pDur'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    current = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPos'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     final = duration - current;
     finalString = [self formatTimeInSeconds:final];
     
@@ -507,10 +502,7 @@
     NSString *finalString;
     
     ITDebugLog(@"Getting current song elapsed time.");
-    
-    final = [[ITAppleEventCenter sharedCenter]
-                        sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-                        
+    final = (long)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPos'), from:'null'() }", 'core', 'getd', &savedPSN) int32Value];
     finalString = [self formatTimeInSeconds:final];
     ITDebugLog(@"Getting current song elapsed time done.");
     return finalString;
@@ -519,7 +511,7 @@
 - (NSImage *)currentSongAlbumArt
 {
     ITDebugLog(@"Getting current song album art.");
-    NSData *data = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForData:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPCT'), from:obj { form:'indx', want:type('cArt'), seld:long(1), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    NSData *data = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPCT'), from:obj { form:'indx', want:type('cArt'), seld:long(1), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }", 'core', 'getd', &savedPSN) data];
     ITDebugLog(@"Getting current song album art done.");    
     if (data) {
         return [[[NSImage alloc] initWithData:data] autorelease];
@@ -532,7 +524,7 @@
 {
     int count;
     ITDebugLog(@"Getting current song play count.");
-    count = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pPlC" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    count = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlC'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting current song play count done.");
     return count;
 }
@@ -541,8 +533,7 @@
 {
     float temp1;
     ITDebugLog(@"Getting current song rating.");
-    temp1 = ((float)[[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] / 100.0);
+    temp1 = ((float)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] / 100.0);
     if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = -1.0; }
     ITDebugLog(@"Getting current song rating done.");
     return temp1;
@@ -552,7 +543,7 @@
 {
     ITDebugLog(@"Setting current song rating to %f.", rating);
     if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { return NO; }
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self currentSongIndex]] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100), [self currentSongIndex]], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Setting current song rating to %f done.", rating);
     return YES;
 }
@@ -560,7 +551,7 @@
 - (BOOL)equalizerEnabled
 {
     ITDebugLog(@"Getting equalizer enabled status.");
-    int thingy = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pEQ " eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    int thingy = (int)[ITSendAEWithKey('pEQ ', 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Done getting equalizer enabled status.");
     return (thingy != 0) ? YES : NO;
 }
@@ -568,7 +559,7 @@
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
     ITDebugLog(@"Setting equalizer enabled to %i.", enabled);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }",enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }", enabled], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Done setting equalizer enabled to %i.", enabled);
     return YES;
 }
@@ -576,11 +567,11 @@
 - (NSArray *)eqPresets
 {
     int i;
-    long numPresets = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"kocl:type('cEQP'), '----':(), &subj:()" eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
+    SInt32 numPresets = [ITSendAEWithString(@"kocl:type('cEQP'), '----':(), &subj:()", 'core', 'cnte', &savedPSN) int32Value];
     NSMutableArray *presets = [[NSMutableArray alloc] initWithCapacity:numPresets];
     ITDebugLog(@"Getting EQ presets");
     for (i = 1; i <= numPresets; i++) {
-        NSString *theObj = [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }",i] eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+        NSString *theObj = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() } }", i], 'core', 'getd', &savedPSN) stringValue];
         if (theObj) {
             ITDebugLog(@"Adding preset %@", theObj);
             [presets addObject:theObj];
@@ -594,8 +585,7 @@
 {
     int result;
     ITDebugLog(@"Getting current EQ preset index.");
-    result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting current EQ preset index done.");
     return result;
 }
@@ -604,13 +594,13 @@
 {
     ITDebugLog(@"Getting volume.");
     ITDebugLog(@"Getting volume done.");
-    return (float)[[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pVol" eventClass:@"core" eventID:@"getd" appPSN:savedPSN] / 100;
+    return (float)[ITSendAEWithKey('pVol', 'core', 'getd', &savedPSN) int32Value] / 100;
 }
 
 - (BOOL)setVolume:(float)volume
 {
     ITDebugLog(@"Setting volume to %f.", volume);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)(volume*100)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }", (long)(volume * 100)], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Setting volume to %f done.", volume);
     return YES;
 }
@@ -619,8 +609,7 @@
 {
     ITDebugLog(@"Getting shuffle enabled status.");
     BOOL final;
-    int result = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pShf" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    int result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('pPla'), seld:type('pEQP'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     if (result != 0) {
         final = YES;
     } else {
@@ -633,7 +622,7 @@
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
     ITDebugLog(@"Set shuffle enabled to %i", enabled);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigned long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", (unsigned long)enabled], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Set shuffle enabled to %i done", enabled);
     return YES;
 }
@@ -642,8 +631,7 @@
 {
     FourCharCode m00f = 0;
     int result = 0;
-    m00f = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pRpt" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    m00f = (FourCharCode)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('pPla'), seld:type('pEQP'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
     ITDebugLog(@"Getting repeat mode.");
     switch (m00f)
     {
@@ -682,7 +670,7 @@
             m00f = "kRp0";
             break;
     }
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }", m00f], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Setting repeat mode to %c done", m00f);
     return YES;
 }
@@ -690,7 +678,7 @@
 - (BOOL)play
 {
     ITDebugLog(@"Play");
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+	ITSendAE('hook', 'Play', &savedPSN);
     ITDebugLog(@"Play done");
     return YES;
 }
@@ -698,7 +686,7 @@
 - (BOOL)pause
 {
     ITDebugLog(@"Pause");
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Paus" appPSN:savedPSN];
+    ITSendAE('hook', 'Paus', &savedPSN);
     ITDebugLog(@"Pause done");
     return YES;
 }
@@ -706,7 +694,7 @@
 - (BOOL)goToNextSong
 {
     ITDebugLog(@"Go to next track");
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next" appPSN:savedPSN];
+    ITSendAE('hook', 'Next', &savedPSN);
     ITDebugLog(@"Go to next track done");
     return YES;
 }
@@ -714,7 +702,7 @@
 - (BOOL)goToPreviousSong
 {
     ITDebugLog(@"Go to previous track");
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Prev" appPSN:savedPSN];
+    ITSendAE('hook', 'Prev', &savedPSN);
     ITDebugLog(@"Go to previous track done");
     return YES;
 }
@@ -722,7 +710,7 @@
 - (BOOL)forward
 {
     ITDebugLog(@"Fast forward action");
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Fast" appPSN:savedPSN];
+    ITSendAE('hook', 'Fast', &savedPSN);
     ITDebugLog(@"Fast forward action done");
     return YES;
 }
@@ -730,7 +718,7 @@
 - (BOOL)rewind
 {
     ITDebugLog(@"Rewind action");
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Rwnd" appPSN:savedPSN];
+    ITSendAE('hook', 'Rwnd', &savedPSN);
     ITDebugLog(@"Rewind action done");
     return YES;
 }
@@ -738,7 +726,7 @@
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
     ITDebugLog(@"Switching to playlist at index %i", index);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:() }", index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:() }", index], 'hook', 'Play', &savedPSN);
     ITDebugLog(@"Done switching to playlist at index %i", index);
     return YES;
 }
@@ -746,8 +734,7 @@
 - (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2
 {
     ITDebugLog(@"Switching to playlist at index %i of source %i", index, index2);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from: obj { form:'indx', want:type('cSrc'), seld:long(%lu), from:'null'() } }", index - 1, index2 + 1] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
-    //{ form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'indx', want:type('cSrc'), seld:long('%lu'), from:'null'() } } -- obj { form:'indx', want:type('cSrc'), seld:long(1), from:'null'() }
+	ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from: obj { form:'indx', want:type('cSrc'), seld:long(%lu), from:'null'() } }", index - 1, index2 + 1], 'hook', 'Play', &savedPSN);
     ITDebugLog(@"Done switching to playlist at index %i of source %i", index, index2);
     return YES;
 }
@@ -755,7 +742,7 @@
 - (BOOL)switchToSongAtIndex:(int)index
 {
     ITDebugLog(@"Switching to track at index %i", index);
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",index] eventClass:@"hook" eventID:@"Play" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }", index], 'hook' ,'Play', &savedPSN);
     ITDebugLog(@"Done switching to track at index %i", index);
     return YES;
 }
@@ -765,7 +752,7 @@
     ITDebugLog(@"Switching to EQ preset at index %i", index);
     // index should count from 0, but itunes counts from 1, so let's add 1.
     [self setEqualizerEnabled:YES];
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }",(index+1)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+	ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }", (index+1)], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Done switching to EQ preset at index %i", index);
     return YES;
 }

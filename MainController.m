@@ -359,7 +359,6 @@ static MainController *sharedController;
 {
     if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
         ITDebugLog(@"The song changed.");
-        
         if ([df boolForKey:@"runScripts"]) {
             NSArray *scripts = [[NSFileManager defaultManager] directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
             NSEnumerator *scriptsEnum = [scripts objectEnumerator];
