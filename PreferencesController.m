@@ -61,10 +61,8 @@ static PreferencesController *prefs = nil;
 
 - (void)setController:(id)object
 {
-NSLog(@"foo");
     [controller autorelease];
     controller = [object retain];
-NSLog(@"bar");
 }
 
 
@@ -72,7 +70,6 @@ NSLog(@"bar");
 #pragma mark -
 #pragma mark INSTANCE METHODS
 /*************************************************************************/
-
 
 - (IBAction)showPrefsWindow:(id)sender
 {
@@ -178,6 +175,72 @@ NSLog(@"bar");
         }
     }*/
     [controller clearHotKeys];
+}
+
+- (void)registerDefaults
+{
+    BOOL found = NO;
+    NSMutableDictionary *loginWindow;
+    NSMutableArray *loginArray;
+    NSEnumerator *loginEnum;
+    id anItem;
+
+    [df setObject:[NSArray arrayWithObjects:
+        @"Play/Pause",
+        @"Next Track",
+        @"Previous Track",
+        @"Fast Forward",
+        @"Rewind",
+        @"<separator>",
+        @"Upcoming Songs",
+        @"Playlists",
+        @"Song Rating",
+        @"<separator>",
+        @"Preferences…",
+        @"Quit",
+        @"<separator>",
+        @"Current Track Info",
+        nil] forKey:@"menu"];
+
+    [df setInteger:5 forKey:@"SongsInAdvance"];
+    [df setBool:YES forKey:@"showName"];
+    [df setBool:YES forKey:@"showArtist"];
+    [df setBool:NO forKey:@"showAlbum"];
+    [df setBool:NO forKey:@"showTime"];
+
+    [df synchronize];
+    
+    loginWindow = [[df persistentDomainForName:@"loginwindow"] mutableCopy];
+    loginArray = [loginWindow objectForKey:@"AutoLaunchedApplicationDictionary"];
+    loginEnum = [loginArray objectEnumerator];
+
+    while ( (anItem = [loginEnum nextObject]) ) {
+        if ( [[[anItem objectForKey:@"Path"] lastPathComponent] isEqualToString:[[[NSBundle mainBundle] bundlePath] lastPathComponent]] ) {
+            found = YES;
+        }
+    }
+
+    [loginWindow release];
+    
+    // This is teh sux
+    // We must fix it so it is no longer suxy
+    if (!found) {
+        if (NSRunInformationalAlertPanel(@"Auto-launch MenuTunes", @"Would you like MenuTunes to automatically launch at login?", @"Yes", @"No", nil) == NSOKButton) {
+            AEDesc scriptDesc, resultDesc;
+            NSString *script = [NSString stringWithFormat:@"tell application \"System Events\"\nmake new login item at end of login items with properties {path:\"%@\", kind:\"APPLICATION\"}\nend tell", [[NSBundle mainBundle] bundlePath]];
+            ComponentInstance asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
+
+            AECreateDesc(typeChar, [script cString], [script cStringLength],
+                         &scriptDesc);
+
+            OSADoScript(asComponent, &scriptDesc, kOSANullScript, typeChar, kOSAModeCanInteract, &resultDesc);
+
+            AEDisposeDesc(&scriptDesc);
+            AEDisposeDesc(&resultDesc);
+
+            CloseComponent(asComponent);
+        }
+    }
 }
 
 - (IBAction)cancelHotKey:(id)sender

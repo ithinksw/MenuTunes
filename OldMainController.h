@@ -64,7 +64,6 @@
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
 
-- (void)registerDefaults;
 - (void)rebuildMenu;
 
 - (void)clearHotKeys;

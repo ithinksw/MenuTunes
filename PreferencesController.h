@@ -57,6 +57,7 @@
 - (void)setController:(id)object;
 
 - (IBAction)showPrefsWindow:(id)sender;
+- (void)registerDefaults;
 
 - (IBAction)cancelHotKey:(id)sender;
 - (IBAction)clearHotKey:(id)sender;
