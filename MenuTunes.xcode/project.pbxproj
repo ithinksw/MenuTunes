@@ -86,8 +86,7 @@
 			sourceTree = "<group>";
 		};
 		1058C7A1FEA54F0111CA2CBB = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
@@ -138,7 +137,7 @@
 		29B97313FDCFA39411CA2CEA = {
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
-				SDKROOT = /Developer/SDKs/MacOSX10.2.7.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
 			};
 			buildStyles = (
 				4A9504CCFFE6A4B311CA0CBA,
@@ -254,8 +253,7 @@
 			sourceTree = "<group>";
 		};
 		29B97324FDCFA39411CA2CEA = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
@@ -263,8 +261,7 @@
 			sourceTree = "<absolute>";
 		};
 		29B97325FDCFA39411CA2CEA = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
@@ -362,8 +359,6 @@
 //4A3
 //4A4
 		4A9504CCFFE6A4B311CA0CBA = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
@@ -378,10 +373,9 @@
 			name = Development;
 		};
 		4A9504CDFFE6A4B311CA0CBA = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				ZERO_LINK = NO;
@@ -501,11 +495,10 @@
 		};
 		7C331F6905A918EC0088905B = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
-			name = "ITMTRemote-Info.plist";
-			path = "/Volumes/Data/Desktop/MenuTunes/ITMTRemote-Info.plist";
-			refType = 0;
-			sourceTree = "<absolute>";
+			lastKnownFileType = text.xml;
+			path = "ITMTRemote-Info.plist";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		7C331F6A05A918FB0088905B = {
 			buildActionMask = 2147483647;
@@ -612,11 +605,10 @@
 		};
 		7C331F7005A918FB0088905B = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
-			name = "iTunesRemote-Info.plist";
-			path = "/Volumes/Data/Desktop/MenuTunes/iTunesRemote-Info.plist";
-			refType = 0;
-			sourceTree = "<absolute>";
+			lastKnownFileType = text.xml;
+			path = "iTunesRemote-Info.plist";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		7C331F8D05A921AC0088905B = {
 			fileEncoding = 4;

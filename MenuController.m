@@ -772,7 +772,7 @@
 
 - (NSMenu *)artistsMenu
 {
-    NSMenu *artistsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSMenu *artistsMenu = [[NSMenu alloc] initWithTitle:@"Artists"];
     NSEnumerator *artistsEnumerator;
     NSString *nextArtist;
     id <NSMenuItem> tempItem;
@@ -781,8 +781,6 @@
         artistsEnumerator = [[[[MainController sharedController] currentRemote] artists] objectEnumerator];
         while ( (nextArtist = [artistsEnumerator nextObject]) ) {
             tempItem = [artistsMenu addItemWithTitle:nextArtist action:@selector(performBrowseMenuAction:) keyEquivalent:@""];
-            [tempItem setRepresentedObject:nextArtist];
-            [tempItem setTag:1];
             [tempItem setTarget:self];
         }
     NS_HANDLER
@@ -794,7 +792,7 @@
 
 - (NSMenu *)albumsMenu
 {
-    NSMenu *albumsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSMenu *albumsMenu = [[NSMenu alloc] initWithTitle:@"Albums"];
     NSEnumerator *albumsEnumerator;
     NSString *nextAlbum;
     id <NSMenuItem> tempItem;
@@ -803,8 +801,6 @@
         albumsEnumerator = [[[[MainController sharedController] currentRemote] albums] objectEnumerator];
         while ( (nextAlbum = [albumsEnumerator nextObject]) ) {
             tempItem = [albumsMenu addItemWithTitle:nextAlbum action:@selector(performBrowseMenuAction:) keyEquivalent:@""];
-            [tempItem setRepresentedObject:nextAlbum];
-            [tempItem setTag:2];
             [tempItem setTarget:self];
         }
     NS_HANDLER
@@ -886,13 +882,13 @@
 
 - (void)performBrowseMenuAction:(id)sender
 {
-    ITDebugLog(@"Browse action selected on item with object %@ and tag %i", [sender representedObject], [sender tag]);
+    ITDebugLog(@"Browse action selected on item named %@", [sender title]);
     /*
     ** 1 - Artist
     ** 2 - Album
     ** 3 - Genre?
     */
-    [[MainController sharedController] makePlaylistWithTerm:[sender representedObject] ofType:[sender tag]];
+    [[MainController sharedController] makePlaylistWithTerm:[sender title] ofType:(([[[sender menu] title] isEqualToString:@"Artists"]) ? 1 : 2)];
 }
 
 - (void)updateMenu
