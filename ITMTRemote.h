@@ -34,7 +34,7 @@ typedef enum {
     playing,
     rewinding,
     forwarding
-} PlayerState;
+} ITMTRemotePlayerState;
 
 /*! @protocol ITMTRemote
  *  @abstract Declares what a MenuTunes Remote must be able to do.
@@ -85,8 +85,17 @@ typedef enum {
  */
 - (BOOL)halt;
 
+/*! @method isAppRunning:
+ *  @abstract Returns controlled application's running status (is or isn't running).
+ *  @result BOOL of the controlled application's running status.
+ */
 - (BOOL)isAppRunning;
-- (PlayerState)playerState;
+
+/*! @method playerState:
+ *  @abstract Returns controlled application's playing state.
+ *  @result ITMTRemotePlayerState of the controlled application's playing state.
+ */
+- (ITMTRemotePlayerState)playerState;
 
 - (NSArray *)playlists;
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;
@@ -103,11 +112,14 @@ typedef enum {
 - (NSString *)currentSongLength;
 - (NSString *)currentSongRemaining;
 
-- (int)currentSongRating;
-- (BOOL)setCurrentSongRating:(int)rating;
+- (float)currentSongRating;
+- (BOOL)setCurrentSongRating:(float)rating;
 
 - (NSArray *)eqPresets;
 - (int)currentEQPresetIndex;
+
+- (float)volume;
+- (BOOL)setVolume:(float)volume;
 
 - (BOOL)play;
 - (BOOL)pause;

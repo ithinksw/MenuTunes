@@ -594,7 +594,7 @@ Things to do:
 - (void)timerUpdate
 {
     int playlist = [currentRemote currentPlaylistIndex];
-    PlayerState playerState = [currentRemote playerState];
+    ITMTRemotePlayerState playerState = [currentRemote playerState];
     
     if ((playlist > 0) || playerState != stopped) {
         int trackPlayingIndex = [currentRemote currentSongIndex];
@@ -731,7 +731,7 @@ Things to do:
 
 - (void)playPause:(id)sender
 {
-    PlayerState state = [currentRemote playerState];
+    ITMTRemotePlayerState state = [currentRemote playerState];
     
     if (state == playing) {
         [currentRemote pause];

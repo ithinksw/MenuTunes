@@ -9,7 +9,7 @@
 
 - (NSString *)title
 {
-    return @"iTunes Plug-in";
+    return @"iTunes";
 }
 
 - (NSString *)information;
@@ -58,7 +58,7 @@
     return NO;
 }
 
-- (PlayerState)playerState
+- (ITMTRemotePlayerState)playerState
 {
     long result = [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     
@@ -166,12 +166,22 @@
     return [[NSNumber numberWithLong:duration - current] stringValue];
 }
 
-- (int)currentSongRating
+- (float)currentSongRating
 {
-    return 0;
+    return 0.00;
 }
 
-- (BOOL)setCurrentSongRating:(int)rating
+- (BOOL)setCurrentSongRating:(float)rating
+{
+    return NO;
+}
+
+- (float)volume
+{
+    return 1.00;
+}
+
+- (BOOL)setVolume:(float)volume
 {
     return NO;
 }

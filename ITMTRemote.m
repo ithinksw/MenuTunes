@@ -38,7 +38,7 @@
     return NO;
 }
 
-- (PlayerState)playerState
+- (ITMTRemotePlayerState)playerState
 {
     return stopped;
 }
@@ -103,12 +103,22 @@
     return nil;
 }
 
-- (int)currentSongRating
+- (float)currentSongRating
 {
-    return 0;
+    return 0.00;
 }
 
-- (BOOL)setCurrentSongRating:(int)rating
+- (BOOL)setCurrentSongRating:(float)rating
+{
+    return NO;
+}
+
+- (float)volume
+{
+    return 1.00;
+}
+
+- (BOOL)setVolume:(float)volume
 {
     return NO;
 }
