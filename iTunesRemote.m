@@ -129,10 +129,11 @@
 {
     int realResult = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
     
-    // ADD SUPPORT FOR RETURNING A ITMTRemotePlayerLibraryPlaylist WHEN PLAYLIST IS LIBRARY.
 
     switch (realResult)
 	   {
+	   case 'cLiP':
+		  return ITRemotePlayerLibraryPlaylist;
 	   case 'cRTP':
 		  return ITMTRemotePlayerRadioPlaylist;
 		  break;
@@ -143,9 +144,7 @@
 
 - (int)currentPlaylistIndex
 {
-    int result;
-    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-    return result;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
 }
 
 - (NSString *)songTitleAtIndex:(int)index
@@ -155,9 +154,7 @@
 
 - (int)currentSongIndex
 {
-    int result;
-    result = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-    return result;
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pidx" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
 }
 
 - (NSString *)currentSongTitle
@@ -197,10 +194,8 @@
 
 - (float)currentSongRating
 {
-    int realResult = [[ITAppleEventCenter sharedCenter]
-                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
-
-    return realResult / 100;
+    return [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN] / 100;
 }
 
 - (BOOL)setCurrentSongRating:(float)rating
@@ -211,12 +206,13 @@
 
 - (BOOL)equalizerEnabled
 {
-    return NO;
+    return [[ITAppleEventCenter sharedCenter]
+                        sendAEWithRequestedKeyForNumber:@"pEQ " eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
 }
 
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
-    return NO;
+[[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
 }
 
 - (NSArray *)eqPresets
