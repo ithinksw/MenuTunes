@@ -421,17 +421,6 @@
 
 //
 //
-// Text Field Delegate
-//
-//
-
-- (void)controlTextDidChange:(NSNotification *)note
-{
-    NSLog(@"%@", [note userInfo]);
-}
-
-//
-//
 // Table View Datasource Methods
 //
 //

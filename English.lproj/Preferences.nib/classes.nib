@@ -22,7 +22,6 @@
                 albumCheckbox = NSButton; 
                 allTableView = NSTableView; 
                 artistCheckbox = NSButton; 
-                hotKeyTextField = NSTextField; 
                 keyComboField = NSTextField; 
                 keyComboPanel = NSPanel; 
                 launchAtLoginCheckbox = NSButton; 
