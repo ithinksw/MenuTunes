@@ -793,8 +793,8 @@
     int curSet = [currentRemote currentEQPresetIndex];
     int item = [[sender representedObject] intValue];
     [currentRemote switchToEQAtIndex:item];
-    [[eqMenu itemAtIndex:curSet - 1] setState:NSOffState];
-    [[eqMenu itemAtIndex:item - 1] setState:NSOnState];
+    [[eqMenu itemAtIndex:curSet + 1] setState:NSOffState];
+    [[eqMenu itemAtIndex:item + 2] setState:NSOnState];
 }
 
 - (void)playPause:(id)sender
