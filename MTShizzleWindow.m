@@ -1,4 +1,5 @@
 #import "MTShizzleWindow.h"
+#import "MainController.h"
 
 @interface MTShizzleWindow (Private)
 - (void)setBling:(id)bling;
@@ -36,6 +37,15 @@ static MTShizzleWindow *_privateSharedWindow = nil;
     }
     return self;
 }
+
+- (void)makeKeyAndOrderFront:(id)sender {
+    if ( ( [[NSDate date] timeIntervalSinceDate:[[MainController sharedController] getBlingTime]] >= 604800 ) && ([[regLater title] isEqualToString:@"Register Later"]) ) {
+        [regLater setTitle:@"Quit"];
+        [regLater setTarget:[NSApplication sharedApplication]];
+        [regLater setAction:@selector(terminate:)];
+    }
+    [super makeKeyAndOrderFront:sender];
+}        
 
 - (void)dealloc
 {

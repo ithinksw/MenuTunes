@@ -33,13 +33,13 @@
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
     NSString *_latestSongIdentifier;
-    
+
     StatusWindowController *statusWindowController; //Shows status windows
     MenuController *menuController;
     NSUserDefaults *df;
     
-    NSDate *blingDate;
     MTBlingController *bling;
+    NSTimer *registerTimer;
     BOOL timerUpdating;
 }
 + (MainController *)sharedController;

@@ -233,7 +233,7 @@ static StatusWindowController *sharedController;
     [_window setImage:[NSImage imageNamed:@"Register"]];
     [_window buildDialogWindowWithMessage:message
                             defaultButton:@"Register Now"
-                          alternateButton:@"Quit MenuPrefs"
+                          alternateButton:@"Quit MenuTunes"
                                    target:[MainController sharedController]
                             defaultAction:@selector(registerNowOK)
                           alternateAction:@selector(registerNowCancel)];

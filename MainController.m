@@ -4,6 +4,7 @@
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
+#import "StatusWindow.h"
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
 
@@ -51,9 +52,6 @@ static MainController *sharedController;
         SetITDebugMode(YES);
     }
     
-    bling = [[MTBlingController alloc] init];
-    blingDate = nil;
-    
     currentRemote = [self loadRemote];
     [currentRemote begin];
     
@@ -78,6 +76,14 @@ static MainController *sharedController;
     statusItem = [[ITStatusItem alloc]
             initWithStatusBar:[NSStatusBar systemStatusBar]
             withLength:NSSquareStatusItemLength];
+    
+    bling = [[MTBlingController alloc] init];
+    [self blingTime];
+    registerTimer = [[NSTimer scheduledTimerWithTimeInterval:10.0
+                             target:self
+                             selector:@selector(blingTime)
+                             userInfo:nil
+                             repeats:YES] retain];
     
     if ([currentRemote playerRunningState] == ITMTRemotePlayerRunning) {
         [self applicationLaunched:nil];
@@ -148,21 +154,45 @@ static MainController *sharedController;
     [pool release];
 }*/
 
+- (void)setBlingTime:(NSDate*)date
+{
+    NSMutableDictionary *globalPrefs;
+    [df synchronize];
+    globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
+    [globalPrefs setObject:date forKey:@"ITMTTrialStart"];
+    [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
+    [df synchronize];
+    [globalPrefs release];
+}
+
+- (NSDate*)getBlingTime
+{
+    [df synchronize];
+    return [[df persistentDomainForName:@".GlobalPreferences"] objectForKey:@"ITMTTrialStart"];
+}
+
 - (void)blingTime
 {
     NSDate *now = [NSDate date];
-    if ( (! blingDate) || ([now timeIntervalSinceDate:blingDate] >= 86400) ) {
-        [bling showPanelIfNeeded];
-        [blingDate autorelease];
-        blingDate = [now retain];
+    if ( (! [self getBlingTime] ) ) {
+        [self setBlingTime:now];
+    }
+    if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) ) {
+        [statusItem setEnabled:NO];
+        [self clearHotKeys];
+        if ([refreshTimer isValid]) {
+        [refreshTimer invalidate];
+        }
+        if ([registerTimer isValid]) {
+        [registerTimer invalidate];
+        }
+        [statusWindowController showRegistrationQueryWindow];
     }
 }
 
 - (void)blingNow
 {
     [bling showPanel];
-    [blingDate autorelease];
-    blingDate = [[NSDate date] retain];
 }
 
 - (BOOL)blingBling
@@ -710,7 +740,7 @@ static MainController *sharedController;
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 
-    [NSApp terminate];
+    [NSApp terminate:self];
 }
 
 
@@ -745,6 +775,9 @@ static MainController *sharedController;
         [refreshTimer invalidate];
         [refreshTimer release];
         refreshTimer = nil;
+        [registerTimer invalidate];
+        [registerTimer release];
+        registerTimer = nil;
         [self clearHotKeys];
         playerRunningState = ITMTRemotePlayerNotRunning;
      }
