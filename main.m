@@ -13,7 +13,7 @@ static const int (*ptp)(int,int,caddr_t,int) = ptrace;
 
 int main(int argc, const char *argv[])
 {
-#ifdef RELEASE
+#ifdef MT_RELEASE
     ptp(PT_DENY_ATTACH,getpid(),NULL,0);
 #endif
     return NSApplicationMain(argc, argv);
