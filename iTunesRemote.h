@@ -8,13 +8,15 @@
 
 
 #import <Cocoa/Cocoa.h>
+#import <Carbon/Carbon.h>
 #import <ITMTRemote/ITMTRemote.h>
 #import <ITFoundation/ITFoundation.h>
 
-
 @interface iTunesRemote : ITMTRemote <ITMTRemote>
 {
+    ComponentInstance asComponent;
     ProcessSerialNumber iTunesPSN;
 }
 - (ProcessSerialNumber)iTunesPSN;
+- (NSString *)runScriptAndReturnResult:(NSString *)script;
 @end

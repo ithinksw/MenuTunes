@@ -77,6 +77,7 @@
  */
 - (BOOL)halt;
 
+- (int)numberOfPlaylists;
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;
 - (NSString *)classOfPlaylistAtIndex:(int)index;
 - (int)currentPlaylistIndex;

@@ -45,6 +45,8 @@ Things to do:
 - (void)applicationDidFinishLaunching:(NSNotification *)note
 {
     currentRemote = [self loadRemote];
+    [currentRemote begin];
+    
     asComponent = OpenDefaultComponent(kOSAComponentType, kAppleScriptSubtype);
 
     [self registerDefaultsIfNeeded];
@@ -767,7 +769,6 @@ andEventID:(AEEventID)eventID
 
 - (void)playPause:(id)sender
 {
-    NSString *rawr;
     NSString *state = [self runScriptAndReturnResult:@"return player state"];
     if ([state isEqualToString:@"playing"]) {
         [self sendAEWithEventClass:'hook' andEventID:'Paus'];

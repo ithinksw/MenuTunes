@@ -33,6 +33,11 @@
     return NO;
 }
 
+- (int)numberOfPlaylists
+{
+    return 0;
+}
+
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
     return 0;
