@@ -14,6 +14,11 @@
 
 \f3\b0\fs20 \cf0 \ulnone \
     Priority: SHOWSTOPPER\
+       Owner: Joseph Spiros\
+      Status: Analyze\
+       Issue: Application - Crash on launch.\
+\
+    Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Analyze\
        Issue: Menu - Rebuild speed is abyssmal.  It needs to take less than half a second. (Note [Joe] I believe something (not sure what) I did tonight fixed this.. double check for me, though, as I wasn't the one who reported this bug)\
@@ -21,12 +26,12 @@
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Analyze\
-       Issue: HotKeys - FKeys (F1 - F15) must be made to work without a modifier key. (Note [Joe] Might want to make this 1.1, or even 1.0.1, as this actually requires us to do some research, and we might not have time)\
+       Issue: HotKeys - FKeys (F1 - F15) must be made to work without a modifier key.\
 \
     Priority: SHOWSTOPPER\
-       Owner: Kent Sutherland\
-      Status: Analyze\
-       Issue: HotKeys - Hotkeys which use the space bar must show the word "Space" in the menu. (Note [Joe] I believe the code I added for this will work, though since hotkeys won't save, I can't test it...)\
+       Owner: Joseph Spiros\
+      Status: Build\
+       Issue: HotKeys - Hotkeys which use the space bar must show the word "Space" in the menu.\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
@@ -68,7 +73,7 @@
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Assigned\
-       Issue: Menu - Shows "No Song" when one is playing. (if not in a playlist?) (Note [Joe] this is misleading, it still shows the song's info, it just says "No Song" at the beginning of the Song info block. Also, I'm not exactly sure how it couldn't be in a playlist, at least, using the iTunes plugin, since even the Library is a playlist)\
+       Issue: Menu - Song Info shows "No Song" instead of "Now Playing", even when one is playing.\
 \
     Priority: SHOWSTOPPER\
        Owner: Joseph Spiros\
@@ -78,18 +83,13 @@
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Assigned\
-       Issue: Menu - Song Info displayed twice in menu if MT is launched when iTunes is already open. (Note [Joe] Haven't been able to reproduce this)\
+       Issue: Menu - Song Info displayed twice in menu if MT is launched when iTunes is already open.\
 \
     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
       Status: Assigned\
        Issue: Hot Keys (Preferences) - Changing hot keys in the prefs has no effect.\
 \
-    Priority: Important\
-       Owner: Kent Sutherland\
-      Status: Assigned\
-       Issue: Hot Keys (Preferences) - Migrate to new style. (Note [Joe] Move this to a 1.1 future feature... we don't have time, and old style works great, apart from above problem)\
-       \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
 \cf2     Priority: SHOWSTOPPER\
        Owner: Kent Sutherland\
@@ -124,7 +124,11 @@ No entries yet.\
 
 \f3\fs20 \cf0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
-\cf0     Priority: FUTURE\
+\cf0     Priority: IMPORTANT\
+      Status: Assigned\
+       Issue: Hot Keys (Preferences) - Migrate to new style.\
+       \
+    Priority: FUTURE\
       Status: Future\
        Issue: Upcoming Songs - should be clickable.\
 \pard\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\ql\qnatural
