@@ -12,15 +12,10 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
         mt = [tunes retain];
-        [mt registerDefaultsIfNeeded];
-
+        [mt registerDefaults];
+        
         //Load the nib
         [NSBundle loadNibNamed:@"Preferences" owner:self];
-        
-        //Show our window
-        [window setLevel:NSStatusWindowLevel];
-        [window center];
-        [window makeKeyAndOrderFront:nil];
         
         //Set the table view cells up
         [imgCell setImageScaling:NSScaleNone];
@@ -111,6 +106,12 @@
                 }
             }
         }
+        
+        //Show our window
+        [window setLevel:NSStatusWindowLevel];
+        [window center];
+        [window makeKeyAndOrderFront:nil];
+        [window setDelegate:self];
     }
     return self;
 }
@@ -209,7 +210,7 @@
         [defaults setInteger:5 forKey:@"SongsInAdvance"];
     }
     
-    {
+    /*{
         NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
         int i;
         
@@ -219,7 +220,7 @@
                 [mt rebuildMenu];
             }
         }
-    }
+    }*/
     [mt clearHotKeys];
 }
 
@@ -389,6 +390,14 @@
         string = @"";
     }
     [keyComboField setStringValue:string];
+}
+
+//
+//
+
+- (void)windowWillClose:(NSNotification *)note
+{
+    [mt closePreferences];
 }
 
 //
