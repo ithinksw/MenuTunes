@@ -160,8 +160,8 @@ static PreferencesController *prefs = nil;
             [self setCurrentHotKey:@"PrevTrack"];
             break;
         case 4035:
-            [self setKeyCombo:[hotKeysDictionary objectForKey:@"ToggleVisualizer"]];
-            [self setCurrentHotKey:@"ToggleVisualizer"];
+            [self setKeyCombo:[hotKeysDictionary objectForKey:@"ShowPlayer"]];
+            [self setCurrentHotKey:@"ShowPlayer"];
             break;
         case 4040:
             [self setKeyCombo:[hotKeysDictionary objectForKey:@"ToggleLoop"]];
@@ -300,8 +300,8 @@ static PreferencesController *prefs = nil;
                         [nextTrackButton setTitle:@""];
                     } else if ([enumKey isEqualToString:@"PrevTrack"]) {
                         [previousTrackButton setTitle:@""];
-                    } else if ([enumKey isEqualToString:@"ToggleVisualizer"]) {
-                        [visualizerButton setTitle:@""];
+                    } else if ([enumKey isEqualToString:@"ShowPlayer"]) {
+                        [showPlayerButton setTitle:@""];
                     } else if ([enumKey isEqualToString:@"TrackInfo"]) {
                         [trackInfoButton setTitle:@""];
                     } else if ([enumKey isEqualToString:@"UpcomingSongs"]) {
@@ -340,9 +340,9 @@ static PreferencesController *prefs = nil;
     } else if ([currentHotKey isEqualToString:@"PrevTrack"]) {
         [previousTrackButton setTitle:string];
         [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack" combo:combo target:[MainController sharedController] action:@selector(prevSong)];
-    } else if ([currentHotKey isEqualToString:@"ToggleVisualizer"]) {
-        [visualizerButton setTitle:string];
-        //[[HotKeyCenter sharedCenter] addHotKey:@"ToggleVisualizer" combo:combo target:[MainController sharedController] selector:@selector(NULL)];
+    } else if ([currentHotKey isEqualToString:@"ShowPlayer"]) {
+        [showPlayerButton setTitle:string];
+        [[HotKeyCenter sharedCenter] addHotKey:@"ShowPlayer" combo:combo target:[MainController sharedController] action:@selector(showPlayer)];
     } else if ([currentHotKey isEqualToString:@"TrackInfo"]) {
         [trackInfoButton setTitle:string];
         [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo" combo:combo target:[MainController sharedController] action:@selector(showCurrentTrackInfo)];
@@ -523,12 +523,12 @@ static PreferencesController *prefs = nil;
         [hotKeysDictionary setObject:[KeyCombo keyCombo] forKey:@"PrevTrack"];
     }
     
-    if ([df objectForKey:@"ToggleVisualizer"]) {
-        anItem = [df keyComboForKey:@"ToggleVisualizer"];
-        [hotKeysDictionary setObject:anItem forKey:@"ToggleVisualizer"];
-        [visualizerButton setTitle:[anItem userDisplayRep]];
+    if ([df objectForKey:@"ShowPlayer"]) {
+        anItem = [df keyComboForKey:@"ShowPlayer"];
+        [hotKeysDictionary setObject:anItem forKey:@"ShowPlayer"];
+        [showPlayerButton setTitle:[anItem userDisplayRep]];
     } else {
-        [hotKeysDictionary setObject:[KeyCombo keyCombo] forKey:@"ToggleVisualizer"];
+        [hotKeysDictionary setObject:[KeyCombo keyCombo] forKey:@"ShowPlayer"];
     }
     
     if ([df objectForKey:@"TrackInfo"]) {

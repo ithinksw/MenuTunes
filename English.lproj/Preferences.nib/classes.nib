@@ -28,6 +28,7 @@
                 previousTrackButton = NSButton; 
                 ratingDecrementButton = NSButton; 
                 ratingIncrementButton = NSButton; 
+                showPlayerButton = NSButton; 
                 songsInAdvance = NSTextField; 
                 toggleLoopButton = NSButton; 
                 toggleShuffleButton = NSButton; 
@@ -35,7 +36,6 @@
                 trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
                 upcomingSongsButton = NSButton; 
-                visualizerButton = NSButton; 
                 volumeDecrementButton = NSButton; 
                 volumeIncrementButton = NSButton; 
                 window = NSWindow; 

@@ -11,16 +11,20 @@
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
 
 \f2\fs20 \cf0 MainController:\
+We now run on only one thread so that we don't have rebuild timing problems\
 Hot keys need to work with FKeys and no modifier\
 Make status windows work\
 \
 MenuController:\
 Space key equivalent needs to show up\
+If you try to open iTunes, and then build the menu, it breaks waiting for iTunes to respond to AEs.\
+\
+PreferencesController:\
+Do we want that preferences checkbox "Launch iTunes When MenuTunes Launches"? It isn't very pluginesque and I think our menu saying launch player is good enough.\
 \
 iTunesRemote:\
-Toggling shuffle, loop and show player don't work.\
-\
-I need to add toggle visualier hotkey. I think we should change it to Show Player though
+-showPrimaryInterface doesn't show the browser window it and unminimize it\
+Toggling shuffle and toggle loop don't work
 \f1\fs28 \
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural

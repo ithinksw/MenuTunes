@@ -38,7 +38,7 @@
     IBOutlet NSButton *trackNumberCheckbox;
     IBOutlet NSButton *trackTimeCheckbox;
     IBOutlet NSButton *upcomingSongsButton;
-    IBOutlet NSButton *visualizerButton;
+    IBOutlet NSButton *showPlayerButton;
     IBOutlet NSButton *volumeDecrementButton;
     IBOutlet NSButton *volumeIncrementButton;
     IBOutlet NSWindow *window;

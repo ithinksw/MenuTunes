@@ -294,6 +294,7 @@ static MainController *sharedController;
     [[HotKeyCenter sharedCenter] removeHotKey:@"NextTrack"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
+    [[HotKeyCenter sharedCenter] removeHotKey:@"ShowPlayer"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
     [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleShuffle"];
@@ -321,6 +322,12 @@ static MainController *sharedController;
         [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
                 combo:[df keyComboForKey:@"PrevTrack"]
                 target:self action:@selector(prevSong)];
+    }
+    
+    if ([df objectForKey:@"ShowPlayer"] != nil) {
+        [[HotKeyCenter sharedCenter] addHotKey:@"ShowPlayer"
+                combo:[df keyComboForKey:@"ShowPlayer"]
+                target:self action:@selector(showPlayer)];
     }
     
     if ([df objectForKey:@"TrackInfo"] != nil) {
@@ -540,7 +547,12 @@ static MainController *sharedController;
         [currentRemote begin];
         [self setLatestSongIdentifier:@""];
         [self timerUpdate];
-        [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
+        refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
+                             target:self
+                             selector:@selector(timerUpdate)
+                             userInfo:nil
+                             repeats:YES] retain];
+        //[NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
         [self setupHotKeys];
         playerRunningState = ITMTRemotePlayerRunning;
     }

@@ -137,6 +137,13 @@
             }
         } else if ([nextObject isEqualToString:@"Show Player"]) {
             tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"Show %@", [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+            
+            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"ShowPlayer"]) ) {
+                [self setKeyEquivalentForCode:[keyCombo keyCode]
+                        andModifiers:[keyCombo modifiers]
+                        onItem:tempItem];
+            }
+            
             [tempItem setTarget:self];
             [tempItem setTag:MTMenuShowPlayerItem];
         } else if ([nextObject isEqualToString:@"Preferences"]) {
@@ -177,9 +184,12 @@
                 }
                 
                 if ([defaults boolForKey:@"showTrackNumber"]) {
-                    [menu addItemWithTitle:[NSString stringWithFormat:@"	 Track %i", [currentRemote currentSongTrack]]
+                    int track = [currentRemote currentSongTrack];
+                    if (track) {
+                        [menu addItemWithTitle:[NSString stringWithFormat:@"	 Track %i", track]
                             action:nil
                             keyEquivalent:@""];
+                    }
                 }
                 
                 if ([defaults boolForKey:@"showTime"]) {
