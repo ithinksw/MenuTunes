@@ -20,7 +20,7 @@
 
 
 //@class MenuTunesView;
-@class PreferencesController, StatusWindowController;
+@class PreferencesController, ITTransientStatusWindow;
 
 @interface MenuTunes : NSObject
 {
@@ -52,7 +52,7 @@
     NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
     
     PreferencesController *prefsController;
-    StatusWindowController *statusController; //Shows track info and upcoming songs.
+    ITTransientStatusWindow *statusWindow; //Shows track info and upcoming songs.
 }
 
 - (void)registerDefaultsIfNeeded;

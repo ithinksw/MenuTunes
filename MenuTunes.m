@@ -10,7 +10,6 @@ Things to do:
 #import "MenuTunes.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
-#import "StatusWindowController.h"
 
 @interface MenuTunes(Private)
 - (ITMTRemote *)loadRemote;
@@ -36,6 +35,7 @@ Things to do:
 {
     if ( ( self = [super init] ) ) {
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
+        statusWindow = [ITTransientStatusWindow sharedWindow];
     }
     return self;
 }
@@ -774,7 +774,7 @@ Things to do:
 - (void)showCurrentTrackInfo
 {
     NSString *trackName = [currentRemote currentSongTitle];
-    if (!statusController && [trackName length]) {
+    if (!statusWindow && [trackName length]) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *stringToShow = @"";
         
@@ -814,8 +814,7 @@ Things to do:
             }
         }
         
-        statusController = [[StatusWindowController alloc] init];
-        [statusController setTrackInfo:stringToShow];
+        [statusWindow setTrackInfo:stringToShow];
         [NSTimer scheduledTimerWithTimeInterval:3.0
                                     target:self
                                     selector:@selector(fadeAndCloseStatusWindow)
@@ -827,7 +826,7 @@ Things to do:
 - (void)showUpcomingSongs
 {
     int curPlaylist = [currentRemote currentPlaylistIndex];
-    if (!statusController) {
+    if (!statusWindow) {
         int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:curPlaylist];
         
         if (numSongs > 0) {
@@ -836,7 +835,7 @@ Things to do:
             int i;
             NSString *songs = @"";
             
-            statusController = [[StatusWindowController alloc] init];
+            statusWindow = [ITTransientStatusWindow sharedWindow];
             for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
                     NSString *curSong = [currentRemote songTitleAtIndex:i];
@@ -844,7 +843,7 @@ Things to do:
                     songs = [songs stringByAppendingString:@"\n"];
                 }
             }
-            [statusController setUpcomingSongs:songs];
+            [statusWindow setUpcomingSongs:songs];
             [NSTimer scheduledTimerWithTimeInterval:3.0
                         target:self
                         selector:@selector(fadeAndCloseStatusWindow)
@@ -856,9 +855,7 @@ Things to do:
 
 - (void)fadeAndCloseStatusWindow
 {
-    [statusController fadeWindowOut];
-    [statusController release];
-    statusController = nil;
+    [statusWindow orderOut:self];
 }
 
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
