@@ -713,7 +713,9 @@ Things to do:
     int playlist = [[sender representedObject] intValue];
     if (!isPlayingRadio) {
         int curPlaylist = [currentRemote currentPlaylistIndex];
-        [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
+        if (curPlaylist > 0) {
+            [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
+        }
     }
     [currentRemote switchToPlaylistAtIndex:playlist];
     [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
