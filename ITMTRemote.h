@@ -40,7 +40,8 @@ typedef enum {
     ITMTDiscTotal,
     ITMTTrackComments,
     ITMTTrackGenre,
-    ITMTTrackRating
+    ITMTTrackRating,
+    ITMTTrackHash
 } ITMTTrackProperty;
 
 /*!
