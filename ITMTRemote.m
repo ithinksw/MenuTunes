@@ -33,9 +33,9 @@
     return NO;
 }
 
-- (int)numberOfPlaylists
+- (NSArray *)playlists
 {
-    return 0;
+    return nil;
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
@@ -96,6 +96,11 @@
 - (NSArray *)eqPresets;
 {
     return nil;
+}
+
+- (int)currentEQPresetIndex
+{
+    return 0;
 }
 
 - (BOOL)play

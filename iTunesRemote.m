@@ -42,10 +42,17 @@
     return YES;
 }
 
-- (int)numberOfPlaylists
+- (NSArray *)playlists
 {
-    NSString *result = [self runScriptAndReturnResult:@"get number of playlists"];
-    return [result intValue];
+    int i;
+    int numPresets = [[self runScriptAndReturnResult:@"get number of playlists"] intValue];
+    NSMutableArray *presets = [[NSMutableArray alloc] init];
+    
+    for (i = 0; i < numPresets; i++) {
+        [presets addObject:[self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of playlist %i", i]]];
+    }
+    
+    return [NSArray arrayWithArray:presets];
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
@@ -78,7 +85,7 @@
 
 - (NSString *)songTitleAtIndex:(int)index
 {
-    NSString *result = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of track %i", index]];
+    NSString *result = [self runScriptAndReturnResult:[NSString stringWithFormat:@"get name of track %i of current playlist", index]];
     return result;
 }
 
@@ -122,7 +129,7 @@
 
 - (NSString *)currentSongLength
 {
-    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pDur"
+    return [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim"
                 fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd"
                 appPSN:[self iTunesPSN]];
 }
@@ -154,6 +161,16 @@
     return [NSArray arrayWithArray:presets];
 }
 
+- (int)currentEQPresetIndex
+{
+    int result;
+    result = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pidx"
+                fromObjectByKey:@"pEQP" eventClass:@"core" eventID:@"getd"
+                appPSN:[self iTunesPSN]];
+    return result;
+}
+
 - (BOOL)play
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Play"
@@ -170,9 +187,8 @@
 
 - (BOOL)goToNextSong
 {
-    NSLog(@"%@", [self classOfPlaylistAtIndex:3]);
-    //[[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
-    //        appPSN:[self iTunesPSN]];
+    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
+            appPSN:[self iTunesPSN]];
     return YES;
 }
 
@@ -186,7 +202,7 @@
 - (BOOL)switchToPlaylistAtIndex:(int)index
 {
     [self runScriptAndReturnResult:[NSString stringWithFormat:
-        @"set current playlist to playlist %i", index]];
+        @"play playlist %i", index]];
     return NO;
 }
 
@@ -201,6 +217,7 @@
 {
     [self runScriptAndReturnResult:[NSString stringWithFormat:
         @"set current EQ preset to EQ preset %i", index]];
+    [self runScriptAndReturnResult:@"set EQ enabled to 1"];
     return NO;
 }
 

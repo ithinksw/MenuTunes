@@ -77,7 +77,7 @@
  */
 - (BOOL)halt;
 
-- (int)numberOfPlaylists;
+- (NSArray *)playlists;
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;
 - (NSString *)classOfPlaylistAtIndex:(int)index;
 - (int)currentPlaylistIndex;
@@ -93,6 +93,7 @@
 - (NSString *)currentSongRemaining;
 
 - (NSArray *)eqPresets;
+- (int)currentEQPresetIndex;
 
 - (BOOL)play;
 - (BOOL)pause;

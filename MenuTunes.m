@@ -208,6 +208,7 @@ Things to do:
     int i;
     
     trackInfoIndex = -1;
+    lastSongIndex = -1;
     didHaveAlbumName = ([[self runScriptAndReturnResult:@"return album of current track"] length] > 0);
     didHaveArtistName = ([[self runScriptAndReturnResult:@"return artist of current track"] length] > 0);
     
@@ -304,7 +305,6 @@ Things to do:
         }
     }
     
-    curTrackIndex = -1; //Force update of everything
     [self timerUpdate]; //Updates dynamic info in the menu
     
     [self clearHotKeys];
@@ -336,14 +336,14 @@ Things to do:
     if (trackInfoIndex > -1)
     {
         NSString *curSongName, *curAlbumName = @"", *curArtistName = @"";
-        curSongName = [self runScriptAndReturnResult:@"return name of current track"];
+        curSongName = [currentRemote currentSongTitle];
         
         if ([defaults boolForKey:@"showAlbum"]) {
-            curAlbumName = [self runScriptAndReturnResult:@"return album of current track"];
+            curAlbumName = [currentRemote currentSongAlbum];
         }
         
         if ([defaults boolForKey:@"showArtist"]) {
-            curArtistName = [self runScriptAndReturnResult:@"return artist of current track"];
+            curArtistName = [currentRemote currentSongArtist];
         }
         
         if ([curSongName length] > 0) {
@@ -440,11 +440,12 @@ Things to do:
 //Rebuild the upcoming songs submenu. Can be improved a lot.
 - (void)rebuildUpcomingSongsMenu
 {
-    int numSongs = [[self runScriptAndReturnResult:@"return number of tracks in current playlist"] intValue];
+    int curIndex = [currentRemote currentPlaylistIndex];
+    int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:curIndex];
     int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
     if (!isPlayingRadio) {
         if (numSongs > 0) {
-            int curTrack = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
+            int curTrack = [currentRemote currentSongIndex];
             int i;
             
             [upcomingSongsMenu release];
@@ -454,7 +455,7 @@ Things to do:
             
             for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
-                    NSString *curSong = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of track %i of current playlist", i]];
+                    NSString *curSong = [currentRemote songTitleAtIndex:i];
                     NSMenuItem *songItem;
                     songItem = [[NSMenuItem alloc] initWithTitle:curSong action:@selector(playTrack:) keyEquivalent:@""];
                     [songItem setTarget:self];
@@ -474,22 +475,22 @@ Things to do:
 
 - (void)rebuildPlaylistMenu
 {
-    int numPlaylists = [[self runScriptAndReturnResult:@"return number of playlists"] intValue];
-    int i, curPlaylist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+    NSArray *playlists = [currentRemote playlists];
+    int i, curPlaylist = [currentRemote currentPlaylistIndex];
     
     if (isPlayingRadio)
     {
         curPlaylist = 0;
     }
     
-    if (playlistMenu && (numPlaylists == [playlistMenu numberOfItems]))
+    if (playlistMenu && ([playlists count] == [playlistMenu numberOfItems]))
         return;
     
     [playlistMenu release];
     playlistMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    for (i = 1; i <= numPlaylists; i++) {
-        NSString *playlistName = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of playlist %i", i]];
+    for (i = 1; i < [playlists count]; i++) {
+        NSString *playlistName = [playlists objectAtIndex:i];
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:playlistName action:@selector(selectPlaylist:) keyEquivalent:@""];
         [tempItem setTarget:self];
@@ -507,17 +508,17 @@ Things to do:
 //Build a menu with the list of all available EQ presets
 - (void)rebuildEQPresetsMenu
 {
-    int numSets = [[self runScriptAndReturnResult:@"return number of EQ presets"] intValue];
+    NSArray *eqPresets = [currentRemote eqPresets];
     int i;
     
-    if (eqMenu && (numSets == [eqMenu numberOfItems]))
+    if (eqMenu && ([[currentRemote eqPresets] count] == [eqMenu numberOfItems]))
         return;
     
     [eqMenu release];
     eqMenu = [[NSMenu alloc] initWithTitle:@""];
     
-    for (i = 1; i <= numSets; i++) {
-        NSString *setName = [self runScriptAndReturnResult:[NSString stringWithFormat:@"return name of EQ preset %i", i]];
+    for (i = 0; i < [eqPresets count]; i++) {
+        NSString *setName = [eqPresets objectAtIndex:i];
         NSMenuItem *tempItem;
         tempItem = [[NSMenuItem alloc] initWithTitle:setName action:@selector(selectEQPreset:) keyEquivalent:@""];
         [tempItem setTarget:self];
@@ -527,7 +528,7 @@ Things to do:
     }
     [eqItem setSubmenu:eqMenu];
     
-    [[eqMenu itemAtIndex:[[self runScriptAndReturnResult:@"return index of current EQ preset"] intValue] - 1] setState:NSOnState];
+    [[eqMenu itemAtIndex:[currentRemote currentEQPresetIndex] - 1] setState:NSOnState];
 }
 
 - (void)clearHotKeys
@@ -609,11 +610,12 @@ Things to do:
 //Called when the timer fires.
 - (void)timerUpdate
 {
-    int trackPlayingIndex = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
+    int trackPlayingIndex = [currentRemote currentSongIndex];
+    int playlist = [currentRemote currentPlaylistIndex];
     
-    if (trackPlayingIndex != curTrackIndex) {
+    if (trackPlayingIndex != lastSongIndex) {
         bool wasPlayingRadio = isPlayingRadio;
-        isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
+        isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
         if (isPlayingRadio && !wasPlayingRadio) {
             int i;
             for (i = 0; i < [playlistMenu numberOfItems]; i++)
@@ -627,14 +629,13 @@ Things to do:
             [temp release];
         }
         [self updateMenu];
-        curTrackIndex = trackPlayingIndex;
+        lastSongIndex = trackPlayingIndex;
     }
     else
     {
-        int playlist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
-        if (playlist != curPlaylistIndex) {
+        if (playlist != [currentRemote currentPlaylistIndex]) {
             bool wasPlayingRadio = isPlayingRadio;
-            isPlayingRadio = [[self runScriptAndReturnResult:@"return class of current playlist"] isEqualToString:@"radio tuner playlist"];
+            isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
             if (isPlayingRadio && !wasPlayingRadio) {
                 int i;
                 for (i = 0; i < [playlistMenu numberOfItems]; i++)
@@ -648,8 +649,7 @@ Things to do:
                 [temp release];
             }
             [self updateMenu];
-            curTrackIndex = trackPlayingIndex;
-            curPlaylistIndex = playlist;
+            lastSongIndex = trackPlayingIndex;
         }
     }
     //Update Play/Pause menu item
@@ -742,7 +742,7 @@ andEventID:(AEEventID)eventID
 
 - (void)playTrack:(id)sender
 {
-    [self runScriptAndReturnResult:[NSString stringWithFormat:@"play track %i of current playlist", [[sender representedObject] intValue]]];
+    [currentRemote switchToSongAtIndex:[[sender representedObject] intValue]];
     [self updateMenu];
 }
 
@@ -750,19 +750,19 @@ andEventID:(AEEventID)eventID
 {
     int playlist = [[sender representedObject] intValue];
     if (!isPlayingRadio) {
-        int curPlaylist = [[self runScriptAndReturnResult:@"return index of current playlist"] intValue];
+        int curPlaylist = [currentRemote currentPlaylistIndex];
         [[playlistMenu itemAtIndex:curPlaylist - 1] setState:NSOffState];
     }
-    [self runScriptAndReturnResult:[NSString stringWithFormat:@"play playlist %i", playlist]];
+    [currentRemote switchToPlaylistAtIndex:playlist];
     [[playlistMenu itemAtIndex:playlist - 1] setState:NSOnState];
+    [self updateMenu];
 }
 
 - (void)selectEQPreset:(id)sender
 {
-    int curSet = [[self runScriptAndReturnResult:@"return index of current EQ preset"] intValue];
+    int curSet = [currentRemote currentEQPresetIndex];
     int item = [[sender representedObject] intValue];
-    [self runScriptAndReturnResult:[NSString stringWithFormat:@"set current EQ preset to EQ preset %i", item]];
-    [self runScriptAndReturnResult:@"set EQ enabled to 1"];
+    [currentRemote switchToEQAtIndex:item];
     [[eqMenu itemAtIndex:curSet - 1] setState:NSOffState];
     [[eqMenu itemAtIndex:item - 1] setState:NSOnState];
 }
@@ -771,14 +771,14 @@ andEventID:(AEEventID)eventID
 {
     NSString *state = [self runScriptAndReturnResult:@"return player state"];
     if ([state isEqualToString:@"playing"]) {
-        [self sendAEWithEventClass:'hook' andEventID:'Paus'];
+        [currentRemote play];
         [playPauseMenuItem setTitle:@"Play"];
     } else if ([state isEqualToString:@"fast forwarding"] || [state 
 isEqualToString:@"rewinding"]) {
-        [self sendAEWithEventClass:'hook' andEventID:'Paus'];
-        [self sendAEWithEventClass:'hook' andEventID:'Play'];
+        [currentRemote play];
+        [currentRemote pause];
     } else {
-        [self sendAEWithEventClass:'hook' andEventID:'Play'];
+        [currentRemote play];
         [playPauseMenuItem setTitle:@"Pause"];
     }
 }
@@ -848,7 +848,7 @@ isEqualToString:@"rewinding"]) {
         
         if ([defaults boolForKey:@"showName"]) {
             if ([defaults boolForKey:@"showArtist"]) {
-                NSString *trackArtist = [self runScriptAndReturnResult:@"return artist of current track"];
+                NSString *trackArtist = [currentRemote currentSongArtist];
                 trackName = [NSString stringWithFormat:@"%@ - %@", trackArtist, trackName];
             }
             stringToShow = [stringToShow stringByAppendingString:trackName];
@@ -856,7 +856,7 @@ isEqualToString:@"rewinding"]) {
         }
         
         if ([defaults boolForKey:@"showAlbum"]) {
-            NSString *trackAlbum = [self runScriptAndReturnResult:@"return album of current track"];
+            NSString *trackAlbum = [currentRemote currentSongAlbum];
             if ([trackAlbum length]) {
                 stringToShow = [stringToShow stringByAppendingString:trackAlbum];
                 stringToShow = [stringToShow stringByAppendingString:@"\n"];
@@ -864,14 +864,15 @@ isEqualToString:@"rewinding"]) {
         }
         
         if ([defaults boolForKey:@"showTime"]) {
-            NSString *trackTime = [self runScriptAndReturnResult:@"return time of current track"];
+            NSString *trackTime = [currentRemote currentSongLength];
+            NSLog(@"%@", trackTime);
             if ([trackTime length]) {
                 stringToShow = [NSString stringWithFormat:@"%@Total Time: %@\n", stringToShow, trackTime];
             }
         }
         
         {
-            int trackTimeLeft = [[self runScriptAndReturnResult:@"return (duration of current track) - player position"] intValue];
+            int trackTimeLeft = [[currentRemote currentSongRemaining] intValue];
             int minutes = trackTimeLeft / 60, seconds = trackTimeLeft % 60;
             if (seconds < 10) {
                 stringToShow = [stringToShow stringByAppendingString:
@@ -894,20 +895,20 @@ isEqualToString:@"rewinding"]) {
 
 - (void)showUpcomingSongs
 {
+    int curPlaylist = [currentRemote currentPlaylistIndex];
     if (!statusController) {
-        int numSongs = [[self runScriptAndReturnResult:@"return number of tracks in current playlist"] intValue];
+        int numSongs = [currentRemote numberOfSongsInPlaylistAtIndex:curPlaylist];
         
         if (numSongs > 0) {
             int numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
-            int curTrack = [[self runScriptAndReturnResult:@"return index of current track"] intValue];
+            int curTrack = [currentRemote currentSongIndex];
             int i;
             NSString *songs = @"";
             
             statusController = [[StatusWindowController alloc] init];
             for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
                 if (i <= numSongs) {
-                    NSString *curSong = [self runScriptAndReturnResult:
-                        [NSString stringWithFormat:@"return name of track %i of current playlist", i]];
+                    NSString *curSong = [currentRemote songTitleAtIndex:i];
                     songs = [songs stringByAppendingString:curSong];
                     songs = [songs stringByAppendingString:@"\n"];
                 }
@@ -966,7 +967,8 @@ isEqualToString:@"rewinding"]) {
         
         case 51:
             charcode = NSDeleteFunctionKey;
-        break;        
+        break;
+                
         case 53:
         break;
                 
@@ -1115,6 +1117,7 @@ isEqualToString:@"rewinding"]) {
         refreshTimer = nil;
     }
     CloseComponent(asComponent);
+    [currentRemote halt];
     [statusItem release];
     [menu release];
 //  [view release];

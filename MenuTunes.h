@@ -32,8 +32,7 @@
     
     //Used in updating the menu automatically
     NSTimer *refreshTimer;
-    int curTrackIndex, curPlaylistIndex;
-    int trackInfoIndex;
+    int trackInfoIndex, lastSongIndex;
     bool isPlayingRadio;
     
     ProcessSerialNumber iTunesPSN;
