@@ -280,9 +280,31 @@
                     action:nil
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Song Rating"]) {
+            NSMenuItem *item;
+            int i;
+            NSString *curTitle = @".....";
+            
             songRatingMenuItem = [menu addItemWithTitle:@"Song Rating"
                     action:nil
                     keyEquivalent:@""];
+            
+            ratingMenu = [[NSMenu alloc] initWithTitle:@""];
+            
+            item = [ratingMenu addItemWithTitle:@"....."
+                            action:@selector(setSongRating:)
+                            keyEquivalent:@""];
+            [item setTarget:self];
+            [item setTag:0];
+            
+            for (i = 1; i < 6; i++) {
+                curTitle = [curTitle substringToIndex:4];
+                curTitle = [@"x" stringByAppendingString:curTitle];
+                item = [ratingMenu addItemWithTitle:curTitle
+                            action:@selector(setSongRating:)
+                            keyEquivalent:@""];
+                [item setTarget:self];
+                [item setTag:(i * 20)];
+            }
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         }
@@ -372,31 +394,11 @@
                 if (songRatingMenuItem) {
                     int rating = (int)[currentRemote currentSongRating] * 10;
                     int i;
-                    
                     for (i = 0; i < 5; i++) {
                         [[ratingMenu itemAtIndex:i] setState:NSOffState];
+                        [[ratingMenu itemAtIndex:i] setTarget:self];
                     }
-                    
-                    switch (rating) {
-                        case 0:
-                            [[ratingMenu itemAtIndex:5] setState:NSOnState];
-                        break;
-                        case 2:
-                            [[ratingMenu itemAtIndex:4] setState:NSOnState];
-                        break;
-                        case 4:
-                            [[ratingMenu itemAtIndex:3] setState:NSOnState];
-                        break;
-                        case 6:
-                            [[ratingMenu itemAtIndex:2] setState:NSOnState];
-                        break;
-                        case 8:
-                            [[ratingMenu itemAtIndex:1] setState:NSOnState];
-                        break;
-                        case 10:
-                            [[ratingMenu itemAtIndex:0] setState:NSOnState];
-                        break;
-                    }
+                    [[ratingMenu itemAtIndex:rating / 2] setState:NSOnState];
                 }
             }
             
@@ -614,7 +616,7 @@
         
         if (trackPlayingIndex != lastSongIndex) {
             BOOL wasPlayingRadio = isPlayingRadio;
-            isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
+            isPlayingRadio = ([currentRemote classOfPlaylistAtIndex:playlist] == ITMTRemotePlayerRadioPlaylist);
             
             if (isPlayingRadio && !wasPlayingRadio) {
                 int i;
@@ -637,7 +639,7 @@
         } else {
             if (playlist != lastPlaylistIndex) {
                 BOOL wasPlayingRadio = isPlayingRadio;
-                isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
+                isPlayingRadio = ([currentRemote classOfPlaylistAtIndex:playlist] == ITMTRemotePlayerRadioPlaylist);
                 
                 if (isPlayingRadio && !wasPlayingRadio) {
                     int i;
@@ -736,7 +738,7 @@
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-    refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES] retain];
+    refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES] retain];
     [runLoop run];
     [pool release];
 }
@@ -771,7 +773,6 @@
 - (void)playTrack:(id)sender
 {
     [currentRemote switchToSongAtIndex:[[sender representedObject] intValue]];
-    [self updateMenu];
 }
 
 - (void)selectPlaylist:(id)sender
@@ -840,7 +841,7 @@
     [currentRemote setEqualizerEnabled:![currentRemote equalizerEnabled]];
 }
 
-- (IBAction)setSongRating:(id)sender
+- (void)setSongRating:(id)sender
 {
     NSLog(@"%f", [currentRemote currentSongRating]);
     NSLog(@"%f", (float)[sender tag] / 100.0);

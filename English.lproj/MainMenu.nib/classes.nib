@@ -3,10 +3,10 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {CLASS = MTApplication; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }, 
         {
-            ACTIONS = {setSongRating = id; }; 
+            ACTIONS = {}; 
             CLASS = MenuTunes; 
             LANGUAGE = ObjC; 
-            OUTLETS = {ratingMenu = NSMenu; }; 
+            OUTLETS = {}; 
             SUPERCLASS = NSObject; 
         }
     ); 

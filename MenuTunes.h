@@ -24,8 +24,6 @@
 
 @interface MenuTunes : NSObject
 {
-    IBOutlet NSMenu *ratingMenu;
-    
     ITStatusItem   *statusItem;
     NSMenu         *menu;
     ITMTRemote     *currentRemote;
@@ -54,7 +52,10 @@
     NSMenuItem *eqItem;
     NSMenu     *eqMenu;
     
-    NSMenuItem *songRatingMenuItem; //Song Rating submenu item
+    //For song ratings
+    NSMenuItem *songRatingMenuItem;
+    NSMenu *ratingMenu;
+    
     NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
     
     PreferencesController *prefsController;
@@ -69,7 +70,7 @@
 
 - (void)runTimerInNewThread;
 
-- (IBAction)setSongRating:(id)sender;
+- (void)setSongRating:(id)sender;
 
 - (void)clearHotKeys;
 - (void)closePreferences;
