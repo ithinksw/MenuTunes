@@ -262,9 +262,17 @@
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
+	/*
+		This method only returns the proper number if there's something playing.
+		This is because it gets the container of the current playlist so that it
+		gets the playlist index from the current source. Operating this way is fine,
+		since MT only ever calls this method when there is something playlist.
+		A working version of this that works in just the main source is in the
+		makePlaylistWithTerm:ofType: method.
+	*/
     int temp1;
     ITDebugLog(@"Getting number of songs in playlist at index %i", index);
-    temp1 = [ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",index], 'core', 'getd', &savedPSN) int32Value];
+    temp1 = (int)[ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", index], 'core', 'cnte', &savedPSN) int32Value];
     ITDebugLog(@"Getting number of songs in playlist at index %i done", index);
     return temp1;
 }
@@ -766,7 +774,7 @@
 - (BOOL)makePlaylistWithTerm:(NSString *)term ofType:(int)type
 {
     int i;
-    
+	
     //Get fixed indexing status
     BOOL fixed = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pFix'), from:'null'() }", 'core', 'getd', &savedPSN) booleanValue];
     
@@ -779,7 +787,7 @@
     //If MenuTunes playlist exists
     if ([ITSendAEWithString(@"'----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'core', 'doex', &savedPSN) booleanValue]) {
         //Clear old MenuTunes playlist
-        int numSongs = [ITSendAEWithString(@"kocl:type('cTrk'), '----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'cnte', &savedPSN) int32Value];
+		int numSongs = [ITSendAEWithString(@"kocl:type('cTrk'), '----':obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", 'core', 'cnte', &savedPSN) int32Value];
         for (i = 1; i <= numSongs; i++) {
             ITSendAEWithString(@"'----':obj { form:'indx', want:type('cTrk'), seld:long(1), from:obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() } }", 'core', 'delo', &savedPSN);
         }

@@ -11,6 +11,10 @@
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
 
+@interface NSMenu (MenuImpl)
+- (id)_menuImpl;
+@end
+
 @interface NSCarbonMenuImpl:NSObject
 {
     NSMenu *_menu;
@@ -435,7 +439,7 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Menu clicked.");
 	
-	if ([[self currentRemote] playerStateUniqueIdentifier] == nil) {
+	if ( ([[self currentRemote] playerStateUniqueIdentifier] == nil) && playerRunningState == ITMTRemotePlayerRunning ) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
 			[self clearHotKeys];
@@ -1393,6 +1397,8 @@ static MainController *sharedController;
             [refreshTimer invalidate];
             [refreshTimer release];
             refreshTimer = nil;
+			[statusItem setEnabled:YES];
+			[statusItem setToolTip:@"iTunes not running."];
             [self clearHotKeys];
             
             if ([df objectForKey:@"ShowPlayer"] != nil) {

@@ -570,7 +570,6 @@
 {
     NSMenu *upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
     int numSongs = 0, numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
-    
     NS_DURING
         numSongs = [[[MainController sharedController] currentRemote] numberOfSongsInPlaylistAtIndex:_currentPlaylist];
     NS_HANDLER
