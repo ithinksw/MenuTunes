@@ -372,7 +372,7 @@ static MainController *sharedController;
 	}
 	
 	if ( [self songChanged] && (timerUpdating != YES) && (playerRunningState == ITMTRemotePlayerRunning) ) {
-        ITDebugLog(@"The song changed.");
+        ITDebugLog(@"The song changed. '%@'", _latestSongIdentifier);
         if ([df boolForKey:@"runScripts"]) {
             NSArray *scripts = [[NSFileManager defaultManager] directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
             NSEnumerator *scriptsEnum = [scripts objectEnumerator];
@@ -434,6 +434,21 @@ static MainController *sharedController;
 - (void)menuClicked
 {
     ITDebugLog(@"Menu clicked.");
+	
+	if ([[self currentRemote] playerStateUniqueIdentifier] == nil) {
+		if ([statusItem isEnabled]) {
+			[statusItem setToolTip:@"iTunes not responding."];
+			[self clearHotKeys];
+		}
+		[statusItem setEnabled:NO];
+		return;
+	} else if (![statusItem isEnabled]) {
+		[statusItem setEnabled:YES];
+		[statusItem setToolTip:_toolTip];
+		[self setupHotKeys];
+		return;
+	}
+	
     if ([networkController isConnectedToServer]) {
         //Used the cached version
         return;
