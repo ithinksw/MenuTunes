@@ -71,6 +71,13 @@
 
 - (BOOL)showPrimaryInterface
 {
+    // Make this into AppleEvents... shouldn't be too hard, I'm just too tired to do it right now.
+    //tell application "iTunes"
+    //	set frontmost to true
+    //	set visible of browser window 1 to true
+    //	set minimized of browser window 1 to false
+    //	set view of browser window 1 to (playlist (index of current playlist))
+    //end tell
     return NO;
 }
 
@@ -206,7 +213,7 @@
 
 - (BOOL)setCurrentSongRating:(float)rating
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }",(long)rating*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100),[self currentSongIndex]] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
 }
 
@@ -218,7 +225,7 @@
 
 - (BOOL)setEqualizerEnabled:(BOOL)enabled
 {
-[[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+[[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }",enabled] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
 }
 
 - (NSArray *)eqPresets
@@ -252,7 +259,7 @@
 
 - (BOOL)setVolume:(float)volume
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)volume*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)(volume*100)] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return NO;
 }
 
@@ -361,7 +368,8 @@
 
 - (BOOL)switchToEQAtIndex:(int)index
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:obj { form:'ID  ', want:type('cEQP'), seld:long(%lu), from:'null'() }, ----:obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }",index] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    // index should count from 0, but itunes counts from 1, so let's add 1.
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }, data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }",(index+1)] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
 }
 
