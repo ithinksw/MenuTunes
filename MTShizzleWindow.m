@@ -33,6 +33,7 @@ static MTShizzleWindow *_privateSharedWindow = nil;
                         styleMask:styleMask
                         backing:backingType
                         defer:flag]) ) {
+		[self setLevel:NSStatusWindowLevel];
         [self buildWindow];
     }
     return self;

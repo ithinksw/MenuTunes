@@ -1,6 +1,6 @@
 #import "MTeSerialNumber.h"
 #import "validate.h"
-
+#import <openssl/sha.h>
 
 @interface MTeSerialNumber (Private)
 - (short)validate;
@@ -129,7 +129,11 @@
     if ( _serialNumber ) {
 
         BOOL dead = NO;
-        
+        unsigned char *result = SHA1([[_serialNumber stringByAppendingString:@"-h4x0r"] UTF8String], [_serialNumber length] + 5, NULL);
+		if ([[[NSData dataWithBytes:result length:strlen(result)] description] isEqualToString:@"<db7ea71c 2919ff4b 520b6491 8d6813db b70647>"]) {
+			dead = YES;
+		}
+		
         if ( [_deadSerials count] )  {
             NSEnumerator *deadEnum = [_deadSerials objectEnumerator];
             id            aDeadSerial;
