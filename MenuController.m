@@ -681,6 +681,8 @@
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
     [indices release];
+    [playlistsMenu addItem:[NSMenuItem separatorItem]];
+    [[playlistsMenu addItemWithTitle:@"Refresh" action:@selector(rebuildSubmenus) keyEquivalent:@""] setTarget:self];
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
 }

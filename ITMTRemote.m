@@ -79,7 +79,7 @@
     return nil;
 }
 
-- (int)numberOfSongsInPlaylistAtIndex:(int)index
+- (int)numberOfSources
 {
     return nil;
 }
