@@ -310,6 +310,8 @@
 {
     long duration;
     long current;
+    long final;
+    NSString *finalString;
     
     ITDebugLog(@"Getting current song remaining time.");
     
@@ -317,20 +319,52 @@
                         sendTwoTierAEWithRequestedKeyForNumber:@"pDur" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     current = [[ITAppleEventCenter sharedCenter]
                         sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+                        
+    final = duration - current;
+    if (final > 60) {
+        if (final > 3600) {
+            if (final > 216000) {
+                finalString = [NSString stringWithFormat:@"%i:%i:%i:%i",(final / 216000),((final % 216000) / 3600),(((final / 216000) % 3600) / 60),(((final / 216000) % 3600) % 60)];
+            } else {
+                finalString = [NSString stringWithFormat:@"%i:%i:%i",(final / 3600),((final % 3600) / 60),((final % 3600) % 60)];
+            }
+        } else {
+            finalString = [NSString stringWithFormat:@"%i:%i",(final / 60),(final % 60)];
+        }
+    } else {
+        finalString = [[NSNumber numberWithLong:final] stringValue];
+    }
+    
     ITDebugLog(@"Getting current song remaining time done.");
-    return [[NSNumber numberWithLong:duration - current] stringValue];
+    
+    return finalString;
 }
 
 - (NSString *)currentSongElapsed
 {
-    long current;
+    long final;
+    NSString *finalString;
     
     ITDebugLog(@"Getting current song elapsed time.");
     
-    current = [[ITAppleEventCenter sharedCenter]
+    final = [[ITAppleEventCenter sharedCenter]
                         sendAEWithRequestedKeyForNumber:@"pPos" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+                        
+    if (final > 60) {
+        if (final > 3600) {
+            if (final > 216000) {
+                finalString = [NSString stringWithFormat:@"%i:%i:%i:%i",(final / 216000),((final % 216000) / 3600),(((final / 216000) % 3600) / 60),(((final / 216000) % 3600) % 60)];
+            } else {
+                finalString = [NSString stringWithFormat:@"%i:%i:%i",(final / 3600),((final % 3600) / 60),((final % 3600) % 60)];
+            }
+        } else {
+            finalString = [NSString stringWithFormat:@"%i:%i",(final / 60),(final % 60)];
+        }
+    } else {
+        finalString = [[NSNumber numberWithLong:final] stringValue];
+    }
     ITDebugLog(@"Getting current song elapsed time done.");
-    return [[NSNumber numberWithLong:current] stringValue];
+    return finalString;
 }
 
 - (float)currentSongRating
@@ -420,7 +454,6 @@
     } else {
         final = NO;
     }
-    NSLog(@"shuffleEnabled: final = %i", final);
     ITDebugLog(@"Getting shuffle enabled status done.");
     return final;
 }
