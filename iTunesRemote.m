@@ -309,12 +309,14 @@
 
 - (NSString *)currentSongLength
 {
-    NSString *temp1;
+    int temp1;
+    NSString *temp2;
     ITDebugLog(@"Getting current song length.");
-    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
-    if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { temp1 = nil; }
+    temp1 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKeyForNumber:@"pcls" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    temp2 = [[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pTim" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
+    if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (temp1 == 'cURT') ) { temp2 = @"Continuous"; }
     ITDebugLog(@"Getting current song length done.");
-    return temp1;
+    return temp2;
 }
 
 - (NSString *)currentSongRemaining
