@@ -2,6 +2,11 @@
 
 @implementation ITMTRemote
 
++ (void)initialize
+{
+[self setVersion:2];
+}
+
 + (id)remote
 {
     return nil;
