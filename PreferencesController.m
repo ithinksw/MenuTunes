@@ -863,7 +863,7 @@ static PreferencesController *prefs = nil;
     [nameTextField setStringValue:serverName];
     
     [selectPlayerBox setContentView:zeroConfView];
-    if ([[df dataForKey:@"sharedPlayerPassword"] length]) {
+    if ([[df dataForKey:@"sharedPlayerPassword"] length] > 0) {
         [passwordTextField setStringValue:@"p4s5w0rdMT1.2"];
     } else {
         [passwordTextField setStringValue:@""];
