@@ -1,8 +1,8 @@
 {
     IBClasses = (
+        {CLASS = CustomMenuTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {CLASS = ITKeyBroadcaster; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
-        {CLASS = MyTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
                 cancelHotKey = id; 
