@@ -121,7 +121,9 @@
     float        excessHeight  = 0.0;
     NSPoint      windowOrigin;
     ITImageView *imageView;
-
+    BOOL         shouldAnimate = ( ! (([self visibilityState] == ITWindowAppearingState) ||
+                                      ([self visibilityState] == ITWindowVanishingState)) );
+        
     if ( _sizing == StatusWindowSmall ) {
         divisor = SMALL_DIVISOR;
     } else if ( _sizing == StatusWindowMini ) {
@@ -173,7 +175,7 @@
     [self setFrame:NSMakeRect( windowOrigin.x,
                                windowOrigin.y,
                                windowWidth,
-                               windowHeight) display:YES animate:YES];
+                               windowHeight) display:YES animate:shouldAnimate];
 
     [[[self contentView] subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
