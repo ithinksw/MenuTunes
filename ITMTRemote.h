@@ -57,6 +57,7 @@ typedef enum {
  * @enum ITMTRemotePlayerPlaylistClass
  * @abstract Possible playlist classes used by a remote's player
  * @discussion Used in functions that report the class of a playlist to MenuTunes. While we borrow the terms/descriptions from iTunes, these should work fine with any other player. If your player doesn't support a given type of playlist, then just return 
+
 ITMTRemotePlayerPlaylist.
  * @constant ITMTRemotePlayerLibraryPlaylist For players that have one playlist that contains all of a user's music, or for players that don't have the concept of multiple playlists, this is the class for that "Master" list.
  * @constant ITMTRemotePlayerPlaylist The generic playlist. Created and maintained by the user.
@@ -75,7 +76,7 @@ typedef enum {
     ITMTRemoteCDSource,
     ITMTRemoteRadioSource,
     ITMTRemoteiPodSource,
-    ITMTRemoteMP3PlayerSource,
+    ITMTRemoteGenericDeviceSource,
     ITMTRemoteSharedLibrarySource
 } ITMTRemotePlayerSource;
 
@@ -156,6 +157,7 @@ typedef enum {
  * @method playerFullName
  * @abstract Returns the remote's player's application filename.
  * @discussion This string should be the name typically used by the remote's player's application bundle/file. For example, Panic's Audion audio player is known simply as "Audion", however, the application bundle is called "Audion 3" for version 3 of thei
+
 r application. This should return "Audion 3", not simply "Audion". See playerSimpleName.
  * @result An NSString containing the remote's player's application filename
  */
@@ -186,6 +188,7 @@ r application. This should return "Audion 3", not simply "Audion". See playerSim
  * @method playerRunningState
  * @abstract Returns the running state of the remote's player.
  * @discussion While most remotes will use only ITMTRemotePlayerNotRunning or ITMTRemotePlayerRunning, we have included support for ITMTRemotePlayerLaunching (see ITMTRemotePlayerRunningState) for remotes that want the most precise control over their play
+
 er's process managment.
  * @result An ITMTRemotePlayerRunningState defining the running state of the remote's player.
  */
