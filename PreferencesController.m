@@ -210,7 +210,7 @@ static PreferencesController *prefs = nil;
 {
     ITDebugLog(@"Changing general setting of tag %i.", [sender tag]);
     if ( [sender tag] == 1010) {
-        //ITSetApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath], SENDER_STATE);
+        ITSetApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath], SENDER_STATE);
     } else if ( [sender tag] == 1020) {
         [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
     } else if ( [sender tag] == 1030) {
@@ -560,9 +560,9 @@ static PreferencesController *prefs = nil;
     
     [df synchronize];
     
-    /*if (ITDoesApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath])) {
+    if (ITDoesApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath])) {
         [[StatusWindowController sharedController] showSetupQueryWindow];
-    }*/
+    }
 }
 
 - (void)autoLaunchOK
@@ -571,7 +571,7 @@ static PreferencesController *prefs = nil;
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
     
-    //ITSetApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath], YES);
+    ITSetApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath], YES);
 }
 
 - (void)autoLaunchCancel
@@ -796,9 +796,9 @@ static PreferencesController *prefs = nil;
     
     // Set the launch at login checkbox state
     ITDebugLog(@"Setting launch at login state.");
-    /*if (ITDoesApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath])) {
+    if (ITDoesApplicationLaunchOnLogin([[NSBundle mainBundle] bundlePath])) {
         [launchAtLoginCheckbox setState:NSOnState];
-    }*/
+    }
     
     // Set the launch player checkbox state
     ITDebugLog(@"Setting launch player with MenuTunes state.");
