@@ -1,7 +1,7 @@
 #import "MainController.h"
 #import "MenuController.h"
 #import "PreferencesController.h"
-#import "HotKeyCenter.h"
+#import <ITKit/ITHotKeyCenter.h>
 #import "StatusWindowController.h"
 #import "StatusItemHack.h"
 
@@ -296,91 +296,91 @@ static MainController *sharedController;
 
 - (void)clearHotKeys
 {
-    [[HotKeyCenter sharedCenter] removeHotKey:@"PlayPause"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"NextTrack"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"ShowPlayer"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleShuffle"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"IncrementVolume"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"DecrementVolume"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"IncrementRating"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"DecrementRating"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"PlayPause"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"NextTrack"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"ShowPlayer"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"ToggleShuffle"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"IncrementVolume"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"DecrementVolume"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"IncrementRating"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"DecrementRating"];
 }
 
 - (void)setupHotKeys
 {
     if ([df objectForKey:@"PlayPause"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"PlayPause"
-                combo:[df keyComboForKey:@"PlayPause"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"PlayPause"
+                combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PlayPause"]]
                 target:self action:@selector(playPause)];
     }
     
     if ([df objectForKey:@"NextTrack"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"NextTrack"
-                combo:[df keyComboForKey:@"NextTrack"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"NextTrack"
+                combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"NextTrack"]]
                 target:self action:@selector(nextSong)];
     }
     
     if ([df objectForKey:@"PrevTrack"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
-                combo:[df keyComboForKey:@"PrevTrack"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
+                combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"PrevTrack"]]
                 target:self action:@selector(prevSong)];
     }
     
     if ([df objectForKey:@"ShowPlayer"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"ShowPlayer"
-                combo:[df keyComboForKey:@"ShowPlayer"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"ShowPlayer"
+                combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ShowPlayer"]]
                 target:self action:@selector(showPlayer)];
     }
     
     if ([df objectForKey:@"TrackInfo"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo"
-                combo:[df keyComboForKey:@"TrackInfo"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"TrackInfo"
+                combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"TrackInfo"]]
                 target:self action:@selector(showCurrentTrackInfo)];
     }
     
     if ([df objectForKey:@"UpcomingSongs"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
-               combo:[df keyComboForKey:@"UpcomingSongs"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"UpcomingSongs"]]
                target:self action:@selector(showUpcomingSongs)];
     }
     
     if ([df objectForKey:@"ToggleLoop"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
-               combo:[df keyComboForKey:@"ToggleLoop"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleLoop"]]
                target:self action:@selector(toggleLoop)];
     }
     
     if ([df objectForKey:@"ToggleShuffle"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
-               combo:[df keyComboForKey:@"ToggleShuffle"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleShuffle"]]
                target:self action:@selector(toggleShuffle)];
     }
     
     if ([df objectForKey:@"IncrementVolume"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
-               combo:[df keyComboForKey:@"IncrementVolume"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"IncrementVolume"]]
                target:self action:@selector(incrementVolume)];
     }
     
     if ([df objectForKey:@"DecrementVolume"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
-               combo:[df keyComboForKey:@"DecrementVolume"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"DecrementVolume"]]
                target:self action:@selector(decrementVolume)];
     }
     
     if ([df objectForKey:@"IncrementRating"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
-               combo:[df keyComboForKey:@"IncrementRating"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"IncrementRating"]]
                target:self action:@selector(incrementRating)];
     }
     
     if ([df objectForKey:@"DecrementRating"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
-               combo:[df keyComboForKey:@"DecrementRating"]
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
+               combo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"DecrementRating"]]
                target:self action:@selector(decrementRating)];
     }
 }

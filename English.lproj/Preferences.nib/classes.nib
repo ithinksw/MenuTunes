@@ -1,7 +1,7 @@
 {
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {CLASS = KeyBroadcaster; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
+        {CLASS = ITKeyBroadcaster; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
         {
             ACTIONS = {
                 cancelHotKey = id; 

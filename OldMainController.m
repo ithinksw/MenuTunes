@@ -235,7 +235,7 @@
     for (i = 0; i < [myMenu count]; i++) {
         NSString *item = [myMenu objectAtIndex:i];
         if ([item isEqualToString:@"Play/Pause"]) {
-            KeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"PlayPause"];
+            ITKeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"PlayPause"];
             playPauseItem = [menu addItemWithTitle:@"Play"
                                     action:@selector(playPause:)
                                     keyEquivalent:@""];
@@ -246,7 +246,7 @@
                 [tempCombo release];
             }
         } else if ([item isEqualToString:@"Next Track"]) {
-            KeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"NextTrack"];
+            ITKeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"NextTrack"];
             NSMenuItem *nextTrack = [menu addItemWithTitle:@"Next Track"
                                         action:@selector(nextSong:)
                                         keyEquivalent:@""];
@@ -257,7 +257,7 @@
                 [tempCombo release];
             }
         } else if ([item isEqualToString:@"Previous Track"]) {
-            KeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"PrevTrack"];
+            ITKeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"PrevTrack"];
             NSMenuItem *prevTrack = [menu addItemWithTitle:@"Previous Track"
                                         action:@selector(prevSong:)
                                         keyEquivalent:@""];
@@ -650,18 +650,18 @@
 
 - (void)clearHotKeys
 {
-    [[HotKeyCenter sharedCenter] removeHotKey:@"PlayPause"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"NextTrack"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleVisualizer"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"ToggleShuffle"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"IncrementVolume"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"DecrementVolume"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"IncrementRating"];
-    [[HotKeyCenter sharedCenter] removeHotKey:@"DecrementRating"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"PlayPause"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"NextTrack"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"PrevTrack"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"ToggleVisualizer"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"TrackInfo"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"UpcomingSongs"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"ToggleLoop"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"ToggleShuffle"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"IncrementVolume"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"DecrementVolume"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"IncrementRating"];
+    [[ITHotKeyCenter sharedCenter] removeHotKey:@"DecrementRating"];
 }
 
 - (void)setupHotKeys
@@ -669,73 +669,73 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     if ([defaults objectForKey:@"PlayPause"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"PlayPause"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"PlayPause"
                 combo:[defaults keyComboForKey:@"PlayPause"]
                 target:self action:@selector(playPause:)];
     }
     
     if ([defaults objectForKey:@"NextTrack"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"NextTrack"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"NextTrack"
                 combo:[defaults keyComboForKey:@"NextTrack"]
                 target:self action:@selector(nextSong:)];
     }
     
     if ([defaults objectForKey:@"PrevTrack"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"PrevTrack"
                 combo:[defaults keyComboForKey:@"PrevTrack"]
                 target:self action:@selector(prevSong:)];
     }
     
     if ([defaults objectForKey:@"ToggleVisualizer"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleVisualizer"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleVisualizer"
                 combo:[defaults keyComboForKey:@"ToggleVisualizer"]
                 target:self action:@selector(toggleVisualizer)];
     }
     
     if ([defaults objectForKey:@"TrackInfo"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"TrackInfo"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"TrackInfo"
                 combo:[defaults keyComboForKey:@"TrackInfo"]
                 target:self action:@selector(showCurrentTrackInfoStatusWindow)];
     }
     
     if ([defaults objectForKey:@"UpcomingSongs"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs"
                combo:[defaults keyComboForKey:@"UpcomingSongs"]
                target:self action:@selector(showUpcomingSongsStatusWindow)];
     }
     
     if ([defaults objectForKey:@"ToggleLoop"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleLoop"
                combo:[defaults keyComboForKey:@"ToggleLoop"]
                target:self action:@selector(showToggleLoopStatusWindow)];
     }
     
     if ([defaults objectForKey:@"ToggleShuffle"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle"
                combo:[defaults keyComboForKey:@"ToggleShuffle"]
                target:self action:@selector(showToggleShuffleStatusWindow)];
     }
     
     if ([defaults objectForKey:@"IncrementVolume"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"IncrementVolume"
                combo:[defaults keyComboForKey:@"IncrementVolume"]
                target:self action:@selector(showVolumeIncrementStatusWindow)];
     }
     
     if ([defaults objectForKey:@"DecrementVolume"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"DecrementVolume"
                combo:[defaults keyComboForKey:@"DecrementVolume"]
                target:self action:@selector(showVolumeDecrementStatusWindow)];
     }
     
     if ([defaults objectForKey:@"IncrementRating"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"IncrementRating"
                combo:[defaults keyComboForKey:@"IncrementRating"]
                target:self action:@selector(showRatingIncrementStatusWindow)];
     }
     
     if ([defaults objectForKey:@"DecrementRating"] != nil) {
-        [[HotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
+        [[ITHotKeyCenter sharedCenter] addHotKey:@"DecrementRating"
                combo:[defaults keyComboForKey:@"DecrementRating"]
                target:self action:@selector(showRatingDecrementStatusWindow)];
     }

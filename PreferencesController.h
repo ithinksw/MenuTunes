@@ -14,7 +14,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class MainController, KeyCombo;
+@class MainController, ITKeyCombo;
 
 @interface PreferencesController : NSObject
 {
@@ -50,7 +50,7 @@
     NSMutableArray *myItems;
     NSArray        *submenuItems;
     
-    KeyCombo *combo;
+    ITKeyCombo *combo;
     NSString *currentHotKey;
     NSMutableDictionary *hotKeysDictionary;
 }
@@ -73,5 +73,5 @@
 - (IBAction)okHotKey:(id)sender;
 
 - (void)setCurrentHotKey:(NSString *)key;
-- (void)setKeyCombo:(KeyCombo *)newCombo;
+- (void)setKeyCombo:(ITKeyCombo *)newCombo;
 @end

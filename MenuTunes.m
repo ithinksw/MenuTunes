@@ -1,11 +1,11 @@
 #import "MenuTunes.h"
-#import "HotKeyCenter.h"
+#import <ITKit/ITHotKeyCenter.h>
 
 @implementation MenuTunes
 
 - (void)sendEvent:(NSEvent *)event
 {
-	[[HotKeyCenter sharedCenter] sendEvent:event];
+	[[ITHotKeyCenter sharedCenter] sendEvent:event];
 	[super sendEvent:event];
 }
 

@@ -8,8 +8,8 @@
 
 #import "MenuController.h"
 #import "MainController.h"
-#import "HotKeyCenter.h"
-#import "KeyCombo.h"
+#import <ITKit/ITHotKeyCenter.h>
+#import <ITKit/ITKeyCombo.h>
 
 @interface MenuController (SubmenuMethods)
 - (NSMenu *)ratingMenu;
@@ -39,7 +39,7 @@
     NSString *nextObject;
     NSMenuItem *tempItem;
     NSEnumerator *itemEnum;
-    KeyCombo *keyCombo;
+    ITKeyCombo *keyCombo;
     
     //Get the information
     _currentPlaylist = [currentRemote currentPlaylistIndex];
@@ -72,11 +72,11 @@
             [tempItem setTag:MTMenuPlayPauseItem];
             [tempItem setTarget:self];
             
-            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"PlayPause"]) ) {
+            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"PlayPause"]) ) {
                 [self setKeyEquivalentForCode:[keyCombo keyCode]
                         andModifiers:[keyCombo modifiers]
                         onItem:tempItem];
-            }
+            }*/ // FIX ME!
             
             switch ([currentRemote playerPlayingState]) {
                 case ITMTRemotePlayerPlaying:
@@ -94,11 +94,11 @@
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
-            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"NextTrack"]) ) {
+            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"NextTrack"]) ) {
                 [self setKeyEquivalentForCode:[keyCombo keyCode]
                         andModifiers:[keyCombo modifiers]
                         onItem:tempItem];
-            }
+            }*/ // FIX ME!
             
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuNextTrackItem];
@@ -109,11 +109,11 @@
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
-            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"PrevTrack"]) ) {
+            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"PrevTrack"]) ) {
                 [self setKeyEquivalentForCode:[keyCombo keyCode]
                         andModifiers:[keyCombo modifiers]
                         onItem:tempItem];
-            }
+            }*/ // FIX ME!
             
             if (_currentPlaylist) {
                 [tempItem setTag:MTMenuPreviousTrackItem];
@@ -142,11 +142,11 @@
                     action:@selector(performMainMenuAction:)
                     keyEquivalent:@""];
             
-            if ( (keyCombo = [[HotKeyCenter sharedCenter] keyComboForName:@"ShowPlayer"]) ) {
+            /*if ( (keyCombo = [[ITHotKeyCenter sharedCenter] keyComboForName:@"ShowPlayer"]) ) {
                 [self setKeyEquivalentForCode:[keyCombo keyCode]
                         andModifiers:[keyCombo modifiers]
                         onItem:tempItem];
-            }
+            }*/ // FIX ME!
             
             [tempItem setTarget:self];
             [tempItem setTag:MTMenuShowPlayerItem];
