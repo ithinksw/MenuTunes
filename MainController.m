@@ -174,7 +174,7 @@ static MainController *sharedController;
 - (void)blingTime
 {
     NSDate *now = [NSDate date];
-    if ( (! [self getBlingTime] ) ) {
+    if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
         [self setBlingTime:now];
     }
     if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) ) {
