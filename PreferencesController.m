@@ -1,10 +1,10 @@
 #import "PreferencesController.h"
-#import "MenuTunes.h"
+#import "MainController.h"
 #import "HotKeyCenter.h"
 
 @implementation PreferencesController
 
-- (id)initWithMenuTunes:(MenuTunes *)tunes;
+- (id)initWithMenuTunes:(MainController *)tunes;
 {
     if ( (self = [super init]) ) {
         int i;

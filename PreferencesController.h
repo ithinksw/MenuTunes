@@ -35,7 +35,7 @@
     IBOutlet NSButton *upcomingSongsButton;
     IBOutlet NSWindow *window;
     
-    MenuTunes *mt;
+    MainController *mt;
     NSMutableArray *availableItems, *myItems;
     NSArray *submenuItems;
     
@@ -43,7 +43,7 @@
              *prevTrackCombo, *trackInfoCombo, *upcomingSongsCombo;
     NSString *setHotKey;
 }
-- (id)initWithMenuTunes:(MenuTunes *)menutunes;
+- (id)initWithMenuTunes:(MainController *)menutunes;
 
 - (IBAction)apply:(id)sender;
 - (IBAction)cancel:(id)sender;
