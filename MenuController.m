@@ -573,6 +573,7 @@
     id <NSMenuItem> tempItem;
     ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
     int i, j;
+    NSMutableArray *indices = [[NSMutableArray alloc] init];
     NS_DURING
         playlists = [[[MainController sharedController] currentRemote] playlists];
     NS_HANDLER
@@ -583,13 +584,16 @@
         NSArray *curPlaylist = [playlists objectAtIndex:0];
         NSString *name = [curPlaylist objectAtIndex:0];
         ITDebugLog(@"Adding main source: %@", name);
-        for (i = 2; i < [curPlaylist count]; i++) {
+        for (i = 3; i < [curPlaylist count]; i++) {
             ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:i]);
             tempItem = [playlistsMenu addItemWithTitle:[curPlaylist objectAtIndex:i] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-            [tempItem setTag:i];
+            [tempItem setTag:i - 1];
             [tempItem setTarget:self];
         }
+        ITDebugLog(@"Adding index to the index array.");
+        [indices addObject:[curPlaylist objectAtIndex:2]];
     }
+    [indices addObject:[[playlists objectAtIndex:1] objectAtIndex:2]];
     if ( (source == ITMTRemoteRadioSource) || ([playlists count] - 2 > 0) ) {
         [playlistsMenu addItem:[NSMenuItem separatorItem]];
     }
@@ -614,23 +618,26 @@
         if ( ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
             ITDebugLog(@"Invalid iPod source.");
         } else {
-            for (j = 2; j < [curPlaylist count]; j++) {
+            for (j = 3; j < [curPlaylist count]; j++) {
                 ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
                 tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-                [tempItem setTag:(i * 1000) + j];
+                [tempItem setTag:(i * 1000) + j - 1];
                 [tempItem setTarget:self];
             }
             [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
         }
+        ITDebugLog(@"Adding index to the index array.");
+        [indices addObject:[curPlaylist objectAtIndex:2]];
     }
-    
+    ITDebugLog(@"Checking the current source.");
     if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ){
-        tempItem = [playlistsMenu itemAtIndex:(int)[[[MainController sharedController] currentRemote] currentSourceIndex] + [playlistsMenu numberOfItems] - 5];
+        tempItem = [playlistsMenu itemAtIndex:[indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] + [playlistsMenu numberOfItems] - 3];
         [tempItem setState:NSOnState];
         [[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     } else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
+    [indices release];
     ITDebugLog(@"Done Building \"Playlists\" menu");
     return playlistsMenu;
 }
