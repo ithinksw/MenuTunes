@@ -33,6 +33,11 @@
 
 }
 
+- (void)showRatingWindowWithLevel:(int)level
+{
+
+}
+
 - (void)showShuffleWindowWithMode:(MTStatusWindowShuffleMode)mode
 {
 
@@ -42,7 +47,5 @@
 {
 
 }
-
-
 
 @end

@@ -45,6 +45,7 @@ typedef enum {
 - (void)showUpcomingSongsWithTitles:(NSArray *)titleStrings;
 
 - (void)showVolumeWindowWithLevel:(int)level;
+- (void)showRatingWindowWithLevel:(int)level;
 - (void)showShuffleWindowWithMode:(MTStatusWindowShuffleMode)mode;
 - (void)showLoopWindowWithMode:(MTStatusWindowLoopMode)mode;
 

@@ -458,6 +458,7 @@ static MainController *sharedController;
     [currentRemote setVolume:volume];
     
     //Show volume status window
+    [statusWindowController showVolumeWindowWithLevel:volume];
 }
 
 - (void)decrementVolume
@@ -470,6 +471,7 @@ static MainController *sharedController;
     [currentRemote setVolume:volume];
     
     //Show volume status window
+    [statusWindowController showVolumeWindowWithLevel:volume];
 }
 
 - (void)incrementRating
@@ -482,6 +484,7 @@ static MainController *sharedController;
     [currentRemote setCurrentSongRating:rating];
     
     //Show rating status window
+    [statusWindowController showRatingWindowWithLevel:rating];
 }
 
 - (void)decrementRating
@@ -494,6 +497,7 @@ static MainController *sharedController;
     [currentRemote setCurrentSongRating:rating];
     
     //Show rating status window
+    [statusWindowController showRatingWindowWithLevel:rating];
 }
 
 - (void)toggleLoop
@@ -514,12 +518,15 @@ static MainController *sharedController;
     [currentRemote setRepeatMode:repeatMode];
     
     //Show loop status window
+    [statusWindowController showLoopWindowWithMode:repeatMode];
 }
 
 - (void)toggleShuffle
 {
-    [currentRemote setShuffleEnabled:![currentRemote shuffleEnabled]];
+    bool newShuffleEnabled = ![currentRemote shuffleEnabled];
+    [currentRemote setShuffleEnabled:newShuffleEnabled];
     //Show shuffle status window
+    [statusWindowController showLoopWindowWithMode:newShuffleEnabled];
 }
 
 /*************************************************************************/

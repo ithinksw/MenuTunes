@@ -135,6 +135,10 @@
                 [tempItem setTag:MTMenuRewindItem];
                 [tempItem setTarget:self];
             }
+        } else if ([nextObject isEqualToString:@"Show Player"]) {
+            tempItem = [menu addItemWithTitle:[NSString stringWithFormat:@"Show %@", [[[MainController sharedController] currentRemote] playerSimpleName]] action:@selector(performMainMenuAction:) keyEquivalent:@""];
+            [tempItem setTarget:self];
+            [tempItem setTag:MTMenuShowPlayerItem];
         } else if ([nextObject isEqualToString:@"Preferences"]) {
             tempItem = [menu addItemWithTitle:@"Preferences..."
                     action:@selector(performMainMenuAction:)
