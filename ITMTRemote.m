@@ -33,22 +33,12 @@
     return NO;
 }
 
-- (NSArray *)sources
+- (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    return nil;
+    return 0;
 }
 
-- (int)currentSourceIndex
-{
-    return nil;
-}
-
-- (NSString *)sourceTypeOfCurrentPlaylist
-{
-    return nil;
-}
-
-- (NSArray *)playlistsForCurrentSource
+- (NSString *)classOfPlaylistAtIndex:(int)index
 {
     return nil;
 }
@@ -58,7 +48,7 @@
     return nil;
 }
 
-- (NSString *)songTitleAtIndex
+- (NSString *)songTitleAtIndex:(int)index
 {
     return nil;
 }
@@ -119,21 +109,6 @@
 }
 
 - (BOOL)goToPreviousSong
-{
-    return NO;
-}
-
-- (BOOL)goToNextPlaylist
-{
-    return NO;
-}
-
-- (BOOL)goToPreviousPlaylist
-{
-    return NO;
-}
-
-- (BOOL)switchToSourceAtIndex:(int)index
 {
     return NO;
 }

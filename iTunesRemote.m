@@ -40,25 +40,15 @@
     return YES;
 }
 
-- (NSArray *)sources
+- (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    //This is probably unneeded
-    return nil;
+    return [[ITAppleEventCenter sharedCenter]
+                    sendAEWithSendStringForNumber:@"cPla"
+                    eventClass:@"core" eventID:@"cnte"
+                    appPSN:[self iTunesPSN]];
 }
 
-- (int)currentSourceIndex
-{
-    //This is probably unneeded
-    return nil;
-}
-
-- (NSArray *)playlistsForCurrentSource
-{
-    //This is probably unneeded
-    return nil;
-}
-
-- (NSString *)sourceTypeOfCurrentPlaylist
+- (NSString *)classOfPlaylistAtIndex:(int)index
 {
     //Not working yet. It returns the 4 character code instead of a name.
     NSString *result;
@@ -79,7 +69,7 @@
     return result;
 }
 
-- (NSString *)songTitleAtIndex
+- (NSString *)songTitleAtIndex:(int)index
 {
     return nil; 
 }
@@ -164,8 +154,9 @@
 
 - (BOOL)goToNextSong
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
-            appPSN:[self iTunesPSN]];
+    [self numberOfSongsInPlaylistAtIndex:1];
+    //[[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Next"
+    //        appPSN:[self iTunesPSN]];
     return YES;
 }
 
@@ -174,24 +165,6 @@
     [[ITAppleEventCenter sharedCenter] sendAEWithEventClass:@"hook" eventID:@"Prev"
             appPSN:[self iTunesPSN]];
     return YES;
-}
-
-- (BOOL)goToNextPlaylist
-{
-    //This is probably unneeded
-    return NO;
-}
-
-- (BOOL)goToPreviousPlaylist
-{
-    //This is probably unneeded
-    return NO;
-}
-
-- (BOOL)switchToSourceAtIndex:(int)index
-{
-    //This is probably unneeded
-    return NO;
 }
 
 - (BOOL)switchToPlaylistAtIndex:(int)index

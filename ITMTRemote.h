@@ -77,14 +77,11 @@
  */
 - (BOOL)halt;
 
-- (NSArray *)sources;
-- (int)currentSourceIndex;
-- (NSString *)sourceTypeOfCurrentPlaylist;
-
-- (NSArray *)playlistsForCurrentSource;
+- (int)numberOfSongsInPlaylistAtIndex:(int)index;
+- (NSString *)classOfPlaylistAtIndex:(int)index;
 - (int)currentPlaylistIndex;
 
-- (NSString *)songTitleAtIndex;
+- (NSString *)songTitleAtIndex:(int)index;
 - (int)currentSongIndex;
 
 - (NSString *)currentSongTitle;
@@ -100,10 +97,7 @@
 - (BOOL)pause;
 - (BOOL)goToNextSong;
 - (BOOL)goToPreviousSong;
-- (BOOL)goToNextPlaylist;
-- (BOOL)goToPreviousPlaylist;
 
-- (BOOL)switchToSourceAtIndex:(int)index;
 - (BOOL)switchToPlaylistAtIndex:(int)index;
 - (BOOL)switchToSongAtIndex:(int)index;
 - (BOOL)switchToEQAtIndex:(int)index;
