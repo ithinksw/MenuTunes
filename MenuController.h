@@ -42,6 +42,7 @@ typedef enum {
 {
     NSMutableArray *_menuLayout;
     NSMenu *_currentMenu;
+    NSMenu *_ratingMenu, *_upcomingSongsMenu, *_eqMenu, *_playlistsMenu; //Submenus
     
     ITMTRemote *currentRemote;
     int _currentPlaylist, _currentTrack;
@@ -50,6 +51,7 @@ typedef enum {
 
 - (NSMenu *)menu;
 - (NSMenu *)menuForNoPlayer;
+- (void)rebuildSubmenus;
 
 // - (NSArray *)menuLayout;
 // - (void)setMenuLayout:(NSArray *)newLayoutArray;

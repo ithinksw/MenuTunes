@@ -34,11 +34,26 @@
     NSString *nextObject;
     NSMenuItem *tempItem;
     
-    //Get the current playlist, track index, etc.
-    currentRemote = [[MainController sharedController] currentRemote];
+    //Get the information
     _currentPlaylist = [currentRemote currentPlaylistIndex];
-    _currentTrack = [currentRemote currentSongIndex];
     _playingRadio = ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
+    
+    //Kill the old submenu items
+    if ( (tempItem = [_currentMenu itemWithTag:1]) ) {
+        [tempItem setSubmenu:nil];
+    }
+    
+    if ( (tempItem = [_currentMenu itemWithTag:2]) ) {
+        [tempItem setSubmenu:nil];
+    }
+    
+    if ( (tempItem = [_currentMenu itemWithTag:3]) ) {
+        [tempItem setSubmenu:nil];
+    }
+    
+    if ( (tempItem = [_currentMenu itemWithTag:4]) ) {
+        [tempItem setSubmenu:nil];
+    }
     
     //create our menu
     while ( (nextObject = [enumerator nextObject]) ) {
@@ -126,7 +141,8 @@
             tempItem = [menu addItemWithTitle:@"Song Rating"
                     action:nil
                     keyEquivalent:@""];
-            [tempItem setSubmenu:[self ratingMenu]];
+            [tempItem setSubmenu:_ratingMenu];
+            [tempItem setTag:1];
             if (_playingRadio || !_currentPlaylist) {
                 [tempItem setEnabled:NO];
             }
@@ -134,7 +150,8 @@
             tempItem = [menu addItemWithTitle:@"Upcoming Songs"
                     action:nil
                     keyEquivalent:@""];
-            [tempItem setSubmenu:[self upcomingSongsMenu]];
+            [tempItem setSubmenu:_upcomingSongsMenu];
+            [tempItem setTag:2];
             if (_playingRadio || !_currentPlaylist) {
                 [tempItem setEnabled:NO];
             }
@@ -142,15 +159,16 @@
             tempItem = [menu addItemWithTitle:@"Playlists"
                     action:nil
                     keyEquivalent:@""];
-            [tempItem setSubmenu:[self playlistsMenu]];
+            [tempItem setSubmenu:_playlistsMenu];
+            [tempItem setTag:3];
         } else if ([nextObject isEqualToString:@"EQ Presets"]) {
             tempItem = [menu addItemWithTitle:@"EQ Presets"
                     action:nil
                     keyEquivalent:@""];
-            [tempItem setSubmenu:[self eqMenu]];
+            [tempItem setSubmenu:_eqMenu];
+            [tempItem setTag:4];
         }
     }
-    
     [_currentMenu release];
     _currentMenu = menu;
     return _currentMenu;
@@ -173,10 +191,26 @@
     return [menu autorelease];
 }
 
+- (void)rebuildSubmenus
+{
+    currentRemote = [[MainController sharedController] currentRemote];
+    _currentPlaylist = [currentRemote currentPlaylistIndex];
+    _currentTrack = [currentRemote currentSongIndex];
+    _playingRadio = ([currentRemote currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
+    
+    [_ratingMenu release];
+    [_upcomingSongsMenu release];
+    [_playlistsMenu release];
+    [_eqMenu release];
+    _ratingMenu = [self ratingMenu];
+    _upcomingSongsMenu = [self upcomingSongsMenu];
+    _playlistsMenu = [self playlistsMenu];
+    _eqMenu = [self eqMenu];
+}
+
 - (NSMenu *)ratingMenu
 {
     NSMenu *ratingMenu = [[NSMenu alloc] initWithTitle:@""];
-    
     if (_currentPlaylist && !_playingRadio) {
         NSEnumerator *itemEnum;
         id  anItem;
@@ -200,8 +234,7 @@
             itemTag += 20;
         }
     }
-    
-    return [ratingMenu autorelease];
+    return ratingMenu;
 }
 
 - (NSMenu *)upcomingSongsMenu
@@ -227,7 +260,7 @@
             }
         }
     }
-    return [upcomingSongsMenu autorelease];
+    return upcomingSongsMenu;
 }
 
 - (NSMenu *)playlistsMenu
@@ -246,7 +279,7 @@
     if (!_playingRadio && _currentPlaylist) {
         [[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
     }
-    return [playlistsMenu autorelease];
+    return playlistsMenu;
 }
 
 - (NSMenu *)eqMenu
@@ -265,7 +298,7 @@
 	}
     }
     [[eqMenu itemAtIndex:([currentRemote currentEQPresetIndex] - 1)] setState:NSOnState];
-    return [eqMenu autorelease];
+    return eqMenu;
 }
 
 - (void)performMainMenuAction:(id)sender

@@ -162,17 +162,17 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    //We're quite worthless now, aren't we? Just used to showing the status windows.
-    /*if ( ( [self songChanged] ) ||
+    if ( ( [self songChanged] ) ||
          ( ([self radioIsPlaying]) && (latestPlaylistClass != ITMTRemotePlayerRadioPlaylist) ) ||
          ( (! [self radioIsPlaying]) && (latestPlaylistClass == ITMTRemotePlayerRadioPlaylist) ) ) {
         [self setLatestSongIdentifier:[currentRemote currentSongUniqueIdentifier]];
         latestPlaylistClass = [currentRemote currentPlaylistClass];
+        [menuController rebuildSubmenus];
         
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
             [self showCurrentTrackInfo];
         }
-    }*/
+    }
 }
 
 - (void)menuClicked
@@ -455,6 +455,7 @@ static MainController *sharedController;
 - (void)applicationLaunched:(NSNotification *)note
 {
     if (!note || [[[note userInfo] objectForKey:@"NSApplicationName"] isEqualToString:[currentRemote playerFullName]]) {
+        [self timerUpdate];
         [NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
         [self setupHotKeys];
         playerRunningState = ITMTRemotePlayerRunning;
