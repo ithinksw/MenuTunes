@@ -47,7 +47,7 @@
     return nil;
 }
 
-- (ITMTRemotePlayerRunningStatus)playerRunningState
+- (ITMTRemotePlayerRunningState)playerRunningState
 {
     return nil;
 }

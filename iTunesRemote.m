@@ -57,7 +57,7 @@
     return nil;
 }
 
-- (ITMTRemotePlayerRunningStatus)playerRunningState
+- (ITMTRemotePlayerRunningState)playerRunningState
 {
     NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
     int i;
