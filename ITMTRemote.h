@@ -15,139 +15,290 @@
  *
  */
 
-/*
- * TO DO:
- *
- * - Capability methods
- *
+/*!
+ * @header ITMTRemote
+ * @discussion This header defines the Objective-C protocol which all MenuTunes Remote plugins must implement.  To build a remote, create a subclass of the ITMTRemote object, and implement each method in the ITMTRemote protocol.
  */
-
-/*! @header ITMTRemote
- *  @abstract Declares the necessary protocol and class to implement a MenuTunes Remote.
- */
-
 #import <Cocoa/Cocoa.h>
 
+/*!
+  @enum ITMTRemotePlayerRunningState
+  @abstract Possible running states for the remote's player.
+  @discussion Used in fuctions that report or take the running state of the remote's player application.
+  @constant ITMTRemotePlayerNotRunning The remote's player isn't running.
+  @constant ITMTRemotePlayerLaunching The remote's player is starting up, or is running, but not yet accepting remote commands.
+  @constant ITMTRemotePlayerRunning The remote's player is running, and as such, is accepting remote commands.
+ */
 typedef enum {
     ITMTRemotePlayerNotRunning = -1,
     ITMTRemotePlayerLaunching,
     ITMTRemotePlayerRunning
-} ITMTRemotePlayerRunningStatus;
+} ITMTRemotePlayerRunningState;
 
+/*!
+  @enum ITMTRemotePlayerPlayingState
+  @abstract Possible playing states for the remote's player.
+  @discussion Used in functions that report or take the playing state of the remote's player application.
+  @constant ITMTRemotePlayerStopped The remote's player is stopped.
+  @constant ITMTRemotePlayerPaused The remote's player is paused.
+  @constant ITMTRemotePlayerPlaying The remote's player is playing.
+  @constant ITMTRemotePlayerRewinding The remote's player is rewinding.
+  @constant ITMTRemotePlayerForwarding The remote's player is forwarding.
+ */
 typedef enum {
     ITMTRemotePlayerStopped = -1,
     ITMTRemotePlayerPaused,
     ITMTRemotePlayerPlaying,
     ITMTRemotePlayerRewinding,
     ITMTRemotePlayerForwarding
-} ITMTRemotePlayerState;
+} ITMTRemotePlayerPlayingState;
 
-/*! @protocol ITMTRemote
- *  @abstract Declares what a MenuTunes Remote must be able to do.
- *  @discussion A MenuTunes Remote must be able to return and change state information.
+/*!
+ * @protocol ITMTRemote
+ * @discussion The Objective-C protocol which all MenuTunes remotes must implement.
  */
 @protocol ITMTRemote
 
-
-/*! @method remote
- *  @abstract Returns an autoreleased instance of the remote.
- *  @discussion Should be very quick and compact.
- *  EXAMPLE:
- *    + (id)remote
- *    {
- *        return [[[MyRemote alloc] init] autorelease];
- *    }
- *  @result The instance.
+/*!
+ * @method remote
+ * @abstract Returns an autoreleased instance of the remote.
+ * @discussion Should be very quick and compact.
+ *
+ * EXAMPLE:<br>
+ * + (id)remote<br>
+ * {<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return [[[MyRemote alloc] init] autorelease];<br>
+ * }
+ *
+ * @result An instance of the remote.
  */
 + (id)remote;
 
-/*! @method pluginTitle:
- *  @abstract Returns the title of the plugin, which should be player name.
- *  @result An NSString containing the title.
+/*!
+ * @method remoteTitle
+ * @abstract Returns the remote's title/name.
+ * @discussion This title is shown while the user is selecting which remote to use. This is for informational purposes only.
+ * @result An NSString containing the title/name of the remote.
  */
-- (NSString *)pluginTitle;
+- (NSString *)remoteTitle;
 
-/*! @method pluginInformation:
- *  @abstract Returns a description of the remote.
- *  @result An NSString containing the description.
+/*!
+ * @method remoteInformation
+ * @abstract Returns the remote's information.
+ * @discussion Information on the remote that the user will see when selecting which remote to use. The information returned here has no bearing on how the remote works, it's simply here for informing the user.
+ * @result An NSString containing the information for the remote.
  */
-- (NSString *)pluginInformation;
+- (NSString *)remoteInformation;
 
-/*! @method pluginIcon:
- *  @abstract Returns a icon for the remote.
- *  @result An NSImage containing the icon.
+/*!
+ * @method remoteIcon
+ * @abstract Returns the remote's icon.
+ * @discussion This icon is shown while the user is selecting which remote to use. Typically, this is the remote's player's application icon, however it can be anything you like.
+ * @result An NSImage containing the icon of the remote.
  */
-- (NSImage *)pluginIcon;
+- (NSImage *)remoteIcon;
 
-/*! @method begin:
- *  @abstract Sent when the plugin should begin operation.
- *  @result A result code signifying success.
+/*!
+ * @method begin
+ * @abstract Sent when the remote should begin operation.
+ * @result A result code signifying success.
  */
 - (BOOL)begin;
 
-/*! @method halt:
- *  @abstract Sent when the plugin should cease operation.
- *  @result A result code signifying success.
+/*!
+ * @method halt
+ * @abstract Sent when the remote should cease operation.
+ * @result A result code signifying success.
  */
 - (BOOL)halt;
 
+/*!
+ * @method playerFullName
+ * @abstract Returns the remote's player's application filename.
+ * @discussion This string should be the name typically used by the remote's player's application bundle/file. For example, Panic's Audion audio player is known simply as "Audion", however, the application bundle is called "Audion 3" for version 3 of their application. This should return "Audion 3", not simply "Audion". See playerSimpleName.
+ * @result An NSString containing the remote's player's application filename
+ */
 - (NSString *)playerFullName;
 
+/*!
+ * @method playerSimpleName
+ * @abstract Returns the simplified name of the remote's player.
+ * @discussion This is the name used in the User Interface for when referring to the remote's player. Continuing the example from the playerFullName method, this method would return simply "Audion", as that is how the player is known.
+ * @result An NSString containing the simplified name of the remote's player.
+ */
 - (NSString *)playerSimpleName;
 
-/*! @method playerRunningStatus:
- *  @abstract Returns controlled application's running status (is or isn't running).
- *  @result BOOL of the controlled application's running status.
+/*!
+ * @method capabilities
+ * @abstract Returns a dictionary defining the capabilities of the remote and it's player.
+ * @discussion Discussion Forthcoming.
+ * @result An NSDictionary defining the capabilities of the remote and it's player.
  */
-- (ITMTRemotePlayerRunningStatus)playerRunningStatus;
+- (NSDictionary *)capabilities;
 
-/*! @method playerState:
- *  @abstract Returns controlled application's playing state.
- *  @result ITMTRemotePlayerState of the controlled application's playing state.
+/*!
+ * @method playerRunningState
+ * @abstract Returns the running state of the remote's player.
+ * @discussion While most remotes will use only ITMTRemotePlayerNotRunning or ITMTRemotePlayerRunning, we have included support for ITMTRemotePlayerLaunching (see ITMTRemotePlayerRunningState) for remotes that want the most precise control over their player's process managment.
+ * @result An ITMTRemotePlayerRunningState defining the running state of the remote's player.
  */
-- (ITMTRemotePlayerState)playerState;
+- (ITMTRemotePlayerRunningState)playerRunningState;
 
+/*!
+ * @method playerPlayingState
+ */
+- (ITMTRemotePlayerPlayingState)playerPlayingState;
+
+/*!
+ * @method playlists
+ */
 - (NSArray *)playlists;
+
+/*!
+ * @method numberOfSongsInPlaylistAtIndex:
+ */
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;
+
+/*!
+ * @method classOfPlaylistAtIndex:
+ */
 - (NSString *)classOfPlaylistAtIndex:(int)index;
+
+/*!
+ * @method currentPlaylistIndex
+ */
 - (int)currentPlaylistIndex;
 
+/*!
+ * @method songTitleAtIndex:
+ */
 - (NSString *)songTitleAtIndex:(int)index;
+
+/*!
+ * @method currentSongIndex
+ */
 - (int)currentSongIndex;
 
+/*!
+ * @method currentSongTitle
+ */
 - (NSString *)currentSongTitle;
+
+/*!
+ * @method currentSongArtist
+ */
 - (NSString *)currentSongArtist;
+
+/*!
+ * @method currentSongAlbum
+ */
 - (NSString *)currentSongAlbum;
+
+/*!
+ * @method currentSongGenre
+ */
 - (NSString *)currentSongGenre;
+
+/*!
+ * @method currentSongLength
+ */
 - (NSString *)currentSongLength;
+
+/*!
+ * @method currentSongRemaining
+ */
 - (NSString *)currentSongRemaining;
 
+/*!
+ * @method currentSongRating
+ */
 - (float)currentSongRating;
+
+/*!
+ * @method setCurrentSongRating:
+ */
 - (BOOL)setCurrentSongRating:(float)rating;
 
+/*!
+ * @method equalizerEnabled
+ */
 - (BOOL)equalizerEnabled;
+
+/*!
+ * @method setEqualizerEnabled:
+ */
 - (BOOL)setEqualizerEnabled:(BOOL)enabled;
 
+/*!
+ * @method eqPresets
+ */
 - (NSArray *)eqPresets;
+
+/*!
+ * @method currentEQPresetIndex
+ */
 - (int)currentEQPresetIndex;
 
+/*!
+ * @method volume
+ */
 - (float)volume;
+
+/*!
+ * @method setVolume:
+ */
 - (BOOL)setVolume:(float)volume;
 
+/*!
+ * @method play
+ */
 - (BOOL)play;
+
+/*!
+ * @method pause
+ */
 - (BOOL)pause;
+
+/*!
+ * @method goToNextSong
+ */
 - (BOOL)goToNextSong;
+
+/*!
+ * @method goToPreviousSong
+ */
 - (BOOL)goToPreviousSong;
+
+/*!
+ * @method forward
+ */
 - (BOOL)forward;
+
+/*!
+ * @method rewind
+ */
 - (BOOL)rewind;
 
+/*!
+ * @method switchToPlaylistAtIndex:
+ */
 - (BOOL)switchToPlaylistAtIndex:(int)index;
+
+/*!
+ * @method switchToSongAtIndex:
+ */
 - (BOOL)switchToSongAtIndex:(int)index;
+
+/*!
+ * @method switchToEQAtIndex:
+ */
 - (BOOL)switchToEQAtIndex:(int)index;
 
 @end
 
-
+/*!
+ * @class ITMTRemote
+ */
 @interface ITMTRemote : NSObject <ITMTRemote>
 
 @end

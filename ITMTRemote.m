@@ -1,6 +1,5 @@
 #import "ITMTRemote.h"
 
-
 @implementation ITMTRemote
 
 + (id)remote
@@ -8,17 +7,17 @@
     return nil;
 }
 
-- (NSString *)title
+- (NSString *)remoteTitle
 {
     return nil;
 }
 
-- (NSString *)information;
+- (NSString *)remoteInformation
 {
     return nil;
 }
 
-- (NSImage *)icon
+- (NSImage *)remoteIcon
 {
     return nil;
 }
@@ -33,14 +32,29 @@
     return NO;
 }
 
-- (ITMTRemotePlayerRunningStatus)playerRunningStatus
+- (NSString *)playerFullName
 {
-    return ITMTRemotePlayerNotRunning;
+    return nil;
 }
 
-- (ITMTRemotePlayerState)playerState
+- (NSString *)playerSimpleName
 {
-    return ITMTRemotePlayerStopped;
+    return nil;
+}
+
+- (NSDictionary *)capabilities
+{
+    return nil;
+}
+
+- (ITMTRemotePlayerRunningStatus)playerRunningState
+{
+    return nil;
+}
+
+- (ITMTRemotePlayerPlayingState)playerPlayingState
+{
+    return nil;
 }
 
 - (NSArray *)playlists
@@ -50,7 +64,7 @@
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    return 0;
+    return nil;
 }
 
 - (NSString *)classOfPlaylistAtIndex:(int)index
@@ -105,7 +119,7 @@
 
 - (float)currentSongRating
 {
-    return 0.00;
+    return nil;
 }
 
 - (BOOL)setCurrentSongRating:(float)rating
@@ -113,24 +127,34 @@
     return NO;
 }
 
-- (float)volume
-{
-    return 1.00;
-}
-
-- (BOOL)setVolume:(float)volume
+- (BOOL)equalizerEnabled
 {
     return NO;
 }
 
-- (NSArray *)eqPresets;
+- (BOOL)setEqualizerEnabled:(BOOL)enabled
+{
+    return NO;
+}
+
+- (NSArray *)eqPresets
 {
     return nil;
 }
 
 - (int)currentEQPresetIndex
 {
-    return 0;
+    return nil;
+}
+
+- (float)volume
+{
+    return nil;
+}
+
+- (BOOL)setVolume:(float)volume
+{
+    return NO;
 }
 
 - (BOOL)play
@@ -153,7 +177,7 @@
     return NO;
 }
 
-- (BOOL)fastForward
+- (BOOL)forward
 {
     return NO;
 }
@@ -177,6 +201,5 @@
 {
     return NO;
 }
-
 
 @end
