@@ -204,7 +204,7 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 5050 ) {
         if ([sender clickedRow] > -1) {
             //Set sharedPlayerHost
-            [df setObject:[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sender clickedRow]] objectForKey:@"ip"] forKey:@"sharedPlayerHost"];
+            //[df setObject:[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sender clickedRow]] objectForKey:@"ip"] forKey:@"sharedPlayerHost"];
         }
     } else if ( [sender tag] == 5060 ) {
         //Show selection sheet
@@ -237,15 +237,18 @@ static PreferencesController *prefs = nil;
         [NSApp endSheet:selectPlayerSheet];
         [selectPlayerSheet orderOut:nil];
         
+        if ([selectPlayerBox contentView] == manualView) {
+            [df setObject:[hostTextField stringValue] forKey:@"sharedPlayerHost"];
+        } else {
+            if ([sharingTableView selectedRow] > -1) {
+                [df setObject:[[[[NetworkController sharedController] remoteServices] objectAtIndex:[sharingTableView selectedRow]] objectForKey:@"ip"] forKey:@"sharedPlayerHost"];
+            }
+        }
+        
         if (![controller connectToServer]) {
             NSRunAlertPanel(@"Connection error.", @"The MenuTunes server you attempted to connect to was not responding. MenuTunes will revert back to the local player.", @"OK", nil, nil);
         } else {
             [useSharedMenuTunesCheckbox setState:NSOnState];
-        }
-        
-        if ([selectPlayerBox contentView] == manualView) {
-            [df setObject:[hostTextField stringValue] forKey:@"sharedPlayerHost"];
-        } else {
         }
     }
     [df synchronize];
