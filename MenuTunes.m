@@ -15,6 +15,9 @@ Things to do:
     - going to need a different way of defining key combos
 ¥ Optimize, this thing is big and slow :(
 ¥ Apple Events! Apple Events! Apple Events!
+
+¥ I think I found a slight memory leak:
+    425 MenuTunes    7.8%  8:29.87   1    56  4827   215M+ 3.14M   135M-  599M+
 */
 
 #import "MenuTunes.h"
@@ -400,6 +403,8 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     buffer = malloc(length);
     
     AEGetDescData(&resultDesc, buffer, length);
+    AEDisposeDesc(&scriptDesc);
+    AEDisposeDesc(&resultDesc);
     result = [NSString stringWithCString:buffer length:length];
     if (![result isEqualToString:@""] &&
         ([result characterAtIndex:0] == '\"') &&
@@ -407,6 +412,7 @@ target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES];
     {
         result = [result substringWithRange:NSMakeRange(1, [result length] - 2)];
     }
+    [script release];
     free(buffer);
     buffer = NULL;
     return result;

@@ -9,6 +9,7 @@
     IBOutlet NSButton *albumCheckbox;
     IBOutlet NSTableView *allTableView;
     IBOutlet NSButton *artistCheckbox;
+    IBOutlet NSTextField *hotKeyTextField;
     IBOutlet NSTextField *keyComboField;
     IBOutlet NSPanel *keyComboPanel;
     IBOutlet NSButton *launchAtLoginCheckbox;
