@@ -348,9 +348,11 @@ static MainController *sharedController;
             NSArray *scripts = [[NSFileManager defaultManager] directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
             NSEnumerator *scriptsEnum = [scripts objectEnumerator];
             NSString *nextScript;
+            ITDebugLog(@"Running AppleScripts for song change.");
             while ( (nextScript = [scriptsEnum nextObject]) ) {
                 NSDictionary *error;
                 NSAppleScript *currentScript = [[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] stringByAppendingPathComponent:nextScript]] error:&error];
+                NSLog(@"Running script: %@", nextScript);
                 if (!currentScript || ![currentScript executeAndReturnError:nil]) {
                     ITDebugLog(@"Error running script %@.", nextScript);
                 }
