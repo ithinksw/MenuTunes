@@ -429,12 +429,19 @@ static PreferencesController *prefs = nil;
         int selRow = [tableView selectedRow];
         if (selRow != - 1) {
             NSString *object = [myItems objectAtIndex:selRow];
+            
+            if ([object isEqualToString:@"preferences"]) {
+                NSBeep();
+                return;
+            }
+            
             if (![object isEqualToString:@"separator"])
                 [availableItems addObject:object];
             [myItems removeObjectAtIndex:selRow];
             [menuTableView reloadData];
             [allTableView reloadData];
         }
+        [self changeMenus:self];
     }
 }
 
