@@ -41,12 +41,14 @@
     MTBlingController *bling;
     NSTimer *registerTimer;
     BOOL timerUpdating;
+    BOOL blinged;
 }
 + (MainController *)sharedController;
 
 - (void)menuClicked;
 
 //Methods called from MenuController by menu items
+- (NSDate*)getBlingTime;
 - (void)blingTime;
 - (void)blingNow;
 - (BOOL)blingBling;

@@ -8,6 +8,7 @@
 
 #import "MTBlingController.h"
 #import "MTeSerialNumber.h"
+#import "MainController.h"
 
 #define APP_SUPPORT_PATH_STRING [@"~/Library/Application Support/MenuTunes/" stringByExpandingTildeInPath]
 #define LICENSE_PATH_STRING [APP_SUPPORT_PATH_STRING stringByAppendingString:@"/.license"]
@@ -115,7 +116,7 @@
                           nil, nil, nil,
                           NSLocalizedString(@"failed_msg", @"Failed Message"));
     }
-    
+    [[MainController sharedController] blingTime];
 }
 
 - (int)checkKeyFile

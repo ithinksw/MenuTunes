@@ -41,6 +41,7 @@ static MainController *sharedController;
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
         timerUpdating = NO;
+        blinged = NO;
     }
     return self;
 }
@@ -182,18 +183,29 @@ static MainController *sharedController;
         if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
             [self setBlingTime:now];
         }
-        if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) ) {
+        if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) && (blinged != YES) ) {
+            blinged = YES;
             [statusItem setEnabled:NO];
             [self clearHotKeys];
             if ([refreshTimer isValid]) {
                 [refreshTimer invalidate];
             }
-            if ([registerTimer isValid]) {
-                [registerTimer invalidate];
-            }
             [statusWindowController showRegistrationQueryWindow];
         }
     } else {
+        if (blinged) {
+            [statusItem setEnabled:YES];
+            [self setupHotKeys];
+            if (![refreshTimer isValid]) {
+                [refreshTimer release];
+                refreshTimer = refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
+                             target:self
+                             selector:@selector(timerUpdate)
+                             userInfo:nil
+                             repeats:YES] retain];
+            }
+            blinged = NO;
+        }
         [self setBlingTime:nil];
     }
 }
