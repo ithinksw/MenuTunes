@@ -417,7 +417,17 @@
 
 - (NSImage *)currentSongAlbumArt
 {
-    return nil;
+    NSAppleScript *script;
+    NSAppleEventDescriptor *moof;
+    NSData  *data;
+    script = [[NSAppleScript alloc] initWithSource:@"tell application \"iTunes\"\nget data of artwork 1 of current track\nend tell"];
+    moof = [script executeAndReturnError:nil];
+    data = [moof data];
+    if (data) {
+        return [[[NSImage alloc] initWithData:data] autorelease];
+    } else {
+        return nil;
+    }
 }
 
 - (float)currentSongRating

@@ -45,7 +45,7 @@
      // Set default values.
         _image  = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
         _locked = NO;
-        _sizing = StatusWindowRegular;
+        _sizing = ITTransientStatusWindowRegular;
     }
     
     return self;
@@ -75,7 +75,7 @@
     [self setExitMode:(flag ? ITTransientStatusWindowExitOnCommand : ITTransientStatusWindowExitAfterDelay)];
 }
 
-- (void)setSizing:(StatusWindowSizing)newSizing
+- (void)setSizing:(ITTransientStatusWindowSizing)newSizing
 {
     _sizing = newSizing;
 }
@@ -124,9 +124,9 @@
     BOOL         shouldAnimate = ( ! (([self visibilityState] == ITWindowAppearingState) ||
                                       ([self visibilityState] == ITWindowVanishingState)) );
         
-    if ( _sizing == StatusWindowSmall ) {
+    if ( _sizing == ITTransientStatusWindowSmall ) {
         divisor = SMALL_DIVISOR;
-    } else if ( _sizing == StatusWindowMini ) {
+    } else if ( _sizing == ITTransientStatusWindowMini ) {
         divisor = MINI_DIVISOR;
     }
 
@@ -212,9 +212,9 @@
         NSFont       *font;
         NSDictionary *attr;
 
-        if ( _sizing == StatusWindowSmall ) {
+        if ( _sizing == ITTransientStatusWindowSmall ) {
             divisor = SMALL_DIVISOR;
-        } else if ( _sizing == StatusWindowMini ) {
+        } else if ( _sizing == ITTransientStatusWindowMini ) {
             divisor = MINI_DIVISOR;
         }
 
@@ -279,9 +279,9 @@
         NSColor      *offColor    = [NSColor colorWithCalibratedWhite:0.15 alpha:0.50];
         NSMatrix     *volMatrix;
         
-        if ( _sizing == StatusWindowSmall ) {
+        if ( _sizing == ITTransientStatusWindowSmall ) {
             divisor = SMALL_DIVISOR;
-        } else if ( _sizing == StatusWindowMini ) {
+        } else if ( _sizing == ITTransientStatusWindowMini ) {
             divisor = MINI_DIVISOR;
         }
         

@@ -146,9 +146,11 @@ static PreferencesController *prefs = nil;
     [passwordPanelOKButton setTitle:@"Connect"];
     [passwordPanelTitle setStringValue:@"Password Required"];
     [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"Please enter a password for access to the MenuTunes player named %@ at %@.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
-    [passwordPanel center];
     [passwordPanel setLevel:NSStatusWindowLevel];
-    [passwordPanel makeKeyAndOrderFront:nil];
+    [NSApp activateIgnoringOtherApps: YES];
+    [window center];
+    [window orderFrontRegardless];
+    [window makeKeyWindow];
     if ([NSApp runModalForWindow:passwordPanel]) {
         return YES;
     } else {
@@ -162,9 +164,11 @@ static PreferencesController *prefs = nil;
     [passwordPanelOKButton setTitle:@"Retry"];
     [passwordPanelTitle setStringValue:@"Invalid Password"];
     [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"The password entered for access to the MenuTunes player named %@ at %@ is invalid.  Please provide a new password.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
-    [passwordPanel center];
     [passwordPanel setLevel:NSStatusWindowLevel];
-    [passwordPanel makeKeyAndOrderFront:nil];
+    [NSApp activateIgnoringOtherApps: YES];
+    [window center];
+    [window orderFrontRegardless];
+    [window makeKeyWindow];
     if ([NSApp runModalForWindow:passwordPanel]) {
         return YES;
     } else {
@@ -193,8 +197,10 @@ static PreferencesController *prefs = nil;
     }
 
     [self resetRemotePlayerTextFields];
+    [NSApp activateIgnoringOtherApps: YES];
     [window center];
-    [NSApp activateIgnoringOtherApps:YES];
+    [window orderFrontRegardless];
+    [window makeKeyWindow];
     [window performSelector:@selector(makeKeyAndOrderFront:) withObject:self afterDelay:0.0];
 }
 
@@ -226,6 +232,8 @@ static PreferencesController *prefs = nil;
         [df setBool:SENDER_STATE forKey:@"showTrackNumber"];
     } else if ( [sender tag] == 1090) {
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
+    } else if ( [sender tag] == 1100) {
+        [df setBool:SENDER_STATE forKey:@"showAlbumArtwork"];
     }
     [df synchronize];
 }
@@ -773,6 +781,7 @@ static PreferencesController *prefs = nil;
     [trackTimeCheckbox setState:[df boolForKey:@"showTime"] ? NSOnState : NSOffState];
     [trackNumberCheckbox setState:[df boolForKey:@"showTrackNumber"] ? NSOnState : NSOffState];
     [ratingCheckbox setState:[df boolForKey:@"showTrackRating"] ? NSOnState : NSOffState];
+    [albumArtworkCheckbox setState:[df boolForKey:@"showAlbumArtwork"] ? NSOnState : NSOffState];
     
     // Set the launch at login checkbox state
     ITDebugLog(@"Setting launch at login state.");

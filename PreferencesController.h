@@ -18,6 +18,7 @@
 
 @interface PreferencesController : NSObject
 {
+    IBOutlet NSButton *albumArtworkCheckbox;
     IBOutlet NSButton *albumCheckbox;
     IBOutlet NSTableView *allTableView;
     IBOutlet NSPopUpButton *appearanceEffectPopup;

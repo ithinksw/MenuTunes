@@ -59,7 +59,7 @@ static StatusWindowController *sharedController;
         [_window setHorizontalPosition:[df integerForKey:@"statusWindowHorizontalPosition"]];
         [_window setVerticalPosition:[df integerForKey:@"statusWindowVerticalPosition"]];
         
-        [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+        [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
         
         if ( [classList containsObject:NSClassFromString(entryClass)] ) {
             entryEffect = [[[NSClassFromString(entryClass) alloc] initWithWindow:_window] autorelease];
@@ -108,11 +108,19 @@ static StatusWindowController *sharedController;
                                 time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
                                track:            (NSString *)track
                               rating:                   (int)rating
+                               image:             (NSImage *)art
 {
     NSImage  *image = nil;
     NSString *text  = title;
     
-    if ( source == ITMTRemoteLibrarySource ) {
+    if ( art != nil ) {
+        image = art;
+        NSSize size = [image size];
+        if (size.width > 110) {
+            [image setScalesWhenResized:YES];
+            [image setSize:NSMakeSize(110, (size.width / size.height) * 110)];
+        }
+    } else if ( source == ITMTRemoteLibrarySource ) {
         image = [NSImage imageNamed:@"Library"];
     } else if ( source == ITMTRemoteCDSource ) {
         image = [NSImage imageNamed:@"CD"];
@@ -125,9 +133,9 @@ static StatusWindowController *sharedController;
     } else if ( source == ITMTRemoteSharedLibrarySource ) {
         image = [NSImage imageNamed:@"Library"];
     }
-
+    
     [_window setImage:image];
-
+    
     if ( album ) {
         text = [text stringByAppendingString:[@"\n" stringByAppendingString:album]];
     }
@@ -160,7 +168,7 @@ static StatusWindowController *sharedController;
     }
     
     
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:text];
     [_window appear:self];
 }
@@ -171,7 +179,7 @@ static StatusWindowController *sharedController;
     NSString *bull = [NSString stringWithUTF8String:"♪ "];
     NSString *end  = [@"\n" stringByAppendingString:bull];
     [_window setImage:[NSImage imageNamed:@"Upcoming"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:[bull stringByAppendingString:[titleStrings componentsJoinedByString:end]]];
     [_window appear:self];
 }
@@ -179,7 +187,7 @@ static StatusWindowController *sharedController;
 - (void)showVolumeWindowWithLevel:(float)level
 {
     [_window setImage:[NSImage imageNamed:@"Volume"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildMeterWindowWithCharacter:[NSString stringWithUTF8String:"▊"]
                                       size:18
                                      count:10
@@ -190,7 +198,7 @@ static StatusWindowController *sharedController;
 - (void)showRatingWindowWithRating:(float)rating
 {
     [_window setImage:[NSImage imageNamed:@"Rating"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildMeterWindowWithCharacter:[NSString stringWithUTF8String:"★"]
                                       size:48
                                      count:5
@@ -201,7 +209,7 @@ static StatusWindowController *sharedController;
 - (void)showShuffleWindow:(BOOL)shuffle
 {
     [_window setImage:[NSImage imageNamed:@"Shuffle"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:( shuffle ? @"Shuffle On" : @"Shuffle Off")];
     [_window appear:self];
 }
@@ -219,7 +227,7 @@ static StatusWindowController *sharedController;
     }
     
     [_window setImage:[NSImage imageNamed:@"Repeat"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:string];
     [_window appear:self];
 }
@@ -229,7 +237,7 @@ static StatusWindowController *sharedController;
     NSString *message = @"Would you like MenuTunes to launch\nautomatically at startup?";
 
     [_window setImage:[NSImage imageNamed:@"Setup"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
                             defaultButton:@"Launch at Startup"
                           alternateButton:@"Launch Manually"
@@ -247,7 +255,7 @@ static StatusWindowController *sharedController;
     NSString *message = @"Your 7-day unlimited trial period has elapsed.\nYou must register to continue using MenuTunes.";
 
     [_window setImage:[NSImage imageNamed:@"Register"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
                             defaultButton:@"Register Now"
                           alternateButton:@"Quit MenuTunes"
@@ -264,7 +272,7 @@ static StatusWindowController *sharedController;
     NSString *message = @"The selected shared player is available again.\nWould you like to reconnect to it?.";
 
     [_window setImage:[NSImage imageNamed:@"Register"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
                             defaultButton:@"Reconnect"
                           alternateButton:@"Ignore"
@@ -281,7 +289,7 @@ static StatusWindowController *sharedController;
     NSString *message = @"The new features in this version of MenuTunes\nrequire you to reconfigure your preferences.";
 
     [_window setImage:[NSImage imageNamed:@"Setup"]];
-    [_window setSizing:(StatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildDialogWindowWithMessage:message
                             defaultButton:@"Show Preferences"
                           alternateButton:@"OK"

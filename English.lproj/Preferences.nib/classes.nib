@@ -16,6 +16,7 @@
             CLASS = PreferencesController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                albumArtworkCheckbox = NSButton; 
                 albumCheckbox = NSButton; 
                 allTableView = NSTableView; 
                 appearanceEffectPopup = NSPopUpButton; 

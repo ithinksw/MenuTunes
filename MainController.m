@@ -679,6 +679,7 @@ static MainController *sharedController;
     NSString               *artist      = nil;
     NSString               *time        = nil;
     NSString               *track       = nil;
+    NSImage                *art         = nil;
     int                     rating      = -1;
     
     NS_DURING
@@ -750,6 +751,14 @@ static MainController *sharedController;
             }
         }
         
+        if ( [df boolForKey:@"showAlbumArtwork"] ) {
+             NS_DURING
+                art = [[self currentRemote] currentSongAlbumArt];
+            NS_HANDLER
+                [self networkError:localException];
+            NS_ENDHANDLER
+        }
+        
     } else {
         title = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
     }
@@ -760,7 +769,8 @@ static MainController *sharedController;
                                                   artist:artist
                                                     time:time
                                                    track:track
-                                                  rating:rating];
+                                                  rating:rating
+                                                   image:art];
 }
 
 - (void)showUpcomingSongs

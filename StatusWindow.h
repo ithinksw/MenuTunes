@@ -15,23 +15,13 @@
 #import <Cocoa/Cocoa.h>
 #import <ITKit/ITKit.h>
 
-
-typedef enum _StatusWindowSizing {
-    StatusWindowRegular,
-    StatusWindowSmall,
-    StatusWindowMini
-} StatusWindowSizing;
-
-
 @interface StatusWindow : ITTransientStatusWindow {
     NSImage            *_image;
     BOOL                _locked;
-    StatusWindowSizing  _sizing;
 }
 
 - (void)setImage:(NSImage *)newImage;
 - (void)setLocked:(BOOL)flag;
-- (void)setSizing:(StatusWindowSizing)newSizing;
 
 - (void)buildTextWindowWithString:(NSString *)text;
 - (void)buildMeterWindowWithCharacter:(NSString *)character

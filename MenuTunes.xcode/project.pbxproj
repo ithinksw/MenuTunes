@@ -75,9 +75,9 @@
 			children = (
 				1058C7A1FEA54F0111CA2CBB,
 				7C95A0EF05A92B4800B4F576,
-				7C95A02A05A9288F00B4F576,
 				7C95A03705A928A300B4F576,
-				7C95A0DF05A929B200B4F576,
+				3740714D05ACE0B500CC2142,
+				3740716C05ACE20500CC2142,
 				7C95A0E805A92B0700B4F576,
 			);
 			isa = PBXGroup;
@@ -293,6 +293,54 @@
 //322
 //323
 //324
+//370
+//371
+//372
+//373
+//374
+		3740714D05ACE0B500CC2142 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			path = ITFoundation.framework;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3740714E05ACE0B500CC2142 = {
+			fileRef = 3740714D05ACE0B500CC2142;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3740714F05ACE0B500CC2142 = {
+			fileRef = 3740714D05ACE0B500CC2142;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3740716B05ACE14D00CC2142 = {
+			fileRef = 3740714D05ACE0B500CC2142;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3740716C05ACE20500CC2142 = {
+			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
+			path = libValidate.a;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3740716D05ACE20500CC2142 = {
+			fileRef = 3740716C05ACE20500CC2142;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//370
+//371
+//372
+//373
+//374
 //4A0
 //4A1
 //4A2
@@ -309,7 +357,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				OPTIMIZATION_CFLAGS = "-O0";
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -472,7 +520,7 @@
 			files = (
 				7C33202105A925BC0088905B,
 				7C33202005A925BA0088905B,
-				7C95A02D05A9288F00B4F576,
+				3740714E05ACE0B500CC2142,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -487,7 +535,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "/Volumes/Data/Desktop/ITFoundation/build /Volumes/Data/Desktop/ITKit/build";
+				FRAMEWORK_SEARCH_PATHS = "/Volumes/Data/Desktop/ITFoundation/build /Volumes/Data/Desktop/ITKit/build /Users/kent/Programming/iThink/MenuTunes";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
@@ -1318,26 +1366,6 @@
 			settings = {
 			};
 		};
-		7C95A02A05A9288F00B4F576 = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.framework;
-			name = ITFoundation.framework;
-			path = ../ITFoundation/build/ITFoundation.framework;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
-		7C95A02B05A9288F00B4F576 = {
-			fileRef = 7C95A02A05A9288F00B4F576;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		7C95A02D05A9288F00B4F576 = {
-			fileRef = 7C95A02A05A9288F00B4F576;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		7C95A03705A928A300B4F576 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -1362,19 +1390,6 @@
 		};
 		7C95A0CF05A9299E00B4F576 = {
 			fileRef = 7C95A0CE05A9299E00B4F576;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		7C95A0DF05A929B200B4F576 = {
-			isa = PBXFileReference;
-			lastKnownFileType = archive.ar;
-			path = libValidate.a;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		7C95A0E005A929B200B4F576 = {
-			fileRef = 7C95A0DF05A929B200B4F576;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1440,18 +1455,12 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3740716B05ACE14D00CC2142,
 				7C95A18A05A92B9700B4F576,
 				7C95A18905A92B9500B4F576,
-				7C95A18805A92B9100B4F576,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7C95A18805A92B9100B4F576 = {
-			fileRef = 7C95A02A05A9288F00B4F576;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		7C95A18905A92B9500B4F576 = {
 			fileRef = 7C95A03705A928A300B4F576;
@@ -1503,7 +1512,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build /Volumes/Data/Desktop/ITFoundation/build";
+				FRAMEWORK_SEARCH_PATHS = "../ITFoundation/build ../ITKit/build /Volumes/Data/Desktop/ITFoundation/build /Users/kent/Programming/iThink/MenuTunes";
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1514,7 +1523,7 @@
 				HEADER_SEARCH_PATHS = "../ITKit/build/ITKit.framework/PrivateHeaders ../ITFoundation/build/ITFoundation.framework/PrivateHeaders ";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = /Volumes/Data/Desktop/MenuTunes;
+				LIBRARY_SEARCH_PATHS = "/Volumes/Data/Desktop/MenuTunes /Users/kent/Programming/iThink/MenuTunes";
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
@@ -1638,11 +1647,11 @@
 			files = (
 				7C33201F05A925AF0088905B,
 				8D11072F0486CEB800E47090,
-				7C95A02B05A9288F00B4F576,
 				7C95A03805A928A300B4F576,
-				7C95A0E005A929B200B4F576,
 				7C95A0E905A92B0700B4F576,
 				7C95A0F005A92B4800B4F576,
+				3740714F05ACE0B500CC2142,
+				3740716D05ACE20500CC2142,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -48,7 +48,8 @@ typedef enum {
                               artist:            (NSString *)artist
                                 time:            (NSString *)time  // FLOW: Should probably be NSDate or something.
                                track:            (NSString *)track
-                              rating:                   (int)rating;
+                              rating:                   (int)rating
+                               image:             (NSImage *)art;
 
 
 @end
