@@ -24,6 +24,8 @@
 
 @interface MenuTunes : NSObject
 {
+    IBOutlet NSMenu *ratingMenu;
+    
     ITStatusItem   *statusItem;
     NSMenu         *menu;
     ITMTRemote     *currentRemote;
@@ -63,6 +65,11 @@
 
 - (void)registerDefaultsIfNeeded;
 - (void)rebuildMenu;
+
+- (void)runTimerInNewThread;
+
+- (IBAction)setSongRating:(id)sender;
+
 - (void)clearHotKeys;
 - (void)closePreferences;
 

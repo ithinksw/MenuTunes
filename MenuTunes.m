@@ -280,18 +280,22 @@
                     action:nil
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Song Rating"]) {
-            NSMenu *ratingSubmenu = [[NSMenu alloc] initWithTitle:@""];
-            unichar whiteStar = 'o';//2606;
-            unichar blackStar = 'x';//2605;
-            NSString *whiteStarString = [NSString stringWithCharacters:&whiteStar
+            /*NSMenu *ratingSubmenu = [[NSMenu alloc] initWithTitle:@""];
+            unichar whiteStarChar = 2606;
+            unichar blackStarChar = 2605;
+            NSString *whiteStar = [NSString stringWithCharacters:&whiteStarChar
                                             length:1];
-            NSString *blackStarString = [NSString stringWithCharacters:&blackStar
+            NSString *blackStar = [NSString stringWithCharacters:&blackStarChar
                                             length:1];
+            NSData *whiteStarData = [whiteStar dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *blackStarData = [blackStar dataUsingEncoding:NSUTF8StringEncoding];
             NSString *string = @"";
             int i;
             
+            whiteStar = [[NSString alloc] initWithData:whiteStarData encoding:NSUTF8StringEncoding];
+            
             for (i = 0; i < 5; i++) {
-                string = [string stringByAppendingString:whiteStarString];
+                string = [string stringByAppendingString:whiteStar];
             }
             for (i = 0; i < 6; i++) {
                 NSMenuItem *ratingItem;
@@ -299,12 +303,12 @@
                 [ratingItem setTarget:self];
                 [ratingItem setTag:i * 20];
                 string = [string substringToIndex:4];
-                string = [blackStarString stringByAppendingString:string];
+                string = [blackStar stringByAppendingString:string];
             }
+            [ratingSubmenu autorelease];*/
             [[menu addItemWithTitle:@"Song Rating"
                     action:nil
-                    keyEquivalent:@""] setSubmenu:ratingSubmenu];
-            [ratingSubmenu autorelease];
+                    keyEquivalent:@""] setSubmenu:ratingMenu];
         } else if ([item isEqualToString:@"<separator>"]) {
             [menu addItem:[NSMenuItem separatorItem]];
         }
@@ -700,7 +704,7 @@
     isAppRunning = ITMTRemotePlayerRunning;
     
     //Restart the timer
-    refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES]; 
+    [NSThread detachNewThreadSelector:@selector(runTimerInNewThread) toTarget:self withObject:nil];
     
     [self rebuildMenu]; //Rebuild the menu since no songs will be playing
     if (playlistItem) {
@@ -710,6 +714,15 @@
         [self rebuildEQPresetsMenu];
     }
     [statusItem setMenu:menu]; //Set the menu back to the main one
+}
+
+- (void)runTimerInNewThread
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+    refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(timerUpdate) userInfo:nil repeats:YES] retain];
+    [runLoop run];
+    [pool release];
 }
 
 - (void)remotePlayerTerminated:(NSNotification *)note
@@ -726,6 +739,7 @@
     [statusItem setMenu:menu];
     
     [refreshTimer invalidate];
+    [refreshTimer release];
     refreshTimer = nil;
     [self clearHotKeys];
 }
@@ -805,7 +819,7 @@
     [playPauseMenuItem setTitle:@"Play"];
 }
 
-- (void)setSongRating:(id)sender
+- (IBAction)setSongRating:(id)sender
 {
     NSLog(@"%f", (float)[sender tag] / 100.0);
     [currentRemote setCurrentSongRating:(float)[sender tag] / 100.0];
@@ -1128,6 +1142,7 @@
 {
     if (refreshTimer) {
         [refreshTimer invalidate];
+        [refreshTimer release];
         refreshTimer = nil;
     }
     [currentRemote halt];

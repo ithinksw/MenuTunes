@@ -2,7 +2,13 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {CLASS = MTApplication; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }, 
-        {CLASS = MenuTunes; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+        {
+            ACTIONS = {setSongRating = id; }; 
+            CLASS = MenuTunes; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {ratingMenu = NSMenu; }; 
+            SUPERCLASS = NSObject; 
+        }
     ); 
     IBVersion = 1; 
 }
