@@ -14,13 +14,14 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
+#import <ITKit/ITKit.h>
 
 //@class MenuTunesView;
 @class PreferencesController, StatusWindowController;
 
 @interface MenuTunes : NSObject
 {
-    NSStatusItem *statusItem;
+    ITStatusItem *statusItem;
     NSMenu *menu;
     ComponentInstance asComponent;
     

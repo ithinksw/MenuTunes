@@ -57,16 +57,15 @@ Things to do:
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(iTunesLaunched:) name:NSWorkspaceDidLaunchApplicationNotification object:nil];
         refreshTimer = nil;
     }
+
+    statusItem = [[ITStatusItem alloc] initWithStatusBar:[NSStatusBar systemStatusBar]
+                                              withLength:NSVariableStatusItemLength];
     
-    statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
-    [[[statusItem _button] cell] setType:NSNullCellType];
     [statusItem setImage:[NSImage imageNamed:@"menu"]];
-    [[statusItem _button] setAlternateImage:[NSImage imageNamed:@"selected_image"]];
-    [statusItem setHighlightMode:YES];
+    [statusItem setAlternateImage:[NSImage imageNamed:@"selected_image"]];
     [statusItem setMenu:menu];
     // Below line of code is for creating builds for Beta Testers
     // [statusItem setToolTip:@"This Nontransferable Beta (Built on __DATE__) of iThink Software's MenuTunes is Registered to: Beta Tester (betatester@somedomain.com)."];
-    [statusItem retain];
 }
 
 
@@ -97,23 +96,19 @@ Things to do:
                 nil] forKey:@"menu"];
     }
     
-    if (![defaults objectForKey:@"showName"])
-    {
+    if (![defaults objectForKey:@"showName"]) {
         [defaults setBool:YES forKey:@"showName"];
     }
     
-    if (![defaults objectForKey:@"showArtist"])
-    {
+    if (![defaults objectForKey:@"showArtist"]) {
         [defaults setBool:YES forKey:@"showArtist"];
     }
     
-    if (![defaults objectForKey:@"showAlbum"])
-    {
+    if (![defaults objectForKey:@"showAlbum"]) {
         [defaults setBool:NO forKey:@"showAlbum"];
     }
     
-    if (![defaults objectForKey:@"showTime"])
-    {
+    if (![defaults objectForKey:@"showTime"]) {
         [defaults setBool:NO forKey:@"showTime"];
     }
 }
@@ -215,9 +210,11 @@ Things to do:
     if (upcomingSongsItem) {
         [self rebuildUpcomingSongsMenu];
     }
+    
     if (playlistItem) {
         [self rebuildPlaylistMenu];
     }
+    
     if (eqItem) {
         [self rebuildEQPresetsMenu];
     }
