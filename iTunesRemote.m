@@ -102,10 +102,6 @@
     
     switch (result)
     {
-        default:
-        case 'kPSS':
-            ITDebugLog(@"Getting player playing state done. Player state: Stopped");
-            return ITMTRemotePlayerStopped;
         case 'kPSP':
             ITDebugLog(@"Getting player playing state done. Player state: Playing");
             return ITMTRemotePlayerPlaying;
@@ -118,6 +114,10 @@
         case 'kPSF':
             ITDebugLog(@"Getting player playing state done. Player state: Forwarding");
             return ITMTRemotePlayerForwarding;
+        case 'kPSS':
+        default:
+            ITDebugLog(@"Getting player playing state done. Player state: Stopped");
+            return ITMTRemotePlayerStopped;
     }
     ITDebugLog(@"Getting player playing state done. Player state: Stopped");
     return ITMTRemotePlayerStopped;
@@ -159,13 +159,6 @@
     
     fourcc = (unsigned long)[[ITAppleEventCenter sharedCenter] sendTwoTierAEWithRequestedKey:@"pKnd" fromObjectByKey:@"pTrk" eventClass:@"core" eventID:@"getd" appPSN:savedPSN];
     switch (fourcc) {
-        case 'kUnk':
-        case 'kLib':
-        case 'kShd':
-        default:
-            ITDebugLog(@"Getting current source done. Source: Library.");
-            return ITMTRemoteLibrarySource;
-            break;
         case 'kTun':
             ITDebugLog(@"Getting current source done. Source: Radio.");
             return ITMTRemoteRadioSource;
@@ -181,6 +174,13 @@
         case 'kACD':
             ITDebugLog(@"Getting current source done. Source: CD.");
             return ITMTRemoteCDSource;
+            break;
+        case 'kUnk':
+        case 'kLib':
+        case 'kShd':
+        default:
+            ITDebugLog(@"Getting current source done. Source: Library.");
+            return ITMTRemoteLibrarySource;
             break;
     }
 }
@@ -446,15 +446,15 @@
     ITDebugLog(@"Setting repeat mode to %i", repeatMode);
     switch (repeatMode)
     {
-        default:
-        case ITMTRemotePlayerRepeatOff:
-            m00f = "kRp0";
-            break;
         case ITMTRemotePlayerRepeatOne:
             m00f = "kRp1";
             break;
         case ITMTRemotePlayerRepeatAll:
             m00f = "kRpA";
+            break;
+        case ITMTRemotePlayerRepeatOff:
+        default:
+            m00f = "kRp0";
             break;
     }
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
