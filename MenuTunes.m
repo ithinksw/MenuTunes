@@ -46,17 +46,17 @@ Things to do:
     currentRemote = [self loadRemote];
     [currentRemote begin];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesTerminated:) name:@"ITMTRemoteAppDidTerminateNotification" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(iTunesLaunched:) name:@"ITMTRemoteAppDidLaunchNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(remotePlayerTerminated:) name:@"ITMTRemoteAppDidTerminateNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(remotePlayerLaunched:) name:@"ITMTRemoteAppDidLaunchNotification" object:nil];
     
     [self registerDefaultsIfNeeded];
     
     menu = [[NSMenu alloc] initWithTitle:@""];
     
     if ([currentRemote isAppRunning]) {
-        [self iTunesLaunched:nil];
+        [self remotePlayerLaunched:nil];
     } else {
-        [self iTunesTerminated:nil];
+        [self remotePlayerTerminated:nil];
     }
     
     statusItem = [[ITStatusItem alloc] initWithStatusBar:[NSStatusBar systemStatusBar]
@@ -638,7 +638,7 @@ Things to do:
     }
 }
 
-- (void)iTunesLaunched:(NSNotification *)note
+- (void)remotePlayerLaunched:(NSNotification *)note
 {
     isAppRunning = YES;
     
@@ -650,7 +650,7 @@ Things to do:
     [statusItem setMenu:menu]; //Set the menu back to the main one
 }
 
-- (void)iTunesTerminated:(NSNotification *)note
+- (void)remotePlayerTerminated:(NSNotification *)note
 {
     isAppRunning = NO;
     

@@ -58,8 +58,8 @@
     StatusWindow *statusWindow; //Shows track info and upcoming songs.
 }
 
-- (void)iTunesLaunched:(NSNotification *)note;
-- (void)iTunesTerminated:(NSNotification *)note;
+- (void)remotePlayerLaunched:(NSNotification *)note;
+- (void)remotePlayerTerminated:(NSNotification *)note;
 
 - (void)registerDefaultsIfNeeded;
 - (void)rebuildMenu;
