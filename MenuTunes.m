@@ -21,6 +21,8 @@ Things to do:
 - (NSString *)runScriptAndReturnResult:(NSString *)script;
 - (void)timerUpdate;
 - (void)sendAEWithEventClass:(AEEventClass)eventClass andEventID:(AEEventID)eventID;
+- (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
+        onItem:(NSMenuItem *)item;
 
 @end
 
@@ -177,18 +179,44 @@ Things to do:
     for (i = 0; i < [myMenu count]; i++) {
         NSString *item = [myMenu objectAtIndex:i];
         if ([item isEqualToString:@"Play/Pause"]) {
+            KeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"PlayPause"];
             playPauseMenuItem = [menu addItemWithTitle:@"Play"
-                                                action:@selector(playPause:)
-                                         keyEquivalent:@""];
+                                    action:@selector(playPause:)
+                                    keyEquivalent:@""];
             [playPauseMenuItem setTarget:self];
+            
+            if (tempCombo)
+            {
+                [self setKeyEquivalentForCode:[tempCombo keyCode]
+                    andModifiers:[tempCombo modifiers] onItem:playPauseMenuItem];
+                [tempCombo release];
+            }
         } else if ([item isEqualToString:@"Next Track"]) {
-            [[menu addItemWithTitle:@"Next Track"
-                             action:@selector(nextSong:)
-                      keyEquivalent:@""] setTarget:self];
+            KeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"NextTrack"];
+            NSMenuItem *nextTrack = [menu addItemWithTitle:@"Next Track"
+                                        action:@selector(nextSong:)
+                                        keyEquivalent:@""];
+            
+            [nextTrack setTarget:self];
+            if (tempCombo)
+            {
+                [self setKeyEquivalentForCode:[tempCombo keyCode]
+                    andModifiers:[tempCombo modifiers] onItem:nextTrack];
+                [tempCombo release];
+            }
         } else if ([item isEqualToString:@"Previous Track"]) {
-            [[menu addItemWithTitle:@"Previous Track"
-                             action:@selector(prevSong:)
-                      keyEquivalent:@""] setTarget:self];
+            KeyCombo *tempCombo = [[NSUserDefaults standardUserDefaults] keyComboForKey:@"PrevTrack"];
+            NSMenuItem *prevTrack = [menu addItemWithTitle:@"Previous Track"
+                                        action:@selector(prevSong:)
+                                        keyEquivalent:@""];
+            
+            [prevTrack setTarget:self];
+            if (tempCombo)
+            {
+                [self setKeyEquivalentForCode:[tempCombo keyCode]
+                    andModifiers:[tempCombo modifiers] onItem:prevTrack];
+                [tempCombo release];
+            }
         } else if ([item isEqualToString:@"Fast Forward"]) {
             [[menu addItemWithTitle:@"Fast Forward"
                              action:@selector(fastForward:)
@@ -824,10 +852,10 @@ isEqualToString:@"rewinding"]) {
             }
             [statusController setUpcomingSongs:songs];
             [NSTimer scheduledTimerWithTimeInterval:3.0
-                                             target:self
-                                           selector:@selector(fadeAndCloseStatusWindow)
-                                           userInfo:nil
-                                            repeats:NO];
+                        target:self
+                        selector:@selector(fadeAndCloseStatusWindow)
+                        userInfo:nil
+                        repeats:NO];
         }
     }
 }
@@ -837,6 +865,168 @@ isEqualToString:@"rewinding"]) {
     [statusController fadeWindowOut];
     [statusController release];
     statusController = nil;
+}
+
+- (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
+        onItem:(NSMenuItem *)item
+{
+    unichar charcode = 'a';
+    int i;
+    long cocoaModifiers = 0;
+    static long carbonToCocoa[6][2] = 
+    {
+        { cmdKey, NSCommandKeyMask },
+        { optionKey, NSAlternateKeyMask },
+        { controlKey, NSControlKeyMask },
+        { shiftKey, NSShiftKeyMask },
+    };
+    
+    for (i = 0; i < 6; i++)
+    {
+        if (modifiers & carbonToCocoa[i][0])
+        {
+            cocoaModifiers += carbonToCocoa[i][1];
+        }
+    }
+    [item setKeyEquivalentModifierMask:cocoaModifiers];
+    
+    //Missing key combos for some keys. Must find them later.
+    switch (code)
+    {
+        case 36:
+        break;
+        
+        case 48:
+        break;
+        
+        case 49:
+        break;
+        
+        case 51:
+            charcode = NSDeleteFunctionKey;
+        break;        
+        case 53:
+        break;
+                
+        case 71:
+        break;
+        
+        case 76:
+        break;
+        
+        case 96:
+            charcode = NSF5FunctionKey;
+        break;
+        
+        case 97:
+            charcode = NSF6FunctionKey;
+        break;
+        
+        case 98:
+            charcode = NSF7FunctionKey;
+        break;
+        
+        case 99:
+            charcode = NSF3FunctionKey;
+        break;
+        
+        case 100:
+            charcode = NSF8FunctionKey;
+        break;
+        
+        case 101:
+            charcode = NSF9FunctionKey;
+        break;
+        
+        case 103:
+            charcode = NSF11FunctionKey;
+        break;
+        
+        case 105:
+            charcode = NSF3FunctionKey;
+        break;
+        
+        case 107:
+            charcode = NSF14FunctionKey;
+        break;
+        
+        case 109:
+            charcode = NSF10FunctionKey;
+        break;
+        
+        case 111:
+            charcode = NSF12FunctionKey;
+        break;
+        
+        case 113:
+            charcode = NSF13FunctionKey;
+        break;
+        
+        case 114:
+            charcode = NSInsertFunctionKey;
+        break;
+        
+        case 115:
+        break;
+        
+        case 116:
+            charcode = NSPageUpFunctionKey;
+        break;
+        
+        case 117:
+            charcode = NSDeleteFunctionKey;
+        break;
+        
+        case 118:
+            charcode = NSF4FunctionKey;
+        break;
+        
+        case 119:
+            charcode = NSEndFunctionKey;
+        break;
+        
+        case 120:
+            charcode = NSF2FunctionKey;
+        break;
+        
+        case 121:
+            charcode = NSPageDownFunctionKey;
+        break;
+        
+        case 122:
+            charcode = NSF1FunctionKey;
+        break;
+        
+        case 123:
+            charcode = NSLeftArrowFunctionKey;
+        break;
+        
+        case 124:
+            charcode = NSRightArrowFunctionKey;
+        break;
+        
+        case 125:
+            charcode = NSDownArrowFunctionKey;
+        break;
+        
+        case 126:
+            charcode = NSUpArrowFunctionKey;
+        break;
+    }
+    
+    if (charcode == 'a') {
+        unsigned long state;
+        long keyTrans;
+        char charCode;
+        Ptr kchr;
+        state = 0;
+        kchr = (Ptr) GetScriptVariable(smCurrentScript, smKCHRCache);
+        keyTrans = KeyTranslate(kchr, code, &state);
+        charCode = keyTrans;
+        [item setKeyEquivalent:[NSString stringWithCString:&charCode length:1]];
+    } else {
+        [item setKeyEquivalent:[NSString stringWithCharacters:&charcode length:1]];
+    }
 }
 
 /*************************************************************************/
@@ -868,6 +1058,5 @@ isEqualToString:@"rewinding"]) {
 //  [view release];
     [super dealloc];
 }
-
 
 @end

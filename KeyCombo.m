@@ -187,7 +187,7 @@
     if (data) {
         combo = [[NSUnarchiver unarchiveObjectWithData:data] retain];
     } else {
-        combo = [[KeyCombo alloc] init];
+        combo = nil;
     }
     
     return combo;
