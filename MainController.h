@@ -40,6 +40,7 @@
     
     NSDate *blingDate;
     MTBlingController *bling;
+    BOOL timerUpdating;
 }
 + (MainController *)sharedController;
 

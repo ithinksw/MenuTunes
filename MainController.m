@@ -39,6 +39,7 @@ static MainController *sharedController;
         statusWindowController = [StatusWindowController sharedController];
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
+        timerUpdating = NO;
     }
     return self;
 }
@@ -202,15 +203,19 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-    if ( [self songChanged] ) {
+    if ( [self songChanged] && (timerUpdating != YES) ) {
         ITDebugLog(@"The song changed.");
-        [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
+        timerUpdating = YES;
         latestPlaylistClass = [currentRemote currentPlaylistClass];
         [menuController rebuildSubmenus];
 
         if ( [df boolForKey:@"showSongInfoOnChange"] ) {
             [self performSelector:@selector(showCurrentTrackInfo) withObject:nil afterDelay:0.0];
         }
+        
+        [self setLatestSongIdentifier:[currentRemote playerStateUniqueIdentifier]];
+        
+        timerUpdating = NO;
     }
 }
 
