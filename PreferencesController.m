@@ -980,6 +980,11 @@ static PreferencesController *prefs = nil;
     ITDebugLog(@"Synchronizing menus");
     [df setObject:myItems forKey:@"menu"];
     [df synchronize];
+    
+    //If we're connected over a network, refresh the menu immediately
+    if ([[NetworkController sharedController] isConnectedToServer]) {
+        [controller timerUpdate];
+    }
 }
 
 - (void)setLaunchesAtLogin:(BOOL)flag

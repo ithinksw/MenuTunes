@@ -22,7 +22,7 @@
 - (NSMenu *)eqMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(NSMenuItem *)item;
-- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
+//- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name;
 @end
 
 @implementation MenuController
@@ -980,7 +980,7 @@
     ITDebugLog(@"Done setting key equivalent on menu item: %@", [item title]);
 }
 
-- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name
+/*- (BOOL)iPodAtPathAutomaticallyUpdates:(NSString *)name
 {
     NSArray *volumes = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
     NSEnumerator *volEnum = [volumes objectEnumerator];
@@ -1010,6 +1010,6 @@
             }
         }
     }
-}
+}*/
 
 @end
