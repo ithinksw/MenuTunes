@@ -1170,7 +1170,7 @@ static MainController *sharedController;
         [[StatusWindowController sharedController] showNetworkErrorQueryWindow];
         if ([self disconnectFromServer]) {
             [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
-            [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:YES];
+            [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
         } else {
             ITDebugLog(@"CRITICAL ERROR, DISCONNECTING!");
         }
@@ -1180,7 +1180,7 @@ static MainController *sharedController;
 - (void)reconnect
 {
     if ([self connectToServer] == 0) {
-        [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
     }
     [[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
