@@ -6,7 +6,7 @@
  *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
  *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
  *
- *  Copyright (c) 2002 iThink Software.
+ *  Copyright (c) 2002-2003 iThink Software.
  *  All Rights Reserved
  *
  */
@@ -17,10 +17,10 @@
 #import <ITKit/ITKit.h>
 #import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
-
+#import <StatusWindow.h>
 
 //@class MenuTunesView;
-@class PreferencesController, ITTransientStatusWindow;
+@class PreferencesController, StatusWindow;
 
 @interface MenuTunes : NSObject
 {
@@ -52,7 +52,7 @@
     NSMenuItem *playPauseMenuItem; //Toggle between 'Play' and 'Pause'
     
     PreferencesController *prefsController;
-    ITTransientStatusWindow *statusWindow; //Shows track info and upcoming songs.
+    StatusWindow *statusWindow; //Shows track info and upcoming songs.
 }
 
 - (void)registerDefaultsIfNeeded;

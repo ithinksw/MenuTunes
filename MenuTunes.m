@@ -10,6 +10,7 @@ Things to do:
 #import "MenuTunes.h"
 #import "PreferencesController.h"
 #import "HotKeyCenter.h"
+#import "StatusWindow.h"
 
 @interface MenuTunes(Private)
 - (ITMTRemote *)loadRemote;
@@ -35,7 +36,7 @@ Things to do:
 {
     if ( ( self = [super init] ) ) {
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
-        statusWindow = [ITTransientStatusWindow sharedWindow];
+        statusWindow = [StatusWindow sharedWindow];
     }
     return self;
 }
@@ -53,17 +54,14 @@ Things to do:
     menu = [[NSMenu alloc] initWithTitle:@""];
     
     isAppRunning = [currentRemote isAppRunning];
-    if (isAppRunning)
-    {
+    if (isAppRunning) {
         [self rebuildMenu];
         refreshTimer = [NSTimer scheduledTimerWithTimeInterval:3.5
                             target:self
                             selector:@selector(timerUpdate)
                             userInfo:nil
                             repeats:YES];
-    }
-    else
-    {
+    } else {
         menu = [[NSMenu alloc] initWithTitle:@""];
         [[menu addItemWithTitle:@"Open iTunes" action:@selector(openiTunes:) keyEquivalent:@""] setTarget:self];
         [[menu addItemWithTitle:@"Preferences" action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
@@ -236,8 +234,7 @@ Things to do:
                                     keyEquivalent:@""];
             [playPauseMenuItem setTarget:self];
             
-            if (tempCombo)
-            {
+            if (tempCombo) {
                 [self setKeyEquivalentForCode:[tempCombo keyCode]
                     andModifiers:[tempCombo modifiers] onItem:playPauseMenuItem];
                 [tempCombo release];
@@ -249,8 +246,7 @@ Things to do:
                                         keyEquivalent:@""];
             
             [nextTrack setTarget:self];
-            if (tempCombo)
-            {
+            if (tempCombo) {
                 [self setKeyEquivalentForCode:[tempCombo keyCode]
                     andModifiers:[tempCombo modifiers] onItem:nextTrack];
                 [tempCombo release];
@@ -262,8 +258,7 @@ Things to do:
                                         keyEquivalent:@""];
             
             [prevTrack setTarget:self];
-            if (tempCombo)
-            {
+            if (tempCombo) {
                 [self setKeyEquivalentForCode:[tempCombo keyCode]
                     andModifiers:[tempCombo modifiers] onItem:prevTrack];
                 [tempCombo release];
@@ -334,8 +329,7 @@ Things to do:
         [self rebuildEQPresetsMenu];
     }
     
-    if (trackInfoIndex > -1)
-    {
+    if (trackInfoIndex > -1) {
         NSString *curSongName, *curAlbumName = @"", *curArtistName = @"";
         curSongName = [currentRemote currentSongTitle];
         
@@ -480,8 +474,7 @@ Things to do:
     NSArray *playlists = [currentRemote playlists];
     int i, curPlaylist = [currentRemote currentPlaylistIndex];
     
-    if (isPlayingRadio)
-    {
+    if (isPlayingRadio) {
         curPlaylist = 0;
     }
     if (playlistMenu && ([playlists count] == [playlistMenu numberOfItems]))
@@ -604,16 +597,13 @@ Things to do:
             
             [self updateMenu];
             lastSongIndex = trackPlayingIndex;
-        }
-        else
-        {
+        } else {
             if (playlist != [currentRemote currentPlaylistIndex]) {
                 BOOL wasPlayingRadio = isPlayingRadio;
                 isPlayingRadio = [[currentRemote classOfPlaylistAtIndex:playlist] isEqualToString:@"radio tuner playlist"];
                 if (isPlayingRadio && !wasPlayingRadio) {
                     int i;
-                    for (i = 0; i < [playlistMenu numberOfItems]; i++)
-                    {
+                    for (i = 0; i < [playlistMenu numberOfItems]; i++) {
                         [[playlistMenu itemAtIndex:i] setState:NSOffState];
                     }
                 }
@@ -819,7 +809,7 @@ Things to do:
             }
         }
         
-        [statusWindow setTrackInfo:stringToShow];
+        [statusWindow setText:stringToShow];
         [NSTimer scheduledTimerWithTimeInterval:3.0
                                     target:self
                                     selector:@selector(fadeAndCloseStatusWindow)
@@ -848,7 +838,7 @@ Things to do:
                     songs = [songs stringByAppendingString:@"\n"];
                 }
             }
-            [statusWindow setUpcomingSongs:songs];
+            [statusWindow setText:songs];
             [NSTimer scheduledTimerWithTimeInterval:3.0
                         target:self
                         selector:@selector(fadeAndCloseStatusWindow)
@@ -877,10 +867,8 @@ Things to do:
         { shiftKey, NSShiftKeyMask },
     };
     
-    for (i = 0; i < 6; i++)
-    {
-        if (modifiers & carbonToCocoa[i][0])
-        {
+    for (i = 0; i < 6; i++) {
+        if (modifiers & carbonToCocoa[i][0]) {
             cocoaModifiers += carbonToCocoa[i][1];
         }
     }
