@@ -740,6 +740,7 @@ static PreferencesController *prefs = nil;
         @"upcomingSongs",
         @"playlists",
         @"artists",
+        @"albums",
         @"eqPresets",
         @"songRating",
         @"playPause",
@@ -767,6 +768,7 @@ static PreferencesController *prefs = nil;
         @"upcomingSongs",
         @"playlists",
         @"artists",
+        @"albums",
         @"eqPresets",
         @"songRating",
         nil];

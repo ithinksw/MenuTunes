@@ -22,6 +22,7 @@
 - (NSMenu *)playlistsMenu;
 - (NSMenu *)eqMenu;
 - (NSMenu *)artistsMenu;
+- (NSMenu *)albumsMenu;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(id <NSMenuItem>)item;
 - (BOOL)iPodWithNameAutomaticallyUpdates:(NSString *)name;
@@ -85,6 +86,11 @@
     
     if ( (tempItem = [_currentMenu itemWithTag:5]) ) {
         ITDebugLog(@"Removing \"Artists\" submenu.");
+        [tempItem setSubmenu:nil];
+    }
+    
+    if ( (tempItem = [_currentMenu itemWithTag:6]) ) {
+        ITDebugLog(@"Removing \"Albums\" submenu.");
         [tempItem setSubmenu:nil];
     }
     
@@ -439,11 +445,13 @@
                     keyEquivalent:@""];
             [tempItem setSubmenu:_artistsMenu];
             [tempItem setTag:5];
-            
-            itemEnum = [[_eqMenu itemArray] objectEnumerator];
-            while ( (tempItem = [itemEnum nextObject]) ) {
-                [tempItem setState:NSOffState];
-            }
+        } else if ([nextObject isEqualToString:@"albums"]) {
+            ITDebugLog(@"Add \"Albums\" submenu.");
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"albums", @"Albums")
+                    action:nil
+                    keyEquivalent:@""];
+            [tempItem setSubmenu:_albumsMenu];
+            [tempItem setTag:6];
         }
     }
     ITDebugLog(@"Finished building menu.");
@@ -519,6 +527,13 @@
         [_artistsMenu release];
         ITDebugLog(@"Beginning Rebuild of \"Artists\" submenu.");
         _artistsMenu = [self artistsMenu];
+    }
+    
+    if ([menu containsObject:@"albums"]) {
+        ITDebugLog(@"Releasing albums menu");
+        [_albumsMenu release];
+        ITDebugLog(@"Beginning Rebuild of \"Albums\" submenu.");
+        _albumsMenu = [self albumsMenu];
     }
     ITDebugLog(@"Done rebuilding all of the submenus.");
 }
@@ -765,8 +780,9 @@
     NS_DURING
         artistsEnumerator = [[[[MainController sharedController] currentRemote] artists] objectEnumerator];
         while ( (nextArtist = [artistsEnumerator nextObject]) ) {
-            tempItem = [artistsMenu addItemWithTitle:nextArtist action:@selector(performArtistsMenuAction:) keyEquivalent:@""];
+            tempItem = [artistsMenu addItemWithTitle:nextArtist action:@selector(performBrowseMenuAction:) keyEquivalent:@""];
             [tempItem setRepresentedObject:nextArtist];
+            [tempItem setTag:1];
             [tempItem setTarget:self];
         }
     NS_HANDLER
@@ -774,6 +790,28 @@
     NS_ENDHANDLER
     ITDebugLog(@"Done Building \"Artists\" menu");
     return artistsMenu;
+}
+
+- (NSMenu *)albumsMenu
+{
+    NSMenu *albumsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSEnumerator *albumsEnumerator;
+    NSString *nextAlbum;
+    id <NSMenuItem> tempItem;
+    ITDebugLog(@"Building \"Albums\" menu.");
+    NS_DURING
+        albumsEnumerator = [[[[MainController sharedController] currentRemote] albums] objectEnumerator];
+        while ( (nextAlbum = [albumsEnumerator nextObject]) ) {
+            tempItem = [albumsMenu addItemWithTitle:nextAlbum action:@selector(performBrowseMenuAction:) keyEquivalent:@""];
+            [tempItem setRepresentedObject:nextAlbum];
+            [tempItem setTag:2];
+            [tempItem setTarget:self];
+        }
+    NS_HANDLER
+        [[MainController sharedController] networkError:localException];
+    NS_ENDHANDLER
+    ITDebugLog(@"Done Building \"Albums\" menu");
+    return albumsMenu;
 }
 
 - (void)performMainMenuAction:(id)sender
@@ -846,15 +884,15 @@
     [[MainController sharedController] selectSongAtIndex:[sender tag]];
 }
 
-- (void)performArtistsMenuAction:(id)sender
+- (void)performBrowseMenuAction:(id)sender
 {
-    ITDebugLog(@"Artist action selected on item with object %i", [sender representedObject]);
+    ITDebugLog(@"Browse action selected on item with object %@ and tag %i", [sender representedObject], [sender tag]);
     /*
     ** 1 - Artist
     ** 2 - Album
     ** 3 - Genre?
     */
-    [[MainController sharedController] makePlaylistWithTerm:[sender representedObject] ofType:1];
+    [[MainController sharedController] makePlaylistWithTerm:[sender representedObject] ofType:[sender tag]];
 }
 
 - (void)updateMenu
