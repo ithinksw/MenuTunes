@@ -4,17 +4,13 @@
         {CLASS = KeyBroadcaster; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
         {
             ACTIONS = {
-                apply = id; 
-                cancel = id; 
                 cancelHotKey = id; 
+                changeGeneralSetting = id; 
+                changeHotKey = id; 
+                changeStatusWindowSetting = id; 
                 clearHotKey = id; 
                 okHotKey = id; 
-                save = id; 
-                setCurrentTrackInfo = id; 
-                setNextTrack = id; 
-                setPlayPause = id; 
-                setPreviousTrack = id; 
-                setUpcomingSongs = id; 
+                showPrefsWindow = id; 
             }; 
             CLASS = PreferencesController; 
             LANGUAGE = ObjC; 
@@ -30,10 +26,16 @@
                 nextTrackButton = NSButton; 
                 playPauseButton = NSButton; 
                 previousTrackButton = NSButton; 
+                ratingDecrementButton = NSButton; 
+                ratingIncrementButton = NSButton; 
                 songsInAdvance = NSTextField; 
+                toggleLoopButton = NSButton; 
+                toggleShuffleButton = NSButton; 
                 trackInfoButton = NSButton; 
                 trackTimeCheckbox = NSButton; 
                 upcomingSongsButton = NSButton; 
+                volumeDecrementButton = NSButton; 
+                volumeIncrementButton = NSButton; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 

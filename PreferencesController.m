@@ -94,92 +94,99 @@ static PreferencesController *prefs = nil;
 
 - (IBAction)changeGeneralSetting:(id)sender
 {
-    if ( [sender tag] == 101) {
+    if ( [sender tag] == 1010) {
         [self setLaunchesAtLogin:SENDER_STATE];
-    } else if ( [sender tag] == 102) {
+    } else if ( [sender tag] == 1020) {
         [df setBool:SENDER_STATE forKey:@"LaunchPlayerWithMT"];
-    } else if ( [sender tag] == 103) {
+    } else if ( [sender tag] == 1030) {
         [df setInteger:[sender intValue] forKey:@"SongsInAdvance"];
-    } else if ( [sender tag] == 104) {
+    } else if ( [sender tag] == 1040) {
         [df setBool:SENDER_STATE forKey:@"showAlbum"];
-    } else if ( [sender tag] == 105) {
+    } else if ( [sender tag] == 1050) {
         [df setBool:SENDER_STATE forKey:@"showName"];
-    } else if ( [sender tag] == 106) {
+    } else if ( [sender tag] == 1060) {
         [df setBool:SENDER_STATE forKey:@"showArtist"];
-    } else if ( [sender tag] == 107) {
+    } else if ( [sender tag] == 1070) {
         [df setBool:SENDER_STATE forKey:@"showTime"];
-    } else if ( [sender tag] == 108) {
+    } else if ( [sender tag] == 1080) {
         [df setBool:SENDER_STATE forKey:@"showTrackNumber"];
-    } else if ( [sender tag] == 109) {
+    } else if ( [sender tag] == 1090) {
         [df setBool:SENDER_STATE forKey:@"showTrackRating"];
     }
 }
 
 - (IBAction)changeStatusWindowSetting:(id)sender
 {
-    if ( [sender tag] == 201) {
+    if ( [sender tag] == 2010) {
         [df setInteger:[sender selectedRow] forKey:@"statusWindowVerticalPosition"];
         [df setInteger:[sender selectedColumn] forKey:@"statusWindowHorizontalPosition"];
         // update the window's position here
-    } else if ( [sender tag] == 202) {
+    } else if ( [sender tag] == 2020) {
         // update screen selection
-    } else if ( [sender tag] == 203) {
+    } else if ( [sender tag] == 2030) {
         // Update appearance effect
-    } else if ( [sender tag] == 204) {
+    } else if ( [sender tag] == 2040) {
         // Update Vanish Effect
-    } else if ( [sender tag] == 205) {
+    } else if ( [sender tag] == 2050) {
         // Update appearance speed
-    } else if ( [sender tag] == 206) {
+    } else if ( [sender tag] == 2060) {
         // Update vanish speed
-    } else if ( [sender tag] == 207) {
+    } else if ( [sender tag] == 2070) {
         // Update vanish delay
-    } else if ( [sender tag] == 208) {
+    } else if ( [sender tag] == 2080) {
         // Update "Song Info window when song changes" setting.
     }
 }
 
-- (IBAction)apply:(id)sender
+- (IBAction)changeHotKey:(id)sender
 {
-    //Set key combos
-    [df setKeyCombo:playPauseCombo forKey:@"PlayPause"];
-    [df setKeyCombo:nextTrackCombo forKey:@"NextTrack"];
-    [df setKeyCombo:prevTrackCombo forKey:@"PrevTrack"];
-    [df setKeyCombo:trackInfoCombo forKey:@"TrackInfo"];
-    [df setKeyCombo:upcomingSongsCombo forKey:@"UpcomingSongs"];
-    [df setKeyCombo:volumeIncrementCombo forKey:@"IncrementVolume"];
-    [df setKeyCombo:volumeDecrementCombo forKey:@"DecrementVolume"];
-    [df setKeyCombo:ratingIncrementCombo forKey:@"IncrementRating"];
-    [df setKeyCombo:ratingDecrementCombo forKey:@"DecrementRating"];
-    [df setKeyCombo:toggleLoopCombo forKey:@"ToggleLoop"];
-    [df setKeyCombo:toggleShuffleCombo forKey:@"ToggleShuffle"];
-    
-    //Set info checkboxes
-    [df setBool:[albumCheckbox state] forKey:@"showAlbum"];
-    [df setBool:[nameCheckbox state] forKey:@"showName"];
-    [df setBool:[artistCheckbox state] forKey:@"showArtist"];
-    [df setBool:[trackTimeCheckbox state] forKey:@"showTime"];
-    
-    //Here we set whether we will launch at login by modifying loginwindow.plist
-    
-    //Set songs in advance
-    if ([songsInAdvance intValue]) {
-        [df setInteger:[songsInAdvance intValue] forKey:@"SongsInAdvance"];
-    } else {
-        [df setInteger:5 forKey:@"SongsInAdvance"];
+    switch ([sender tag])
+    {
+        case 4010:
+            [self setKeyCombo:playPauseCombo];
+            [self setHotKey:@"PlayPause"];
+            break;
+        case 4020:
+            [self setKeyCombo:nextTrackCombo];
+            [self setHotKey:@"NextTrack"];
+            break;
+        case 4030:
+            [self setKeyCombo:prevTrackCombo];
+            [self setHotKey:@"PrevTrack"];
+            break;
+        case 4040:
+            [self setKeyCombo:toggleLoopCombo];
+            [self setHotKey:@"ToggleLoop"];
+            break;
+        case 4050:
+            [self setKeyCombo:toggleShuffleCombo];
+            [self setHotKey:@"ToggleShuffle"];
+            break;
+        case 4060:
+            [self setKeyCombo:trackInfoCombo];
+            [self setHotKey:@"TrackInfo"];
+            break;
+        case 4070:
+            [self setKeyCombo:upcomingSongsCombo];
+            [self setHotKey:@"UpcomingSongs"];
+            break;
+        case 4080:
+            [self setKeyCombo:volumeIncrementCombo];
+            [self setHotKey:@"IncrementVolume"];
+            break;
+        case 4090:
+            [self setKeyCombo:volumeDecrementCombo];
+            [self setHotKey:@"DecrementVolume"];
+            break;
+        case 4100:
+            [self setKeyCombo:ratingIncrementCombo];
+            [self setHotKey:@"IncrementRating"];
+            break;
+        case 4110:
+            [self setKeyCombo:ratingDecrementCombo];
+            [self setHotKey:@"DecrementRating"];
+            break;
     }
-    
-    /*{
-        NSArray *apps = [[NSWorkspace sharedWorkspace] launchedApplications];
-        int i;
-        
-        for (i = 0; i < [apps count]; i++) {
-            if ([[[apps objectAtIndex:i] objectForKey:@"NSApplicationName"]
-                    isEqualToString:@"iTunes"]) {
-                [controller rebuildMenu];
-            }
-        }
-    }*/
-    [controller clearHotKeys];
 }
 
 - (void)registerDefaults
@@ -438,56 +445,6 @@ static PreferencesController *prefs = nil;
     [self cancelHotKey:sender];
 }
 
-- (IBAction)setNewHotKey:(id)sender
-{
-    switch ([sender tag])
-    {
-        case 401:
-            [self setKeyCombo:playPauseCombo];
-            [self setHotKey:@"PlayPause"];
-        break;
-        case 402:
-            [self setKeyCombo:nextTrackCombo];
-            [self setHotKey:@"NextTrack"];
-        break;
-        case 403:
-            [self setKeyCombo:prevTrackCombo];
-            [self setHotKey:@"PrevTrack"];
-        break;
-        case 404:
-            [self setKeyCombo:toggleLoopCombo];
-            [self setHotKey:@"ToggleLoop"];
-        break;
-        case 405:
-            [self setKeyCombo:toggleShuffleCombo];
-            [self setHotKey:@"ToggleShuffle"];
-        break;
-        case 406:
-            [self setKeyCombo:trackInfoCombo];
-            [self setHotKey:@"TrackInfo"];
-        break;
-        case 407:
-            [self setKeyCombo:upcomingSongsCombo];
-            [self setHotKey:@"UpcomingSongs"];
-        break;
-        case 408:
-            [self setKeyCombo:volumeIncrementCombo];
-            [self setHotKey:@"IncrementVolume"];
-        break;
-        case 409:
-            [self setKeyCombo:volumeDecrementCombo];
-            [self setHotKey:@"DecrementVolume"];
-        break;
-        case 410:
-            [self setKeyCombo:ratingIncrementCombo];
-            [self setHotKey:@"IncrementRating"];
-        break;
-        case 411:
-            [self setKeyCombo:ratingDecrementCombo];
-            [self setHotKey:@"DecrementRating"];
-        break;
-    }
-}
 
 
 /*************************************************************************/

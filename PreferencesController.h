@@ -69,12 +69,16 @@
 - (void)setController:(id)object;
 
 - (IBAction)showPrefsWindow:(id)sender;
+
+- (IBAction)changeGeneralSetting:(id)sender;
+- (IBAction)changeStatusWindowSetting:(id)sender;
+- (IBAction)changeHotKey:(id)sender;
+
 - (void)registerDefaults;
 
 - (IBAction)cancelHotKey:(id)sender;
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)okHotKey:(id)sender;
-- (IBAction)setNewHotKey:(id)sender;
 
 - (void)setHotKey:(NSString *)key;
 - (void)setKeyCombo:(KeyCombo *)newCombo;
