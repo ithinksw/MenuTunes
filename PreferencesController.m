@@ -1,7 +1,9 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 #import <ITKit/ITHotKeyCenter.h>
+#import <ITKit/ITKeyCombo.h>
 #import <ITKit/ITWindowPositioning.h>
+#import <ITKit/ITKeyBroadcaster.h>
 
 #define SENDER_STATE (([sender state] == NSOnState) ? YES : NO)
 
@@ -339,40 +341,28 @@ static PreferencesController *prefs = nil;
     
     if ([currentHotKey isEqualToString:@"PlayPause"]) {
         [playPauseButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"PlayPause" combo:combo target:[MainController sharedController] action:@selector(playPause)];
     } else if ([currentHotKey isEqualToString:@"NextTrack"]) {
         [nextTrackButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"NextTrack" combo:combo target:[MainController sharedController] action:@selector(nextSong)];
     } else if ([currentHotKey isEqualToString:@"PrevTrack"]) {
         [previousTrackButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"PrevTrack" combo:combo target:[MainController sharedController] action:@selector(prevSong)];
     } else if ([currentHotKey isEqualToString:@"ShowPlayer"]) {
         [showPlayerButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"ShowPlayer" combo:combo target:[MainController sharedController] action:@selector(showPlayer)];
     } else if ([currentHotKey isEqualToString:@"TrackInfo"]) {
         [trackInfoButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"TrackInfo" combo:combo target:[MainController sharedController] action:@selector(showCurrentTrackInfo)];
     } else if ([currentHotKey isEqualToString:@"UpcomingSongs"]) {
         [upcomingSongsButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"UpcomingSongs" combo:combo target:[MainController sharedController] action:@selector(showUpcomingSongs)];
     } else if ([currentHotKey isEqualToString:@"IncrementVolume"]) {
         [volumeIncrementButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"IncrementVolume" combo:combo target:[MainController sharedController] action:@selector(incrementVolume)];
     } else if ([currentHotKey isEqualToString:@"DecrementVolume"]) {
         [volumeDecrementButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"DecrementVolume" combo:combo target:[MainController sharedController] action:@selector(decrementVolume)];
     } else if ([currentHotKey isEqualToString:@"IncrementRating"]) {
         [ratingIncrementButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"IncrementRating" combo:combo target:[MainController sharedController] action:@selector(incrementRating)];
     } else if ([currentHotKey isEqualToString:@"DecrementRating"]) {
         [ratingDecrementButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"DecrementRating" combo:combo target:[MainController sharedController] action:@selector(decrementRating)];
     } else if ([currentHotKey isEqualToString:@"ToggleShuffle"]) {
         [toggleShuffleButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleShuffle" combo:combo target:[MainController sharedController] action:@selector(toggleShuffle)];
     } else if ([currentHotKey isEqualToString:@"ToggleLoop"]) {
         [toggleLoopButton setTitle:string];
-        //[[ITHotKeyCenter sharedCenter] addHotKey:@"ToggleLoop" combo:combo target:[MainController sharedController] action:@selector(toggleLoop)];
     }
     [controller setupHotKeys];
     [self cancelHotKey:sender];
@@ -389,22 +379,13 @@ static PreferencesController *prefs = nil;
 {
     [currentHotKey autorelease];
     currentHotKey = [key copy];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyEvent:) name:@"KeyBroadcasterEvent" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyEvent:) name:ITKeyBroadcasterKeyEvent object:nil];
     [NSApp beginSheet:keyComboPanel modalForWindow:window modalDelegate:self didEndSelector:nil contextInfo:nil];
 }
 
 - (void)keyEvent:(NSNotification *)note
 {
-    NSDictionary *info = [note userInfo];
-    short keyCode;
-    long modifiers;
-    ITKeyCombo *newCombo;
-    
-    keyCode = [[info objectForKey:@"KeyCode"] shortValue];
-    modifiers = [[info objectForKey:@"Modifiers"] longValue];
-    
-    newCombo = [[ITKeyCombo alloc] initWithKeyCode:keyCode modifiers:modifiers];
-    [self setKeyCombo:newCombo];
+    [self setKeyCombo:[[[note userInfo] objectForKey:@"keyCombo"] copy]];
 }
 
 - (void)setKeyCombo:(ITKeyCombo *)newCombo
@@ -512,6 +493,7 @@ static PreferencesController *prefs = nil;
         [playPauseButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"PlayPause"];
+        [playPauseButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"NextTrack"]) {
@@ -520,6 +502,7 @@ static PreferencesController *prefs = nil;
         [nextTrackButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"NextTrack"];
+        [nextTrackButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"PrevTrack"]) {
@@ -528,6 +511,7 @@ static PreferencesController *prefs = nil;
         [previousTrackButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"PrevTrack"];
+        [previousTrackButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"ShowPlayer"]) {
@@ -536,6 +520,7 @@ static PreferencesController *prefs = nil;
         [showPlayerButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"ShowPlayer"];
+        [showPlayerButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"TrackInfo"]) {
@@ -544,6 +529,7 @@ static PreferencesController *prefs = nil;
         [trackInfoButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"TrackInfo"];
+        [trackInfoButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"UpcomingSongs"]) {
@@ -552,6 +538,7 @@ static PreferencesController *prefs = nil;
         [upcomingSongsButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"UpcomingSongs"];
+        [upcomingSongsButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"IncrementVolume"]) {
@@ -560,6 +547,7 @@ static PreferencesController *prefs = nil;
         [volumeIncrementButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"IncrementVolume"];
+        [volumeIncrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"DecrementVolume"]) {
@@ -568,6 +556,7 @@ static PreferencesController *prefs = nil;
         [volumeDecrementButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"DecrementVolume"];
+        [volumeDecrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"IncrementRating"]) {
@@ -576,6 +565,7 @@ static PreferencesController *prefs = nil;
         [ratingIncrementButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"IncrementRating"];
+        [ratingIncrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"DecrementRating"]) {
@@ -584,6 +574,7 @@ static PreferencesController *prefs = nil;
         [ratingDecrementButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"DecrementRating"];
+        [ratingDecrementButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"ToggleLoop"]) {
@@ -592,6 +583,7 @@ static PreferencesController *prefs = nil;
         [toggleLoopButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"ToggleLoop"];
+        [toggleLoopButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     if ([df objectForKey:@"ToggleShuffle"]) {
@@ -600,6 +592,7 @@ static PreferencesController *prefs = nil;
         [toggleShuffleButton setTitle:[anItem description]];
     } else {
         [hotKeysDictionary setObject:[ITKeyCombo clearKeyCombo] forKey:@"ToggleShuffle"];
+        [toggleShuffleButton setTitle:[[ITKeyCombo clearKeyCombo] description]];
     }
     
     // Check current track info buttons
