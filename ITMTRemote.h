@@ -382,7 +382,7 @@ er's process managment.
 /*!
  * @method switchToPlaylistAtIndex:
  */
-//- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2;
+- (BOOL)switchToPlaylistAtIndex:(int)index ofSourceAtIndex:(int)index2;
 
 /*!
  * @method switchToSongAtIndex:

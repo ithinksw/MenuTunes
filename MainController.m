@@ -444,8 +444,8 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Selecting playlist %i", index);
     NS_DURING
-        //[[self currentRemote] switchToPlaylistAtIndex:(index % 1000) ofSourceAtIndex:(index / 1000)];
-        [[self currentRemote] switchToPlaylistAtIndex:index];
+        [[self currentRemote] switchToPlaylistAtIndex:(index % 1000) ofSourceAtIndex:(index / 1000)];
+        //[[self currentRemote] switchToPlaylistAtIndex:index];
     NS_HANDLER
         [self networkError:localException];
     NS_ENDHANDLER
