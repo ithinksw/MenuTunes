@@ -498,7 +498,12 @@ static MainController *sharedController;
     } else {
         ITDebugLog(@"Launching player.");
         NS_DURING
-            if (![[NSWorkspace sharedWorkspace] launchApplication:[[self currentRemote] playerFullName]]) {
+            NSString *path;
+            if ( (path = [df stringForKey:@"CustomPlayerPath"]) ) {
+            } else {
+                path = [[self currentRemote] playerFullName];
+            }
+            if (![[NSWorkspace sharedWorkspace] launchApplication:path]) {
                 ITDebugLog(@"Error Launching Player");
             }
         NS_HANDLER
