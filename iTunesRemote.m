@@ -168,21 +168,27 @@
 
 - (float)currentSongRating
 {
-    return 0.00;
+    int realResult = [[ITAppleEventCenter sharedCenter]
+                sendTwoTierAEWithRequestedKeyForNumber:@"pRte" fromObjectByKey:@"pPla" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+
+    return realResult / 100;
 }
 
 - (BOOL)setCurrentSongRating:(float)rating
 {
-    return NO;
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } ",(long)rating*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    return YES;
 }
 
 - (float)volume
 {
-    return 1.00;
+    long vol = [[ITAppleEventCenter sharedCenter] sendAEWithRequestedKeyForNumber:@"pVol" eventClass:@"core" eventID:@"getd" appPSN:iTunesPSN];
+    return vol / 100;
 }
 
 - (BOOL)setVolume:(float)volume
 {
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), ----:obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)volume*100] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return NO;
 }
 
@@ -258,8 +264,7 @@
 
 - (BOOL)switchToEQAtIndex:(int)index
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:obj { form:'indx', want:type('cEQP'), seld:long(%lu), from:'null'() }, '----':obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }",index] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:1, '----':obj { form:'prop', want:type('prop'), seld:type('pEQ '), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:obj { form:'ID  ', want:type('cEQP'), seld:long(%lu), from:'null'() }, ----:obj { form:'prop', want:type('prop'), seld:type('pEQP'), from:'null'() }",index] eventClass:@"core" eventID:@"setd" appPSN:iTunesPSN];
     return YES;
 }
 
