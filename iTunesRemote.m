@@ -62,15 +62,15 @@
 
 - (BOOL)showPrimaryInterface
 {
+    // Still have to convert these to AEs:
+    //	set minimized of browser window 1 to false
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), '----':obj { form:'prop', want:type('prop'), seld:type('pMin'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    //	set visible of browser window 1 to true
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pvis'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     // Make this into AppleEvents... shouldn't be too hard, I'm just too tired to do it right now.
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), '----':obj { form:'prop', want:type('prop'), seld:type('pisf'), from:'null'() }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    // Still have to convert these to AEs:
-    //	set visible of browser window 1 to true
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(1), ----:obj { form:'prop', want:'prop', seld:'pvis', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    //	set minimized of browser window 1 to false
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:@"data:long(0), ----:obj { form:'prop', want:'prop', seld:'pMin', from:obj { form:'indx', want:'cBrW', seld:1, from:'null'() } }" eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
 
-    return NO;
+    return YES;
 }
 
 - (ITMTRemotePlayerRunningState)playerRunningState
