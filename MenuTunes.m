@@ -280,9 +280,13 @@
                     action:nil
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Song Rating"]) {
+            unichar fullstar = 0x2605;
+            unichar emptystar = 0x2606;
+            NSString *fullStarChar = [NSString stringWithCharacters:&fullstar length:1];
+            NSString *emptyStarChar = [NSString stringWithCharacters:&emptystar length:1];
             NSMenuItem *item;
             int i;
-            NSString *curTitle = @".....";
+            NSString *curTitle = [NSString stringWithFormat:@"%@%@%@%@%@", emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar];
             
             songRatingMenuItem = [menu addItemWithTitle:@"Song Rating"
                     action:nil
@@ -290,7 +294,7 @@
             
             ratingMenu = [[NSMenu alloc] initWithTitle:@""];
             
-            item = [ratingMenu addItemWithTitle:@"....."
+            item = [ratingMenu addItemWithTitle:[NSString stringWithFormat:@"%@%@%@%@%@", emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar, emptyStarChar]
                             action:@selector(setSongRating:)
                             keyEquivalent:@""];
             [item setTarget:self];
@@ -298,7 +302,7 @@
             
             for (i = 1; i < 6; i++) {
                 curTitle = [curTitle substringToIndex:4];
-                curTitle = [@"x" stringByAppendingString:curTitle];
+                curTitle = [fullStarChar stringByAppendingString:curTitle];
                 item = [ratingMenu addItemWithTitle:curTitle
                             action:@selector(setSongRating:)
                             keyEquivalent:@""];
