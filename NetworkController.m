@@ -78,10 +78,10 @@ static NetworkController *sharedController;
             serverConnection = [[NSConnection alloc] initWithReceivePort:serverPort
                                                      sendPort:serverPort];
             clientProxy = [[NetworkObject alloc] init];
-            [serverConnection setRootObject:[clientProxy autorelease]];
+            [serverConnection setRootObject:clientProxy];
             [serverConnection registerName:@"ITMTPlayerHost"];
         NS_HANDLER
-            [[serverConnection rootObject] release];
+            [clientProxy release];
             [serverConnection setRootObject:nil];
             [serverConnection release];
             [serverPort release];
@@ -112,6 +112,7 @@ static NetworkController *sharedController;
         [service stop];
         [clientProxy invalidate];
         [serverConnection registerName:nil];
+        [serverConnection setRootObject:nil];
         [serverConnection release];
         ITDebugLog(@"Stopped server.");
         serverOn = NO;
