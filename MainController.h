@@ -39,7 +39,22 @@
     StatusWindowController *statusWindowController; //Shows track info and upcoming songs.
     NSUserDefaults *df;
 }
++ (MainController *)sharedController;
 
+//Methods called from MenuController by menu items
+- (void)playPause;
+- (void)nextSong;
+- (void)prevSong;
+- (void)fastForward;
+- (void)rewind;
+- (void)selectPlaylistAtIndex:(int)index;
+- (void)selectSongAtIndex:(int)index;
+- (void)selectSongRating:(int)rating;
+- (void)selectEQPresetAtIndex:(int)index;
+- (void)showPreferences;
+- (void)quitMenuTunes;
+
+//
 
 - (ITMTRemote *)currentRemote;
 - (void)clearHotKeys;

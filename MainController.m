@@ -7,9 +7,18 @@
 - (ITMTRemote *)loadRemote;
 - (void)setupHotKeys;
 - (void)timerUpdate;
+- (void)setLatestSongIdentifier:(NSString *)newIdentifier;
+- (void)showCurrentTrackInfo;
 @end
 
+static MainController *sharedController;
+
 @implementation MainController
+
++ (MainController *)sharedController
+{
+    return sharedController;
+}
 
 /*************************************************************************/
 #pragma mark -
@@ -19,6 +28,8 @@
 - (id)init
 {
     if ( ( self = [super init] ) ) {
+        sharedController = self;
+        
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
         statusWindowController = [[StatusWindowController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
@@ -161,90 +172,79 @@
 */
 }
 
-/*
 //
 //
 // Menu Selectors
 //
 //
 
-- (void)selectSong:(id)sender
-{
-    [currentRemote switchToSongAtIndex:[[sender representedObject] intValue]];
-}
-*/
-- (void)selectPlaylist:(id)sender
-{
-    int playlist = [sender tag];
-    [currentRemote switchToPlaylistAtIndex:playlist];
-}
-/*
-- (void)selectEQPreset:(id)sender
-{
-    int curSet = [currentRemote currentEQPresetIndex];
-    int item = [sender tag];
-    
-    [currentRemote switchToEQAtIndex:item];
-    [[eqMenu itemAtIndex:curSet - 1] setState:NSOffState];
-    [[eqMenu itemAtIndex:item] setState:NSOnState];
-}
-*/
-/*
-- (void)selectSongRating:(id)sender
-{
-    int newRating = [sender tag];
-//  [[ratingMenu itemAtIndex:lastSongRating] setState:NSOffState];
-    [sender setState:NSOnState];
-    [currentRemote setCurrentSongRating:(float)newRating / 100.0];
-    lastSongRating = newRating / 20;
-}
-*/
-/*
-- (void)playPause:(id)sender
+- (void)playPause
 {
     ITMTRemotePlayerPlayingState state = [currentRemote playerPlayingState];
     
     if (state == ITMTRemotePlayerPlaying) {
         [currentRemote pause];
-        [playPauseItem setTitle:@"Play"];
     } else if ((state == ITMTRemotePlayerForwarding) || (state == ITMTRemotePlayerRewinding)) {
         [currentRemote pause];
         [currentRemote play];
     } else {
         [currentRemote play];
-        [playPauseItem setTitle:@"Pause"];
     }
 }
 
-- (void)nextSong:(id)sender
+- (void)nextSong
 {
     [currentRemote goToNextSong];
 }
 
-- (void)prevSong:(id)sender
+- (void)prevSong
 {
     [currentRemote goToPreviousSong];
 }
 
-- (void)fastForward:(id)sender
+- (void)fastForward
 {
     [currentRemote forward];
-    [playPauseItem setTitle:@"Play"];
 }
 
-- (void)rewind:(id)sender
+- (void)rewind
 {
     [currentRemote rewind];
-    [playPauseItem setTitle:@"Play"];
 }
-*/
 
-//
-//
-- (void)quitMenuTunes:(id)sender
+- (void)selectPlaylistAtIndex:(int)index
+{
+    [currentRemote switchToPlaylistAtIndex:index];
+}
+
+- (void)selectSongAtIndex:(int)index
+{
+    [currentRemote switchToSongAtIndex:index];
+}
+
+- (void)selectSongRating:(int)rating
+{
+    [currentRemote setCurrentSongRating:(float)rating / 100.0];
+}
+
+- (void)selectEQPresetAtIndex:(int)index
+{
+    [currentRemote switchToEQAtIndex:index];
+}
+
+- (void)showPreferences
+{
+    [[PreferencesController sharedPrefs] setController:self];
+    [[PreferencesController sharedPrefs] showPrefsWindow:self];
+}
+
+- (void)quitMenuTunes
 {
     [NSApp terminate:self];
 }
+
+//
+//
 
 - (void)showPlayer:(id)sender
 {
@@ -255,12 +255,6 @@
             NSLog(@"Error Launching Player");
         }
     }
-}
-
-- (void)showPreferences:(id)sender
-{
-    [[PreferencesController sharedPrefs] setController:self];
-    [[PreferencesController sharedPrefs] showPrefsWindow:self];
 }
 
 - (void)closePreferences

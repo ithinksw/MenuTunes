@@ -7,7 +7,7 @@
 //
 
 #import "MenuController.h"
-
+#import "MainController.h"
 
 @implementation MenuController
 
@@ -32,24 +32,34 @@
     {
         case MTMenuPlayPauseItem:
             NSLog(@"MenuController: Play/Pause");
+            [[MainController sharedController] playPause];
+            //We're gonna have to change the Play menu item to Pause here too.
             break;
         case MTMenuFastForwardItem:
             NSLog(@"MenuController: Fast Forward");
+            [[MainController sharedController] fastForward];
+            //make sure play/pause item says sane through this
             break;
         case MTMenuRewindItem:
             NSLog(@"MenuController: Rewind");
+            [[MainController sharedController] rewind];
+            //make sure play/pause item says sane through this
             break;
         case MTMenuPreviousTrackItem:
             NSLog(@"MenuController: Previous Track");
+            [[MainController sharedController] prevSong];
             break;
         case MTMenuNextTrackItem:
             NSLog(@"MenuController: Next Track");
+            [[MainController sharedController] nextSong];
             break;
         case MTMenuPreferencesItem:
             NSLog(@"MenuController: Preferences...");
+            [[MainController sharedController] showPreferences];
             break;
         case MTMenuQuitItem:
             NSLog(@"MenuController: Quit");
+            [[MainController sharedController] quitMenuTunes];
             break;
         default:
             NSLog(@"MenuController: Unimplemented Menu Item OR Child-bearing Menu Item");
@@ -57,20 +67,24 @@
     }
 }
 
-- (void)performRatingMenuAction
+- (void)performRatingMenuAction:(id)sender
 {
+    [[MainController sharedController] selectSongRating:[sender tag]];
 }
 
-- (void)performPlaylistMenuAction
+- (void)performPlaylistMenuAction:(id)sender
 {
+    [[MainController sharedController] selectPlaylistAtIndex:[sender tag]];
 }
 
-- (void)performEqualizerMenuAction
+- (void)performEqualizerMenuAction:(id)sender
 {
+    [[MainController sharedController] selectEQItemAtIndex:[sender tag]]
 }
 
-- (void)performUpcomingSongsMenuAction
+- (void)performUpcomingSongsMenuAction:(id)sender
 {
+    [[MainController sharedController] selectSongAtIndex:[sender tag]]
 }
 
 - (void)updateMenu
