@@ -717,8 +717,8 @@
         break;
         
         case 105:
-            ITDebugLog(@"Keycode for menu item \"%@\": 105 (F3)", [item title]);
-            charcode = NSF3FunctionKey;
+            ITDebugLog(@"Keycode for menu item \"%@\": 105 (F13)", [item title]);
+            charcode = NSF13FunctionKey;
         break;
         
         case 107:
