@@ -84,6 +84,11 @@
     return nil;
 }
 
+- (ITMTRemotePlayerSource)currentSource
+{
+    return nil;
+}
+
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
     return nil;

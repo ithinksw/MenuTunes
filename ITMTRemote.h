@@ -69,6 +69,14 @@ typedef enum {
     ITMTRemotePlayerRadioPlaylist
 } ITMTRemotePlayerPlaylistClass;
 
+typedef enum {
+    ITMTRemoteLibrarySource = -1,
+    ITMTRemoteCDSource,
+    ITMTRemoteRadioSource,
+    ITMTRemoteiPodSource,
+    ITMTRemoteMP3PlayerSource
+} ITMTRemotePlayerSource;
+
 /*!
  * @enum ITMTRemotePlayerRepeatMode
  * @abstract Possible repeat modes for the remote's player.
@@ -193,6 +201,11 @@ typedef enum {
  * @method numberOfSongsInPlaylistAtIndex:
  */
 - (int)numberOfSongsInPlaylistAtIndex:(int)index;
+
+/*!
+ * @method currentSource
+ */
+- (ITMTRemotePlayerSource)currentSource;
 
 /*!
  * @method currentPlaylistClass

@@ -128,6 +128,10 @@
 {
     return [[ITAppleEventCenter sharedCenter] sendAEWithSendStringForNumber:[NSString stringWithFormat:@"kocl:type('cTrk'), '----':obj { form:'indx', want:type('cPly'), seld:long(%lu), from:'null'() }",index] eventClass:@"core" eventID:@"cnte" appPSN:savedPSN];
 }
+- (ITMTRemotePlayerSource)currentSource
+{
+    return ITMTRemoteLibrarySource;
+}
 
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
