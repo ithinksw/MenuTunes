@@ -293,7 +293,7 @@
 - (BOOL)setVolume:(float)volume
 {
     [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pVol'), from:'null'() }",(long)(volume*100)] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
-    return NO;
+    return YES;
 }
 
 - (BOOL)shuffleEnabled
@@ -305,7 +305,7 @@
 
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu) ----:obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigned long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",(unsigned long)enabled] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
@@ -348,7 +348,7 @@
 		  break;
 	   }
 
-    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s') ----:obj { form:'prop', want:type('pRpt'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
+    [[ITAppleEventCenter sharedCenter] sendAEWithSendString:[NSString stringWithFormat:@"data:type('%s'), '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }",m00f] eventClass:@"core" eventID:@"setd" appPSN:savedPSN];
     return YES;
 }
 
