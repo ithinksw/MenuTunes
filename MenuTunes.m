@@ -522,6 +522,7 @@ Things to do:
 - (void)rebuildEQPresetsMenu
 {
     NSArray *eqPresets = [currentRemote eqPresets];
+    NSMenuItem *enabledItem;
     int i;
     
     if (eqMenu && ([[currentRemote eqPresets] count] == [eqMenu numberOfItems]))
@@ -529,6 +530,11 @@ Things to do:
     
     [eqMenu release];
     eqMenu = [[NSMenu alloc] initWithTitle:@""];
+    
+    enabledItem = [eqMenu addItemWithTitle:@"EQ Enabled"
+                          action:NULL
+                          keyEquivalent:@""];
+    [eqMenu addItem:[NSMenuItem separatorItem]];
     
     for (i = 0; i < [eqPresets count]; i++) {
         NSString *setName = [eqPresets objectAtIndex:i];
@@ -806,7 +812,8 @@ Things to do:
 
 - (void)setSongRating:(id)sender
 {
-    //[currentRemote setCurrentSongRating:[sender tag]];
+    NSLog(@"%f", (float)[sender tag] / 100.0);
+    [currentRemote setCurrentSongRating:(float)[sender tag] / 100.0];
 }
 
 //
