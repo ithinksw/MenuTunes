@@ -1,6 +1,6 @@
 /* Copyright (c) 2002 - 2003 by iThink Software. All Rights Reserved. */
 
-#import "ITMTRemote.h"
+#import "ITMTPlayer.h"
 
-@implementation ITMTRemote
+@implementation ITMTPlayer
 @end
