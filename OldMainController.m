@@ -146,7 +146,7 @@
         [notRunningMenu addItemWithTitle:[NSString stringWithFormat:@"Open %@", [currentRemote playerSimpleName]] action:@selector(showPlayer:) keyEquivalent:@""];
         [notRunningMenu addItem:[NSMenuItem separatorItem]];
         [notRunningMenu addItemWithTitle:@"Preferences..." action:@selector(showPreferences:) keyEquivalent:@""];
-        [notRunningMenu addItemWithTitle:@"Quit" action:@selector(quitMenuTunes:) keyEquivalent:@""];
+        [[notRunningMenu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@""] setTarget:NSApp];
         [statusItem setMenu:[notRunningMenu autorelease]];
         
         [currentRemote halt];
@@ -299,9 +299,9 @@
                     action:@selector(showPreferences:)
                     keyEquivalent:@""];
         } else if ([item isEqualToString:@"Quit"]) {
-            [menu addItemWithTitle:@"Quit"
-                    action:@selector(quitMenuTunes:)
-                    keyEquivalent:@""];
+            [[menu addItemWithTitle:@"Quit"
+                    action:@selector(terminate:)
+                    keyEquivalent:@""] setTarget:NSApp];
         } else if ([item isEqualToString:@"Current Track Info"]) {
             trackInfoIndex = [menu numberOfItems];
             [menu addItemWithTitle:@"No Song"
@@ -612,10 +612,6 @@
 
 //
 //
-- (void)quitMenuTunes:(id)sender
-{
-    [NSApp terminate:self];
-}
 
 - (void)showPlayer:(id)sender
 {
@@ -898,17 +894,11 @@
         //Space -- ARGH!
         case 49:
         {
-            // Haven't tested this, though it should work.
-            //Doesn't work :(
-            unichar buffer;
-            [[NSString stringWithString:@"Space"] getCharacters:&buffer];
-            charcode = buffer;
-            /*MenuRef menuRef = _NSGetCarbonMenu([item menu]);
-            NSLog(@"%@", menuRef);
-            SetMenuItemCommandKey(menuRef, 0, NO, 49);
-            SetMenuItemModifiers(menuRef, 0, kMenuNoCommandModifier);
-            SetMenuItemKeyGlyph(menuRef, 0, kMenuBlankGlyph);
-            charcode = 'b';*/
+            MenuRef menuRef = _NSGetCarbonMenu([item menu]);
+            SetMenuItemCommandKey(menuRef, 1, NO, 49);
+            SetMenuItemModifiers(menuRef, 1, kMenuNoCommandModifier);
+            SetMenuItemKeyGlyph(menuRef, 1, kMenuBlankGlyph);
+            charcode = 'b';
             
         }
         break;
