@@ -371,6 +371,11 @@ static MainController *sharedController;
 {
     ITHotKey *hotKey;
     ITDebugLog(@"Setting up hot keys.");
+    
+    if (playerRunningState == ITMTRemotePlayerNotRunning) {
+        return;
+    }
+    
     if ([df objectForKey:@"PlayPause"] != nil) {
         ITDebugLog(@"Setting up play pause hot key.");
         hotKey = [[ITHotKey alloc] init];
@@ -620,6 +625,12 @@ static MainController *sharedController;
 {
     float rating = [currentRemote currentSongRating];
     ITDebugLog(@"Incrementing rating.");
+    
+    if ([currentRemote currentPlaylistIndex] == 0) {
+        ITDebugLog(@"No song playing, rating change aborted.");
+        return;
+    }
+    
     rating += 0.2;
     if (rating > 1.0) {
         rating = 1.0;
@@ -635,6 +646,12 @@ static MainController *sharedController;
 {
     float rating = [currentRemote currentSongRating];
     ITDebugLog(@"Decrementing rating.");
+    
+    if ([currentRemote currentPlaylistIndex] == 0) {
+        ITDebugLog(@"No song playing, rating change aborted.");
+        return;
+    }
+    
     rating -= 0.2;
     if (rating < 0.0) {
         rating = 0.0;

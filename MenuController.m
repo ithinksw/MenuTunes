@@ -220,6 +220,7 @@
                         [menu addItemWithTitle:title action:nil keyEquivalent:@""]];
                 }
                 
+                if (!_playingRadio) {
                     if ([defaults boolForKey:@"showAlbum"]) {
                         NSString *curAlbum = [currentRemote currentSongAlbum];
                         ITDebugLog(@"Add Track Album (\"%@\") menu item.", curAlbum);
@@ -277,7 +278,7 @@
                         ITDebugLog(@"Add Track Rating (\"%@\") menu item.", string);
                         [menu indentItem:[menu addItemWithTitle:string action:nil keyEquivalent:@""]];
                     }
-                
+                }
             } else {
                 ITDebugLog(@"No Track is Playing, Add \"No Song\" menu item.");
                 [menu addItemWithTitle:NSLocalizedString(@"noSong", @"No Song") action:NULL keyEquivalent:@""];
