@@ -211,6 +211,9 @@
                     keyEquivalent:@""];
             [tempItem setSubmenu:_ratingMenu];
             [tempItem setTag:1];
+            if (_playingRadio || !_currentPlaylist) {
+                [tempItem setEnabled:NO];
+            }
             
             itemEnum = [[_ratingMenu itemArray] objectEnumerator];
             while ( (tempItem = [itemEnum nextObject]) ) {
@@ -218,9 +221,6 @@
             }
             
             [[_ratingMenu itemAtIndex:([currentRemote currentSongRating] * 5)] setState:NSOnState];
-            if (_playingRadio || !_currentPlaylist) {
-                [tempItem setEnabled:NO];
-            }
         } else if ([nextObject isEqualToString:@"Upcoming Songs"]) {
             tempItem = [menu addItemWithTitle:@"Upcoming Songs"
                     action:nil
@@ -292,26 +292,24 @@
 - (NSMenu *)ratingMenu
 {
     NSMenu *ratingMenu = [[NSMenu alloc] initWithTitle:@""];
-    if (_currentPlaylist && !_playingRadio) {
-        NSEnumerator *itemEnum;
-        id  anItem;
-        int itemTag = 0;
-        SEL itemSelector = @selector(performRatingMenuAction:);
-        
-        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"☆☆☆☆☆"] action:nil keyEquivalent:@""];
-        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★☆☆☆☆"] action:nil keyEquivalent:@""];
-        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★☆☆☆"] action:nil keyEquivalent:@""];
-        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★☆☆"] action:nil keyEquivalent:@""];
-        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★☆"] action:nil keyEquivalent:@""];
-        [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★★"] action:nil keyEquivalent:@""];
-        
-        itemEnum = [[ratingMenu itemArray] objectEnumerator];
-        while ( (anItem = [itemEnum nextObject]) ) {
-            [anItem setAction:itemSelector];
-            [anItem setTarget:self];
-            [anItem setTag:itemTag];
-            itemTag += 20;
-        }
+    NSEnumerator *itemEnum;
+    id  anItem;
+    int itemTag = 0;
+    SEL itemSelector = @selector(performRatingMenuAction:);
+    
+    [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"☆☆☆☆☆"] action:nil keyEquivalent:@""];
+    [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★☆☆☆☆"] action:nil keyEquivalent:@""];
+    [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★☆☆☆"] action:nil keyEquivalent:@""];
+    [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★☆☆"] action:nil keyEquivalent:@""];
+    [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★☆"] action:nil keyEquivalent:@""];
+    [ratingMenu addItemWithTitle:[NSString stringWithUTF8String:"★★★★★"] action:nil keyEquivalent:@""];
+    
+    itemEnum = [[ratingMenu itemArray] objectEnumerator];
+    while ( (anItem = [itemEnum nextObject]) ) {
+        [anItem setAction:itemSelector];
+        [anItem setTarget:self];
+        [anItem setTag:itemTag];
+        itemTag += 20;
     }
     return ratingMenu;
 }
