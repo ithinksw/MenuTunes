@@ -11,6 +11,14 @@
 
 @implementation MenuController
 
+- (id)init
+{
+    if ( (self = [super init]) ) {
+        _menuLayout = [[NSMutableArray alloc] initWithCapacity:
+    }
+    return self;
+}
+
 - (NSMenu *)menu
 {
     // dynamically create menu from supplied data and layout information.
@@ -67,11 +75,31 @@
 
 - (void)updateMenu
 {
+    
     [_currentMenu update];
 }
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
+}
+
+- (NSString *)systemUIColor
+{
+    NSDictionary *tmpDict;
+    NSNumber *tmpNumber;
+    if ( (tmpDict = [NSDictionary dictionaryWithContentsOfFile:[@"~/Library/Preferences/.GlobalPreferences.plist" stringByExpandingTildeInPath]]) ) {
+        if ( (tmpNumber = [tmpDict objectForKey:@"AppleAquaColorVariant"]) ) {
+            if ( ([tmpNumber intValue == 1) ) {
+                return @"Aqua";
+            } else {
+                return @"Graphite";
+            }
+        } else {
+            return @"Aqua";
+        }
+    } else {
+        return @"Aqua";
+    }
 }
 
 @end
