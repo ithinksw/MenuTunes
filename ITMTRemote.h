@@ -1,226 +1,364 @@
-/****************************************
-    ITMTRemote 1.0 (MenuTunes Remotes)
-    ITMTRemote.h
-    
-    Responsibility:
-        Joseph Spiros <joseph.spiros@ithinksw.com>
-    
-    Copyright (c) 2002 - 2003 by iThink Software.
-    All Rights Reserved.
-****************************************/
+/*
+ *  MenuTunes
+ *  ITMTRemote
+ *    Plugin definition for audio player control via MenuTunes
+ *
+ *  Original Author : Matt Judy <mjudy@ithinksw.com>
+ *   Responsibility : Matt Judy <mjudy@ithinksw.com>
+ *
+ *  Copyright (c) 2002 - 2003 iThink Software.
+ *  All Rights Reserved
+ *
+ *	This header defines the Objective-C protocol which all MenuTunes Remote
+ *  plugins must implement.  To build a remote, create a subclass of this
+ *  object, and implement each method in the @protocol below.
+ *
+ */
 
+/*!
+ * @header ITMTRemote
+ * @discussion This header defines the Objective-C protocol which all MenuTunes Remote plugins must implement.  To build a remote, create a subclass of the ITMTRemote object, and implement each method in the ITMTRemote protocol.
+ */
 #import <Cocoa/Cocoa.h>
 
+/*!
+ * @enum ITMTRemotePlayerRunningState
+ * @abstract Possible running states for the remote's player.
+ * @discussion Used in fuctions that report or take the running state of the remote's player application.
+ * @constant ITMTRemotePlayerNotRunning The remote's player isn't running.
+ * @constant ITMTRemotePlayerLaunching The remote's player is starting up, or is running, but not yet accepting remote commands.
+ * @constant ITMTRemotePlayerRunning The remote's player is running, and as such, is accepting remote commands.
+ */
 typedef enum {
-    ITMTNameProperty,
-    ITMTImageProperty
-} ITMTGenericProperty;
-
-typedef enum {
-    ITMTRemoteNameProperty,
-    ITMTRemoteImageProperty,
-    ITMTRemoteAuthorProperty,
-    ITMTRemoteDescriptionProperty,
-    ITMTRemoteURLProperty,
-    ITMTRemoteCopyrightProperty,
-    ITMTRemoteActivationStringProperty,
-    ITMTRemoteDeactivationStringProperty
-} ITMTRemoteProperty;
-
-typedef enum {
-    ITMTTrackTitle,
-    ITMTTrackArtist,
-    ITMTTrackComposer,
-    ITMTTrackYear,
-    ITMTTrackImage,
-    ITMTTrackAlbum,
-    ITMTTrackNumber,
-    ITMTTrackTotal,
-    ITMTDiscNumber,
-    ITMTDiscTotal,
-    ITMTTrackComments,
-    ITMTTrackGenre,
-    ITMTTrackRating,
-    ITMTTrackHash
-} ITMTTrackProperty;
+    ITMTRemotePlayerNotRunning = -1,
+    ITMTRemotePlayerLaunching,
+    ITMTRemotePlayerRunning
+} ITMTRemotePlayerRunningState;
 
 /*!
-    @typedef ITMTPlayerStyle
-    @constant ITMTSinglePlayerStyle Like iTunes, One player controls all available songs.
-    @constant ITMTMultiplePlayerStyle Like Audion, Multiple players control multiple playlists.
-    @constant ITMTSinglePlayerSinglePlaylistStyle Like *Amp, XMMS. Not recommended, but instead, developers are urged to use ITMTSinglePlayerStyle with emulated support for multiple playlists.
-*/
+ * @enum ITMTRemotePlayerPlayingState
+ * @abstract Possible playing states for the remote's player.
+ * @discussion Used in functions that report or take the playing state of the remote's player application.
+ * @constant ITMTRemotePlayerStopped The remote's player is stopped.
+ * @constant ITMTRemotePlayerPaused The remote's player is paused.
+ * @constant ITMTRemotePlayerPlaying The remote's player is playing.
+ * @constant ITMTRemotePlayerRewinding The remote's player is rewinding.
+ * @constant ITMTRemotePlayerForwarding The remote's player is forwarding.
+ */
 typedef enum {
-    ITMTSinglePlayerStyle,
-    ITMTMultiplePlayerStyle,
-    ITMTSinglePlayerSinglePlaylistStyle
-} ITMTPlayerStyle;
+    ITMTRemotePlayerStopped = -1,
+    ITMTRemotePlayerPaused,
+    ITMTRemotePlayerPlaying,
+    ITMTRemotePlayerRewinding,
+    ITMTRemotePlayerForwarding
+} ITMTRemotePlayerPlayingState;
 
+/*!
+ * @enum ITMTRemotePlayerPlaylistClass
+ * @abstract Possible playlist classes used by a remote's player
+ * @discussion Used in functions that report the class of a playlist to MenuTunes. While we borrow the terms/descriptions from iTunes, these should work fine with any other player. If your player doesn't support a given type of playlist, then just return ITMTRemotePlayerPlaylist.
+ * @constant ITMTRemotePlayerLibraryPlaylist For players that have one playlist that contains all of a user's music, or for players that don't have the concept of multiple playlists, this is the class for that "Master" list.
+ * @constant ITMTRemotePlayerPlaylist The generic playlist. Created and maintained by the user.
+ * @constant ITMTRemotePlayerSmartPlaylist A smart playlist is a playlist who's contents are dynamic, based on a set of criteria or updated by a script. These are usually not edited directly by the user, but instead maintained by the player.
+ * @constant ITMTRemotePlayerRadioPlaylist This is for when playing tracks off of (online) radio stations.
+ */
 typedef enum {
-    ITMT32HzEqualizerBandLevel,
-    ITMT64HzEqualizerBandLevel,
-    ITMT125HzEqualizerBandLevel,
-    ITMT250HzEqualizerBandLevel,
-    ITMT500HzEqualizerBandLevel,
-    ITMT1kHzEqualizerBandLevel,
-    ITMT2kHzEqualizerBandLevel,
-    ITMT4kHzEqualizerBandLevel,
-    ITMT8kHzEqualizerBandLevel,
-    ITMT16kHzEqualizerBandLevel,
-    ITMTEqualizerPreampLevel
-} ITMTEqualizerLevel;
+    ITMTRemotePlayerLibraryPlaylist = -1,
+    ITMTRemotePlayerPlaylist,
+    ITMTRemotePlayerSmartPlaylist,
+    ITMTRemotePlayerRadioPlaylist
+} ITMTRemotePlayerPlaylistClass;
 
+/*!
+ * @enum ITMTRemotePlayerRepeatMode
+ * @abstract Possible repeat modes for the remote's player.
+ * @discussion Used in functions that report or set the remote's player's repeat mode.
+ * @constant ITMTRemotePlayerRepeatOff The player plays all of the songs in a playlist through to the end, and then stops.
+ * @constant ITMTRemotePlayerRepeatAll The player plays all of the songs in a playlist through to the end, and then starts over again from the beginning.
+ * @constant ITMTRemotePlayerRepeatOne The player loops playing the selected song.
+ */
 typedef enum {
-    ITMTTrackStopped = -1,
-    ITMTTrackPaused,
-    ITMTTrackPlaying,
-    ITMTTrackForwarding,
-    ITMTTrackRewinding
-} ITMTTrackState;
+    ITMTRemotePlayerRepeatOff = -1,
+    ITMTRemotePlayerRepeatAll,
+    ITMTRemotePlayerRepeatOne
+} ITMTRemotePlayerRepeatMode;
 
-typedef enum {
-    ITMTRepeatNoneMode,
-    ITMTRepeatOneMode,
-    ITMTRepeatAllMode
-} ITMTRepeatMode;
-
-@class ITMTRemote, ITMTPlayer, ITMTPlaylist, ITMTTrack, ITMTEqualizer;
-
+/*!
+ * @protocol ITMTRemote
+ * @discussion The Objective-C protocol which all MenuTunes remotes must implement.
+ */
 @protocol ITMTRemote
+
+/*!
+ * @method remote
+ * @abstract Returns an autoreleased instance of the remote.
+ * @discussion Should be very quick and compact.
+ *
+ * EXAMPLE:<br>
+ * + (id)remote<br>
+ * {<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return [[[MyRemote alloc] init] autorelease];<br>
+ * }
+ *
+ * @result An instance of the remote.
+ */
 + (id)remote;
 
-- (id)valueOfProperty:(ITMTRemoteProperty)property;
+/*!
+ * @method remoteTitle
+ * @abstract Returns the remote's title/name.
+ * @discussion This title is shown while the user is selecting which remote to use. This is for informational purposes only.
+ * @result An NSString containing the title/name of the remote.
+ */
+- (NSString *)remoteTitle;
 
-- (NSDictionary *)propertiesAndValues;
+/*!
+ * @method remoteInformation
+ * @abstract Returns the remote's information.
+ * @discussion Information on the remote that the user will see when selecting which remote to use. The information returned here has no bearing on how the remote works, it's simply here for informing the user.
+ * @result An NSString containing the information for the remote.
+ */
+- (NSString *)remoteInformation;
 
-- (ITMTPlayerStyle)playerStyle;
+/*!
+ * @method remoteIcon
+ * @abstract Returns the remote's icon.
+ * @discussion This icon is shown while the user is selecting which remote to use. Typically, this is the remote's player's application icon, however it can be anything you like.
+ * @result An NSImage containing the icon of the remote.
+ */
+- (NSImage *)remoteIcon;
 
-- (BOOL)activate;
-- (BOOL)deactivate;
+/*!
+ * @method begin
+ * @abstract Sent when the remote should begin operation.
+ * @result A result code signifying success.
+ */
+- (BOOL)begin;
 
-- (ITMTPlayer *)currentPlayer;
-- (BOOL)selectPlayer:(ITMTPlayer *)player;
-- (NSArray *)players;
-@end
+/*!
+ * @method halt
+ * @abstract Sent when the remote should cease operation.
+ * @result A result code signifying success.
+ */
+- (BOOL)halt;
 
-@interface ITMTRemote : NSObject <ITMTRemote>
+/*!
+ * @method playerFullName
+ * @abstract Returns the remote's player's application filename.
+ * @discussion This string should be the name typically used by the remote's player's application bundle/file. For example, Panic's Audion audio player is known simply as "Audion", however, the application bundle is called "Audion 3" for version 3 of their application. This should return "Audion 3", not simply "Audion". See playerSimpleName.
+ * @result An NSString containing the remote's player's application filename
+ */
+- (NSString *)playerFullName;
+
+/*!
+ * @method playerSimpleName
+ * @abstract Returns the simplified name of the remote's player.
+ * @discussion This is the name used in the User Interface for when referring to the remote's player. Continuing the example from the playerFullName method, this method would return simply "Audion", as that is how the player is known.
+ * @result An NSString containing the simplified name of the remote's player.
+ */
+- (NSString *)playerSimpleName;
+
+/*!
+ * @method capabilities
+ * @abstract Returns a dictionary defining the capabilities of the remote and it's player.
+ * @discussion Discussion Forthcoming.
+ * @result An NSDictionary defining the capabilities of the remote and it's player.
+ */
+- (NSDictionary *)capabilities;
+
+/*!
+ * @method showPrimaryInterface
+ */
+- (BOOL)showPrimaryInterface;
+
+/*!
+ * @method playerRunningState
+ * @abstract Returns the running state of the remote's player.
+ * @discussion While most remotes will use only ITMTRemotePlayerNotRunning or ITMTRemotePlayerRunning, we have included support for ITMTRemotePlayerLaunching (see ITMTRemotePlayerRunningState) for remotes that want the most precise control over their player's process managment.
+ * @result An ITMTRemotePlayerRunningState defining the running state of the remote's player.
+ */
+- (ITMTRemotePlayerRunningState)playerRunningState;
+
+/*!
+ * @method playerPlayingState
+ */
+- (ITMTRemotePlayerPlayingState)playerPlayingState;
+
+/*!
+ * @method playlists
+ */
+- (NSArray *)playlists;
+
+/*!
+ * @method numberOfSongsInPlaylistAtIndex:
+ */
+- (int)numberOfSongsInPlaylistAtIndex:(int)index;
+
+/*!
+ * @method currentPlaylistClass
+ */
+- (ITMTRemotePlayerPlaylistClass)currentPlaylistClass;
+
+/*!
+ * @method currentPlaylistIndex
+ */
+- (int)currentPlaylistIndex;
+
+/*!
+ * @method songTitleAtIndex:
+ */
+- (NSString *)songTitleAtIndex:(int)index;
+
+/*!
+ * @method currentAlbumTrackCount:
+ */
+- (int)currentAlbumTrackCount;
+
+/*!
+ * @method currentSongTrack:
+ */
+- (int)currentSongTrack;
+
+/*!
+ * @method playerStateUniqueIdentifier:
+ */
+- (NSString *)playerStateUniqueIdentifier;
+
+/*!
+ * @method currentSongIndex
+ */
+- (int)currentSongIndex;
+
+/*!
+ * @method currentSongTitle
+ */
+- (NSString *)currentSongTitle;
+
+/*!
+ * @method currentSongArtist
+ */
+- (NSString *)currentSongArtist;
+
+/*!
+ * @method currentSongAlbum
+ */
+- (NSString *)currentSongAlbum;
+
+/*!
+ * @method currentSongGenre
+ */
+- (NSString *)currentSongGenre;
+
+/*!
+ * @method currentSongLength
+ */
+- (NSString *)currentSongLength;
+
+/*!
+ * @method currentSongRemaining
+ */
+- (NSString *)currentSongRemaining;
+
+/*!
+ * @method currentSongRating
+ */
+- (float)currentSongRating;
+
+/*!
+ * @method setCurrentSongRating:
+ */
+- (BOOL)setCurrentSongRating:(float)rating;
+
+/*!
+ * @method eqPresets
+ */
+- (NSArray *)eqPresets;
+
+/*!
+ * @method currentEQPresetIndex
+ */
+- (int)currentEQPresetIndex;
+
+/*!
+ * @method volume
+ */
+- (float)volume;
+
+/*!
+ * @method setVolume:
+ */
+- (BOOL)setVolume:(float)volume;
+
+/*!
+ * @method shuffleEnabled
+ */
+- (BOOL)shuffleEnabled;
+
+/*!
+ * @method setShuffleEnabled:
+ */
+- (BOOL)setShuffleEnabled:(BOOL)enabled;
+
+/*!
+ * @method repeatMode
+ */
+- (ITMTRemotePlayerRepeatMode)repeatMode;
+
+/*!
+ * @method setRepeatMode:
+ */
+- (BOOL)setRepeatMode:(ITMTRemotePlayerRepeatMode)repeatMode;
+
+/*!
+ * @method play
+ */
+- (BOOL)play;
+
+/*!
+ * @method pause
+ */
+- (BOOL)pause;
+
+/*!
+ * @method goToNextSong
+ */
+- (BOOL)goToNextSong;
+
+/*!
+ * @method goToPreviousSong
+ */
+- (BOOL)goToPreviousSong;
+
+/*!
+ * @method forward
+ */
+- (BOOL)forward;
+
+/*!
+ * @method rewind
+ */
+- (BOOL)rewind;
+
+/*!
+ * @method switchToPlaylistAtIndex:
+ */
+- (BOOL)switchToPlaylistAtIndex:(int)index;
+
+/*!
+ * @method switchToSongAtIndex:
+ */
+- (BOOL)switchToSongAtIndex:(int)index;
+
+/*!
+ * @method switchToEQAtIndex:
+ */
+- (BOOL)switchToEQAtIndex:(int)index;
+
 @end
 
 /*!
-    @protocol ITMTPlayer
-    @abstract Object representation for a controlled player.
-    @discussion Object representation for a controlled player. Players can be defined as things that control playlist(s) objects, a pool of track objects, and possibly, equalizer objects.
-*/
-@protocol ITMTPlayer
-- (BOOL)writable;
+ * @class ITMTRemote
+ */
+@interface ITMTRemote : NSObject <ITMTRemote>
 
-- (BOOL)show;
-
-- (BOOL)setValue:(id)value forProperty:(ITMTGenericProperty)property;
-- (id)valueOfProperty:(ITMTGenericProperty)property;
-- (NSDictionary *)propertiesAndValues;
-
-- (ITMTRemote *)remote;
-
-- (ITMTPlaylist *)currentPlaylist;
-- (BOOL)selectPlaylist:(ITMTPlaylist *)playlist;
-- (ITMTTrack *)currentTrack;
-- (BOOL)selectTrack:(ITMTTrack *)track;
-- (ITMTEqualizer *)currentEqualizer;
-- (BOOL)selectEqualizer:(ITMTEqualizer *)equalizer;
-
-- (NSArray *)playlists;
-
-- (NSArray *)tracks;
-- (ITMTPlaylist *)libraryPlaylist;
-
-- (NSArray *)equalizers;
-
-- (ITMTRepeatMode)repeatMode;
-- (BOOL)setRepeatMode:(ITMTRepeatMode)repeatMode;
-
-- (BOOL)shuffleEnabled;
-- (BOOL)enableShuffle:(BOOL)shuffle;
-@end
-
-@interface ITMTPlayer : NSObject <ITMTPlayer>
-@end
-
-@protocol ITMTPlaylist
-- (BOOL)isEqualToPlaylist:(ITMTPlaylist *)playlist;
-
-- (BOOL)writable;
-
-- (BOOL)show;
-
-- (BOOL)setValue:(id)value forProperty:(ITMTGenericProperty)property;
-- (id)valueOfProperty:(ITMTGenericProperty)property;
-- (NSDictionary *)propertiesAndValues;
-
-- (ITMTPlayer *)player;
-
-- (BOOL)addTrack:(ITMTTrack *)track;
-- (BOOL)insertTrack:(ITMTTrack *)track atIndex:(int)index;
-
-- (BOOL)removeTrack:(ITMTTrack *)item;
-- (BOOL)removeTrackAtIndex:(int)index;
-
-- (ITMTTrack *)trackAtIndex:(int)index;
-
-- (int)indexOfTrack:(ITMTTrack *)track;
-- (ITMTTrack *)trackWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatch:(BOOL)partial;
-- (NSArray *)tracksWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatches:(BOOL)partial;
-- (int)indexOfTrackWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatch:(BOOL)partial;
-- (NSArray *)indexesOfTracksWithProperty:(ITMTTrackProperty)property ofValue:(id)value allowPartialMatches:(BOOL)partial;
-
-- (int)trackCount;
-- (NSArray *)tracks;
-
-- (ITMTTrack *)currentTrack;
-- (int)indexOfCurrentTrack;
-
-- (BOOL)selectTrack:(ITMTTrack *)track;
-- (BOOL)selectTrackAtIndex:(int)index;
-
-- (BOOL)selectNextTrack;
-- (BOOL)selectPreviousTrack;
-@end
-
-@interface ITMTPlaylist : NSObject <ITMTPlaylist>
-@end
-
-@protocol ITMTTrack
-- (BOOL)isEqualToTrack:(ITMTTrack *)track;
-
-- (BOOL)writable;
-
-- (BOOL)addToPlaylist:(ITMTPlaylist *)playlist;
-- (BOOL)addToPlaylist:(ITMTPlaylist *)playlist atIndex:(int)index;
-
-- (ITMTPlayer *)player;
-- (NSArray *)playlists;
-- (ITMTPlaylist *)currentPlaylist;
-- (BOOL)setCurrentPlaylist:(ITMTPlaylist *)playlist;
-
-- (BOOL)setValue:(id)value forProperty:(ITMTTrackProperty)property;
-- (id)valueOfProperty:(ITMTTrackProperty)property;
-- (NSDictionary *)propertiesAndValues;
-
-- (BOOL)setState:(ITMTTrackState)state;
-- (ITMTTrackState)state;
-@end
-
-@interface ITMTTrack : NSObject <ITMTTrack>
-@end
-
-@protocol ITMTEqualizer
-- (BOOL)writable;
-
-- (ITMTPlayer *)player;
-
-- (float)dBForLevel:(ITMTEqualizerLevel)level;
-- (BOOL)setdB:(float)dB forLevel:(ITMTEqualizerLevel)level;
-@end
-
-@interface ITMTEqualizer : NSObject <ITMTEqualizer>
 @end
