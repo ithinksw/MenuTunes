@@ -130,8 +130,11 @@ static PreferencesController *prefs = nil;
 - (BOOL)showPasswordPanel
 {
     [passwordPanel setLevel:NSStatusWindowLevel];
-    [passwordPanelOKButton setTitle:@"OK"];
+    [passwordPanelOKButton setTitle:@"Connect"];
+    [passwordPanelTitle setStringValue:@"Password Required"];
     [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"Please enter a password for access to the MenuTunes player named %@ at %@.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
+    [passwordPanel center];
+    [passwordPanel setLevel:NSStatusWindowLevel];
     [passwordPanel makeKeyAndOrderFront:nil];
     if ([NSApp runModalForWindow:passwordPanel]) {
         return YES;
@@ -144,7 +147,10 @@ static PreferencesController *prefs = nil;
 {
     [passwordPanel setLevel:NSStatusWindowLevel];
     [passwordPanelOKButton setTitle:@"Retry"];
+    [passwordPanelTitle setStringValue:@"Invalid Password"];
     [passwordPanelMessage setStringValue:[NSString stringWithFormat:@"The password entered for access to the MenuTunes player named %@ at %@ is invalid.  Please provide a new password.", [[[NetworkController sharedController] networkObject] serverName], [[NetworkController sharedController] remoteHost]]];
+    [passwordPanel center];
+    [passwordPanel setLevel:NSStatusWindowLevel];
     [passwordPanel makeKeyAndOrderFront:nil];
     if ([NSApp runModalForWindow:passwordPanel]) {
         return YES;
@@ -488,6 +494,17 @@ static PreferencesController *prefs = nil;
             [allTableView reloadData];
         }
         [self changeMenus:self];
+    }
+}
+
+- (void)resetRemotePlayerTextFields
+{
+    if ([[NetworkController sharedController] isConnectedToServer]) {
+        [selectedPlayerTextField setStringValue:[[[NetworkController sharedController] networkObject] serverName]];
+        [locationTextField setStringValue:[[NetworkController sharedController] remoteHost]];
+    } else {
+        [selectedPlayerTextField setStringValue:@"No shared player selected."];
+        [locationTextField setStringValue:@"-"];
     }
 }
 

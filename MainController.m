@@ -950,9 +950,9 @@ static MainController *sharedController;
     result = [networkController connectToHost:[df stringForKey:@"sharedPlayerHost"]];
     //Connect
     if (result == 1) {
+        [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
         currentRemote = [[[networkController networkObject] remote] retain];
         [self timerUpdate];
-        //[refreshTimer invalidate];
         ITDebugLog(@"Connection successful.");
         return YES;
     } else if (result == 0) {
@@ -999,6 +999,7 @@ static MainController *sharedController;
     if ([[exception name] isEqualToString:NSPortTimeoutException] && [networkController isConnectedToServer]) {
         NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
         if ([self disconnectFromServer]) {
+            [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];
             [NSTimer scheduledTimerWithTimeInterval:45 target:self selector:@selector(checkForRemoteServer:) userInfo:nil repeats:YES];
         } else {
             ITDebugLog(@"CRITICAL ERROR, DISCONNECTING!");
@@ -1075,8 +1076,8 @@ static MainController *sharedController;
 
 - (void)applicationWillTerminate:(NSNotification *)note
 {
-    [self clearHotKeys];
     [networkController stopRemoteServerSearch];
+    [self clearHotKeys];
     [[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
 }
 
@@ -1096,6 +1097,5 @@ static MainController *sharedController;
     [networkController release];
     [super dealloc];
 }
-
 
 @end

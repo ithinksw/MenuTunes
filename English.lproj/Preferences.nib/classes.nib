@@ -34,6 +34,7 @@
                 passwordPanelMessage = NSTextField; 
                 passwordPanelOKButton = NSButton; 
                 passwordPanelTextField = NSTextField; 
+                passwordPanelTitle = NSTextField; 
                 passwordTextField = NSTextField; 
                 ratingCheckbox = NSButton; 
                 selectPlayerBox = NSBox; 

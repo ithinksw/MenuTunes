@@ -37,6 +37,7 @@
     IBOutlet NSTextField *passwordPanelMessage;
     IBOutlet NSButton *passwordPanelOKButton;
     IBOutlet NSTextField *passwordPanelTextField;
+    IBOutlet NSTextField *passwordPanelTitle;
     IBOutlet NSTextField *passwordTextField;
     IBOutlet NSButton *ratingCheckbox;
     IBOutlet NSTextField *selectedPlayerTextField;
@@ -78,6 +79,8 @@
 - (IBAction)changeGeneralSetting:(id)sender;
 - (IBAction)changeSharingSetting:(id)sender;
 - (IBAction)changeStatusWindowSetting:(id)sender;
+- (void)resetRemotePlayerTextFields;
+
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)editHotKey:(id)sender;
 - (IBAction)showPrefsWindow:(id)sender;
