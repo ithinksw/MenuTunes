@@ -147,13 +147,13 @@ static MainController *sharedController;
                 withLength:NSSquareStatusItemLength];
     }
     
-    bling = [[MTBlingController alloc] init];
+    /*bling = [[MTBlingController alloc] init];
     [self blingTime];
     registerTimer = [[NSTimer scheduledTimerWithTimeInterval:10.0
                              target:self
                              selector:@selector(blingTime)
                              userInfo:nil
-                             repeats:YES] retain];
+                             repeats:YES] retain];*/
     
     NS_DURING
         if ([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
@@ -174,6 +174,14 @@ static MainController *sharedController;
     [networkController startRemoteServerSearch];
     [NSApp deactivate];
 	[self performSelector:@selector(rawr) withObject:nil afterDelay:1.0];
+	
+	bling = [[MTBlingController alloc] init];
+    [self blingTime];
+    registerTimer = [[NSTimer scheduledTimerWithTimeInterval:10.0
+                             target:self
+                             selector:@selector(blingTime)
+                             userInfo:nil
+                             repeats:YES] retain];
 }
 
 - (void)rawr
@@ -181,9 +189,9 @@ static MainController *sharedController;
 	_open = YES;
 }
 
-- (void)applicationWillBecomeActive:(NSNotification *)note
+- (void)applicationDidBecomeActive:(NSNotification *)note
 {
-	if (_open) {
+	if (_open && !blinged && ![NSApp mainWindow] && ![[StatusWindow sharedWindow] isVisible]) {
 		[[MainController sharedController] showPreferences];
 	}
 }
@@ -288,7 +296,7 @@ static MainController *sharedController;
         if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) && (blinged != YES) ) {
             blinged = YES;
             [statusItem setEnabled:NO];
-            [self clearHotKeys];
+			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
             if ([refreshTimer isValid]) {
                 [refreshTimer invalidate];
 				[refreshTimer release];
@@ -299,7 +307,7 @@ static MainController *sharedController;
     } else {
         if (blinged) {
             [statusItem setEnabled:YES];
-            [self setupHotKeys];
+            [[ITHotKeyCenter sharedCenter] setEnabled:YES];
             if (![refreshTimer isValid]) {
                 [refreshTimer release];
                 refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)

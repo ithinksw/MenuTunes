@@ -76,6 +76,9 @@
 - (void)registerLater:(id)sender
 {
     [window orderOut:self];
+	if ([[NSDate date] timeIntervalSinceDate:[[MainController sharedController] getBlingTime]] >= 604800) {
+		[NSApp terminate:nil];
+	}
 }
 
 - (void)verifyKey:(id)sender
