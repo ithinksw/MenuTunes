@@ -5,12 +5,10 @@
         {CLASS = ITKeyBroadcaster; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
         {
             ACTIONS = {
-                cancelHotKey = id; 
                 changeGeneralSetting = id; 
-                changeHotKey = id; 
                 changeStatusWindowSetting = id; 
                 clearHotKey = id; 
-                okHotKey = id; 
+                editHotKey = id; 
                 showPrefsWindow = id; 
             }; 
             CLASS = PreferencesController; 
@@ -21,32 +19,19 @@
                 appearanceEffectPopup = NSPopUpButton; 
                 appearanceSpeedSlider = NSSlider; 
                 artistCheckbox = NSButton; 
-                keyComboField = NSTextField; 
-                keyComboPanel = NSPanel; 
+                hotKeysTableView = NSTableView; 
                 launchAtLoginCheckbox = NSButton; 
                 launchPlayerAtLaunchCheckbox = NSButton; 
                 menuTableView = CustomMenuTableView; 
                 nameCheckbox = NSButton; 
-                nextTrackButton = NSButton; 
-                playPauseButton = NSButton; 
-                previousTrackButton = NSButton; 
                 ratingCheckbox = NSButton; 
-                ratingDecrementButton = NSButton; 
-                ratingIncrementButton = NSButton; 
                 showOnChangeCheckbox = NSButton; 
-                showPlayerButton = NSButton; 
                 songsInAdvance = NSTextField; 
-                toggleLoopButton = NSButton; 
-                toggleShuffleButton = NSButton; 
-                trackInfoButton = NSButton; 
                 trackNumberCheckbox = NSButton; 
                 trackTimeCheckbox = NSButton; 
-                upcomingSongsButton = NSButton; 
                 vanishDelaySlider = NSSlider; 
                 vanishEffectPopup = NSPopUpButton; 
                 vanishSpeedSlider = NSSlider; 
-                volumeDecrementButton = NSButton; 
-                volumeIncrementButton = NSButton; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
