@@ -1,7 +1,7 @@
 #import "PreferencesController.h"
 #import "MainController.h"
 #import "StatusWindow.h"
-#import "MyTableView.h"
+#import "CustomMenuTableView.h"
 
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITKeyCombo.h>

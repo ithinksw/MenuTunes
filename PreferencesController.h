@@ -14,7 +14,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class MyTableView, MainController, ITKeyCombo;
+@class CustomMenuTableView, MainController, ITKeyCombo;
 
 @interface PreferencesController : NSObject
 {

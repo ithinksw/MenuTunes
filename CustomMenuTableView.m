@@ -1,7 +1,7 @@
-#import "MyTableView.h"
+#import "CustomMenuTableView.h"
 #import "PreferencesController.h"
 
-@implementation MyTableView
+@implementation CustomMenuTableView
 
 - (void)keyDown:(NSEvent *)event
 {
