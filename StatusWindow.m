@@ -53,7 +53,7 @@
 
 - (void)dealloc
 {
-    [_image     release];
+    [_image release];
     [super dealloc];
 }
 
@@ -79,7 +79,6 @@
 {
     _sizing = newSizing;
 }
-
 
 /*************************************************************************/
 #pragma mark -
@@ -123,7 +122,7 @@
     ITImageView *imageView;
     BOOL         shouldAnimate = ( ! (([self visibilityState] == ITWindowAppearingState) ||
                                       ([self visibilityState] == ITWindowVanishingState)) );
-        
+	
     if ( _sizing == ITTransientStatusWindowSmall ) {
         divisor = SMALL_DIVISOR;
     } else if ( _sizing == ITTransientStatusWindowMini ) {

@@ -464,7 +464,9 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 2020) {
     
         // Update screen selection.
-        
+		[[StatusWindow sharedWindow] setScreen:[[NSScreen screens] objectAtIndex:[sender indexOfSelectedItem]]];
+        [(MainController *)controller showCurrentTrackInfo];
+		
     } else if ( [sender tag] == 2030) {
     
         [self setStatusWindowEntryEffect:[[sender selectedItem] representedObject]];
@@ -781,7 +783,8 @@ static PreferencesController *prefs = nil;
     NSData         *colorData;
     int selectedBGStyle;
     id anItem;
-    
+    NSArray *screens = [NSScreen screens];
+	
     [df setInteger:MT_CURRENT_VERSION forKey:@"appVersion"];
     
     ITDebugLog(@"Setting up preferences UI.");
@@ -800,6 +803,18 @@ static PreferencesController *prefs = nil;
         }
     }
     
+	ITDebugLog(@"Setting up screen popup");
+	if ([screens count] > 1) {
+		int i;
+		[screenPopup setEnabled:YES];
+		for (i = 0; i < [screens count]; i++) {
+			NSScreen *screen = [screens objectAtIndex:i];
+			if (![screen isEqual:[NSScreen mainScreen]]) {
+				[screenPopup addItemWithTitle:[NSString stringWithFormat:@"Screen %i", i + 1]];
+			}
+		}
+	}
+	
     ITDebugLog(@"Setting up track info checkboxes.");
     // Check current track info buttons
     [albumCheckbox setState:[df boolForKey:@"showAlbum"] ? NSOnState : NSOffState];

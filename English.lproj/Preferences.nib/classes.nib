@@ -45,6 +45,7 @@
                 positionMatrix = NSMatrix; 
                 ratingCheckbox = NSButton; 
                 runScriptsCheckbox = NSButton; 
+                screenPopup = NSPopUpButton; 
                 selectPlayerBox = NSBox; 
                 selectPlayerSheet = NSPanel; 
                 selectSharedPlayerButton = NSButton; 

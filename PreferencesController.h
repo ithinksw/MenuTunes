@@ -48,6 +48,7 @@
     IBOutlet NSMatrix *positionMatrix;
     IBOutlet NSButton *ratingCheckbox;
     IBOutlet NSButton *runScriptsCheckbox;
+	IBOutlet NSPopUpButton *screenPopup;
     IBOutlet NSTextField *selectedPlayerTextField;
     IBOutlet NSBox *selectPlayerBox;
     IBOutlet NSPanel *selectPlayerSheet;
