@@ -496,8 +496,10 @@
     NSArray *menu = [[NSUserDefaults standardUserDefaults] arrayForKey:@"menu"];
     ITDebugLog(@"Rebuilding all of the submenus.");
     NS_DURING
-        _currentPlaylist = [[[MainController sharedController] currentRemote] currentPlaylistIndex];
-        _currentTrack = [[[MainController sharedController] currentRemote] currentSongIndex];
+		_currentTrack = [[[MainController sharedController] currentRemote] currentSongIndex];
+		if (_currentTrack > -1) {
+			_currentPlaylist = [[[MainController sharedController] currentRemote] currentPlaylistIndex];
+		}
         _playingRadio = ([[[MainController sharedController] currentRemote] currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist);
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
@@ -578,8 +580,11 @@
 
 - (NSMenu *)upcomingSongsMenu
 {
-    NSMenu *upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
+    NSMenu *upcomingSongsMenu;
     int numSongs = 0, numSongsInAdvance = [[NSUserDefaults standardUserDefaults] integerForKey:@"SongsInAdvance"];
+	if (_currentTrack == -1) {
+		return nil;
+	}
     NS_DURING
         numSongs = [[[MainController sharedController] currentRemote] numberOfSongsInPlaylistAtIndex:_currentPlaylist];
     NS_HANDLER
@@ -587,9 +592,9 @@
     NS_ENDHANDLER
     
 	if (numSongs == -1) {
-		[upcomingSongsMenu release];
 		return nil;
 	}
+	upcomingSongsMenu = [[NSMenu alloc] initWithTitle:@""];
 	NS_DURING
     ITDebugLog(@"Building \"Upcoming Songs\" menu.");
     if (_currentPlaylist && !_playingRadio) {

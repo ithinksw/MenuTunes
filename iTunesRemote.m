@@ -388,8 +388,8 @@
     NSString *temp1;
     ITDebugLog(@"Getting current unique identifier.");
 	NSAppleEventDescriptor *descriptor = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN);
-	if (descriptor == nil) {
-		return nil;
+	if ((descriptor == nil) || ([descriptor int32Value] == 'prop')) {
+		return @"0-0";
 	}
     SInt32 cls = [descriptor int32Value];
     if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (cls == 'cURT') ) {
@@ -409,7 +409,7 @@
 {
     int temp1;
     ITDebugLog(@"Getting current song index.");
-    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+	temp1 = (([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] != 'prop') ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] : -1);
     ITDebugLog(@"Getting current song index done.");
     return temp1;
 }
