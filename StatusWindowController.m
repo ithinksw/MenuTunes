@@ -14,7 +14,7 @@
 
 - (void)setUpcomingSongs:(NSString *)string
 {
-    int size = 0, i;
+int size = 0, i;
     NSArray *lines = [string componentsSeparatedByString:@"\n"];
     
     for (i = 0; i < [lines count]; i++) {
@@ -30,7 +30,7 @@
     }
     
     [statusField setStringValue:string];
-    [statusWindow setFrame:NSMakeRect(0, 0, size + 45, 40 + ([lines count] * 17)) display:NO];
+    [statusWindow setFrame:NSMakeRect(0, 0, size + 45, 40 + ([lines count] * 15)) display:NO];
     [statusWindow center];
     [statusWindow makeKeyAndOrderFront:nil];
 }
@@ -53,7 +53,7 @@
     }
     
     [statusField setStringValue:string];
-    [statusWindow setFrame:NSMakeRect(0, 0, size + 45, 40 + ([lines count] * 17)) display:NO];
+    [statusWindow setFrame:NSMakeRect(0, 0, size + 45, 40 + ([lines count] * 16)) display:NO];
     [statusWindow center];
     [statusWindow makeKeyAndOrderFront:nil];
 }
