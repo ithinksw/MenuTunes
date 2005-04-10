@@ -388,14 +388,12 @@ static MainController *sharedController;
 	if (refreshTimer && identifier == nil) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
-			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
 		}
 		[statusItem setEnabled:NO];
 		return;
 	} else if (![statusItem isEnabled]) {
 		[statusItem setEnabled:YES];
 		[statusItem setToolTip:_toolTip];
-		[[ITHotKeyCenter sharedCenter] setEnabled:YES];
 		return;
 	}
 	
@@ -465,7 +463,6 @@ static MainController *sharedController;
 		if (refreshTimer) {
 			if ([statusItem isEnabled]) {
 				[statusItem setToolTip:NSLocalizedString(@"iTunesNotResponding", @"iTunes is not responding.")];
-				[[ITHotKeyCenter sharedCenter] setEnabled:NO];
 			}
 			[statusItem setEnabled:NO];
 		} else {
@@ -477,7 +474,6 @@ static MainController *sharedController;
 	} else if (![statusItem isEnabled]) {
 		[statusItem setEnabled:YES];
 		[statusItem setToolTip:_toolTip];
-		[[ITHotKeyCenter sharedCenter] setEnabled:YES];
 		return;
 	}
 	
