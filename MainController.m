@@ -189,13 +189,6 @@ static MainController *sharedController;
 	_open = YES;
 }
 
-- (void)applicationDidBecomeActive:(NSNotification *)note
-{
-	if (_open && !blinged && ![NSApp mainWindow] && ![[StatusWindow sharedWindow] isVisible]) {
-		[[MainController sharedController] showPreferences];
-	}
-}
-
 - (ITMTRemote *)loadRemote
 {
     NSString *folderPath = [[NSBundle mainBundle] builtInPlugInsPath];
@@ -1520,7 +1513,7 @@ static MainController *sharedController;
             [refreshTimer invalidate];
             [refreshTimer release];
             refreshTimer = nil;
-			[[NSNotificationCenter defaultCenter] removeObserver:self];
+			[[NSNotificationCenter defaultCenter] removeObserver:self name:@"ITMTTrackChanged" object:nil];
 			[statusItem setEnabled:YES];
 			[statusItem setToolTip:@"iTunes not running."];
             [self clearHotKeys];
@@ -1556,6 +1549,12 @@ static MainController *sharedController;
     [[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
 }
 
+- (void)applicationDidBecomeActive:(NSNotification *)note
+{
+	if (_open && !blinged && ![NSApp mainWindow] && ([[StatusWindow sharedWindow] exitMode] == ITTransientStatusWindowExitAfterDelay)) {
+		[[MainController sharedController] showPreferences];
+	}
+}
 
 /*************************************************************************/
 #pragma mark -
