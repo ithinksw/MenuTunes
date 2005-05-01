@@ -122,7 +122,7 @@
     SInt32 result;
     
     ITDebugLog(@"Getting player playing state");
-    result = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }", 'core', 'getd', &savedPSN) int32Value];
+    result = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPlS'), from:'null'() }", 'core', 'getd', &savedPSN) typeCodeValue];
     switch (result)
     {
         case 'kPSP':
