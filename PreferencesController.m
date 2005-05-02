@@ -1265,6 +1265,7 @@ static PreferencesController *prefs = nil;
     [submenuItems release];
     [myItems release];
     [df release];
+	[super dealloc];
 }
 
 @end

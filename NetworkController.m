@@ -291,7 +291,7 @@ static NetworkController *sharedController;
     [aNetService setDelegate:self];
 	//Figure out if it responds to the 10.4 method
 	if ([aNetService respondsToSelector:@selector(resolveWithTimeout:)]) {
-		[aNetService resolveWithTimeout:5.0];
+		(void)[aNetService resolveWithTimeout:5.0];
 	} else {
 		[aNetService resolve];
 	}
