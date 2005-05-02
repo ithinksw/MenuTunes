@@ -289,7 +289,12 @@ static NetworkController *sharedController;
     ITDebugLog(@"Found service named %@.", [aNetService name]);
     [remoteServices addObject:aNetService];
     [aNetService setDelegate:self];
-    [aNetService resolve];
+	//Figure out if it responds to the 10.4 method
+	if ([aNetService respondsToSelector:@selector(resolveWithTimeout:)]) {
+		[aNetService resolveWithTimeout:5.0];
+	} else {
+		[aNetService resolve];
+	}
     if (!moreComing) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ITMTFoundNetService" object:nil];
     }
