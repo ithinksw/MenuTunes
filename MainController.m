@@ -98,11 +98,28 @@ static MainController *sharedController;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)note
 {
+	NSString *iTunesPath = [df stringForKey:@"CustomPlayerPath"];
+	NSDictionary *iTunesInfoPlist;
+	float iTunesVersion;
+	
     //Turn on debug mode if needed
     if ([df boolForKey:@"ITDebugMode"]) {
         SetITDebugMode(YES);
     }
-    
+
+	//Check if iTunes 4.7 or later is installed	
+	if (!iTunesPath) {
+		iTunesPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:@"iTunes.app"];
+	}
+	iTunesInfoPlist = [[NSBundle bundleWithPath:iTunesPath] infoDictionary];
+	iTunesVersion = [[iTunesInfoPlist objectForKey:@"CFBundleVersion"] floatValue];
+	ITDebugLog(@"iTunes version found: %f.", iTunesVersion);
+	if (iTunesVersion >= 4.7) {
+		_needsPolling = NO;
+	} else {
+		_needsPolling = YES;
+	}
+	
     if (([df integerForKey:@"appVersion"] < 1200) && ([df integerForKey:@"SongsInAdvance"] > 0)) {
         [df removePersistentDomainForName:@"com.ithinksw.menutunes"];
         [df synchronize];
@@ -301,7 +318,7 @@ static MainController *sharedController;
         if (blinged) {
             [statusItem setEnabled:YES];
             [[ITHotKeyCenter sharedCenter] setEnabled:YES];
-            if (![refreshTimer isValid]) {
+            if (_needsPolling && ![refreshTimer isValid]) {
                 [refreshTimer release];
                 refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
                              target:self
@@ -489,12 +506,12 @@ static MainController *sharedController;
 - (void)trackChanged:(NSNotification *)note
 {
 	//If we're running the timer, shut it off since we don't need it!
-	if (refreshTimer && [refreshTimer isValid]) {
+	/*if (refreshTimer && [refreshTimer isValid]) {
 		ITDebugLog(@"Invalidating refresh timer.");
 		[refreshTimer invalidate];
 		[refreshTimer release];
 		refreshTimer = nil;
-	}
+	}*/
 	
 	if (![self songChanged]) {
 		return;
@@ -992,7 +1009,7 @@ static MainController *sharedController;
     NSImage                *art         = nil;
     int                     rating      = -1;
     int                     playCount   = -1;
-    
+	
     ITDebugLog(@"Showing track info status window.");
     
     NS_DURING
@@ -1344,14 +1361,16 @@ static MainController *sharedController;
         [self setupHotKeys];
         //playerRunningState = ITMTRemotePlayerRunning;
         playerRunningState = [[self currentRemote] playerRunningState];
-		if (refreshTimer) {
-			[refreshTimer invalidate];
+		if (_needsPolling) {
+			if (refreshTimer) {
+				[refreshTimer invalidate];
+			}
+			refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
+									 target:self
+									 selector:@selector(timerUpdate)
+									 userInfo:nil
+									 repeats:YES] retain];
 		}
-        refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
-                                target:self
-                                selector:@selector(timerUpdate)
-                                userInfo:nil
-                                repeats:YES] retain];
         [self timerUpdate];
         ITDebugLog(@"Connection successful.");
         return 1;
@@ -1487,11 +1506,13 @@ static MainController *sharedController;
             [[self currentRemote] begin];
             [self setLatestSongIdentifier:@""];
             [self timerUpdate];
-            refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
-                                target:self
-                                selector:@selector(timerUpdate)
-                                userInfo:nil
-                                repeats:YES] retain];
+			if (_needsPolling) {
+				refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
+									target:self
+									selector:@selector(timerUpdate)
+									userInfo:nil
+									repeats:YES] retain];
+			}
             //[NSThread detachNewThreadSelector:@selector(startTimerInNewThread) toTarget:self withObject:nil];
 			if (![df boolForKey:@"UsePollingOnly"]) {
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(trackChanged:) name:@"ITMTTrackChanged" object:nil];
