@@ -15,6 +15,9 @@
 #import <Cocoa/Cocoa.h>
 #import <ITKit/ITKit.h>
 
+#define SMALL_DIVISOR       1.33333
+#define MINI_DIVISOR        1.66667
+
 @interface StatusWindow : ITTransientStatusWindow {
     NSImage            *_image;
     BOOL                _locked;
@@ -23,7 +26,7 @@
 - (void)setImage:(NSImage *)newImage;
 - (void)setLocked:(BOOL)flag;
 
-- (void)buildTextWindowWithString:(NSString *)text;
+- (void)buildTextWindowWithString:(id)text;
 - (void)buildMeterWindowWithCharacter:(NSString *)character
                                  size:(float)size
                                 count:(int)count

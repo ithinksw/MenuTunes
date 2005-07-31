@@ -19,8 +19,6 @@
 #define SW_BUTTON_DIV      12.00
 #define SW_BUTTON_EXTRA_W   8.00
 #define SW_SHADOW_SAT       1.25
-#define SMALL_DIVISOR       1.33333
-#define MINI_DIVISOR        1.66667
 
 @interface StatusWindow (Private)
 - (NSRect)setupWindowWithDataSize:(NSSize)dataSize;
@@ -195,7 +193,7 @@
                        dataHeight);
 }
 
-- (void)buildTextWindowWithString:(NSString *)text
+- (void)buildTextWindowWithString:(id)text
 {
     if ( ! _locked ) {
 
@@ -203,9 +201,9 @@
         float         dataWidth     = 0.0;
         float         dataHeight    = 0.0;
         NSRect        dataRect;
-        NSArray      *lines         = [text componentsSeparatedByString:@"\n"];
+        NSArray      *lines			= [(([text isKindOfClass:[NSString class]]) ? text : [text mutableString]) componentsSeparatedByString:@"\n"];
         id			  oneLine       = nil;
-        NSEnumerator *lineEnum      = [lines objectEnumerator];
+        NSEnumerator *lineEnum		= [lines objectEnumerator];
         float         baseFontSize  = 18.0;
         ITTextField  *textField;
         NSFont       *font;
@@ -216,10 +214,10 @@
         } else if ( _sizing == ITTransientStatusWindowMini ) {
             divisor = MINI_DIVISOR;
         }
-
-        font = [NSFont fontWithName:@"LucidaGrande-Bold" size:(baseFontSize / divisor)];
-        attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-        
+		
+		font = [NSFont fontWithName:@"LucidaGrande-Bold" size:(baseFontSize / divisor)];
+		attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+		
 //      Iterate over each line to get text width and height
         while ( (oneLine = [lineEnum nextObject]) ) {
 //          Get the width of one line, adding 8.0 because Apple sucks donkey rectum.
@@ -246,7 +244,13 @@
         [textField setTextColor:[NSColor whiteColor]];
         [textField setCastsShadow:YES];
         [[textField cell] setWraps:NO];
-        [textField setStringValue:text];
+		
+		if ([text isKindOfClass:[NSString class]]) {
+			[textField setStringValue:text];
+		} else {
+			[textField setAttributedStringValue:text];
+		}
+		
         [textField setShadowSaturation:SW_SHADOW_SAT];
         [[self contentView] addSubview:textField];
         
@@ -284,7 +288,7 @@
             divisor = MINI_DIVISOR;
         }
         
-        font        = [NSFont fontWithName:@"LucidaGrande-Bold" size:( size / divisor )];
+        font        = [NSFont fontWithName:@"AppleGothic" size:( size / divisor )];
         attr        = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
         charSize    = [character sizeWithAttributes:attr];
         cellHeight  = ( charSize.height + 4.0 );  // Add 4.0 for shadow

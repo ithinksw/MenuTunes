@@ -119,7 +119,7 @@ static StatusWindowController *sharedController;
                                image:             (NSImage *)art
 {
     NSImage  *image = nil;
-    NSString *text  = title;
+    NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:title];
     
     if ( art != nil ) {
         image = art;
@@ -138,31 +138,38 @@ static StatusWindowController *sharedController;
     }
     
     [_window setImage:image];
+	[_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     
     if ( album ) {
-        text = [text stringByAppendingString:[@"\n" stringByAppendingString:album]];
+		[[text mutableString] appendFormat:@"\n%@", album];
+        //text = [text stringByAppendingString:[@"\n" stringByAppendingString:album]];
     }
     if ( artist ) {
-        text = [text stringByAppendingString:[@"\n" stringByAppendingString:artist]];
+		[[text mutableString] appendFormat:@"\n%@", artist];
+        //text = [text stringByAppendingString:[@"\n" stringByAppendingString:artist]];
     }
     if ( composer ) {
-        text = [text stringByAppendingString:[@"\n" stringByAppendingString:composer]];
+		[[text mutableString] appendFormat:@"\n%@", composer];
+        //text = [text stringByAppendingString:[@"\n" stringByAppendingString:composer]];
     }
     if ( time ) {
-        text = [text stringByAppendingString:[@"\n" stringByAppendingString:time]];
+		[[text mutableString] appendFormat:@"\n%@", time];
+        //text = [text stringByAppendingString:[@"\n" stringByAppendingString:time]];
     }
     if ( track ) {
-        text = [text stringByAppendingString:[@"\n" stringByAppendingString:track]];
+		[[text mutableString] appendFormat:@"\n%@", track];
+        //text = [text stringByAppendingString:[@"\n" stringByAppendingString:track]];
     }
     if (playCount > -1) {
-        text = [text stringByAppendingString:[NSString stringWithFormat:@"\n%@: %i", NSLocalizedString(@"playCount", @"Play Count"), playCount]];
+		[[text mutableString] appendFormat:@"\n%@: %i", NSLocalizedString(@"playCount", @"Play Count"), playCount];
+        //text = [text stringByAppendingString:[NSString stringWithFormat:@"\n%@: %i", NSLocalizedString(@"playCount", @"Play Count"), playCount]];
     }
     if ( rating > -1 ) {
 
         NSString *ratingString = [NSString string];
         NSString *emptyChar    = [NSString stringWithUTF8String:"☆"];
         NSString *fullChar     = [NSString stringWithUTF8String:"★"];
-        int       i;
+        int       i, start = [[text mutableString] length], size = 18;
         
         for ( i = 1; i < 6; i++ ) {
         	
@@ -172,11 +179,17 @@ static StatusWindowController *sharedController;
                 ratingString = [ratingString stringByAppendingString:emptyChar];
             }
         }
-    
-        text = [text stringByAppendingString:[@"\n" stringByAppendingString:ratingString]];
+		
+		[[text mutableString] appendFormat:@"\n%@", ratingString];
+		if ([_window sizing] == ITTransientStatusWindowSmall) {
+			size /= SMALL_DIVISOR;
+		} else if ([_window sizing] == ITTransientStatusWindowMini) {
+			size /= MINI_DIVISOR;
+		}
+		[text setAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont fontWithName:@"AppleGothic" size:size], NSFontAttributeName, nil, nil] range:NSMakeRange(start + 1, 5)];
+        //text = [text stringByAppendingString:[@"\n" stringByAppendingString:ratingString]];
     }
     
-    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:text];
     [_window appear:self];
 }
@@ -324,6 +337,20 @@ static StatusWindowController *sharedController;
 
     [_window appear:self];
     [_window setLocked:YES];
+}
+
+- (void)showDebugModeEnabledWindow
+{
+	[_window setImage:[NSImage imageNamed:@"Setup"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window buildDialogWindowWithMessage:NSLocalizedString(@"debugmodeenabled", @"Debug Mode Enabled")
+                            defaultButton:@"OK"
+                          alternateButton:nil
+                                   target:[MainController sharedController]
+                            defaultAction:@selector(cancelReconnect)
+                          alternateAction:nil];
+    [_window appear:self];
+	[_window setLocked:YES];
 }
 
 @end

@@ -103,8 +103,12 @@ static MainController *sharedController;
 	float iTunesVersion;
 	
     //Turn on debug mode if needed
-    if ([df boolForKey:@"ITDebugMode"]) {
+	/*if ((GetCurrentKeyModifiers() & (controlKey | rightControlKey)) != 0)
+    if ((GetCurrentKeyModifiers() & (optionKey | rightOptionKey)) != 0)
+    if ((GetCurrentKeyModifiers() & (shiftKey | rightShiftKey)) != 0)*/
+    if ([df boolForKey:@"ITDebugMode"] || ((GetCurrentKeyModifiers() & (controlKey | rightControlKey)) != 0)) {
         SetITDebugMode(YES);
+		[[StatusWindowController sharedController] showDebugModeEnabledWindow];
     }
 
 	//Check if iTunes 4.7 or later is installed	

@@ -42,6 +42,7 @@ typedef enum {
 - (void)showReconnectQueryWindow;
 - (void)showNetworkErrorQueryWindow;
 - (void)showPreferencesUpdateWindow;
+- (void)showDebugModeEnabledWindow;
 
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
                                title:            (NSString *)title

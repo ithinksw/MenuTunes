@@ -68,3 +68,4 @@ genericDevice = "Generic Device";
 iPod = "iPod";
 cd = "CD";
 sharedLibrary = "Shared Library";
+debugmodeenabled = "Debug Mode Enabled\nAll actions MenuTunes performs will be logged\nto the console. To disable debug mode, quit\nand relaunch MenuTunes.\n\n(debug mode is enabled by holding down\nthe control key while MenuTunes opens)";
