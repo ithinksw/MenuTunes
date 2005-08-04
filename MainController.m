@@ -1576,7 +1576,8 @@ static MainController *sharedController;
 
 - (void)applicationDidBecomeActive:(NSNotification *)note
 {
-	if (_open && !blinged && ![NSApp mainWindow] && ([[StatusWindow sharedWindow] exitMode] == ITTransientStatusWindowExitAfterDelay)) {
+	//This appears to not work in 10.4
+	if (_open && !blinged && ![[ITAboutBox sharedController] isVisible] && ![NSApp mainWindow] && ([[StatusWindow sharedWindow] exitMode] == ITTransientStatusWindowExitAfterDelay)) {
 		[[MainController sharedController] showPreferences];
 	}
 }

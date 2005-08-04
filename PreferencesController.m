@@ -559,6 +559,7 @@ static PreferencesController *prefs = nil;
         @"upcomingSongs",
         @"separator",
         @"preferences",
+		@"about",
         @"quit",
         nil] forKey:@"menu"];
 
@@ -756,6 +757,7 @@ static PreferencesController *prefs = nil;
         @"fastForward",
         @"rewind",
         @"showPlayer",
+		@"about",
         @"quit",
         nil];
     

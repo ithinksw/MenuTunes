@@ -15,6 +15,7 @@
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
 #import <ITKit/ITCategory-NSMenu.h>
+#import <ITKit/ITAboutBox.h>
 
 @interface MenuController (SubmenuMethods)
 - (NSMenu *)ratingMenu;
@@ -222,7 +223,14 @@
                     keyEquivalent:@""];
             [tempItem setTag:MTMenuPreferencesItem];
             [tempItem setTarget:self];
-        } else if ([nextObject isEqualToString:@"quit"]) {
+        } else if ([nextObject isEqualToString:@"about"]) {
+			ITDebugLog(@"Add \"About MenuTunes...\" menu item.");
+            tempItem = [menu addItemWithTitle:NSLocalizedString(@"about", @"About MenuTunes...")
+                    action:@selector(performMainMenuAction:)
+                    keyEquivalent:@""];
+            [tempItem setTag:MTMenuAboutItem];
+            [tempItem setTarget:self];
+		} else if ([nextObject isEqualToString:@"quit"]) {
             if ([[MainController sharedController] blingBling] == NO) {
                 ITDebugLog(@"Add \"Register MenuTunes...\" menu item.");
                 tempItem = [menu addItemWithTitle:NSLocalizedString(@"register", @"Register MenuTunes...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
@@ -876,6 +884,10 @@
             ITDebugLog(@"Performing Menu Action: Preferences...");
             [[MainController sharedController] showPreferences];
             break;
+		case MTMenuAboutItem:
+			ITDebugLog(@"Performing Menu Action: About MenuTunes...");
+			[[ITAboutBox sharedController] showAboutBox];
+			break;
         case MTMenuQuitItem:
             ITDebugLog(@"Performing Menu Action: Quit");
             [[MainController sharedController] quitMenuTunes];

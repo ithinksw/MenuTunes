@@ -34,6 +34,7 @@ typedef enum {
     MTMenuNextTrackItem,
     MTMenuShowPlayerItem,
     MTMenuPreferencesItem,
+	MTMenuAboutItem,
     MTMenuQuitItem,
     MTMenuRegisterItem
 } MTMenuItemTag;
