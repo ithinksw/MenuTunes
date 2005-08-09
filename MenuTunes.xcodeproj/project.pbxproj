@@ -1,0 +1,1291 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3740716D05ACE20500CC2142 /* libValidate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3740716C05ACE20500CC2142 /* libValidate.a */; };
+		37B7EA0406AECF0700A4DE86 /* ChasingArrow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */; };
+		37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FB305A922210088905B /* StatusWindowController.m */; };
+		7C331F8F05A921AC0088905B /* MenuTunes.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F8D05A921AC0088905B /* MenuTunes.h */; };
+		7C331F9005A921AC0088905B /* MenuTunes.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331F8E05A921AC0088905B /* MenuTunes.m */; };
+		7C331F9505A921C30088905B /* MenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331F9105A921C30088905B /* MenuController.m */; };
+		7C331F9605A921C30088905B /* MainController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F9205A921C30088905B /* MainController.h */; };
+		7C331F9705A921C30088905B /* MainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331F9305A921C30088905B /* MainController.m */; };
+		7C331F9805A921C30088905B /* MenuController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F9405A921C30088905B /* MenuController.h */; };
+		7C331FA505A921E10088905B /* MTeSerialNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331F9905A921E10088905B /* MTeSerialNumber.m */; };
+		7C331FA605A921E10088905B /* MTBlingController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F9A05A921E10088905B /* MTBlingController.h */; };
+		7C331FA705A921E10088905B /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331F9B05A921E10088905B /* PreferencesController.m */; };
+		7C331FA805A921E10088905B /* PreferencesController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F9C05A921E10088905B /* PreferencesController.h */; };
+		7C331FA905A921E10088905B /* MTShizzleWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331F9D05A921E10088905B /* MTShizzleWindow.m */; };
+		7C331FAA05A921E10088905B /* MTeSerialNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F9E05A921E10088905B /* MTeSerialNumber.h */; };
+		7C331FAB05A921E10088905B /* NetworkObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F9F05A921E10088905B /* NetworkObject.h */; };
+		7C331FAC05A921E10088905B /* NetworkObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FA005A921E10088905B /* NetworkObject.m */; };
+		7C331FAD05A921E10088905B /* MTShizzleWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FA105A921E10088905B /* MTShizzleWindow.h */; };
+		7C331FAE05A921E10088905B /* MTBlingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FA205A921E10088905B /* MTBlingController.m */; };
+		7C331FAF05A921E10088905B /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FA305A921E10088905B /* NetworkController.m */; };
+		7C331FB005A921E10088905B /* NetworkController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FA405A921E10088905B /* NetworkController.h */; };
+		7C331FB705A922210088905B /* StatusItemHack.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FB105A922210088905B /* StatusItemHack.m */; };
+		7C331FB805A922210088905B /* StatusItemHack.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FB205A922210088905B /* StatusItemHack.h */; };
+		7C331FBA05A922210088905B /* StatusWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FB405A922210088905B /* StatusWindow.h */; };
+		7C331FBB05A922210088905B /* StatusWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FB505A922210088905B /* StatusWindow.m */; };
+		7C331FBC05A922210088905B /* StatusWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FB605A922210088905B /* StatusWindowController.h */; };
+		7C331FBF05A922490088905B /* ITMTRemote.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FBD05A922490088905B /* ITMTRemote.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7C331FC005A922490088905B /* ITMTRemote.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FBE05A922490088905B /* ITMTRemote.m */; };
+		7C331FC305A9225A0088905B /* iTunesRemote.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FC105A9225A0088905B /* iTunesRemote.m */; };
+		7C331FC405A9225A0088905B /* iTunesRemote.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331FC205A9225A0088905B /* iTunesRemote.h */; };
+		7C331FD705A923190088905B /* Register.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FC505A923180088905B /* Register.tiff */; };
+		7C331FD805A923190088905B /* Repeat.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FC605A923180088905B /* Repeat.tiff */; };
+		7C331FD905A923190088905B /* Setup.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FC705A923180088905B /* Setup.tiff */; };
+		7C331FDA05A923190088905B /* esellerate.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FC805A923180088905B /* esellerate.gif */; };
+		7C331FDB05A923190088905B /* MP3Player.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FC905A923180088905B /* MP3Player.tiff */; };
+		7C331FDC05A923190088905B /* Shuffle.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FCA05A923190088905B /* Shuffle.tiff */; };
+		7C331FDD05A923190088905B /* submenu.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FCB05A923190088905B /* submenu.tiff */; };
+		7C331FDE05A923190088905B /* iPod.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FCC05A923190088905B /* iPod.tiff */; };
+		7C331FDF05A923190088905B /* MenuInverted.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FCD05A923190088905B /* MenuInverted.tiff */; };
+		7C331FE005A923190088905B /* Radio.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FCE05A923190088905B /* Radio.tiff */; };
+		7C331FE105A923190088905B /* CD.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FCF05A923190088905B /* CD.tiff */; };
+		7C331FE205A923190088905B /* NetLibrary.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD005A923190088905B /* NetLibrary.tiff */; };
+		7C331FE305A923190088905B /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD105A923190088905B /* AppIcon.icns */; };
+		7C331FE405A923190088905B /* Upcoming.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD205A923190088905B /* Upcoming.tiff */; };
+		7C331FE505A923190088905B /* Rating.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD305A923190088905B /* Rating.tiff */; };
+		7C331FE605A923190088905B /* Library.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD405A923190088905B /* Library.tiff */; };
+		7C331FE705A923190088905B /* Volume.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD505A923190088905B /* Volume.tiff */; };
+		7C331FE805A923190088905B /* MenuNormal.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FD605A923190088905B /* MenuNormal.tiff */; };
+		7C331FEB05A923580088905B /* Preferences.nib in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FE905A923580088905B /* Preferences.nib */; };
+		7C331FEE05A923830088905B /* KeyCodes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FEC05A923830088905B /* KeyCodes.plist */; };
+		7C331FF105A923970088905B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7C331FEF05A923970088905B /* Localizable.strings */; };
+		7C33201A05A9259C0088905B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		7C33201F05A925AF0088905B /* ITMTRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C331F6805A918EC0088905B /* ITMTRemote.framework */; };
+		7C33202005A925BA0088905B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		7C33202105A925BC0088905B /* ITMTRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C331F6805A918EC0088905B /* ITMTRemote.framework */; };
+		7C505D3E0801F1D300017AF9 /* ITFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7C505D340801F0F000017AF9 /* ITFoundation.framework */; };
+		7C505D3F0801F1D300017AF9 /* ITMac.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7C505D360801F0F000017AF9 /* ITMac.framework */; };
+		7C505D400801F1D300017AF9 /* ITKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7C505D380801F0F000017AF9 /* ITKit.framework */; };
+		7C505D410801F1D500017AF9 /* ITFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C505D340801F0F000017AF9 /* ITFoundation.framework */; };
+		7C505D420801F1D500017AF9 /* ITMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C505D360801F0F000017AF9 /* ITMac.framework */; };
+		7C505D430801F1D500017AF9 /* ITKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C505D380801F0F000017AF9 /* ITKit.framework */; };
+		7C505D440801F1E300017AF9 /* ITFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C505D340801F0F000017AF9 /* ITFoundation.framework */; };
+		7C505D450801F1E300017AF9 /* ITMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C505D360801F0F000017AF9 /* ITMac.framework */; };
+		7C95A0CF05A9299E00B4F576 /* validate.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C95A0CE05A9299E00B4F576 /* validate.h */; };
+		7C95A0E305A929F400B4F576 /* CustomMenuTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C95A0E105A929F400B4F576 /* CustomMenuTableView.m */; };
+		7C95A0E405A929F400B4F576 /* CustomMenuTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C95A0E205A929F400B4F576 /* CustomMenuTableView.h */; };
+		7C95A0E905A92B0700B4F576 /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C95A0E805A92B0700B4F576 /* libcrypto.dylib */; };
+		7C95A0F005A92B4800B4F576 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C95A0EF05A92B4800B4F576 /* Carbon.framework */; };
+		7C95A18A05A92B9700B4F576 /* ITMTRemote.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7C331F6805A918EC0088905B /* ITMTRemote.framework */; };
+		7C95A18C05A92BAC00B4F576 /* iTunes.remote in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7C331F6F05A918FB0088905B /* iTunes.remote */; };
+		8D1107280486CEB800E47090 /* MenuTunes_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32CA4F630368D1EE00C91783 /* MenuTunes_Prefix.pch */; };
+		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
+		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
+		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		4A9504CCFFE6A4B311CA0CBA /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OPTIMIZATION_CFLAGS = "-O0";
+				ZERO_LINK = NO;
+			};
+			name = Development;
+		};
+		4A9504CDFFE6A4B311CA0CBA /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		7C331FF205A9253F0088905B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7C331F6705A918EC0088905B;
+			remoteInfo = ITMTRemote;
+		};
+		7C331FF405A925550088905B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7C331F6705A918EC0088905B;
+			remoteInfo = ITMTRemote;
+		};
+		7C331FF605A9255A0088905B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7C331F6E05A918FB0088905B;
+			remoteInfo = iTunesRemote;
+		};
+		7C505D3A0801F0F300017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ITKit;
+		};
+		7C505D3B0801F0F300017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+			proxyType = 2;
+			remoteGlobalIDString = 7C992F87054F5389000B93EA;
+			remoteInfo = ITKitShowcase;
+		};
+		7C505D3C0801F0F300017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ITFoundation;
+		};
+		7C505D3D0801F0F300017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = ITMac;
+		};
+		7C505D460801F1F000017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITFoundation;
+		};
+		7C505D480801F1F400017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITMac;
+		};
+		7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITMac;
+		};
+		7C505D4C0801F20500017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITFoundation;
+		};
+		7C505D4E0801F20D00017AF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = ITKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7C95A18705A92B7C00B4F576 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7C505D3E0801F1D300017AF9 /* ITFoundation.framework in CopyFiles */,
+				7C505D3F0801F1D300017AF9 /* ITMac.framework in CopyFiles */,
+				7C505D400801F1D300017AF9 /* ITKit.framework in CopyFiles */,
+				7C95A18A05A92B9700B4F576 /* ITMTRemote.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C95A18B05A92B9D00B4F576 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7C95A18C05A92BAC00B4F576 /* iTunes.remote in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		29B97319FDCFA39411CA2CEA /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32CA4F630368D1EE00C91783 /* MenuTunes_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTunes_Prefix.pch; sourceTree = "<group>"; };
+		3740716C05ACE20500CC2142 /* libValidate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libValidate.a; sourceTree = "<group>"; };
+		37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ChasingArrow.tiff; sourceTree = "<group>"; };
+		7C331F6805A918EC0088905B /* ITMTRemote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ITMTRemote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C331F6905A918EC0088905B /* ITMTRemote-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ITMTRemote-Info.plist"; sourceTree = SOURCE_ROOT; };
+		7C331F6F05A918FB0088905B /* iTunes.remote */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iTunes.remote; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C331F7005A918FB0088905B /* iTunesRemote-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "iTunesRemote-Info.plist"; sourceTree = SOURCE_ROOT; };
+		7C331F8D05A921AC0088905B /* MenuTunes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTunes.h; sourceTree = "<group>"; };
+		7C331F8E05A921AC0088905B /* MenuTunes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTunes.m; sourceTree = "<group>"; };
+		7C331F9105A921C30088905B /* MenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuController.m; sourceTree = "<group>"; };
+		7C331F9205A921C30088905B /* MainController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
+		7C331F9305A921C30088905B /* MainController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
+		7C331F9405A921C30088905B /* MenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuController.h; sourceTree = "<group>"; };
+		7C331F9905A921E10088905B /* MTeSerialNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTeSerialNumber.m; sourceTree = "<group>"; };
+		7C331F9A05A921E10088905B /* MTBlingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTBlingController.h; sourceTree = "<group>"; };
+		7C331F9B05A921E10088905B /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesController.m; sourceTree = "<group>"; };
+		7C331F9C05A921E10088905B /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesController.h; sourceTree = "<group>"; };
+		7C331F9D05A921E10088905B /* MTShizzleWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTShizzleWindow.m; sourceTree = "<group>"; };
+		7C331F9E05A921E10088905B /* MTeSerialNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTeSerialNumber.h; sourceTree = "<group>"; };
+		7C331F9F05A921E10088905B /* NetworkObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkObject.h; sourceTree = "<group>"; };
+		7C331FA005A921E10088905B /* NetworkObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkObject.m; sourceTree = "<group>"; };
+		7C331FA105A921E10088905B /* MTShizzleWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTShizzleWindow.h; sourceTree = "<group>"; };
+		7C331FA205A921E10088905B /* MTBlingController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTBlingController.m; sourceTree = "<group>"; };
+		7C331FA305A921E10088905B /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
+		7C331FA405A921E10088905B /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
+		7C331FB105A922210088905B /* StatusItemHack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusItemHack.m; sourceTree = "<group>"; };
+		7C331FB205A922210088905B /* StatusItemHack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusItemHack.h; sourceTree = "<group>"; };
+		7C331FB305A922210088905B /* StatusWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusWindowController.m; sourceTree = "<group>"; };
+		7C331FB405A922210088905B /* StatusWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusWindow.h; sourceTree = "<group>"; };
+		7C331FB505A922210088905B /* StatusWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusWindow.m; sourceTree = "<group>"; };
+		7C331FB605A922210088905B /* StatusWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusWindowController.h; sourceTree = "<group>"; };
+		7C331FBD05A922490088905B /* ITMTRemote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITMTRemote.h; sourceTree = "<group>"; };
+		7C331FBE05A922490088905B /* ITMTRemote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITMTRemote.m; sourceTree = "<group>"; };
+		7C331FC105A9225A0088905B /* iTunesRemote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTunesRemote.m; sourceTree = "<group>"; };
+		7C331FC205A9225A0088905B /* iTunesRemote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesRemote.h; sourceTree = "<group>"; };
+		7C331FC505A923180088905B /* Register.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Register.tiff; sourceTree = "<group>"; };
+		7C331FC605A923180088905B /* Repeat.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Repeat.tiff; sourceTree = "<group>"; };
+		7C331FC705A923180088905B /* Setup.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Setup.tiff; sourceTree = "<group>"; };
+		7C331FC805A923180088905B /* esellerate.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = esellerate.gif; sourceTree = "<group>"; };
+		7C331FC905A923180088905B /* MP3Player.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = MP3Player.tiff; sourceTree = "<group>"; };
+		7C331FCA05A923190088905B /* Shuffle.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Shuffle.tiff; sourceTree = "<group>"; };
+		7C331FCB05A923190088905B /* submenu.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = submenu.tiff; sourceTree = "<group>"; };
+		7C331FCC05A923190088905B /* iPod.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = iPod.tiff; sourceTree = "<group>"; };
+		7C331FCD05A923190088905B /* MenuInverted.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = MenuInverted.tiff; sourceTree = "<group>"; };
+		7C331FCE05A923190088905B /* Radio.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Radio.tiff; sourceTree = "<group>"; };
+		7C331FCF05A923190088905B /* CD.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = CD.tiff; sourceTree = "<group>"; };
+		7C331FD005A923190088905B /* NetLibrary.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = NetLibrary.tiff; sourceTree = "<group>"; };
+		7C331FD105A923190088905B /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		7C331FD205A923190088905B /* Upcoming.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Upcoming.tiff; sourceTree = "<group>"; };
+		7C331FD305A923190088905B /* Rating.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Rating.tiff; sourceTree = "<group>"; };
+		7C331FD405A923190088905B /* Library.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Library.tiff; sourceTree = "<group>"; };
+		7C331FD505A923190088905B /* Volume.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = Volume.tiff; sourceTree = "<group>"; };
+		7C331FD605A923190088905B /* MenuNormal.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = MenuNormal.tiff; sourceTree = "<group>"; };
+		7C331FEA05A923580088905B /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Preferences.nib; sourceTree = "<group>"; };
+		7C331FED05A923830088905B /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; name = English; path = English.lproj/KeyCodes.plist; sourceTree = "<group>"; };
+		7C331FF005A923970088905B /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7C505D250801F0BE00017AF9 /* ITKit.xcode */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITKit.xcode; path = ../ITKit/ITKit.xcode; sourceTree = SOURCE_ROOT; };
+		7C505D290801F0C700017AF9 /* ITMac.xcode */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITMac.xcode; path = ../ITMac/ITMac.xcode; sourceTree = SOURCE_ROOT; };
+		7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITFoundation.xcode; path = ../ITFoundation/ITFoundation.xcode; sourceTree = SOURCE_ROOT; };
+		7C95A0CE05A9299E00B4F576 /* validate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = validate.h; sourceTree = SOURCE_ROOT; };
+		7C95A0E105A929F400B4F576 /* CustomMenuTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomMenuTableView.m; sourceTree = "<group>"; };
+		7C95A0E205A929F400B4F576 /* CustomMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomMenuTableView.h; sourceTree = "<group>"; };
+		7C95A0E805A92B0700B4F576 /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
+		7C95A0EF05A92B4800B4F576 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* MenuTunes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuTunes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7C331F6605A918EC0088905B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C33201A05A9259C0088905B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C331F6D05A918FB0088905B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C505D440801F1E300017AF9 /* ITFoundation.framework in Frameworks */,
+				7C505D450801F1E300017AF9 /* ITMac.framework in Frameworks */,
+				7C33202105A925BC0088905B /* ITMTRemote.framework in Frameworks */,
+				7C33202005A925BA0088905B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C505D410801F1D500017AF9 /* ITFoundation.framework in Frameworks */,
+				7C505D420801F1D500017AF9 /* ITMac.framework in Frameworks */,
+				7C505D430801F1D500017AF9 /* ITKit.framework in Frameworks */,
+				7C33201F05A925AF0088905B /* ITMTRemote.framework in Frameworks */,
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				7C95A0E905A92B0700B4F576 /* libcrypto.dylib in Frameworks */,
+				7C95A0F005A92B4800B4F576 /* Carbon.framework in Frameworks */,
+				3740716D05ACE20500CC2142 /* libValidate.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				7C331F8D05A921AC0088905B /* MenuTunes.h */,
+				7C331F8E05A921AC0088905B /* MenuTunes.m */,
+				7C331F9205A921C30088905B /* MainController.h */,
+				7C331F9305A921C30088905B /* MainController.m */,
+				7C331F9405A921C30088905B /* MenuController.h */,
+				7C331F9105A921C30088905B /* MenuController.m */,
+				7C95A0E205A929F400B4F576 /* CustomMenuTableView.h */,
+				7C95A0E105A929F400B4F576 /* CustomMenuTableView.m */,
+				7C331F9C05A921E10088905B /* PreferencesController.h */,
+				7C331F9B05A921E10088905B /* PreferencesController.m */,
+				7C331F9F05A921E10088905B /* NetworkObject.h */,
+				7C331FA005A921E10088905B /* NetworkObject.m */,
+				7C331FA105A921E10088905B /* MTShizzleWindow.h */,
+				7C331F9D05A921E10088905B /* MTShizzleWindow.m */,
+				7C331F9A05A921E10088905B /* MTBlingController.h */,
+				7C331FA205A921E10088905B /* MTBlingController.m */,
+				7C331F9E05A921E10088905B /* MTeSerialNumber.h */,
+				7C331F9905A921E10088905B /* MTeSerialNumber.m */,
+				7C331FA405A921E10088905B /* NetworkController.h */,
+				7C331FA305A921E10088905B /* NetworkController.m */,
+				7C331FB205A922210088905B /* StatusItemHack.h */,
+				7C331FB105A922210088905B /* StatusItemHack.m */,
+				7C331FB405A922210088905B /* StatusWindow.h */,
+				7C331FB505A922210088905B /* StatusWindow.m */,
+				7C331FB605A922210088905B /* StatusWindowController.h */,
+				7C331FB305A922210088905B /* StatusWindowController.m */,
+				7C331FBD05A922490088905B /* ITMTRemote.h */,
+				7C331FBE05A922490088905B /* ITMTRemote.m */,
+				7C331FC205A9225A0088905B /* iTunesRemote.h */,
+				7C331FC105A9225A0088905B /* iTunesRemote.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				7C95A0EF05A92B4800B4F576 /* Carbon.framework */,
+				3740716C05ACE20500CC2142 /* libValidate.a */,
+				7C95A0E805A92B0700B4F576 /* libcrypto.dylib */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* MenuTunes.app */,
+				7C331F6805A918EC0088905B /* ITMTRemote.framework */,
+				7C331F6F05A918FB0088905B /* iTunes.remote */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* MenuTunes */ = {
+			isa = PBXGroup;
+			children = (
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = MenuTunes;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* MenuTunes_Prefix.pch */,
+				7C95A0CE05A9299E00B4F576 /* validate.h */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107310486CEB800E47090 /* Info.plist */,
+				7C331F6905A918EC0088905B /* ITMTRemote-Info.plist */,
+				7C331F7005A918FB0088905B /* iTunesRemote-Info.plist */,
+				7C331FEF05A923970088905B /* Localizable.strings */,
+				7C331FEC05A923830088905B /* KeyCodes.plist */,
+				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
+				7C331FE905A923580088905B /* Preferences.nib */,
+				37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */,
+				7C331FC505A923180088905B /* Register.tiff */,
+				7C331FC605A923180088905B /* Repeat.tiff */,
+				7C331FC705A923180088905B /* Setup.tiff */,
+				7C331FC805A923180088905B /* esellerate.gif */,
+				7C331FC905A923180088905B /* MP3Player.tiff */,
+				7C331FCA05A923190088905B /* Shuffle.tiff */,
+				7C331FCB05A923190088905B /* submenu.tiff */,
+				7C331FCC05A923190088905B /* iPod.tiff */,
+				7C331FCD05A923190088905B /* MenuInverted.tiff */,
+				7C331FCE05A923190088905B /* Radio.tiff */,
+				7C331FCF05A923190088905B /* CD.tiff */,
+				7C331FD005A923190088905B /* NetLibrary.tiff */,
+				7C331FD105A923190088905B /* AppIcon.icns */,
+				7C331FD205A923190088905B /* Upcoming.tiff */,
+				7C331FD305A923190088905B /* Rating.tiff */,
+				7C331FD405A923190088905B /* Library.tiff */,
+				7C331FD505A923190088905B /* Volume.tiff */,
+				7C331FD605A923190088905B /* MenuNormal.tiff */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */,
+				7C505D290801F0C700017AF9 /* ITMac.xcode */,
+				7C505D250801F0BE00017AF9 /* ITKit.xcode */,
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7C505D330801F0F000017AF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7C505D340801F0F000017AF9 /* ITFoundation.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7C505D350801F0F000017AF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7C505D360801F0F000017AF9 /* ITMac.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7C505D370801F0F000017AF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7C505D380801F0F000017AF9 /* ITKit.framework */,
+				7C505D390801F0F000017AF9 /* ITKitShowcase.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		7C331F6305A918EC0088905B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C331FBF05A922490088905B /* ITMTRemote.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C331F6A05A918FB0088905B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C331FC405A9225A0088905B /* iTunesRemote.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D1107270486CEB800E47090 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D1107280486CEB800E47090 /* MenuTunes_Prefix.pch in Headers */,
+				7C331F8F05A921AC0088905B /* MenuTunes.h in Headers */,
+				7C331F9605A921C30088905B /* MainController.h in Headers */,
+				7C331F9805A921C30088905B /* MenuController.h in Headers */,
+				7C331FA605A921E10088905B /* MTBlingController.h in Headers */,
+				7C331FA805A921E10088905B /* PreferencesController.h in Headers */,
+				7C331FAA05A921E10088905B /* MTeSerialNumber.h in Headers */,
+				7C331FAB05A921E10088905B /* NetworkObject.h in Headers */,
+				7C331FAD05A921E10088905B /* MTShizzleWindow.h in Headers */,
+				7C331FB005A921E10088905B /* NetworkController.h in Headers */,
+				7C331FB805A922210088905B /* StatusItemHack.h in Headers */,
+				7C331FBA05A922210088905B /* StatusWindow.h in Headers */,
+				7C331FBC05A922210088905B /* StatusWindowController.h in Headers */,
+				7C95A0CF05A9299E00B4F576 /* validate.h in Headers */,
+				7C95A0E405A929F400B4F576 /* CustomMenuTableView.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		7C331F6705A918EC0088905B /* ITMTRemote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C182AC708A84C6300A098F8 /* Build configuration list for PBXNativeTarget "ITMTRemote" */;
+			buildPhases = (
+				7C331F6305A918EC0088905B /* Headers */,
+				7C331F6405A918EC0088905B /* Resources */,
+				7C331F6505A918EC0088905B /* Sources */,
+				7C331F6605A918EC0088905B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "ITMTRemote-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-seg1addr",
+					0x10000000,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ITMTRemote;
+				WARNING_CFLAGS = "-Wmost";
+			};
+			dependencies = (
+			);
+			name = ITMTRemote;
+			productName = ITMTRemote;
+			productReference = 7C331F6805A918EC0088905B /* ITMTRemote.framework */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>ITMTRemote</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string>com.MySoftwareCompany.ITMTRemote</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>FMWK</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0d1</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.framework";
+		};
+		7C331F6E05A918FB0088905B /* iTunesRemote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C182ACB08A84C6300A098F8 /* Build configuration list for PBXNativeTarget "iTunesRemote" */;
+			buildPhases = (
+				7C331F6A05A918FB0088905B /* Headers */,
+				7C331F6B05A918FB0088905B /* Resources */,
+				7C331F6C05A918FB0088905B /* Sources */,
+				7C331F6D05A918FB0088905B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "iTunesRemote-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = iTunes;
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = remote;
+			};
+			dependencies = (
+				7C505D470801F1F000017AF9 /* PBXTargetDependency */,
+				7C505D490801F1F400017AF9 /* PBXTargetDependency */,
+				7C331FF305A9253F0088905B /* PBXTargetDependency */,
+			);
+			name = iTunesRemote;
+			productName = iTunesRemote;
+			productReference = 7C331F6F05A918FB0088905B /* iTunes.remote */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>iTunesRemote</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string>com.MySoftwareCompany.iTunesRemote</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0d1</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.bundle";
+		};
+		8D1107260486CEB800E47090 /* MenuTunes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C182ACF08A84C6300A098F8 /* Build configuration list for PBXNativeTarget "MenuTunes" */;
+			buildPhases = (
+				7C505D860801F49F00017AF9 /* ShellScript */,
+				8D1107270486CEB800E47090 /* Headers */,
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				7C95A18B05A92B9D00B4F576 /* CopyFiles */,
+				7C95A18705A92B7C00B4F576 /* CopyFiles */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = .;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-bind_at_load";
+				PRODUCT_NAME = MenuTunes;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+			};
+			dependencies = (
+				7C505D4D0801F20500017AF9 /* PBXTargetDependency */,
+				7C505D4B0801F20200017AF9 /* PBXTargetDependency */,
+				7C505D4F0801F20D00017AF9 /* PBXTargetDependency */,
+				7C331FF505A925550088905B /* PBXTargetDependency */,
+				7C331FF705A9255A0088905B /* PBXTargetDependency */,
+			);
+			name = MenuTunes;
+			productInstallPath = "$(HOME)/Applications";
+			productName = MenuTunes;
+			productReference = 8D1107320486CEB800E47090 /* MenuTunes.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 7C182AD308A84C6300A098F8 /* Build configuration list for PBXProject "MenuTunes" */;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
+			};
+			buildStyles = (
+				4A9504CCFFE6A4B311CA0CBA /* Development */,
+				4A9504CDFFE6A4B311CA0CBA /* Deployment */,
+			);
+			hasScannedForEncodings = 1;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* MenuTunes */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7C505D370801F0F000017AF9 /* Products */;
+					ProjectRef = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+				},
+				{
+					ProductGroup = 7C505D350801F0F000017AF9 /* Products */;
+					ProjectRef = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+				},
+				{
+					ProductGroup = 7C505D330801F0F000017AF9 /* Products */;
+					ProjectRef = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
+				},
+			);
+			targets = (
+				8D1107260486CEB800E47090 /* MenuTunes */,
+				7C331F6705A918EC0088905B /* ITMTRemote */,
+				7C331F6E05A918FB0088905B /* iTunesRemote */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		7C505D340801F0F000017AF9 /* ITFoundation.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ITFoundation.framework;
+			remoteRef = 7C505D3C0801F0F300017AF9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D360801F0F000017AF9 /* ITMac.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ITMac.framework;
+			remoteRef = 7C505D3D0801F0F300017AF9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D380801F0F000017AF9 /* ITKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ITKit.framework;
+			remoteRef = 7C505D3A0801F0F300017AF9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7C505D390801F0F000017AF9 /* ITKitShowcase.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ITKitShowcase.app;
+			remoteRef = 7C505D3B0801F0F300017AF9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7C331F6405A918EC0088905B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C331F6B05A918FB0088905B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */,
+				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				7C331FD705A923190088905B /* Register.tiff in Resources */,
+				7C331FD805A923190088905B /* Repeat.tiff in Resources */,
+				7C331FD905A923190088905B /* Setup.tiff in Resources */,
+				7C331FDA05A923190088905B /* esellerate.gif in Resources */,
+				7C331FDB05A923190088905B /* MP3Player.tiff in Resources */,
+				7C331FDC05A923190088905B /* Shuffle.tiff in Resources */,
+				7C331FDD05A923190088905B /* submenu.tiff in Resources */,
+				7C331FDE05A923190088905B /* iPod.tiff in Resources */,
+				7C331FDF05A923190088905B /* MenuInverted.tiff in Resources */,
+				7C331FE005A923190088905B /* Radio.tiff in Resources */,
+				7C331FE105A923190088905B /* CD.tiff in Resources */,
+				7C331FE205A923190088905B /* NetLibrary.tiff in Resources */,
+				7C331FE305A923190088905B /* AppIcon.icns in Resources */,
+				7C331FE405A923190088905B /* Upcoming.tiff in Resources */,
+				7C331FE505A923190088905B /* Rating.tiff in Resources */,
+				7C331FE605A923190088905B /* Library.tiff in Resources */,
+				7C331FE705A923190088905B /* Volume.tiff in Resources */,
+				7C331FE805A923190088905B /* MenuNormal.tiff in Resources */,
+				7C331FEB05A923580088905B /* Preferences.nib in Resources */,
+				7C331FEE05A923830088905B /* KeyCodes.plist in Resources */,
+				7C331FF105A923970088905B /* Localizable.strings in Resources */,
+				37B7EA0406AECF0700A4DE86 /* ChasingArrow.tiff in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7C505D860801F49F00017AF9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ranlib libValidate.a";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7C331F6505A918EC0088905B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C331FC005A922490088905B /* ITMTRemote.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C331F6C05A918FB0088905B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C331FC305A9225A0088905B /* iTunesRemote.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				7C331F9005A921AC0088905B /* MenuTunes.m in Sources */,
+				7C331F9505A921C30088905B /* MenuController.m in Sources */,
+				7C331F9705A921C30088905B /* MainController.m in Sources */,
+				7C331FA505A921E10088905B /* MTeSerialNumber.m in Sources */,
+				7C331FA705A921E10088905B /* PreferencesController.m in Sources */,
+				7C331FA905A921E10088905B /* MTShizzleWindow.m in Sources */,
+				7C331FAC05A921E10088905B /* NetworkObject.m in Sources */,
+				7C331FAE05A921E10088905B /* MTBlingController.m in Sources */,
+				7C331FAF05A921E10088905B /* NetworkController.m in Sources */,
+				7C331FB705A922210088905B /* StatusItemHack.m in Sources */,
+				7C331FBB05A922210088905B /* StatusWindow.m in Sources */,
+				7C95A0E305A929F400B4F576 /* CustomMenuTableView.m in Sources */,
+				37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7C331FF305A9253F0088905B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7C331F6705A918EC0088905B /* ITMTRemote */;
+			targetProxy = 7C331FF205A9253F0088905B /* PBXContainerItemProxy */;
+		};
+		7C331FF505A925550088905B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7C331F6705A918EC0088905B /* ITMTRemote */;
+			targetProxy = 7C331FF405A925550088905B /* PBXContainerItemProxy */;
+		};
+		7C331FF705A9255A0088905B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7C331F6E05A918FB0088905B /* iTunesRemote */;
+			targetProxy = 7C331FF605A9255A0088905B /* PBXContainerItemProxy */;
+		};
+		7C505D470801F1F000017AF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ITFoundation (from ITFoundation.xcode)";
+			targetProxy = 7C505D460801F1F000017AF9 /* PBXContainerItemProxy */;
+		};
+		7C505D490801F1F400017AF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ITMac (from ITMac.xcode)";
+			targetProxy = 7C505D480801F1F400017AF9 /* PBXContainerItemProxy */;
+		};
+		7C505D4B0801F20200017AF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ITMac (from ITMac.xcode)";
+			targetProxy = 7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */;
+		};
+		7C505D4D0801F20500017AF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ITFoundation (from ITFoundation.xcode)";
+			targetProxy = 7C505D4C0801F20500017AF9 /* PBXContainerItemProxy */;
+		};
+		7C505D4F0801F20D00017AF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ITKit (from ITKit.xcode)";
+			targetProxy = 7C505D4E0801F20D00017AF9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C165DFE840E0CC02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		29B97318FDCFA39411CA2CEA /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				29B97319FDCFA39411CA2CEA /* English */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		7C331FE905A923580088905B /* Preferences.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7C331FEA05A923580088905B /* English */,
+			);
+			name = Preferences.nib;
+			sourceTree = "<group>";
+		};
+		7C331FEC05A923830088905B /* KeyCodes.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7C331FED05A923830088905B /* English */,
+			);
+			name = KeyCodes.plist;
+			sourceTree = "<group>";
+		};
+		7C331FEF05A923970088905B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7C331FF005A923970088905B /* English */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7C182AC808A84C6300A098F8 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "ITMTRemote-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-seg1addr",
+					0x10000000,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ITMTRemote;
+				WARNING_CFLAGS = "-Wmost";
+				ZERO_LINK = NO;
+			};
+			name = Development;
+		};
+		7C182AC908A84C6300A098F8 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "ITMTRemote-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-seg1addr",
+					0x10000000,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ITMTRemote;
+				WARNING_CFLAGS = "-Wmost";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		7C182ACA08A84C6300A098F8 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "ITMTRemote-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-seg1addr",
+					0x10000000,
+				);
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ITMTRemote;
+				WARNING_CFLAGS = "-Wmost";
+			};
+			name = Default;
+		};
+		7C182ACC08A84C6300A098F8 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "iTunesRemote-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = iTunes;
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = remote;
+				ZERO_LINK = NO;
+			};
+			name = Development;
+		};
+		7C182ACD08A84C6300A098F8 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "iTunesRemote-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = iTunes;
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = remote;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		7C182ACE08A84C6300A098F8 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = "iTunesRemote-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = iTunes;
+				WARNING_CFLAGS = "-Wmost";
+				WRAPPER_EXTENSION = remote;
+			};
+			name = Default;
+		};
+		7C182AD008A84C6300A098F8 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = .;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-bind_at_load";
+				PRODUCT_NAME = MenuTunes;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Development;
+		};
+		7C182AD108A84C6300A098F8 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = .;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-bind_at_load";
+				PRODUCT_NAME = MenuTunes;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		7C182AD208A84C6300A098F8 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MenuTunes_Prefix.pch;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = .;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-bind_at_load";
+				PRODUCT_NAME = MenuTunes;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = app;
+			};
+			name = Default;
+		};
+		7C182AD408A84C6300A098F8 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
+			};
+			name = Development;
+		};
+		7C182AD508A84C6300A098F8 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
+			};
+			name = Deployment;
+		};
+		7C182AD608A84C6300A098F8 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7C182AC708A84C6300A098F8 /* Build configuration list for PBXNativeTarget "ITMTRemote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C182AC808A84C6300A098F8 /* Development */,
+				7C182AC908A84C6300A098F8 /* Deployment */,
+				7C182ACA08A84C6300A098F8 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		7C182ACB08A84C6300A098F8 /* Build configuration list for PBXNativeTarget "iTunesRemote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C182ACC08A84C6300A098F8 /* Development */,
+				7C182ACD08A84C6300A098F8 /* Deployment */,
+				7C182ACE08A84C6300A098F8 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		7C182ACF08A84C6300A098F8 /* Build configuration list for PBXNativeTarget "MenuTunes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C182AD008A84C6300A098F8 /* Development */,
+				7C182AD108A84C6300A098F8 /* Deployment */,
+				7C182AD208A84C6300A098F8 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		7C182AD308A84C6300A098F8 /* Build configuration list for PBXProject "MenuTunes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C182AD408A84C6300A098F8 /* Development */,
+				7C182AD508A84C6300A098F8 /* Deployment */,
+				7C182AD608A84C6300A098F8 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

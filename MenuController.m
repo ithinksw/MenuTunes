@@ -15,7 +15,7 @@
 #import <ITKit/ITHotKey.h>
 #import <ITKit/ITKeyCombo.h>
 #import <ITKit/ITCategory-NSMenu.h>
-#import <ITKit/ITAboutBox.h>
+#import <ITKit/ITAboutWindowController.h>
 
 @interface MenuController (SubmenuMethods)
 - (NSMenu *)ratingMenu;
@@ -886,7 +886,7 @@
             break;
 		case MTMenuAboutItem:
 			ITDebugLog(@"Performing Menu Action: About MenuTunes...");
-			[[ITAboutBox sharedController] showAboutBox];
+			[[ITAboutWindowController sharedController] showAboutWindow];
 			break;
         case MTMenuQuitItem:
             ITDebugLog(@"Performing Menu Action: Quit");
