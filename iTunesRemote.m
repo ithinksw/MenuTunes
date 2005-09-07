@@ -630,8 +630,14 @@
 
 - (BOOL)shuffleEnabled
 {
+	int result;
     ITDebugLog(@"Getting shuffle enabled status.");
-	int result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+	if ([[self playerStateUniqueIdentifier] isEqualToString:@"0-0"]) {
+		ITDebugLog(@"No current playlist, getting shuffle status from visible playlist.");
+		result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value];
+	} else {
+		result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+	}
     ITDebugLog(@"Getting shuffle enabled status done.");
     return (result != 0);
 }
@@ -639,7 +645,12 @@
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
     ITDebugLog(@"Set shuffle enabled to %i", enabled);
-	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", (unsigned long)enabled], 'core', 'setd', &savedPSN);
+	if ([[self playerStateUniqueIdentifier] isEqualToString:@"0-0"]) {
+		ITDebugLog(@"No current playlist, setting shuffle status on visible playlist.");
+		ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", (unsigned long)enabled], 'core', 'setd', &savedPSN);
+	} else {
+		ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", (unsigned long)enabled], 'core', 'setd', &savedPSN);
+	}
     ITDebugLog(@"Set shuffle enabled to %i done", enabled);
     return YES;
 }
@@ -648,8 +659,14 @@
 {
     FourCharCode m00f = 0;
     int result = 0;
-    m00f = (FourCharCode)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
-    ITDebugLog(@"Getting repeat mode.");
+	ITDebugLog(@"Getting repeat mode.");
+    m00f = (FourCharCode)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) typeCodeValue];
+	
+	if (m00f == 0) {
+		ITDebugLog(@"No current playlist, getting repeat mode from visible playlist.");
+		m00f = (FourCharCode)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", 'core', 'getd', &savedPSN) typeCodeValue];
+	}
+	
     switch (m00f)
     {
         //case 'kRp0':
@@ -687,7 +704,12 @@
             m00f = "kRp0";
             break;
     }
-	ITSendAEWithString([NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }", m00f], 'core', 'setd', &savedPSN);
+	if ([[self playerStateUniqueIdentifier] isEqualToString:@"0-0"]) {
+		ITDebugLog(@"No current playlist, setting repeat mode on visible playlist.");
+		ITSendAEWithString([NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", m00f], 'core', 'setd', &savedPSN);
+	} else {
+		ITSendAEWithString([NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:() } }", m00f], 'core', 'setd', &savedPSN);
+	}
     ITDebugLog(@"Setting repeat mode to %c done", m00f);
     return YES;
 }
@@ -802,6 +824,7 @@
     //Duplicate search results to playlist
     for (i = 1; i <= [searchResults numberOfItems]; i++) {
 		//NSLog(@"%@", ITSendAEWithStringAndParameter(@"'----':obj { form:'prop', want:type('prop'), seld:prop('pnam'), from:aevt(@) }", *[[searchResults descriptorAtIndex:i] aeDesc], 'core', 'getd', &savedPSN));
+		
         ITSendAEWithStringAndObject(@"insh:obj { form:'name', want:type('cPly'), seld:\"MenuTunes\", from:'null'() }", [[searchResults descriptorAtIndex:i] aeDesc], 'core', 'clon', &savedPSN);
     }
     //Reset fixed indexing
