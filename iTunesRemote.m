@@ -1,4 +1,5 @@
 #import "iTunesRemote.h"
+#import "PlaylistNode.h"
 
 @implementation iTunesRemote
 
@@ -27,6 +28,20 @@
     ITDebugLog(@"iTunesRemote begun");
     savedPSN = [self iTunesPSN];
 	[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationHandler:) name:@"com.apple.iTunes.playerInfo" object:@"com.apple.iTunes.player"];
+	
+	NSString *iTunesPath = [[NSUserDefaults standardUserDefaults] stringForKey:@"CustomPlayerPath"];
+	NSDictionary *iTunesInfoPlist;
+	float iTunesVersion;
+
+	//Check if iTunes 5.0 or later is installed	
+	if (!iTunesPath) {
+		iTunesPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:@"iTunes.app"];
+	}
+	iTunesInfoPlist = [[NSBundle bundleWithPath:iTunesPath] infoDictionary];
+	iTunesVersion = [[iTunesInfoPlist objectForKey:@"CFBundleVersion"] floatValue];
+	ITDebugLog(@"iTunes version found: %f.", iTunesVersion);
+	_iTunesVersion = iTunesVersion;
+	
     return YES;
 }
 
@@ -162,7 +177,7 @@
 }*/
 
 //Full source awareness
-- (NSArray *)playlists
+/*- (NSArray *)playlists
 {
     unsigned long i, k;
     SInt32 numSources = [ITSendAEWithString(@"kocl:type('cSrc'), '----':()", 'core', 'cnte', &savedPSN) int32Value];
@@ -223,8 +238,153 @@
             ITDebugLog(@"Source at index %i disappeared.", k);
         }
     }
+	NSLog(@"playlists: %@", allSources);
     ITDebugLog(@"Finished getting playlists.");
     return [allSources autorelease];
+}*/
+
+- (NSArray *)playlists
+{
+	SInt32 numSources = [ITSendAEWithString(@"kocl:type('cSrc'), '----':()", 'core', 'cnte', &savedPSN) int32Value];
+	NSMutableArray *sources = [[NSMutableArray alloc] init];
+	int i;
+	
+	ITDebugLog(@"Getting playlists.");
+    if (numSources == 0) {
+		[sources release];
+        ITDebugLog(@"No sources.");
+        return nil;
+    }
+	
+	//Loop through each source
+	for (i = 1; i <= numSources; i++) {
+        SInt32 fourcc = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) int32Value]; //Type of the current source
+        NSString *sourceName = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) stringValue]; //Name of the current source
+        SInt32 index = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) int32Value]; //Index of the current source
+        ITMTRemotePlayerSource class; //The class of the current source
+		
+		//Make a new PlaylistNode for this source
+		PlaylistNode *sourceNode = [PlaylistNode playlistNodeWithName:sourceName type:ITMTSourceNode index:index];
+		
+		switch (fourcc) {
+			case 'kTun':
+				class = ITMTRemoteRadioSource;
+				break;
+			case 'kDev':
+				class = ITMTRemoteGenericDeviceSource;
+				break;
+			case 'kPod':
+				class = ITMTRemoteiPodSource;
+				break;
+			case 'kMCD':
+			case 'kACD':
+				class = ITMTRemoteCDSource;
+				break;
+			case 'kShd':
+				class = ITMTRemoteSharedLibrarySource;
+				break;
+			case 'kUnk':
+			case 'kLib':
+			default:
+				class = ITMTRemoteLibrarySource;
+				break;
+		}
+		[sourceNode setSourceType:class];
+		ITDebugLog(@"New source %@ of type %i at index %i", sourceName, class, index);
+		
+		int j;
+		SInt32 numPlaylists = [ITSendAEWithString([NSString stringWithFormat:@"kocl:type('cPly'), '----':obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() }", i], 'core', 'cnte', &savedPSN) int32Value]; //Number of playlists in the current source
+		
+		//Pass 1, add all the playlists into the main array
+		for (j = 1; j <= numPlaylists; j++) {
+			NSString *sendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cPly'), seld:long(%i), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } } }", j, (_iTunesVersion >= 5) ? i : index];
+			NSString *parentSendStr = [NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'prop', want:type('prop'), seld:type('pPlP'), from:obj { form:'indx', want:type('cPly'), seld:long(%i), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } } } }", j, i];
+			NSString *theObj = [ITSendAEWithString(sendStr, 'core', 'getd', &savedPSN) stringValue], *parent = [ITSendAEWithString(parentSendStr, 'core', 'getd', &savedPSN) stringValue];
+			ITDebugLog(@" - Adding playlist %@", theObj);
+			if (theObj) {
+				FourCharCode code = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pSpK'), from:obj { form:'indx', want:type('cPly'), seld:long(%i), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } } }", j, i], 'core', 'getd', &savedPSN) typeCodeValue];
+				ITMTNodeType type;
+				switch (code) {
+					case 'kSpN':
+						type = ITMTPlaylistNode;
+						break;
+					case 'kSpF':
+						type = ITMTFolderNode;
+						break;
+					case 'kSpS':
+						type = ITMTPartyShuffleNode;
+						break;
+					case 'kSpP':
+						type = ITMTPodcastsNode;
+						break;
+					case 'kSpM':
+						type = ITMTPurchasedMusicNode;
+						break;
+					case 'kSpV':
+						type = ITMTVideosNode;
+						break;
+				}
+				PlaylistNode *node = [PlaylistNode playlistNodeWithName:theObj type:type index:j];
+				[[sourceNode children] addObject:node];
+				if (parent) {
+					int parentIndex = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'prop', want:type('prop'), seld:type('pPlP'), from:obj { form:'indx', want:type('cPly'), seld:long(%i), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } } } }", j, i], 'core', 'getd', &savedPSN) int32Value];
+					[node setParent:[PlaylistNode playlistNodeWithName:parent type:ITMTFolderNode index:parentIndex]];
+				} else {
+					[node setParent:sourceNode];
+				}
+			}
+		}
+		
+		//Pass 2, nest each item under its proper parent. Once everything has been nested, delete the original from the main array.
+		NSEnumerator *enumerator = [[sourceNode children] objectEnumerator];
+		PlaylistNode *nextNode;
+		NSMutableArray *nested = [[NSMutableArray alloc] init];
+		
+		while ( (nextNode = [enumerator nextObject]) ) {
+			PlaylistNode *pNode = [nextNode parent];
+			if ([pNode type] == ITMTFolderNode) {
+				PlaylistNode *newParent = nil;
+				int k;
+				for (k = 0; !newParent; k++) {
+					PlaylistNode *test = [[sourceNode children] objectAtIndex:k];
+					if ([test index] == [pNode index]) {
+						newParent = test;
+					}
+				}
+				[nextNode setParent:newParent];
+				[[newParent children] addObject:nextNode];
+				[newParent setType:ITMTFolderNode];
+				[nested addObject:nextNode];
+			}
+		}
+		
+		NSEnumerator *nestEnumerator = [nested objectEnumerator];
+		while ( (nextNode = [nestEnumerator nextObject]) ) {
+			[[sourceNode children] removeObject:nextNode];
+		}
+		[nested release];
+		
+		//Move all the folders to the beginning of the list
+		//Move the podcasts playlist to the top
+		BOOL movedPodcasts = NO;
+		enumerator = [[sourceNode children] reverseObjectEnumerator];
+		while ( (nextNode = [enumerator nextObject]) ) {
+			if ([nextNode type] == ITMTPodcastsNode) {
+				[nextNode retain];
+				[[sourceNode children] removeObject:nextNode];
+				[[sourceNode children] insertObject:nextNode atIndex:1];
+				movedPodcasts = YES;
+			} else if ([nextNode type] == ITMTFolderNode) {
+				[nextNode retain];
+				[[sourceNode children] removeObject:nextNode];
+				[[sourceNode children] insertObject:nextNode atIndex:1 + movedPodcasts];
+			}
+		}
+		
+		[sources addObject:sourceNode];
+	}
+	
+	return [sources autorelease];
 }
 
 - (NSArray *)artists
@@ -632,7 +792,7 @@
 {
 	int result;
     ITDebugLog(@"Getting shuffle enabled status.");
-	if ([[self playerStateUniqueIdentifier] isEqualToString:@"0-0"]) {
+	if (![self isPlaying]) {
 		ITDebugLog(@"No current playlist, getting shuffle status from visible playlist.");
 		result = (int)[ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value];
 	} else {
@@ -645,7 +805,7 @@
 - (BOOL)setShuffleEnabled:(BOOL)enabled
 {
     ITDebugLog(@"Set shuffle enabled to %i", enabled);
-	if ([[self playerStateUniqueIdentifier] isEqualToString:@"0-0"]) {
+	if (![self isPlaying]) {
 		ITDebugLog(@"No current playlist, setting shuffle status on visible playlist.");
 		ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pShf'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", (unsigned long)enabled], 'core', 'setd', &savedPSN);
 	} else {
@@ -704,7 +864,7 @@
             m00f = "kRp0";
             break;
     }
-	if ([[self playerStateUniqueIdentifier] isEqualToString:@"0-0"]) {
+	if (![self isPlaying]) {
 		ITDebugLog(@"No current playlist, setting repeat mode on visible playlist.");
 		ITSendAEWithString([NSString stringWithFormat:@"data:'%s', '----':obj { form:'prop', want:type('prop'), seld:type('pRpt'), from:obj { form:'prop', want:type('prop'), seld:type('pPly'), from:obj { form:'indx', want:type('cBrW'), seld:1, from:'null'() } } }", m00f], 'core', 'setd', &savedPSN);
 	} else {

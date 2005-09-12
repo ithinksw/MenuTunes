@@ -10,6 +10,7 @@
 #import "MainController.h"
 #import "NetworkController.h"
 #import "ITMTRemote.h"
+#import "PlaylistNode.h"
 #import <ITFoundation/ITDebug.h>
 #import <ITKit/ITHotKeyCenter.h>
 #import <ITKit/ITHotKey.h>
@@ -24,6 +25,7 @@
 - (NSMenu *)eqMenu;
 - (NSMenu *)artistsMenu;
 - (NSMenu *)albumsMenu;
+- (void)playlistsMenuAux:(NSMenu *)menu node:(PlaylistNode *)node tagPrefix:(int)p;
 - (void)setKeyEquivalentForCode:(short)code andModifiers:(long)modifiers
         onItem:(id <NSMenuItem>)item;
 - (BOOL)iPodWithNameAutomaticallyUpdates:(NSString *)name;
@@ -679,6 +681,27 @@
     return playlistsMenu;
 }*/
 
+- (void)playlistsMenuAux:(NSMenu *)menu node:(PlaylistNode *)node tagPrefix:(int)p
+{
+	id <NSMenuItem> tempItem;
+	int i;
+	
+	for (i = 0; i < [[node children] count]; i++) {
+		PlaylistNode *nextNode = [[node children] objectAtIndex:i];
+		if ([nextNode type] == ITMTFolderNode) {
+			NSMenu *submenu = [[NSMenu alloc] init];
+			tempItem = [menu addItemWithTitle:[nextNode name] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+			[tempItem setTag:p + [nextNode index] + 1];
+			[tempItem setTarget:self];
+			[tempItem setSubmenu:submenu];
+			[self playlistsMenuAux:[submenu autorelease] node:nextNode tagPrefix:p];
+		} else {
+			tempItem = [menu addItemWithTitle:[nextNode name] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
+			[tempItem setTag:p + [nextNode index] + 1];
+			[tempItem setTarget:self];
+		}
+	}
+}
 
 - (NSMenu *)playlistsMenu
 {
@@ -686,7 +709,7 @@
     NSArray *playlists = nil;
     id <NSMenuItem> tempItem;
     ITMTRemotePlayerSource source = [[[MainController sharedController] currentRemote] currentSource];
-    int i, j;
+	int i;
     NSMutableArray *indices = [[NSMutableArray alloc] init];
     NS_DURING
         playlists = [[[MainController sharedController] currentRemote] playlists];
@@ -701,22 +724,19 @@
 	NS_DURING
     ITDebugLog(@"Building \"Playlists\" menu.");
     {
-        NSArray *curPlaylist = [playlists objectAtIndex:0];
-        NSString *name = [curPlaylist objectAtIndex:0];
-        ITDebugLog(@"Adding main source: %@", name);
-        for (i = 3; i < [curPlaylist count]; i++) {
-            ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:i]);
-            tempItem = [playlistsMenu addItemWithTitle:[curPlaylist objectAtIndex:i] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-            [tempItem setTag:i - 1];
-            [tempItem setTarget:self];
-        }
+		//First we add the main Library source, since it is guaranteed to be there.
+        PlaylistNode *library = [playlists objectAtIndex:0];
+        ITDebugLog(@"Adding main source: %@", [library name]);
+		[self playlistsMenuAux:playlistsMenu node:library tagPrefix:0];
         ITDebugLog(@"Adding index to the index array.");
-        [indices addObject:[curPlaylist objectAtIndex:2]];
+        [indices addObject:[NSNumber numberWithInt:[library index]]];
     }
 	
+	//Next go through the other sources
     if ([playlists count] > 1) {
-        if ([[[playlists objectAtIndex:1] objectAtIndex:1] intValue] == ITMTRemoteRadioSource) {
-            [indices addObject:[[playlists objectAtIndex:1] objectAtIndex:2]];
+		//Add the radio source if it is playing
+        if ([[playlists objectAtIndex:1] sourceType] == ITMTRemoteRadioSource) {
+            [indices addObject:[NSNumber numberWithInt:[[playlists objectAtIndex:1] index]]];
             if (source == ITMTRemoteRadioSource) {
                 [playlistsMenu addItem:[NSMenuItem separatorItem]];
                 [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:@selector(performPlaylistMenuAction:) keyEquivalent:@""] setState:NSOnState];
@@ -724,30 +744,24 @@
         } else {
             [playlistsMenu addItem:[NSMenuItem separatorItem]];
         }
-    }
-	
-    if ([playlists count] > 1) {
-        for (i = 1; i < [playlists count]; i++) {
-            NSArray *curPlaylist = [playlists objectAtIndex:i];
-            if ([[curPlaylist objectAtIndex:1] intValue] != ITMTRemoteRadioSource) {
-                NSString *name = [curPlaylist objectAtIndex:0];
-                NSMenu *submenu = [[NSMenu alloc] init];
+		
+		//Add other sources as needed (shared music, iPods, CDs)
+        for (i = 2; i < [playlists count]; i++) {
+            PlaylistNode *nextSource = [playlists objectAtIndex:i];
+            if ([nextSource type] != ITMTRemoteRadioSource) {
+                NSString *name = [nextSource name];
                 ITDebugLog(@"Adding source: %@", name);
                 
-                if ( ([[curPlaylist objectAtIndex:1] intValue] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
+                if ( ([nextSource type] == ITMTRemoteiPodSource) && [self iPodWithNameAutomaticallyUpdates:name] ) {
                     ITDebugLog(@"Invalid iPod source.");
                     [playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""];
                 } else {
-                    for (j = 3; j < [curPlaylist count]; j++) {
-                        ITDebugLog(@"Adding playlist: %@", [curPlaylist objectAtIndex:j]);
-                        tempItem = [submenu addItemWithTitle:[curPlaylist objectAtIndex:j] action:@selector(performPlaylistMenuAction:) keyEquivalent:@""];
-                        [tempItem setTag:(i * 1000) + j - 1];
-                        [tempItem setTarget:self];
-                    }
-                    [[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[submenu autorelease]];
+					NSMenu *menu = [[NSMenu alloc] init];
+					[[playlistsMenu addItemWithTitle:name action:NULL keyEquivalent:@""] setSubmenu:[menu autorelease]];
+					[self playlistsMenuAux:menu node:nextSource tagPrefix:(i * 1000)];
                 }
                 ITDebugLog(@"Adding index to the index array.");
-                [indices addObject:[curPlaylist objectAtIndex:2]];
+                [indices addObject:[NSNumber numberWithInt:[nextSource index]]];
             }
         }
     }

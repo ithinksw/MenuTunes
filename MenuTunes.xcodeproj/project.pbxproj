@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3739DDA308CFA0C600CCFBC6 /* PlaylistNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */; };
+		3739DDA408CFA0C600CCFBC6 /* PlaylistNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */; };
+		3739DDA508CFA0C600CCFBC6 /* PlaylistNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */; };
+		3739DDA608CFA0C600CCFBC6 /* PlaylistNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */; };
 		3740716D05ACE20500CC2142 /* libValidate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3740716C05ACE20500CC2142 /* libValidate.a */; };
 		37B7EA0406AECF0700A4DE86 /* ChasingArrow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */; };
 		37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FB305A922210088905B /* StatusWindowController.m */; };
@@ -162,13 +166,6 @@
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = ITMac;
 		};
-		7C505D460801F1F000017AF9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = ITFoundation;
-		};
 		7C505D480801F1F400017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
@@ -182,13 +179,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITMac;
-		};
-		7C505D4C0801F20500017AF9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = ITFoundation;
 		};
 		7C505D4E0801F20D00017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -233,6 +223,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* MenuTunes_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTunes_Prefix.pch; sourceTree = "<group>"; };
+		3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistNode.h; sourceTree = "<group>"; };
+		3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistNode.m; sourceTree = "<group>"; };
 		3740716C05ACE20500CC2142 /* libValidate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libValidate.a; sourceTree = "<group>"; };
 		37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ChasingArrow.tiff; sourceTree = "<group>"; };
 		7C331F6805A918EC0088905B /* ITMTRemote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ITMTRemote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -371,6 +363,8 @@
 				7C331FBE05A922490088905B /* ITMTRemote.m */,
 				7C331FC205A9225A0088905B /* iTunesRemote.h */,
 				7C331FC105A9225A0088905B /* iTunesRemote.m */,
+				3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */,
+				3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -514,6 +508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C331FC405A9225A0088905B /* iTunesRemote.h in Headers */,
+				3739DDA508CFA0C600CCFBC6 /* PlaylistNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,6 +531,7 @@
 				7C331FBC05A922210088905B /* StatusWindowController.h in Headers */,
 				7C95A0CF05A9299E00B4F576 /* validate.h in Headers */,
 				7C95A0E405A929F400B4F576 /* CustomMenuTableView.h in Headers */,
+				3739DDA308CFA0C600CCFBC6 /* PlaylistNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -631,7 +627,6 @@
 				WRAPPER_EXTENSION = remote;
 			};
 			dependencies = (
-				7C505D470801F1F000017AF9 /* PBXTargetDependency */,
 				7C505D490801F1F400017AF9 /* PBXTargetDependency */,
 				7C331FF305A9253F0088905B /* PBXTargetDependency */,
 			);
@@ -705,7 +700,6 @@
 				WRAPPER_EXTENSION = app;
 			};
 			dependencies = (
-				7C505D4D0801F20500017AF9 /* PBXTargetDependency */,
 				7C505D4B0801F20200017AF9 /* PBXTargetDependency */,
 				7C505D4F0801F20D00017AF9 /* PBXTargetDependency */,
 				7C331FF505A925550088905B /* PBXTargetDependency */,
@@ -865,6 +859,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C331FC305A9225A0088905B /* iTunesRemote.m in Sources */,
+				3739DDA608CFA0C600CCFBC6 /* PlaylistNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -886,6 +881,7 @@
 				7C331FBB05A922210088905B /* StatusWindow.m in Sources */,
 				7C95A0E305A929F400B4F576 /* CustomMenuTableView.m in Sources */,
 				37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */,
+				3739DDA408CFA0C600CCFBC6 /* PlaylistNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -907,11 +903,6 @@
 			target = 7C331F6E05A918FB0088905B /* iTunesRemote */;
 			targetProxy = 7C331FF605A9255A0088905B /* PBXContainerItemProxy */;
 		};
-		7C505D470801F1F000017AF9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ITFoundation (from ITFoundation.xcode)";
-			targetProxy = 7C505D460801F1F000017AF9 /* PBXContainerItemProxy */;
-		};
 		7C505D490801F1F400017AF9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "ITMac (from ITMac.xcode)";
@@ -921,11 +912,6 @@
 			isa = PBXTargetDependency;
 			name = "ITMac (from ITMac.xcode)";
 			targetProxy = 7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */;
-		};
-		7C505D4D0801F20500017AF9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ITFoundation (from ITFoundation.xcode)";
-			targetProxy = 7C505D4C0801F20500017AF9 /* PBXContainerItemProxy */;
 		};
 		7C505D4F0801F20D00017AF9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

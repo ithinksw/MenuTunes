@@ -13,9 +13,12 @@
 #import <ITFoundation/ITFoundation.h>
 #import <ITMac/ITMac.h>
 
+@class PlaylistNode;
+
 @interface iTunesRemote : ITMTRemote <ITMTRemote>
 {
     ProcessSerialNumber savedPSN;
+	float _iTunesVersion;
 }
 - (BOOL)isPlaying;
 - (ProcessSerialNumber)iTunesPSN;
