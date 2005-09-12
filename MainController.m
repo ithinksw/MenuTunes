@@ -768,7 +768,7 @@ static MainController *sharedController;
 {
     ITDebugLog(@"Show preferences.");
     [[PreferencesController sharedPrefs] showPrefsWindow:self];
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }
@@ -975,6 +975,16 @@ static MainController *sharedController;
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
     
+	if ([df objectForKey:@"ToggleShufflability"] != nil) {
+        ITDebugLog(@"Setting up toggle song shufflability hot key.");
+        hotKey = [[ITHotKey alloc] init];
+        [hotKey setName:@"ToggleShufflability"];
+        [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"ToggleShufflability"]]];
+        [hotKey setTarget:self];
+        [hotKey setAction:@selector(toggleSongShufflable)];
+        [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+    }
+	
     if ([df objectForKey:@"PopupMenu"] != nil) {
         ITDebugLog(@"Setting up popup menu hot key.");
         hotKey = [[ITHotKey alloc] init];
@@ -1318,9 +1328,22 @@ static MainController *sharedController;
     NS_ENDHANDLER
 }
 
+- (void)toggleSongShufflable
+{
+	NS_DURING
+        BOOL flag = ![[self currentRemote] currentSongShufflable];
+        ITDebugLog(@"Toggling shufflability.");
+        [[self currentRemote] setCurrentSongShufflable:flag];
+        //Show song shufflability status window
+        //[statusWindowController showSongShuffabilityWindow:flag];
+    NS_HANDLER
+        [self networkError:localException];
+    NS_ENDHANDLER
+}
+
 - (void)registerNowOK
 {
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 
@@ -1329,7 +1352,7 @@ static MainController *sharedController;
 
 - (void)registerNowCancel
 {
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 
@@ -1484,14 +1507,14 @@ static MainController *sharedController;
         [NSTimer scheduledTimerWithTimeInterval:90.0 target:self selector:@selector(checkForRemoteServer) userInfo:nil repeats:NO];
     }*/
     [self checkForRemoteServerAndConnectImmediately:YES];
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }
 
 - (void)cancelReconnect
 {
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }

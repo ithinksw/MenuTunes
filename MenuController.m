@@ -740,9 +740,9 @@
             if (source == ITMTRemoteRadioSource) {
                 [playlistsMenu addItem:[NSMenuItem separatorItem]];
                 [[playlistsMenu addItemWithTitle:NSLocalizedString(@"radio", @"Radio") action:@selector(performPlaylistMenuAction:) keyEquivalent:@""] setState:NSOnState];
-            }
-        } else {
-            [playlistsMenu addItem:[NSMenuItem separatorItem]];
+            } else if ([playlists count] > 2) {
+				[playlistsMenu addItem:[NSMenuItem separatorItem]];
+			}
         }
 		
 		//Add other sources as needed (shared music, iPods, CDs)
@@ -773,7 +773,7 @@
 			[tempItem setState:NSOnState];
 			[[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
 		} else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
-			[[playlistsMenu itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
+			[[playlistsMenu itemAtIndex:_currentPlaylist - 2] setState:NSOnState];
 		}
 	}
 	NS_HANDLER

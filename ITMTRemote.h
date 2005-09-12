@@ -325,6 +325,16 @@ er's process managment.
 - (BOOL)setCurrentSongRating:(float)rating;
 
 /*!
+ * @method currentSongShuffable
+ */
+- (BOOL)currentSongShufflable;
+
+/*!
+ * @method setCurrentSongShuffable:
+ */
+- (BOOL)setCurrentSongShufflable:(BOOL)shufflable;
+
+/*!
  * @method equalizerEnabled
  */
 - (BOOL)equalizerEnabled;

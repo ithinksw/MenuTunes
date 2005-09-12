@@ -204,6 +204,16 @@
     return NO;
 }
 
+- (BOOL)currentSongShufflable
+{
+	return NO;
+}
+
+- (BOOL)setCurrentSongShufflable:(BOOL)shufflable
+{
+	return NO;
+}
+
 - (BOOL)equalizerEnabled
 {
     return NO;

@@ -258,7 +258,7 @@
 	
 	//Loop through each source
 	for (i = 1; i <= numSources; i++) {
-        SInt32 fourcc = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) int32Value]; //Type of the current source
+        FourCharCode fourcc = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) typeCodeValue]; //Type of the current source
         NSString *sourceName = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pnam'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) stringValue]; //Name of the current source
         SInt32 index = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('pidx'), from:obj { form:'indx', want:type('cSrc'), seld:long(%i), from:() } }", i], 'core', 'getd', &savedPSN) int32Value]; //Index of the current source
         ITMTRemotePlayerSource class; //The class of the current source
@@ -448,7 +448,7 @@
 
     ITDebugLog(@"Getting current source.");   
     
-    fourcc = ([self isPlaying]) ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'getd', &savedPSN) int32Value] : 'kLib';
+    fourcc = ([self isPlaying]) ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pKnd'), from:obj { form:'prop', want:type('prop'), seld:type('ctnr'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", 'core', 'getd', &savedPSN) typeCodeValue] : 'kLib';
     
     switch (fourcc) {
         case 'kTun':
@@ -488,9 +488,9 @@
 
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
-    SInt32 realResult;
+    FourCharCode realResult;
     ITDebugLog(@"Getting current playlist class");
-    realResult = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    realResult = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } }", 'core', 'getd', &savedPSN) typeCodeValue];
     switch (realResult)
 	   {
 	   case 'cLiP':
@@ -550,12 +550,12 @@
     NSString *temp1;
     ITDebugLog(@"Getting current unique identifier.");
 	NSAppleEventDescriptor *descriptor = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN);
-	if ([descriptor int32Value] == 'prop') {
+	if ([descriptor typeCodeValue] == 'prop') {
 		return @"0-0";
 	} else if (descriptor == nil) {
 		return nil;
 	}
-    SInt32 cls = [descriptor int32Value];
+    FourCharCode cls = [descriptor typeCodeValue];
     if ( ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) || (cls == 'cURT') ) {
 		NSString *bad = [NSString stringWithUTF8String:"浳湧"];
         temp1 = [ITSendAEWithKey('pStT', 'core', 'getd', &savedPSN) stringValue];
@@ -582,7 +582,7 @@
 {
     NSString *temp1;
     ITDebugLog(@"Getting current song title.");
-    SInt32 result = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    FourCharCode result = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) typeCodeValue];
 	
     //If we're listening to the radio.
     if (result == 'cURT') {
@@ -728,6 +728,27 @@
     if ( [self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist ) { return NO; }
 	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pRte'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }",(long)(rating*100), [self currentSongIndex]], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Setting current song rating to %f done.", rating);
+    return YES;
+}
+
+- (BOOL)currentSongShufflable
+{
+	BOOL temp1;
+	ITDebugLog(@"Getting current song shufflable status.");
+    temp1 = (![self isPlaying] || ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist)) ? NO : [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pSfa'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) booleanValue];
+    ITDebugLog(@"Getting current song shufflable status done.");
+    return temp1;
+}
+
+- (BOOL)setCurrentSongShufflable:(BOOL)shufflable
+{
+	ITDebugLog(@"Setting current song shufflable status to %i.", shufflable);
+    if ([self currentPlaylistClass] == ITMTRemotePlayerRadioPlaylist) {
+		ITDebugLog(@"Not a valid track to set status to, returning.");
+		return NO;
+	}
+	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pSfa'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", !shufflable, [self currentSongIndex]], 'core', 'setd', &savedPSN);
+    ITDebugLog(@"Setting current song shufflable status to %i done.", shufflable);
     return YES;
 }
 
@@ -998,7 +1019,7 @@
 
 - (BOOL)isPlaying
 {
-	return ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value] != 'prop');
+	return ([ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pcls'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) typeCodeValue] != 'prop');
 }
 
 - (void)notificationHandler:(NSNotification *)note
