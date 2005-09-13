@@ -700,6 +700,15 @@
 			[tempItem setTag:p + [nextNode index] + 1];
 			[tempItem setTarget:self];
 		}
+		
+		PlaylistNode *root = node;
+		while ([root type] == ITMTPlaylistNode || [root type] == ITMTFolderNode) {
+			root = [root parent];
+		}
+		
+		if ([root index] == [[[MainController sharedController] currentRemote] currentSourceIndex] && [nextNode index] == _currentPlaylist) {
+			[tempItem setState:NSOnState];
+		}
 	}
 }
 
@@ -746,7 +755,7 @@
         }
 		
 		//Add other sources as needed (shared music, iPods, CDs)
-        for (i = 2; i < [playlists count]; i++) {
+        for (i = [playlists count] - 1; i > 1 ; i--) {
             PlaylistNode *nextSource = [playlists objectAtIndex:i];
             if ([nextSource type] != ITMTRemoteRadioSource) {
                 NSString *name = [nextSource name];
@@ -765,15 +774,11 @@
             }
         }
     }
-    ITDebugLog(@"Checking the current source.");
 	NS_DURING
 	if (_currentPlaylist != -1) {
 		if ( (source == ITMTRemoteSharedLibrarySource) || (source == ITMTRemoteiPodSource) || (source == ITMTRemoteGenericDeviceSource) || (source == ITMTRemoteCDSource) ) {
 			tempItem = [playlistsMenu itemAtIndex:[playlistsMenu numberOfItems] + [indices indexOfObject:[NSNumber numberWithInt:[[[MainController sharedController] currentRemote] currentSourceIndex]]] - [indices count]];
 			[tempItem setState:NSOnState];
-			[[[tempItem submenu] itemAtIndex:_currentPlaylist - 1] setState:NSOnState];
-		} else if (source == ITMTRemoteLibrarySource && _currentPlaylist) {
-			[[playlistsMenu itemAtIndex:_currentPlaylist - 2] setState:NSOnState];
 		}
 	}
 	NS_HANDLER

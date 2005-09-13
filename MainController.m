@@ -1080,6 +1080,8 @@ static MainController *sharedController;
             NS_HANDLER
                 [self networkError:localException];
             NS_ENDHANDLER
+			_timeUpdateCount = 0;
+			[NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTime:) userInfo:nil repeats:YES];
         }
 
         if ( [df boolForKey:@"showTrackNumber"] ) {
@@ -1134,6 +1136,23 @@ static MainController *sharedController;
                                                   rating:rating
                                                playCount:playCount
                                                    image:art];
+}
+
+- (void)updateTime:(NSTimer *)timer
+{
+	_timeUpdateCount++;
+	if (_timeUpdateCount > (int)[df floatForKey:@"statusWindowVanishDelay"] - 1) {
+		NSString *time = nil;
+		NS_DURING
+			time = [NSString stringWithFormat:@"%@: %@ / %@",
+						NSLocalizedString(@"time", @"Time"),
+						[[self currentRemote] currentSongElapsed],
+						[[self currentRemote] currentSongLength]];
+			[[StatusWindowController sharedController] updateTime:time];
+		NS_HANDLER
+			[self networkError:localException];
+		NS_ENDHANDLER
+	}
 }
 
 - (void)showUpcomingSongs

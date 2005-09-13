@@ -21,6 +21,7 @@
 @interface StatusWindow : ITTransientStatusWindow {
     NSImage            *_image;
     BOOL                _locked;
+	NSTextField		   *_textField;
 }
 
 - (void)setImage:(NSImage *)newImage;
@@ -37,5 +38,6 @@
                               target:(id)target
                        defaultAction:(SEL)okAction
                      alternateAction:(SEL)alternateAction;
-                         
+
+- (void)updateTime:(NSString *)time range:(NSRange)range;
 @end

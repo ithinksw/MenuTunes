@@ -27,6 +27,7 @@ typedef enum {
 @interface StatusWindowController : NSObject {
     StatusWindow   *_window;
     NSUserDefaults *df;
+	NSRange _timeRange;
 }
 
 + (StatusWindowController *)sharedController;
@@ -55,5 +56,6 @@ typedef enum {
                            playCount:                   (int)playCount
                                image:             (NSImage *)art;
 
+- (void)updateTime:(NSString *)time;
 
 @end

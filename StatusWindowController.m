@@ -153,6 +153,7 @@ static StatusWindowController *sharedController;
         //text = [text stringByAppendingString:[@"\n" stringByAppendingString:composer]];
     }
     if ( time ) {
+		_timeRange = NSMakeRange([[text mutableString] length] + 1, [time length]);
 		[[text mutableString] appendFormat:@"\n%@", time];
         //text = [text stringByAppendingString:[@"\n" stringByAppendingString:time]];
     }
@@ -351,6 +352,13 @@ static StatusWindowController *sharedController;
                           alternateAction:nil];
     [_window appear:self];
 	[_window setLocked:YES];
+}
+
+- (void)updateTime:(NSString *)time
+{
+	if (time && [time length]) {
+		[_window updateTime:time range:_timeRange];
+	}
 }
 
 @end

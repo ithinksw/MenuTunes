@@ -256,7 +256,7 @@
         
 //      Display the window.
         [[self contentView] setNeedsDisplay:YES];
-
+		_textField = textField;
     }
 }
 
@@ -489,6 +489,14 @@
 //      Display the window.
         [[self contentView] setNeedsDisplay:YES];
     }
+}
+
+- (void)updateTime:(NSString *)time range:(NSRange)range
+{
+	NSMutableAttributedString *string = [[_textField attributedStringValue] mutableCopy];
+	[string replaceCharactersInRange:range withString:time];
+	[_textField setAttributedStringValue:[string autorelease]];
+	[[self contentView] setNeedsDisplay:YES];
 }
 
 - (NSTimeInterval)animationResizeTime:(NSRect)newFrame
