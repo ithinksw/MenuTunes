@@ -38,6 +38,7 @@ typedef enum {
 - (void)showRatingWindowWithRating:(float)rating;
 - (void)showShuffleWindow:(BOOL)shuffle;
 - (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode;
+- (void)showSongShufflabilityWindow:(BOOL)shufflable;
 - (void)showSetupQueryWindow;
 - (void)showRegistrationQueryWindow;
 - (void)showReconnectQueryWindow;

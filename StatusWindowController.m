@@ -254,6 +254,14 @@ static StatusWindowController *sharedController;
     [_window appear:self];
 }
 
+- (void)showSongShufflabilityWindow:(BOOL)shufflable
+{
+    [_window setImage:[NSImage imageNamed:@"Shuffle"]];
+    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
+    [_window buildTextWindowWithString:( !shufflable ? NSLocalizedString(@"shufflableOn", @"Current Song Skipped When Shuffling") : NSLocalizedString(@"shufflableOff", @"Current Song Not Skipped When Shuffling"))];
+    [_window appear:self];
+}
+
 - (void)showSetupQueryWindow
 {
     NSString *message = NSLocalizedString(@"autolaunch_msg", @"Would you like MenuTunes to launch\nautomatically at startup?");

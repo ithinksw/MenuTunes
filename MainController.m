@@ -1349,15 +1349,17 @@ static MainController *sharedController;
 
 - (void)toggleSongShufflable
 {
-	NS_DURING
-        BOOL flag = ![[self currentRemote] currentSongShufflable];
-        ITDebugLog(@"Toggling shufflability.");
-        [[self currentRemote] setCurrentSongShufflable:flag];
-        //Show song shufflability status window
-        //[statusWindowController showSongShuffabilityWindow:flag];
-    NS_HANDLER
-        [self networkError:localException];
-    NS_ENDHANDLER
+	if ([self songIsPlaying]) {
+		NS_DURING
+			BOOL flag = ![[self currentRemote] currentSongShufflable];
+			ITDebugLog(@"Toggling shufflability.");
+			[[self currentRemote] setCurrentSongShufflable:flag];
+			//Show song shufflability status window
+			[statusWindowController showSongShufflabilityWindow:flag];
+		NS_HANDLER
+			[self networkError:localException];
+		NS_ENDHANDLER
+	}
 }
 
 - (void)registerNowOK

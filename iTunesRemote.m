@@ -747,7 +747,7 @@
 		ITDebugLog(@"Not a valid track to set status to, returning.");
 		return NO;
 	}
-	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pSfa'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", !shufflable, [self currentSongIndex]], 'core', 'setd', &savedPSN);
+	ITSendAEWithString([NSString stringWithFormat:@"data:long(%lu), '----':obj { form:'prop', want:type('prop'), seld:type('pSfa'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", shufflable, [self currentSongIndex]], 'core', 'setd', &savedPSN);
     ITDebugLog(@"Setting current song shufflable status to %i done.", shufflable);
     return YES;
 }
