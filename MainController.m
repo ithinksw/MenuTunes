@@ -1140,8 +1140,9 @@ static MainController *sharedController;
 
 - (void)updateTime:(NSTimer *)timer
 {
+	StatusWindow *sw = [StatusWindow sharedWindow];
 	_timeUpdateCount++;
-	if (_timeUpdateCount > (int)[df floatForKey:@"statusWindowVanishDelay"] - 1) {
+	if (_timeUpdateCount < (int)[sw exitDelay] + (int)[[sw exitEffect] effectTime] + (int)[[sw entryEffect] effectTime]) {
 		NSString *time = nil;
 		NS_DURING
 			time = [NSString stringWithFormat:@"%@: %@ / %@",
@@ -1152,6 +1153,8 @@ static MainController *sharedController;
 		NS_HANDLER
 			[self networkError:localException];
 		NS_ENDHANDLER
+	} else {
+		[timer invalidate];
 	}
 }
 
