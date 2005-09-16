@@ -64,6 +64,8 @@
 - (void)setLatestSongIdentifier:(NSString *)newIdentifier;
 - (void)applicationLaunched:(NSNotification *)note;
 - (void)applicationTerminated:(NSNotification *)note;
+
+- (void)invalidateStatusWindowUpdateTimer;
 @end
 
 static MainController *sharedController;
@@ -85,6 +87,8 @@ static MainController *sharedController;
     if ( ( self = [super init] ) ) {
         sharedController = self;
         
+		_statusWindowUpdateTimer = nil;
+		
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
         [[PreferencesController sharedPrefs] setController:self];
         statusWindowController = [StatusWindowController sharedController];
@@ -1081,7 +1085,8 @@ static MainController *sharedController;
                 [self networkError:localException];
             NS_ENDHANDLER
 			_timeUpdateCount = 0;
-			[NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTime:) userInfo:nil repeats:YES];
+			[self invalidateStatusWindowUpdateTimer];
+			_statusWindowUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateTime:) userInfo:nil repeats:YES];
         }
 
         if ( [df boolForKey:@"showTrackNumber"] ) {
@@ -1143,18 +1148,29 @@ static MainController *sharedController;
 	StatusWindow *sw = [StatusWindow sharedWindow];
 	_timeUpdateCount++;
 	if (_timeUpdateCount < (int)[sw exitDelay] + (int)[[sw exitEffect] effectTime] + (int)[[sw entryEffect] effectTime]) {
-		NSString *time = nil;
+		NSString *time = nil, *length;
 		NS_DURING
-			time = [NSString stringWithFormat:@"%@: %@ / %@",
-						NSLocalizedString(@"time", @"Time"),
-						[[self currentRemote] currentSongElapsed],
-						[[self currentRemote] currentSongLength]];
-			[[StatusWindowController sharedController] updateTime:time];
+			length = [[self currentRemote] currentSongLength];
+			if (length) {
+				time = [NSString stringWithFormat:@"%@: %@ / %@",
+							NSLocalizedString(@"time", @"Time"),
+							[[self currentRemote] currentSongElapsed],
+							length];
+				[[StatusWindowController sharedController] updateTime:time];
+			}
 		NS_HANDLER
 			[self networkError:localException];
 		NS_ENDHANDLER
 	} else {
-		[timer invalidate];
+		[self invalidateStatusWindowUpdateTimer];
+	}
+}
+
+- (void)invalidateStatusWindowUpdateTimer
+{
+	if (_statusWindowUpdateTimer) {
+		[_statusWindowUpdateTimer invalidate];
+		_statusWindowUpdateTimer = nil;
 	}
 }
 
@@ -1167,6 +1183,8 @@ static MainController *sharedController;
         [self networkError:localException];
     NS_ENDHANDLER
     
+	[self invalidateStatusWindowUpdateTimer];
+	
     ITDebugLog(@"Showing upcoming songs status window.");
     NS_DURING
         if (numSongs > 0) {
@@ -1175,10 +1193,12 @@ static MainController *sharedController;
             int curTrack = [[self currentRemote] currentSongIndex];
             int i;
     
-            for (i = curTrack + 1; i <= curTrack + numSongsInAdvance; i++) {
-                if (i <= numSongs) {
+            for (i = curTrack + 1; i <= curTrack + numSongsInAdvance && i <= numSongs; i++) {
+                if ([[self currentRemote] songEnabledAtIndex:i]) {
                     [songList addObject:[[self currentRemote] songTitleAtIndex:i]];
-                }
+                } else {
+					numSongsInAdvance++;
+				}
             }
             
             if ([songList count] == 0) {
@@ -1223,6 +1243,7 @@ static MainController *sharedController;
         [[self currentRemote] setVolume:volume];
     
         // Show volume status window
+		[self invalidateStatusWindowUpdateTimer];
         [statusWindowController showVolumeWindowWithLevel:dispVol];
     NS_HANDLER
         [self networkError:localException];
@@ -1247,6 +1268,7 @@ static MainController *sharedController;
         [[self currentRemote] setVolume:volume];
         
         //Show volume status window
+		[self invalidateStatusWindowUpdateTimer];
         [statusWindowController showVolumeWindowWithLevel:dispVol];
     NS_HANDLER
         [self networkError:localException];
@@ -1272,6 +1294,7 @@ static MainController *sharedController;
         [[self currentRemote] setCurrentSongRating:rating];
         
         //Show rating status window
+		[self invalidateStatusWindowUpdateTimer];
         [statusWindowController showRatingWindowWithRating:rating];
     NS_HANDLER
         [self networkError:localException];
@@ -1297,6 +1320,7 @@ static MainController *sharedController;
         [[self currentRemote] setCurrentSongRating:rating];
         
         //Show rating status window
+		[self invalidateStatusWindowUpdateTimer];
         [statusWindowController showRatingWindowWithRating:rating];
     NS_HANDLER
         [self networkError:localException];
@@ -1330,6 +1354,7 @@ static MainController *sharedController;
         [[self currentRemote] setRepeatMode:repeatMode];
         
         //Show loop status window
+		[self invalidateStatusWindowUpdateTimer];
         [statusWindowController showRepeatWindowWithMode:repeatMode];
     NS_HANDLER
         [self networkError:localException];
@@ -1344,6 +1369,7 @@ static MainController *sharedController;
         [[self currentRemote] setShuffleEnabled:newShuffleEnabled];
         //Show shuffle status window
         ITDebugLog(@"Setting shuffle mode to %i", newShuffleEnabled);
+		[self invalidateStatusWindowUpdateTimer];
         [statusWindowController showShuffleWindow:newShuffleEnabled];
     NS_HANDLER
         [self networkError:localException];
@@ -1358,6 +1384,7 @@ static MainController *sharedController;
 			ITDebugLog(@"Toggling shufflability.");
 			[[self currentRemote] setCurrentSongShufflable:flag];
 			//Show song shufflability status window
+			[self invalidateStatusWindowUpdateTimer];
 			[statusWindowController showSongShufflabilityWindow:flag];
 		NS_HANDLER
 			[self networkError:localException];
@@ -1499,6 +1526,7 @@ static MainController *sharedController;
 - (void)remoteServerFound:(id)sender
 {
     if (![networkController isServerOn] && ![networkController isConnectedToServer]) {
+		[self invalidateStatusWindowUpdateTimer];
         [[StatusWindowController sharedController] showReconnectQueryWindow];
     }
 }
@@ -1515,6 +1543,7 @@ static MainController *sharedController;
     ITDebugLog(@"Remote exception thrown: %@: %@", [exception name], [exception reason]);
     if ( ((exception == nil) || [[exception name] isEqualToString:NSPortTimeoutException]) && [networkController isConnectedToServer]) {
         //NSRunCriticalAlertPanel(@"Remote MenuTunes Disconnected", @"The MenuTunes server you were connected to stopped responding or quit. MenuTunes will revert back to the local player.", @"OK", nil, nil);
+		[self invalidateStatusWindowUpdateTimer];
         [[StatusWindowController sharedController] showNetworkErrorQueryWindow];
         if ([self disconnectFromServer]) {
             [[PreferencesController sharedPrefs] resetRemotePlayerTextFields];

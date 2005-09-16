@@ -525,6 +525,15 @@
     return ( ([temp1 length]) ? temp1 : nil ) ;
 }
 
+- (BOOL)songEnabledAtIndex:(int)index
+{
+    BOOL temp1;
+    ITDebugLog(@"Getting song enabled at index %i.", index);
+    temp1 = [ITSendAEWithString([NSString stringWithFormat:@"'----':obj { form:'prop', want:type('prop'), seld:type('enbl'), from:obj { form:'indx', want:type('cTrk'), seld:long(%lu), from:obj { form:'prop', want:type('prop'), seld:type('pPla'), from:'null'() } } }", index], 'core', 'getd', &savedPSN) booleanValue];
+    ITDebugLog(@"Getting song enabled at index %i done.", index);
+    return temp1;
+}
+
 - (int)currentAlbumTrackCount
 {
     int temp1;

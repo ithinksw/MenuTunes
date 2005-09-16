@@ -124,6 +124,11 @@
     return nil;
 }
 
+- (BOOL)songEnabledAtIndex:(int)index
+{
+	return nil;
+}
+
 - (int)currentAlbumTrackCount
 {
     return nil;

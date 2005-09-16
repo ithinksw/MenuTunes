@@ -245,6 +245,11 @@ er's process managment.
 - (NSString *)songTitleAtIndex:(int)index;
 
 /*!
+ * @method songEnabledAtIndex:
+ */
+- (BOOL)songEnabledAtIndex:(int)index;
+
+/*!
  * @method currentAlbumTrackCount:
  */
 - (int)currentAlbumTrackCount;

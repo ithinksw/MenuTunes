@@ -63,7 +63,7 @@
     NS_HANDLER
         [[MainController sharedController] networkError:localException];
     NS_ENDHANDLER
-    
+	
     ITDebugLog(@"Reset menu if required.");
     
     //Kill the old submenu items
@@ -444,7 +444,7 @@
                     keyEquivalent:@""];
             [tempItem setSubmenu:_upcomingSongsMenu];
             [tempItem setTag:2];
-            if (_playingRadio || !_currentPlaylist) {
+            if (_playingRadio || _currentPlaylist < 1) {
                 [tempItem setEnabled:NO];
             }
         } else if ([nextObject isEqualToString:@"artists"]) {
@@ -609,8 +609,17 @@
     if (_currentPlaylist && !_playingRadio) {
         if (numSongs > 0) {
             int i;
-            for (i = _currentTrack + 1; i <= _currentTrack + numSongsInAdvance; i++) {
-                if (i <= numSongs) {
+            for (i = _currentTrack + 1; i <= _currentTrack + numSongsInAdvance && i <= numSongs; i++) {
+				BOOL enabled;
+				
+				//Check if the song at this index is enabled for playback. If it isn't, skip over it
+				NS_DURING
+					enabled = [[[MainController sharedController] currentRemote] songEnabledAtIndex:i];
+				NS_HANDLER
+					[[MainController sharedController] networkError:localException];
+				NS_ENDHANDLER
+				
+                if (enabled) {
                     NSString *curSong = nil;
                     NS_DURING
                         curSong = [[[MainController sharedController] currentRemote] songTitleAtIndex:i];
@@ -623,8 +632,8 @@
                     [songItem setTag:i];
                     [songItem setTarget:self];
                 } else {
-                    break;
-                }
+					numSongsInAdvance++;
+				}
             }
         }
         

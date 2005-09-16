@@ -43,7 +43,7 @@
     NSUserDefaults *df;
     
     MTBlingController *bling;
-    NSTimer *registerTimer;
+    NSTimer *registerTimer, *_statusWindowUpdateTimer;
     BOOL timerUpdating, _checkingForServer, _popped, _open, _needsPolling;
     BOOL blinged;
 	int _timeUpdateCount; //Keeps track of how many times the time has been updated in the info status window
