@@ -351,6 +351,7 @@
 						newParent = test;
 					}
 				}
+				[[[nextNode parent] children] removeObject:nextNode];
 				[nextNode setParent:newParent];
 				[[newParent children] addObject:nextNode];
 				[newParent setType:ITMTFolderNode];
@@ -361,6 +362,7 @@
 		NSEnumerator *nestEnumerator = [nested objectEnumerator];
 		while ( (nextNode = [nestEnumerator nextObject]) ) {
 			[[sourceNode children] removeObject:nextNode];
+			[nested removeObject:nextNode];
 		}
 		[nested release];
 		
@@ -370,12 +372,10 @@
 		enumerator = [[sourceNode children] reverseObjectEnumerator];
 		while ( (nextNode = [enumerator nextObject]) ) {
 			if ([nextNode type] == ITMTPodcastsNode) {
-				[nextNode retain];
 				[[sourceNode children] removeObject:nextNode];
 				[[sourceNode children] insertObject:nextNode atIndex:1];
 				movedPodcasts = YES;
 			} else if ([nextNode type] == ITMTFolderNode) {
-				[nextNode retain];
 				[[sourceNode children] removeObject:nextNode];
 				[[sourceNode children] insertObject:nextNode atIndex:1 + movedPodcasts];
 			}
@@ -1074,6 +1074,7 @@
                 ITDebugLog(@"iTunes' highLPongOfPSN: %lu.", number.highLongOfPSN);
                 ITDebugLog(@"iTunes' lowLongOfPSN: %lu.", number.lowLongOfPSN);
                 ITDebugLog(@"Done getting iTunes' PSN.");
+				[(NSString *)name release];
                 return number;
             }
             [(NSString *)name release];

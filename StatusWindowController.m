@@ -193,6 +193,7 @@ static StatusWindowController *sharedController;
     
     [_window buildTextWindowWithString:text];
     [_window appear:self];
+	[text release];
 }
 
 - (void)showUpcomingSongsWindowWithTitles:(NSArray *)titleStrings

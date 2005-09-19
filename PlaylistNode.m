@@ -27,7 +27,7 @@
 		_name = [n retain];
 		_type = t;
 		_index = i;
-		_children = [[NSMutableArray alloc] init];
+		_children = nil;
 		_parent = nil;
 	}
 	return self;
@@ -53,6 +53,9 @@
 
 - (NSMutableArray *)children
 {
+	if (!_children) {
+		_children = [[NSMutableArray alloc] init];
+	}
 	return _children;
 }
 
