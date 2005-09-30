@@ -140,49 +140,49 @@
 		};
 		7C505D3A0801F0F300017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = ITKit;
 		};
 		7C505D3B0801F0F300017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7C992F87054F5389000B93EA;
 			remoteInfo = ITKitShowcase;
 		};
 		7C505D3C0801F0F300017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
+			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = ITFoundation;
 		};
 		7C505D3D0801F0F300017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = ITMac;
 		};
 		7C505D480801F1F400017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITMac;
 		};
 		7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITMac;
 		};
 		7C505D4E0801F20D00017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITKit;
@@ -280,9 +280,9 @@
 		7C331FEA05A923580088905B /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Preferences.nib; sourceTree = "<group>"; };
 		7C331FED05A923830088905B /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; name = English; path = English.lproj/KeyCodes.plist; sourceTree = "<group>"; };
 		7C331FF005A923970088905B /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
-		7C505D250801F0BE00017AF9 /* ITKit.xcode */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITKit.xcode; path = ../ITKit/ITKit.xcode; sourceTree = SOURCE_ROOT; };
-		7C505D290801F0C700017AF9 /* ITMac.xcode */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITMac.xcode; path = ../ITMac/ITMac.xcode; sourceTree = SOURCE_ROOT; };
-		7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITFoundation.xcode; path = ../ITFoundation/ITFoundation.xcode; sourceTree = SOURCE_ROOT; };
+		7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITKit.xcodeproj; path = ../ITKit/ITKit.xcodeproj; sourceTree = SOURCE_ROOT; };
+		7C505D290801F0C700017AF9 /* ITMac.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITMac.xcodeproj; path = ../ITMac/ITMac.xcodeproj; sourceTree = SOURCE_ROOT; };
+		7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ITFoundation.xcodeproj; path = ../ITFoundation/ITFoundation.xcodeproj; sourceTree = SOURCE_ROOT; };
 		7C95A0CE05A9299E00B4F576 /* validate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = validate.h; sourceTree = SOURCE_ROOT; };
 		7C95A0E105A929F400B4F576 /* CustomMenuTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomMenuTableView.m; sourceTree = "<group>"; };
 		7C95A0E205A929F400B4F576 /* CustomMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomMenuTableView.h; sourceTree = "<group>"; };
@@ -458,9 +458,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */,
-				7C505D290801F0C700017AF9 /* ITMac.xcode */,
-				7C505D250801F0BE00017AF9 /* ITKit.xcode */,
+				7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */,
+				7C505D290801F0C700017AF9 /* ITMac.xcodeproj */,
+				7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -731,15 +731,15 @@
 			projectReferences = (
 				{
 					ProductGroup = 7C505D370801F0F000017AF9 /* Products */;
-					ProjectRef = 7C505D250801F0BE00017AF9 /* ITKit.xcode */;
+					ProjectRef = 7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */;
 				},
 				{
 					ProductGroup = 7C505D350801F0F000017AF9 /* Products */;
-					ProjectRef = 7C505D290801F0C700017AF9 /* ITMac.xcode */;
+					ProjectRef = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
 				},
 				{
 					ProductGroup = 7C505D330801F0F000017AF9 /* Products */;
-					ProjectRef = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcode */;
+					ProjectRef = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
 				},
 			);
 			targets = (
@@ -905,17 +905,17 @@
 		};
 		7C505D490801F1F400017AF9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "ITMac (from ITMac.xcode)";
+			name = "ITMac (from ITMac.xcodeproj)";
 			targetProxy = 7C505D480801F1F400017AF9 /* PBXContainerItemProxy */;
 		};
 		7C505D4B0801F20200017AF9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "ITMac (from ITMac.xcode)";
+			name = "ITMac (from ITMac.xcodeproj)";
 			targetProxy = 7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */;
 		};
 		7C505D4F0801F20D00017AF9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "ITKit (from ITKit.xcode)";
+			name = "ITKit (from ITKit.xcodeproj)";
 			targetProxy = 7C505D4E0801F20D00017AF9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
