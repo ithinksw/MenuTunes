@@ -389,7 +389,7 @@
 
 - (NSArray *)artists
 {
-    NSAppleEventDescriptor *rawr = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pArt'), from:obj { form:'indx', want:type('cTrk'), seld:abso($616C6C20$), from:obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:() } } } }", 'core', 'getd', &savedPSN);
+    NSAppleEventDescriptor *rawr = ITSendAEWithStringAndTimeout(@"'----':obj { form:'prop', want:type('prop'), seld:type('pArt'), from:obj { form:'indx', want:type('cTrk'), seld:abso($616C6C20$), from:obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:() } } } }", 'core', 'getd', &savedPSN, 600);
     int i;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     NSArray *returnArray;
@@ -407,7 +407,7 @@
 
 - (NSArray *)albums
 {
-    NSAppleEventDescriptor *rawr = ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pAlb'), from:obj { form:'indx', want:type('cTrk'), seld:abso($616C6C20$), from:obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:() } } } }", 'core', 'getd', &savedPSN);
+    NSAppleEventDescriptor *rawr = ITSendAEWithStringAndTimeout(@"'----':obj { form:'prop', want:type('prop'), seld:type('pAlb'), from:obj { form:'indx', want:type('cTrk'), seld:abso($616C6C20$), from:obj { form:'indx', want:type('cPly'), seld:long(1), from:obj { form:'indx', want:type('cSrc'), seld:long(1), from:() } } } }", 'core', 'getd', &savedPSN, 600);
     int i;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     NSArray *returnArray;
