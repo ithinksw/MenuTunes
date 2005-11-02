@@ -13,13 +13,24 @@
 
 #import <Cocoa/Cocoa.h>
 
+typedef enum {
+	AudioscrobblerIdleStatus = -1,
+	AudioscrobblerRequestingHandshakeStatus,
+	AudioscrobblerCompletedHandshakeStatus,
+	AudioscrobblerSubmittingTrackStatus
+} AudioscrobblerStatus;
+
 @interface AudioscrobblerController : NSObject {
 	BOOL _handshakeCompleted;
+	AudioscrobblerStatus _currentStatus;
 	
+	NSString *_md5Challenge;
+	NSURL *_postURL;
 	NSMutableData *_responseData;
 }
 + (AudioscrobblerController *)sharedController;
 
 - (void)attemptHandshake;
 - (BOOL)handshakeCompleted;
+- (void)submitTrack:(NSString *)title artist:(NSString *)artist album:(NSString *)album length:(int)length;
 @end
