@@ -44,6 +44,8 @@ static StatusWindowController *sharedController;
         ITWindowEffect *entryEffect;
         ITWindowEffect *exitEffect;
         
+		_currentType = StatusWindowNoType;
+		
         _window = [[StatusWindow sharedWindow] retain];
         df = [[NSUserDefaults standardUserDefaults] retain];
         
@@ -191,6 +193,7 @@ static StatusWindowController *sharedController;
         //text = [text stringByAppendingString:[@"\n" stringByAppendingString:ratingString]];
     }
     
+	_currentType = StatusWindowTrackInfoType;
     [_window buildTextWindowWithString:text];
     [_window appear:self];
 	[text release];
@@ -204,6 +207,7 @@ static StatusWindowController *sharedController;
     [_window setImage:[NSImage imageNamed:@"Upcoming"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:[bull stringByAppendingString:[titleStrings componentsJoinedByString:end]]];
+	_currentType = StatusWindowUpcomingSongsType;
     [_window appear:self];
 }
 
@@ -215,6 +219,7 @@ static StatusWindowController *sharedController;
                                       size:18
                                      count:10
                                     active:( ceil(level * 100) / 10 )];
+	_currentType = StatusWindowVolumeType;
     [_window appear:self];
 }
 
@@ -226,7 +231,8 @@ static StatusWindowController *sharedController;
                                       size:48
                                      count:5
                                     active:( ceil(rating * 100) / 20 )];
-    [_window appear:self];
+    _currentType = StatusWindowRatingType;
+	[_window appear:self];
 }
 
 - (void)showShuffleWindow:(BOOL)shuffle
@@ -234,6 +240,7 @@ static StatusWindowController *sharedController;
     [_window setImage:[NSImage imageNamed:@"Shuffle"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:( shuffle ? NSLocalizedString(@"shuffleOn", @"Shuffle On") : NSLocalizedString(@"shuffleOff", @"Shuffle Off"))];
+	_currentType = StatusWindowRatingType;
     [_window appear:self];
 }
 
@@ -252,6 +259,7 @@ static StatusWindowController *sharedController;
     [_window setImage:[NSImage imageNamed:@"Repeat"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:string];
+	_currentType = StatusWindowRepeatType;
     [_window appear:self];
 }
 
@@ -260,6 +268,7 @@ static StatusWindowController *sharedController;
     [_window setImage:[NSImage imageNamed:@"Shuffle"]];
     [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
     [_window buildTextWindowWithString:( !shufflable ? NSLocalizedString(@"shufflableOn", @"Current Song Skipped When Shuffling") : NSLocalizedString(@"shufflableOff", @"Current Song Not Skipped When Shuffling"))];
+	_currentType = StatusWindowShufflabilityType;
     [_window appear:self];
 }
 
@@ -276,6 +285,7 @@ static StatusWindowController *sharedController;
                             defaultAction:@selector(autoLaunchOK)
                           alternateAction:@selector(autoLaunchCancel)];
 
+	_currentType = StatusWindowSetupType;
     [_window appear:self];
     [_window setLocked:YES];
 }
@@ -294,6 +304,7 @@ static StatusWindowController *sharedController;
                             defaultAction:@selector(registerNowOK)
                           alternateAction:@selector(registerNowCancel)];
 
+	_currentType = StatusWindowRegistrationType;
     [_window appear:self];
     [_window setLocked:YES];
 }
@@ -311,6 +322,7 @@ static StatusWindowController *sharedController;
                             defaultAction:@selector(reconnect)
                           alternateAction:@selector(cancelReconnect)];
 
+	_currentType = StatusWindowNetworkType;
     [_window appear:self];
     [_window setLocked:YES];
 }
@@ -328,6 +340,7 @@ static StatusWindowController *sharedController;
                             defaultAction:@selector(cancelReconnect)
                           alternateAction:nil];
 
+	_currentType = StatusWindowNetworkType;
     [_window appear:self];
     [_window setLocked:YES];
 }
@@ -345,6 +358,7 @@ static StatusWindowController *sharedController;
                             defaultAction:@selector(showPreferencesAndClose)
                           alternateAction:@selector(cancelReconnect)];
 
+	_currentType = StatusWindowPreferencesType;
     [_window appear:self];
     [_window setLocked:YES];
 }
@@ -359,8 +373,15 @@ static StatusWindowController *sharedController;
                                    target:[MainController sharedController]
                             defaultAction:@selector(cancelReconnect)
                           alternateAction:nil];
+
+	_currentType = StatusWindowDebugType;
     [_window appear:self];
 	[_window setLocked:YES];
+}
+
+- (StatusWindowType)currentStatusWindowType
+{
+	return _currentType;
 }
 
 - (void)updateTime:(NSString *)time

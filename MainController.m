@@ -1028,6 +1028,13 @@ static MainController *sharedController;
     int                     rating      = -1;
     int                     playCount   = -1;
 	
+	//If we're already visible and the setting says so, vanish instead of displaying again.
+	if ([[StatusWindowController sharedController] currentStatusWindowType] == StatusWindowTrackInfoType && [[StatusWindow sharedWindow] visibilityState] == ITWindowVisibleState) {
+		[self invalidateStatusWindowUpdateTimer];
+		[[StatusWindow sharedWindow] vanish:nil];
+		return;
+	}
+	
     ITDebugLog(@"Showing track info status window.");
     
     NS_DURING

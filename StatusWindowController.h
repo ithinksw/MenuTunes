@@ -23,11 +23,27 @@ typedef enum {
     StatusWindowRepeatTrack
 } StatusWindowRepeatMode;
 
+typedef enum {
+	StatusWindowNoType = -1,
+	StatusWindowTrackInfoType,
+	StatusWindowUpcomingSongsType,
+	StatusWindowVolumeType,
+	StatusWindowRatingType,
+	StatusWindowRepeatType,
+	StatusWindowShuffleType,
+	StatusWindowShufflabilityType,
+	StatusWindowSetupType,
+	StatusWindowRegistrationType,
+	StatusWindowNetworkType,
+	StatusWindowPreferencesType,
+	StatusWindowDebugType
+} StatusWindowType;
 
 @interface StatusWindowController : NSObject {
     StatusWindow   *_window;
     NSUserDefaults *df;
 	NSRange _timeRange;
+	StatusWindowType _currentType;
 }
 
 + (StatusWindowController *)sharedController;
@@ -57,6 +73,7 @@ typedef enum {
                            playCount:                   (int)playCount
                                image:             (NSImage *)art;
 
+- (StatusWindowType)currentStatusWindowType;
 - (void)updateTime:(NSString *)time;
 
 @end
