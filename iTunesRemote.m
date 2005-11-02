@@ -705,7 +705,7 @@
 {
     ITDebugLog(@"Getting current song album art.");
     NSData *data = ([self isPlaying]) ? [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pPCT'), from:obj { form:'indx', want:type('cArt'), seld:long(1), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } } }", 'core', 'getd', &savedPSN) data] : nil;
-    ITDebugLog(@"Getting current song album art done.");    
+    ITDebugLog(@"Getting current song album art done.");
     if (data) {
         return [[[NSImage alloc] initWithData:data] autorelease];
     } else {

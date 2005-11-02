@@ -1029,7 +1029,8 @@ static MainController *sharedController;
     int                     playCount   = -1;
 	
 	//If we're already visible and the setting says so, vanish instead of displaying again.
-	if ([[StatusWindowController sharedController] currentStatusWindowType] == StatusWindowTrackInfoType && [[StatusWindow sharedWindow] visibilityState] == ITWindowVisibleState) {
+	if ([df boolForKey:@"ToggleTrackInfoWithHotKey"] && [statusWindowController currentStatusWindowType] == StatusWindowTrackInfoType && [[StatusWindow sharedWindow] visibilityState] == ITWindowVisibleState) {
+		ITDebugLog(@"Track window is already visible, hiding track window.");
 		[self invalidateStatusWindowUpdateTimer];
 		[[StatusWindow sharedWindow] vanish:nil];
 		return;
@@ -1046,16 +1047,18 @@ static MainController *sharedController;
     
     if ( title ) {
         if ( [df boolForKey:@"showAlbumArtwork"] ) {
-	    NSSize oldSize, newSize;
-             NS_DURING
-		 art = [[self currentRemote] currentSongAlbumArt];
-		 oldSize = [art size];
-		 if (oldSize.width > oldSize.height) newSize = NSMakeSize(110,oldSize.height * (110.0f / oldSize.width));
-		 else newSize = NSMakeSize(oldSize.width * (110.0f / oldSize.height),110);
-                art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
-            NS_HANDLER
-                [self networkError:localException];
-            NS_ENDHANDLER
+			NSSize oldSize, newSize;
+			NS_DURING
+				art = [[self currentRemote] currentSongAlbumArt];
+				oldSize = [art size];
+				if (oldSize.width > oldSize.height) {
+					newSize = NSMakeSize(110,oldSize.height * (110.0f / oldSize.width));
+				}
+				else newSize = NSMakeSize(oldSize.width * (110.0f / oldSize.height),110);
+				art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
+			NS_HANDLER
+				[self networkError:localException];
+			NS_ENDHANDLER
         }
         
         if ( [df boolForKey:@"showAlbum"] ) {
@@ -1336,9 +1339,11 @@ static MainController *sharedController;
 
 - (void)setRating:(ITHotKey *)sender
 {
-    int stars = [[sender name] characterAtIndex:9] - 48;
-    [self selectSongRating:stars * 20];
-    [statusWindowController showRatingWindowWithRating:(float)stars / 5.0];
+	if ([self songIsPlaying]) {
+		int stars = [[sender name] characterAtIndex:9] - 48;
+		[self selectSongRating:stars * 20];
+		[statusWindowController showRatingWindowWithRating:(float)stars / 5.0];
+	}
 }
 
 - (void)toggleLoop
