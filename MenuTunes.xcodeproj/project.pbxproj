@@ -12,6 +12,8 @@
 		3739DDA508CFA0C600CCFBC6 /* PlaylistNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */; };
 		3739DDA608CFA0C600CCFBC6 /* PlaylistNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */; };
 		3740716D05ACE20500CC2142 /* libValidate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3740716C05ACE20500CC2142 /* libValidate.a */; };
+		3798C6B6091874600004C420 /* AudioscrobblerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3798C6B4091874600004C420 /* AudioscrobblerController.h */; };
+		3798C6B7091874600004C420 /* AudioscrobblerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3798C6B5091874600004C420 /* AudioscrobblerController.m */; };
 		37B7EA0406AECF0700A4DE86 /* ChasingArrow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */; };
 		37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FB305A922210088905B /* StatusWindowController.m */; };
 		7C331F8F05A921AC0088905B /* MenuTunes.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F8D05A921AC0088905B /* MenuTunes.h */; };
@@ -166,20 +168,6 @@
 			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
 			remoteInfo = ITMac;
 		};
-		7C505D480801F1F400017AF9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = ITMac;
-		};
-		7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = ITMac;
-		};
 		7C505D4E0801F20D00017AF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */;
@@ -226,6 +214,8 @@
 		3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistNode.h; sourceTree = "<group>"; };
 		3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistNode.m; sourceTree = "<group>"; };
 		3740716C05ACE20500CC2142 /* libValidate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libValidate.a; sourceTree = "<group>"; };
+		3798C6B4091874600004C420 /* AudioscrobblerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioscrobblerController.h; sourceTree = "<group>"; };
+		3798C6B5091874600004C420 /* AudioscrobblerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioscrobblerController.m; sourceTree = "<group>"; };
 		37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ChasingArrow.tiff; sourceTree = "<group>"; };
 		7C331F6805A918EC0088905B /* ITMTRemote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ITMTRemote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C331F6905A918EC0088905B /* ITMTRemote-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ITMTRemote-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -365,6 +355,8 @@
 				7C331FC105A9225A0088905B /* iTunesRemote.m */,
 				3739DDA108CFA0C600CCFBC6 /* PlaylistNode.h */,
 				3739DDA208CFA0C600CCFBC6 /* PlaylistNode.m */,
+				3798C6B4091874600004C420 /* AudioscrobblerController.h */,
+				3798C6B5091874600004C420 /* AudioscrobblerController.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -532,6 +524,7 @@
 				7C95A0CF05A9299E00B4F576 /* validate.h in Headers */,
 				7C95A0E405A929F400B4F576 /* CustomMenuTableView.h in Headers */,
 				3739DDA308CFA0C600CCFBC6 /* PlaylistNode.h in Headers */,
+				3798C6B6091874600004C420 /* AudioscrobblerController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,7 +620,6 @@
 				WRAPPER_EXTENSION = remote;
 			};
 			dependencies = (
-				7C505D490801F1F400017AF9 /* PBXTargetDependency */,
 				7C331FF305A9253F0088905B /* PBXTargetDependency */,
 			);
 			name = iTunesRemote;
@@ -700,7 +692,6 @@
 				WRAPPER_EXTENSION = app;
 			};
 			dependencies = (
-				7C505D4B0801F20200017AF9 /* PBXTargetDependency */,
 				7C505D4F0801F20D00017AF9 /* PBXTargetDependency */,
 				7C331FF505A925550088905B /* PBXTargetDependency */,
 				7C331FF705A9255A0088905B /* PBXTargetDependency */,
@@ -882,6 +873,7 @@
 				7C95A0E305A929F400B4F576 /* CustomMenuTableView.m in Sources */,
 				37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */,
 				3739DDA408CFA0C600CCFBC6 /* PlaylistNode.m in Sources */,
+				3798C6B7091874600004C420 /* AudioscrobblerController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -902,16 +894,6 @@
 			isa = PBXTargetDependency;
 			target = 7C331F6E05A918FB0088905B /* iTunesRemote */;
 			targetProxy = 7C331FF605A9255A0088905B /* PBXContainerItemProxy */;
-		};
-		7C505D490801F1F400017AF9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ITMac (from ITMac.xcodeproj)";
-			targetProxy = 7C505D480801F1F400017AF9 /* PBXContainerItemProxy */;
-		};
-		7C505D4B0801F20200017AF9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ITMac (from ITMac.xcodeproj)";
-			targetProxy = 7C505D4A0801F20200017AF9 /* PBXContainerItemProxy */;
 		};
 		7C505D4F0801F20D00017AF9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
