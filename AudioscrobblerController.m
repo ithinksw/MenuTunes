@@ -40,11 +40,6 @@ static AudioscrobblerController *_sharedController = nil;
 		_responseData = nil;
 		_md5Challenge = nil;
 		_postURL = nil;
-		
-		//Test variables
-		_md5Challenge = @"315EFDA9FDA6A24B421BE991511DEE90";
-		_postURL = [[NSURL alloc] initWithString:@"http://62.216.251.205:80/protocol_1.1"];
-		_handshakeCompleted = YES;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioscrobblerNotification:) name:nil object:self];
 	}
 	return self;
@@ -83,79 +78,50 @@ static AudioscrobblerController *_sharedController = nil;
 	
 	//What we eventually want is a submission list that sends backlogs also
 	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] mutableCopy];
-	NSString *responseHash, *requestBody;
+	NSString *responseHash = @"", *requestBody;
 	
 	char *pass = "waffles";
-	unsigned char *buffer, *buffer2, buffer3[16];
+	unsigned char *buffer;
 	EVP_MD_CTX ctx;
 	int i;
 	
 	buffer = malloc(EVP_MD_size(EVP_md5()));
-	//buffer3 = malloc(EVP_MD_size(EVP_md5()));
 	
 	EVP_DigestInit(&ctx, EVP_md5());
 	EVP_DigestUpdate(&ctx, pass, strlen(pass));
-	EVP_DigestUpdate(&ctx, [_md5Challenge UTF8String], strlen([_md5Challenge UTF8String]));
 	EVP_DigestFinal(&ctx, buffer, NULL);
 	
 	for (i = 0; i < 16; i++) {
-		char hex1, hex2;
-		hex1 = toascii(48+ (buffer[i] / 16));
-		if (hex1 > 57) {
-			hex1 = hex1 + 39;
-		}
-		hex2 = toascii(48 + (buffer[i] % 16));
-		if (hex2 > 57) {
-			hex2 = hex2 + 39;
-		}
-		
-		buffer3[i] = hex1;
-		buffer3[i + 1] = hex2;
+		responseHash = [responseHash stringByAppendingFormat:@"%0.2x", buffer[i]];
 	}
 	
-	NSLog(@"%s", buffer3);
-	
-	/*unsigned char *cat = strcat(buffer3, [[_md5Challenge lowercaseString] UTF8String]);
-	
+	free(buffer);
+	buffer = malloc(EVP_MD_size(EVP_md5()));
+	char *cat = (char *)[[responseHash stringByAppendingString:_md5Challenge] UTF8String];
 	EVP_DigestInit(&ctx, EVP_md5());
 	EVP_DigestUpdate(&ctx, cat, strlen(cat));
-	EVP_DigestFinal(&ctx, buffer2, NULL);
+	EVP_DigestFinal(&ctx, buffer, NULL);
 	
+	responseHash = @"";
 	for (i = 0; i < 16; i++) {
-		char hex1, hex2;
-		hex1 = toascii(48+ (buffer2[i] / 16));
-		if (hex1 > 57) {
-			hex1 = hex1 + 39;
-		}
-		hex2 = toascii(48 + (buffer2[i] % 16));
-		if (hex2 > 57) {
-			hex2 = hex2 + 39;
-		}
-		buffer3[i] = hex1;
-		buffer3[i + 1] = hex2;
+		responseHash = [responseHash stringByAppendingFormat:@"%0.2x", buffer[i]];
 	}
-	NSLog(@"%s", buffer3);*/
+	free(buffer);
 	
-	if ([NSString respondsToSelector:@selector(stringWithCString:encoding:)]) {
-		responseHash = [NSString stringWithCString:buffer3 encoding:NSASCIIStringEncoding];
-	} else {
-		responseHash = [NSString stringWithCString:buffer3 length:strlen(buffer)];
-	}
-	
-	requestBody = [NSString stringWithFormat:@"u=%@&s=%@&a[0]=%@&t[0]=%@&b[0]=%@&m[0]=&l[0]=%i&i[0]=%@", @"Tristrex", @"rawr", responseHash, title, album, length, [[NSDate date] descriptionWithCalendarFormat:@"%Y-%m-%d %H:%M:%S" timeZone:nil locale:nil]];
+	requestBody = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[NSString stringWithFormat:@"u=%@&s=%@&a[0]=%@&t[0]=%@&b[0]=%@&m[0]=&l[0]=%i&i[0]=%@", @"Tristrex", responseHash, artist, title, album, length, [[NSDate date] descriptionWithCalendarFormat:@"%Y-%m-%d %H:%M:%S" timeZone:nil locale:nil]], NULL, NULL, kCFStringEncodingUTF8);
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[requestBody dataUsingEncoding:NSUTF8StringEncoding]];
-	
 	_currentStatus = AudioscrobblerSubmittingTrackStatus;
 	_responseData = [[NSMutableData alloc] init];
 	[NSURLConnection connectionWithRequest:request delegate:self];
+	CFRelease(requestBody);
 	[request release];
 }
 
 - (void)handleAudioscrobblerNotification:(NSNotification *)note
 {
 	if ([[note name] isEqualToString:@"AudioscrobblerHandshakeComplete"]) {
-		[[AudioscrobblerController sharedController] submitTrack:@"Stairway To Heaven" artist:@"Led Zeppelin" album:@"Led Zeppelin IV" length:483];
+		[[AudioscrobblerController sharedController] submitTrack:@"Good Times Bad Times" artist:@"Led Zeppelin" album:@"Led Zeppelin I" length:166];
 	}
 }
 
@@ -187,7 +153,6 @@ static AudioscrobblerController *_sharedController = nil;
 				_md5Challenge = [[lines objectAtIndex:1] retain];
 				_postURL = [[NSURL alloc] initWithString:[lines objectAtIndex:2]];
 				_handshakeCompleted = YES;
-				NSLog(@"%@", _md5Challenge);
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerHandshakeComplete" object:self];
 			} else {
 				//We have an error
