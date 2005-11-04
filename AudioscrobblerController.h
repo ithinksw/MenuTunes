@@ -17,12 +17,15 @@ typedef enum {
 	AudioscrobblerIdleStatus = -1,
 	AudioscrobblerRequestingHandshakeStatus,
 	AudioscrobblerCompletedHandshakeStatus,
-	AudioscrobblerSubmittingTrackStatus
+	AudioscrobblerSubmittingTracksStatus,
+	AudioscrobblerWaitingIntervalStatus
 } AudioscrobblerStatus;
 
 @interface AudioscrobblerController : NSObject {
 	BOOL _handshakeCompleted;
 	AudioscrobblerStatus _currentStatus;
+	NSMutableArray *_tracks;
+	NSDate *_delayDate;
 	
 	NSString *_md5Challenge;
 	NSURL *_postURL;
@@ -33,4 +36,5 @@ typedef enum {
 - (void)attemptHandshake;
 - (BOOL)handshakeCompleted;
 - (void)submitTrack:(NSString *)title artist:(NSString *)artist album:(NSString *)album length:(int)length;
+- (void)submitTracks;
 @end
