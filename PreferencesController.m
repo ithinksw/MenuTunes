@@ -7,6 +7,8 @@
 #import "StatusWindowController.h"
 #import "CustomMenuTableView.h"
 
+#import <Security/Security.h>
+
 #import <netinet/in.h>
 #import <arpa/inet.h>
 #import <openssl/sha.h>
@@ -272,7 +274,31 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 1120) {
         mkdir([[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] cString], 0744);
         [[NSWorkspace sharedWorkspace] openFile:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
-    }
+    } else if ( [sender tag] == 6010) {
+		//Toggle the other Audioscrobbler options
+		[df setBool:SENDER_STATE forKey:@"audioscrobblerEnabled"];
+		[audioscrobblerUseCacheCheckbox setEnabled:SENDER_STATE];
+		[audioscrobblerUserTextField setEnabled:SENDER_STATE];
+		[audioscrobblerPasswordTextField setEnabled:SENDER_STATE];
+	} else if ( [sender tag ] == 6015) {
+		[df setString:[sender stringValue] forKey:@"audioscrobblerUser"];
+	} else if ( [sender tag ] == 6030) {
+		//Set the password in the keychain
+		char *service = "Audioscrobbler";
+		NSString *account = [df stringForKey:@"audioscrobblerUser"];
+		SecKeychainItemRef item;
+		OSStatus status = SecKeychainFindGenericPassword(NULL, strlen(service), service, [account length], [account UTF8String], NULL, NULL, &item);
+		if (status == errSecItemNotFound) {
+			//Create the keychain
+		} else if (status == noErr) {
+			//Modify the current item
+			//SecKeychainItemFreeContent(NULL, item);
+		} else {
+			ITDebugLog(@"Audioscrobbler: Unable to retrieve keychain password.");
+		}
+	} else if ( [sender tag] == 6045) {
+		[df setBool:SENDER_STATE forKey:@"audioscrobblerCacheSubmissions"];
+	}
     [df synchronize];
 }
 
@@ -910,6 +936,22 @@ static PreferencesController *prefs = nil;
         [selectSharedPlayerButton setEnabled:YES];
     }
     
+	//Setup the Audioscrobbler controls
+	if ([df boolForKey:@"audioscrobblerEnabled"]) {
+		[audioscrobblerEnabledCheckbox setState:NSOnState];
+		[audioscrobblerUserTextField setEnabled:YES];
+		[audioscrobblerPasswordTextField setEnabled:YES];
+		[audioscrobblerUseCacheCheckbox setEnabled:YES];
+	} else {
+		[audioscrobblerUserTextField setEnabled:NO];
+		[audioscrobblerPasswordTextField setEnabled:NO];
+		[audioscrobblerUseCacheCheckbox setEnabled:NO];
+	}
+	[audioscrobblerUserTextField setStringValue:[df stringForKey:@"audioscrobblerUser"]];
+	if ([[audioscrobblerUserTextField stringValue] length] > 0) {
+		[audioscrobblerPasswordTextField setStringValue:@"******"];
+	}
+	
     [[NSNotificationCenter defaultCenter] addObserver:sharingTableView selector:@selector(reloadData) name:@"ITMTFoundNetService" object:nil];
     
     serverName = [df stringForKey:@"sharedPlayerName"];

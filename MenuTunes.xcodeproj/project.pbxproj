@@ -14,6 +14,7 @@
 		3740716D05ACE20500CC2142 /* libValidate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3740716C05ACE20500CC2142 /* libValidate.a */; };
 		3798C6B6091874600004C420 /* AudioscrobblerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3798C6B4091874600004C420 /* AudioscrobblerController.h */; };
 		3798C6B7091874600004C420 /* AudioscrobblerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3798C6B5091874600004C420 /* AudioscrobblerController.m */; };
+		37A1EBDB091F07F700C2CE55 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37A1EBDA091F07F700C2CE55 /* Security.framework */; };
 		37B7EA0406AECF0700A4DE86 /* ChasingArrow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */; };
 		37CB20230753EE1E00BB0E46 /* StatusWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C331FB305A922210088905B /* StatusWindowController.m */; };
 		7C331F8F05A921AC0088905B /* MenuTunes.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C331F8D05A921AC0088905B /* MenuTunes.h */; };
@@ -216,6 +217,7 @@
 		3740716C05ACE20500CC2142 /* libValidate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libValidate.a; sourceTree = "<group>"; };
 		3798C6B4091874600004C420 /* AudioscrobblerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioscrobblerController.h; sourceTree = "<group>"; };
 		3798C6B5091874600004C420 /* AudioscrobblerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioscrobblerController.m; sourceTree = "<group>"; };
+		37A1EBDA091F07F700C2CE55 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		37B7EA0306AECF0700A4DE86 /* ChasingArrow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ChasingArrow.tiff; sourceTree = "<group>"; };
 		7C331F6805A918EC0088905B /* ITMTRemote.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ITMTRemote.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C331F6905A918EC0088905B /* ITMTRemote-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ITMTRemote-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -314,6 +316,7 @@
 				7C95A0E905A92B0700B4F576 /* libcrypto.dylib in Frameworks */,
 				7C95A0F005A92B4800B4F576 /* Carbon.framework in Frameworks */,
 				3740716D05ACE20500CC2142 /* libValidate.a in Frameworks */,
+				37A1EBDB091F07F700C2CE55 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +369,7 @@
 			children = (
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				7C95A0EF05A92B4800B4F576 /* Carbon.framework */,
+				37A1EBDA091F07F700C2CE55 /* Security.framework */,
 				3740716C05ACE20500CC2142 /* libValidate.a */,
 				7C95A0E805A92B0700B4F576 /* libcrypto.dylib */,
 			);

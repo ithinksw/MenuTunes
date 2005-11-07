@@ -24,6 +24,10 @@
     IBOutlet NSPopUpButton *appearanceEffectPopup;
     IBOutlet NSSlider *appearanceSpeedSlider;
     IBOutlet NSButton *artistCheckbox;
+	IBOutlet NSButton *audioscrobblerEnabledCheckbox;
+	IBOutlet NSTextField *audioscrobblerPasswordTextField;
+	IBOutlet NSButton *audioscrobblerUseCacheCheckbox;
+	IBOutlet NSTextField *audioscrobblerUserTextField;
     IBOutlet NSPopUpButton *backgroundStylePopup;
     IBOutlet NSColorWell *backgroundColorWell;
     IBOutlet NSPopUpButton *backgroundColorPopup;

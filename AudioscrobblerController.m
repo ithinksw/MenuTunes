@@ -121,7 +121,7 @@ static AudioscrobblerController *_sharedController = nil;
 	
 	int i;
 	NSMutableString *requestString;
-	NSString *authString, *responseHash;
+	NSString *authString, *responseHash = @"";
 	char *pass = "waffles";
 	unsigned char *buffer;
 	EVP_MD_CTX ctx;
@@ -166,7 +166,7 @@ static AudioscrobblerController *_sharedController = nil;
 	[authString release];
 	
 	//We can only submit ten tracks at a time
-	for (i = 0; ([_tracks count] > 0) && (i < 10); i++) {
+	for (i = 0; (i < [_tracks count]) && (i < 10); i++) {
 		NSDictionary *nextTrack = [_tracks objectAtIndex:i];
 		NSString *trackString;
 		
