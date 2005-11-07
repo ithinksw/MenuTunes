@@ -21,6 +21,10 @@
                 appearanceEffectPopup = NSPopUpButton; 
                 appearanceSpeedSlider = NSSlider; 
                 artistCheckbox = NSButton; 
+                audioscrobblerEnabledCheckbox = NSButton; 
+                audioscrobblerPasswordTextField = NSSecureTextField; 
+                audioscrobblerUseCacheCheckbox = NSButton; 
+                audioscrobblerUserTextField = NSTextField; 
                 backgroundColorPopup = NSPopUpButton; 
                 backgroundColorWell = NSColorWell; 
                 backgroundStylePopup = NSPopUpButton; 
