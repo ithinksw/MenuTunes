@@ -33,6 +33,8 @@
 
 
 #define SENDER_STATE (([sender state] == NSOnState) ? YES : NO)
+#define AUDIOSCROBBLER_KEYCHAIN_SERVICE "MenuTunes: Audioscrobbler"
+#define AUDIOSCROBBLER_KEYCHAIN_KIND "application password"
 
 /*************************************************************************/
 #pragma mark -
@@ -51,6 +53,12 @@
 - (void)repopulateEffectPopupsForVerticalPosition:(ITVerticalWindowPosition)vPos horizontalPosition:(ITHorizontalWindowPosition)hPos;
 - (BOOL)effect:(Class)effectClass supportsVerticalPosition:(ITVerticalWindowPosition)vPos withHorizontalPosition:(ITHorizontalWindowPosition)hPos;
 - (IBAction)changeMenus:(id)sender;
+
+- (SecKeychainItemRef)keychainItemForUser:(NSString *)user;
+- (BOOL)keychainItemExistsForUser:(NSString *)user;
+- (BOOL)createKeychainItemForUser:(NSString *)user andPassword:(NSString *)password;
+- (BOOL)deleteKeychainItemForUser:(NSString *)user;
+- (BOOL)setKeychainItemPassword:(NSString *)password forUser:(NSString *)user;
 @end
 
 
@@ -281,20 +289,29 @@ static PreferencesController *prefs = nil;
 		[audioscrobblerUserTextField setEnabled:SENDER_STATE];
 		[audioscrobblerPasswordTextField setEnabled:SENDER_STATE];
 	} else if ( [sender tag ] == 6015) {
-		[df setString:[sender stringValue] forKey:@"audioscrobblerUser"];
+		//Here we create a new keychain item if needed and deletes the keychain item if the field is cleared.
+		NSString *currentAccount = [df stringForKey:@"audioscrobblerUser"], *newAccount = [sender stringValue];
+		if ([newAccount length] == 0) {
+			[self deleteKeychainItemForUser:currentAccount];
+		} else if (![currentAccount isEqualToString:newAccount] && [[audioscrobblerPasswordTextField stringValue] length] > 0) {
+			[df setObject:newAccount forKey:@"audioscrobblerUser"];
+			if ([self keychainItemExistsForUser:currentAccount]) {
+				//Delete the current keychain item if there is one
+				[self deleteKeychainItemForUser:currentAccount];
+			}
+			[self createKeychainItemForUser:newAccount andPassword:[audioscrobblerPasswordTextField stringValue]];
+		}
 	} else if ( [sender tag ] == 6030) {
-		//Set the password in the keychain
-		char *service = "Audioscrobbler";
-		NSString *account = [df stringForKey:@"audioscrobblerUser"];
-		SecKeychainItemRef item;
-		OSStatus status = SecKeychainFindGenericPassword(NULL, strlen(service), service, [account length], [account UTF8String], NULL, NULL, &item);
-		if (status == errSecItemNotFound) {
-			//Create the keychain
-		} else if (status == noErr) {
-			//Modify the current item
-			//SecKeychainItemFreeContent(NULL, item);
-		} else {
-			ITDebugLog(@"Audioscrobbler: Unable to retrieve keychain password.");
+		//Here we set the password for an existing keychain item or we create a new keychain item.
+		if ([[audioscrobblerUserTextField stringValue] length] > 0) {
+			NSString *account = [df stringForKey:@"audioscrobblerUser"];
+			if ([self keychainItemExistsForUser:account]) {
+				//Update the current keychain item
+				[self setKeychainItemPassword:[sender stringValue] forUser:account];
+			} else if ([[sender stringValue] length] > 0 && [[audioscrobblerUserTextField stringValue] length]) {
+				//Create a new keychain item
+				[self createKeychainItemForUser:account andPassword:[sender stringValue]];
+			}
 		}
 	} else if ( [sender tag] == 6045) {
 		[df setBool:SENDER_STATE forKey:@"audioscrobblerCacheSubmissions"];
@@ -321,15 +338,15 @@ static PreferencesController *prefs = nil;
         //Set the server password
         const char *instring = [[sender stringValue] UTF8String];
         const char *password = "p4s5w0rdMT1.2";
-        unsigned char *result;
+        char *result;
         NSData *hashedPass, *passwordStringHash;
         if ([[sender stringValue] length] == 0) {
             [df setObject:[NSData data] forKey:@"sharedPlayerPassword"];
             return;
         }
-        result = SHA1(instring, strlen(instring), NULL);
+        result = (char *)SHA1((unsigned char *)instring, strlen(instring), NULL);
         hashedPass = [NSData dataWithBytes:result length:strlen(result)];
-        result = SHA1(password, strlen(password), NULL);
+        result = (char *)SHA1((unsigned char *)password, strlen(password), NULL);
         passwordStringHash = [NSData dataWithBytes:result length:strlen(result)];
         if (![hashedPass isEqualToData:passwordStringHash]) {
             [df setObject:hashedPass forKey:@"sharedPlayerPassword"];
@@ -400,8 +417,8 @@ static PreferencesController *prefs = nil;
         }
     } else if ( [sender tag] == 5150 ) {
         const char *instring = [[sender stringValue] UTF8String];
-        unsigned char *result;
-        result = SHA1(instring, strlen(instring), NULL);
+        char *result;
+        result = (char *)SHA1((unsigned char *)instring, strlen(instring), NULL);
         [df setObject:[NSData dataWithBytes:result length:strlen(result)] forKey:@"connectPassword"];
     } else if ( [sender tag] == 5110 ) {
         //Cancel
@@ -440,8 +457,8 @@ static PreferencesController *prefs = nil;
     } else if ( [sender tag] == 6020 ) {
         //OK password entry, retry connect
         const char *instring = [[passwordPanelTextField stringValue] UTF8String];
-        unsigned char *result;
-        result = SHA1(instring, strlen(instring), NULL);
+        char *result;
+        result = (char *)SHA1((unsigned char *)instring, strlen(instring), NULL);
         [df setObject:[NSData dataWithBytes:result length:strlen(result)] forKey:@"connectPassword"];
         [passwordPanel orderOut:nil];
         [NSApp stopModalWithCode:1];
@@ -624,7 +641,7 @@ static PreferencesController *prefs = nil;
 
 - (void)autoLaunchOK
 {
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
     
@@ -633,7 +650,7 @@ static PreferencesController *prefs = nil;
 
 - (void)autoLaunchCancel
 {
-    [[StatusWindow sharedWindow] setLocked:NO];
+    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
     [[StatusWindow sharedWindow] vanish:self];
     [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
 }
@@ -671,6 +688,140 @@ static PreferencesController *prefs = nil;
         [selectedPlayerTextField setStringValue:@"No shared player selected."];
         [locationTextField setStringValue:@"-"];
     }
+}
+
+/*************************************************************************/
+#pragma mark -
+#pragma mark KEYCHAIN SUPPORT METHODS
+/*************************************************************************/
+
+- (SecKeychainItemRef)keychainItemForUser:(NSString *)user
+{
+	SecKeychainSearchRef search;
+	SecKeychainItemRef item;
+	OSStatus status;
+	SecKeychainAttribute attributes[3];
+	SecKeychainAttributeList list;
+
+	ITDebugLog(@"Audioscrobbler: Searching for keychain item for %@.", user);
+	attributes[0].tag = kSecAccountItemAttr;
+	attributes[0].data = (char *)[user UTF8String];
+	attributes[0].length = [user length];
+	attributes[1].tag = kSecDescriptionItemAttr;
+	attributes[1].data = AUDIOSCROBBLER_KEYCHAIN_KIND;
+	attributes[1].length = strlen(AUDIOSCROBBLER_KEYCHAIN_KIND);
+	attributes[2].tag = kSecLabelItemAttr;
+	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE;
+	attributes[2].length = strlen(AUDIOSCROBBLER_KEYCHAIN_SERVICE);
+	list.count = 3;
+	list.attr = attributes;
+
+	status = SecKeychainSearchCreateFromAttributes(NULL, kSecGenericPasswordItemClass, &list, &search);
+
+	if (status != noErr) {
+		ITDebugLog(@"Audioscrobbler: Error searching for existing keychain item: %i", status);
+	}
+	
+	status = SecKeychainSearchCopyNext(search, &item);
+	
+	if (status != noErr) {
+		ITDebugLog(@"Audioscrobbler: Error searching for existing keychain item: %i", status);
+		item = nil;
+	}
+	
+    CFRelease(search);
+	return item;
+}
+
+- (BOOL)keychainItemExistsForUser:(NSString *)user
+{
+	SecKeychainItemRef item = [self keychainItemForUser:user];
+	BOOL exists = (item != nil);
+	if (item) {
+		CFRelease(item);
+	}
+	return exists;
+}
+
+- (BOOL)createKeychainItemForUser:(NSString *)user andPassword:(NSString *)password
+{
+	SecKeychainItemRef item;
+	OSStatus status;
+	SecKeychainAttribute attributes[3];
+	SecKeychainAttributeList list;
+
+	ITDebugLog(@"Audioscrobbler: Creating new keychain item for %@.", user);
+	attributes[0].tag = kSecAccountItemAttr;
+	attributes[0].data = (char *)[user UTF8String];
+	attributes[0].length = [user length];
+	attributes[1].tag = kSecDescriptionItemAttr;
+	attributes[1].data = AUDIOSCROBBLER_KEYCHAIN_KIND;
+	attributes[1].length = strlen(AUDIOSCROBBLER_KEYCHAIN_KIND);
+	attributes[2].tag = kSecLabelItemAttr;
+	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE;
+	attributes[2].length = strlen(AUDIOSCROBBLER_KEYCHAIN_SERVICE);
+	list.count = 3;
+	list.attr = attributes;
+
+	status = SecKeychainItemCreateFromContent(kSecGenericPasswordItemClass, &list, [password length], [password UTF8String], NULL, NULL, &item);
+	if (status != noErr) {
+		ITDebugLog(@"Audioscrobbler: Error creating keychain item: %i", status);
+	}
+	return (status == noErr);
+}
+
+- (BOOL)deleteKeychainItemForUser:(NSString *)user
+{
+	OSStatus status = errSecNotAvailable;
+	SecKeychainItemRef item = [self keychainItemForUser:user];
+	if (item != nil) {
+		status = SecKeychainItemDelete(item);
+		if (status != noErr) {
+			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
+		}
+		CFRelease(item);
+	}
+	return (status == noErr);
+}
+
+- (BOOL)setKeychainItemPassword:(NSString *)password forUser:(NSString *)user
+{
+	OSStatus status = errSecNotAvailable;
+	SecKeychainItemRef item = [self keychainItemForUser:user];
+	if (item != nil) {
+		status = SecKeychainItemModifyContent(item, NULL, [password length], [password cString]);
+		if (status != noErr) {
+			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
+		}
+		CFRelease(item);
+	}
+	return (status == noErr);
+}
+
+- (NSString *)getKeychainItemPasswordForUser:(NSString *)user
+{
+	OSStatus status = errSecNotAvailable;
+	SecKeychainItemRef item = [self keychainItemForUser:user];
+	NSString *pass = nil;
+	if (item != nil) {
+		UInt32 length;
+		char *buffer;
+		status = SecKeychainItemCopyContent(item, NULL, NULL, &length, (void **)&buffer);
+		if (status != noErr) {
+			ITDebugLog(@"Audioscrobbler: Error getting keychain item password: %i", status);
+		} else {
+			if ([NSString respondsToSelector:@selector(stringWithCString:encoding:)]) {
+				pass = [NSString stringWithCString:buffer encoding:NSASCIIStringEncoding];
+			} else {
+				pass = [NSString stringWithCString:buffer];
+			}
+		}
+		if (status != noErr) {
+			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
+		}
+		CFRelease(item);
+	}
+	return pass;
 }
 
 /*************************************************************************/
@@ -947,9 +1098,13 @@ static PreferencesController *prefs = nil;
 		[audioscrobblerPasswordTextField setEnabled:NO];
 		[audioscrobblerUseCacheCheckbox setEnabled:NO];
 	}
-	[audioscrobblerUserTextField setStringValue:[df stringForKey:@"audioscrobblerUser"]];
-	if ([[audioscrobblerUserTextField stringValue] length] > 0) {
-		[audioscrobblerPasswordTextField setStringValue:@"******"];
+	NSString *audioscrobblerUser = [df stringForKey:@"audioscrobblerUser"];
+	if (audioscrobblerUser != nil && [audioscrobblerUser length] > 0 && [self keychainItemExistsForUser:audioscrobblerUser]) {
+		NSString *password = [self getKeychainItemPasswordForUser:audioscrobblerUser];
+		[audioscrobblerUserTextField setStringValue:audioscrobblerUser];
+		if (password != nil) {
+			[audioscrobblerPasswordTextField setStringValue:password];
+		}
 	}
 	
     [[NSNotificationCenter defaultCenter] addObserver:sharingTableView selector:@selector(reloadData) name:@"ITMTFoundNetService" object:nil];

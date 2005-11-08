@@ -97,6 +97,8 @@
 - (IBAction)changeStatusWindowSetting:(id)sender;
 - (void)resetRemotePlayerTextFields;
 
+- (NSString *)getKeychainItemPasswordForUser:(NSString *)user;
+
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)editHotKey:(id)sender;
 - (IBAction)showPrefsWindow:(id)sender;
