@@ -300,7 +300,12 @@ er's process managment.
 - (NSString *)currentSongLength;
 
 /*!
- * @method currentSongDuratioh
+ * @method currentSongPlayed
+ */
+- (int)currentSongPlayed;
+
+/*!
+ * @method currentSongDuration
  */
 - (int)currentSongDuration;
 

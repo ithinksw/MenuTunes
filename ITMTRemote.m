@@ -179,6 +179,11 @@
     return nil;
 }
 
+- (int)currentSongPlayed
+{
+	return -1;
+}
+
 - (int)currentSongDuration
 {
 	return -1;

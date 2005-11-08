@@ -670,6 +670,15 @@
     return temp2;
 }
 
+- (int)currentSongPlayed
+{
+	UInt32 final;
+    ITDebugLog(@"Getting current song played time.");
+	final = [ITSendAEWithKey('pPos', 'core', 'getd', &savedPSN) int32Value];
+    ITDebugLog(@"Getting current song played time done.");
+    return final;
+}
+
 - (int)currentSongDuration
 {
     SInt32 temp1;

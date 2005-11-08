@@ -16,6 +16,9 @@
 #import <openssl/evp.h>
 #import <ITFoundation/ITDebug.h>
 
+#define AUDIOSCROBBLER_ID @"tst"
+#define AUDIOSCROBBLER_VERSION [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]
+
 static AudioscrobblerController *_sharedController = nil;
 
 @implementation AudioscrobblerController
@@ -75,9 +78,9 @@ static AudioscrobblerController *_sharedController = nil;
 		return;
 	}
 	
-	if (!_handshakeCompleted) {
-		NSString *version = [[[NSBundle bundleWithPath:[[NSWorkspace sharedWorkspace] fullPathForApplication:@"iTunes.app"]] infoDictionary] objectForKey:@"CFBundleVersion"], *user = @"Tristrex";
-		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://post.audioscrobbler.com/?hs=true&p=1.1&c=tst&v=%@&u=%@", version, user]];
+	NSString *user = [[NSUserDefaults standardUserDefaults] stringForKey:@"audioscrobblerUser"];
+	if (!_handshakeCompleted && user) {
+		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://post.audioscrobbler.com/?hs=true&p=1.1&c=%@&v=%@&u=%@", AUDIOSCROBBLER_ID, AUDIOSCROBBLER_VERSION, user]];
 		
 		_currentStatus = AudioscrobblerRequestingHandshakeStatus;
 		_responseData = [[NSMutableData alloc] init];

@@ -1105,6 +1105,7 @@ static PreferencesController *prefs = nil;
 			[audioscrobblerPasswordTextField setStringValue:password];
 		}
 	}
+	[audioscrobblerUseCacheCheckbox setState:[df boolForKey:@"audioscrobblerCacheSubmissions"]];
 	
     [[NSNotificationCenter defaultCenter] addObserver:sharingTableView selector:@selector(reloadData) name:@"ITMTFoundNetService" object:nil];
     
