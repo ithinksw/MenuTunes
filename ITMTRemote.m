@@ -179,6 +179,11 @@
     return nil;
 }
 
+- (int)currentSongDuration
+{
+	return -1;
+}
+
 - (NSString *)currentSongRemaining
 {
     return nil;

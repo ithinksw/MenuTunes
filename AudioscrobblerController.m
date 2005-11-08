@@ -12,6 +12,7 @@
  */
 
 #import "AudioscrobblerController.h"
+#import "PreferencesController.h"
 #import <openssl/evp.h>
 #import <ITFoundation/ITDebug.h>
 
@@ -19,14 +20,14 @@ static AudioscrobblerController *_sharedController = nil;
 
 @implementation AudioscrobblerController
 
-+ (void)load
+/*+ (void)load
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[[AudioscrobblerController sharedController] submitTrack:@"Immigrant Song" artist:@"Led Zeppelin" album:@"How The West Was Won" length:221];
 	[[AudioscrobblerController sharedController] submitTrack:@"Comfortably Numb" artist:@"Pink Floyd" album:@"The Wall" length:384];
 	[[AudioscrobblerController sharedController] submitTracks];
 	[pool release];
-}
+}*/
 
 + (AudioscrobblerController *)sharedController
 {
@@ -39,13 +40,13 @@ static AudioscrobblerController *_sharedController = nil;
 - (id)init
 {
 	if ( (self = [super init]) ) {
-		/*_handshakeCompleted = NO;
+		_handshakeCompleted = NO;
 		_md5Challenge = nil;
-		_postURL = nil;*/
+		_postURL = nil;
 		
-		_handshakeCompleted = YES;
+		/*_handshakeCompleted = YES;
 		_md5Challenge = @"rawr";
-		_postURL = [NSURL URLWithString:@"http://audioscrobbler.com/"];
+		_postURL = [NSURL URLWithString:@"http://audioscrobbler.com/"];*/
 		
 		_delayDate = nil;
 		_responseData = nil;
@@ -77,10 +78,10 @@ static AudioscrobblerController *_sharedController = nil;
 	if (!_handshakeCompleted) {
 		NSString *version = [[[NSBundle bundleWithPath:[[NSWorkspace sharedWorkspace] fullPathForApplication:@"iTunes.app"]] infoDictionary] objectForKey:@"CFBundleVersion"], *user = @"Tristrex";
 		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://post.audioscrobbler.com/?hs=true&p=1.1&c=tst&v=%@&u=%@", version, user]];
-		NSURLConnection *connection;
 		
 		_currentStatus = AudioscrobblerRequestingHandshakeStatus;
-		connection = [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] delegate:self];
+		_responseData = [[NSMutableData alloc] init];
+		[NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] delegate:self];
 	}
 }
 
@@ -91,16 +92,12 @@ static AudioscrobblerController *_sharedController = nil;
 
 - (void)submitTrack:(NSString *)title artist:(NSString *)artist album:(NSString *)album length:(int)length
 {
-	if (!_handshakeCompleted) {
-		[self attemptHandshake];
-		return;
-	}
 	ITDebugLog(@"Audioscrobbler: Adding a new track to the submission queue.");
 	NSDictionary *newTrack = [NSDictionary dictionaryWithObjectsAndKeys:title,
 																		@"title",
 																		artist,
 																		@"artist",
-																		album,
+																		(album == nil) ? @"" : album,
 																		@"album",
 																		[NSString stringWithFormat:@"%i", length],
 																		@"length",
@@ -108,28 +105,30 @@ static AudioscrobblerController *_sharedController = nil;
 																		@"time",
 																		nil, nil];
 	[_tracks addObject:newTrack];
+	[self submitTracks];
 }
 
 - (void)submitTracks
 {
+	if (!_handshakeCompleted) {
+		[self attemptHandshake];
+		return;
+	}
+	
 	NSTimeInterval interval = [_delayDate timeIntervalSinceNow];
 	if (interval > 0) {
-		ITDebugLog(@"Audioscrobbler: Delaying track submission for %i seconds", interval);
-		[self performSelector:@selector(attemptHandshake) withObject:nil afterDelay:interval + 1];
+		ITDebugLog(@"Audioscrobbler: Delaying track submission for %f seconds", interval);
+		[self performSelector:@selector(submitTracks) withObject:nil afterDelay:interval + 1];
 		return;
 	}
 	
 	int i;
 	NSMutableString *requestString;
 	NSString *authString, *responseHash = @"";
-	char *pass = "waffles";
+	NSString *user = [[NSUserDefaults standardUserDefaults] stringForKey:@"audioscrobblerUser"];
+	char *pass = (char *)[[PreferencesController getKeychainItemPasswordForUser:user] UTF8String];
 	unsigned char *buffer;
 	EVP_MD_CTX ctx;
-	
-	if (!_handshakeCompleted) {
-		[self attemptHandshake];
-		return;
-	}
 	
 	ITDebugLog(@"Audioscrobbler: Submitting queued tracks");
 	
@@ -161,7 +160,7 @@ static AudioscrobblerController *_sharedController = nil;
 	}
 	free(buffer);
 	
-	authString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[NSString stringWithFormat:@"u=%@&s=%@", @"Tristrex", responseHash], NULL, NULL, kCFStringEncodingUTF8);
+	authString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[NSString stringWithFormat:@"u=%@&s=%@", user, responseHash], NULL, NULL, kCFStringEncodingUTF8);
 	requestString = [[NSMutableString alloc] initWithString:authString];
 	[authString release];
 	
@@ -180,7 +179,8 @@ static AudioscrobblerController *_sharedController = nil;
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[requestString dataUsingEncoding:NSUTF8StringEncoding]];
 	_currentStatus = AudioscrobblerSubmittingTracksStatus;
-	//[NSURLConnection connectionWithRequest:request delegate:self];
+	_responseData = [[NSMutableData alloc] init];
+	[NSURLConnection connectionWithRequest:request delegate:self];
 	[requestString release];
 	[request release];
 	
@@ -191,11 +191,8 @@ static AudioscrobblerController *_sharedController = nil;
 {
 	if ([[note name] isEqualToString:@"AudioscrobblerHandshakeComplete"]) {
 		if ([_tracks count] > 0) {
-			[self submitTracks];
+			[self performSelector:@selector(submitTracks) withObject:nil afterDelay:2];
 		}
-		[self submitTrack:@"Immigrant Song" artist:@"Led Zeppelin" album:@"How The West Was Won" length:221];
-		[self submitTrack:@"Comfortably Numb" artist:@"Pink Floyd" album:@"The Wall" length:384];
-		[self submitTracks];
 	}
 }
 
@@ -251,28 +248,21 @@ static AudioscrobblerController *_sharedController = nil;
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
 			//Failed
 		}
-		NSLog(string);
 	}
 	
 	//Handle the final INTERVAL response
-	if (([responseAction length] > 9) && [[responseAction substringToIndex:7] isEqualToString:@"INTERVAL"]) {
-		int seconds = [[[lines objectAtIndex:[lines count] - 1] substringFromIndex:9] intValue];
+	if (([[lines objectAtIndex:[lines count] - 2] length] > 9) && [[[lines objectAtIndex:[lines count] - 2] substringToIndex:8] isEqualToString:@"INTERVAL"]) {
+		int seconds = [[[lines objectAtIndex:[lines count] - 2] substringFromIndex:9] intValue];
 		ITDebugLog(@"Audioscrobbler: INTERVAL %i", seconds);
-		_delayDate = [NSDate dateWithTimeIntervalSinceNow:seconds];
+		[_delayDate release];
+		_delayDate = [[NSDate dateWithTimeIntervalSinceNow:seconds] retain];
 	} else {
+		ITDebugLog(@"No interval response.");
 		//We have a protocol error
 	}
 	
 	[string release];
 	[_responseData release];
-}
-
--(NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
-{
-	ITDebugLog(@"Audioscrobbler: Sending URL request.");
-	NSLog(@"Sending request.");
-	_responseData = [[NSMutableData alloc] init];
-	return request;
 }
 
 @end

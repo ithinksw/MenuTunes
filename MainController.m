@@ -9,6 +9,7 @@
 #import <ITKit/ITCategory-NSMenu.h>
 #import "StatusWindow.h"
 #import "StatusWindowController.h"
+#import "AudioscrobblerController.h"
 #import "StatusItemHack.h"
 
 @interface NSMenu (MenuImpl)
@@ -88,6 +89,7 @@ static MainController *sharedController;
         sharedController = self;
         
 		_statusWindowUpdateTimer = nil;
+		_audioscrobblerTimer = nil;
 		
         remoteArray = [[NSMutableArray alloc] initWithCapacity:1];
         [[PreferencesController sharedPrefs] setController:self];
@@ -461,6 +463,18 @@ static MainController *sharedController;
 					[statusItem setToolTip:nil];
 				}
 			}
+			
+			if ([df boolForKey:@"audioscrobblerEnabled"]) {
+				int length = [[self currentRemote] currentSongDuration];
+				if (_audioscrobblerTimer) {
+					[_audioscrobblerTimer invalidate];
+				}
+				if (length > 0) {
+					_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length < 240) ? length / 2 : 120) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
+				}
+			} else {
+				_audioscrobblerTimer = nil;
+			}
         NS_HANDLER
             [self networkError:localException];
         NS_ENDHANDLER
@@ -575,6 +589,18 @@ static MainController *sharedController;
 				[statusItem setToolTip:nil];
 			}
 		}
+		
+		if ([df boolForKey:@"audioscrobblerEnabled"]) {
+			int length = [[self currentRemote] currentSongDuration];
+			if (_audioscrobblerTimer) {
+				[_audioscrobblerTimer invalidate];
+			}
+			if (length > 0) {
+				_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length < 240) ? length / 2 : 120) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
+			}
+		} else {
+			_audioscrobblerTimer = nil;
+		}
 	NS_HANDLER
 		[self networkError:localException];
 	NS_ENDHANDLER
@@ -584,6 +610,25 @@ static MainController *sharedController;
 	if ([networkController isConnectedToServer]) {
         [statusItem setMenu:([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) ? [menuController menu] : [menuController menuForNoPlayer]];
     }
+}
+
+- (void)submitAudioscrobblerTrack:(NSTimer *)timer
+{
+	if ([df boolForKey:@"audioscrobblerEnabled"]) {
+		NS_DURING
+			NSString *title = [[self currentRemote] currentSongTitle], *artist = [[self currentRemote] currentSongArtist];
+			if (title && artist) {
+				[[AudioscrobblerController sharedController] submitTrack:title
+																artist:artist
+																album:[[self currentRemote] currentSongAlbum]
+																length:[[self currentRemote] currentSongDuration]];
+			}
+		NS_HANDLER
+			[self networkError:localException];
+		NS_ENDHANDLER
+		[timer invalidate];
+		_audioscrobblerTimer = nil;
+	}
 }
 
 //

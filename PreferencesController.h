@@ -85,6 +85,7 @@
 }
 
 + (PreferencesController *)sharedPrefs;
++ (NSString *)getKeychainItemPasswordForUser:(NSString *)user;
 
 - (id)controller;
 - (void)setController:(id)object;
@@ -96,8 +97,6 @@
 - (IBAction)changeSharingSetting:(id)sender;
 - (IBAction)changeStatusWindowSetting:(id)sender;
 - (void)resetRemotePlayerTextFields;
-
-- (NSString *)getKeychainItemPasswordForUser:(NSString *)user;
 
 - (IBAction)clearHotKey:(id)sender;
 - (IBAction)editHotKey:(id)sender;

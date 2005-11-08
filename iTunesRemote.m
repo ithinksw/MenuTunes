@@ -670,6 +670,15 @@
     return temp2;
 }
 
+- (int)currentSongDuration
+{
+    SInt32 temp1;
+    ITDebugLog(@"Getting current song duration.");
+    temp1 = [ITSendAEWithString(@"'----':obj { form:'prop', want:type('prop'), seld:type('pDur'), from:obj { form:'prop', want:type('prop'), seld:type('pTrk'), from:'null'() } }", 'core', 'getd', &savedPSN) int32Value];
+    ITDebugLog(@"Getting current song duration done.");
+    return temp1;
+}
+
 - (NSString *)currentSongRemaining
 {
     SInt32 duration, current, final;
