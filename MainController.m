@@ -950,7 +950,7 @@ static MainController *sharedController;
         [hotKey setName:@"TrackInfo"];
         [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"TrackInfo"]]];
         [hotKey setTarget:self];
-        [hotKey setAction:@selector(showCurrentTrackInfo)];
+        [hotKey setAction:@selector(showCurrentTrackInfoHotKey)];
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
     
@@ -1060,6 +1060,18 @@ static MainController *sharedController;
     ITDebugLog(@"Finished setting up hot keys.");
 }
 
+- (void)showCurrentTrackInfoHotKey
+{
+	//If we're already visible and the setting says so, vanish instead of displaying again.
+	if ([df boolForKey:@"ToggleTrackInfoWithHotKey"] && [statusWindowController currentStatusWindowType] == StatusWindowTrackInfoType && [[StatusWindow sharedWindow] visibilityState] == ITWindowVisibleState) {
+		ITDebugLog(@"Track window is already visible, hiding track window.");
+		[self invalidateStatusWindowUpdateTimer];
+		[[StatusWindow sharedWindow] vanish:nil];
+		return;
+	}
+	[self showCurrentTrackInfo];
+}
+
 - (void)showCurrentTrackInfo
 {
     ITMTRemotePlayerSource  source      = 0;
@@ -1072,14 +1084,6 @@ static MainController *sharedController;
     NSImage                *art         = nil;
     int                     rating      = -1;
     int                     playCount   = -1;
-	
-	//If we're already visible and the setting says so, vanish instead of displaying again.
-	if ([df boolForKey:@"ToggleTrackInfoWithHotKey"] && [statusWindowController currentStatusWindowType] == StatusWindowTrackInfoType && [[StatusWindow sharedWindow] visibilityState] == ITWindowVisibleState) {
-		ITDebugLog(@"Track window is already visible, hiding track window.");
-		[self invalidateStatusWindowUpdateTimer];
-		[[StatusWindow sharedWindow] vanish:nil];
-		return;
-	}
 	
     ITDebugLog(@"Showing track info status window.");
     
