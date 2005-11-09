@@ -51,7 +51,7 @@ static AudioscrobblerController *_sharedController = nil;
 		_md5Challenge = @"rawr";
 		_postURL = [NSURL URLWithString:@"http://audioscrobbler.com/"];*/
 		
-		_delayDate = nil;
+		_delayDate = [[NSDate date] retain];
 		_responseData = nil;
 		_tracks = [[NSMutableArray alloc] init];
 		_submitTracks = [[NSMutableArray alloc] init];
@@ -67,7 +67,13 @@ static AudioscrobblerController *_sharedController = nil;
 	[_responseData release];
 	[_submitTracks release];
 	[_tracks release];
+	[_delayDate release];
 	[super dealloc];
+}
+
+- (void)attemptHandshake
+{
+	[self attemptHandshake:NO];
 }
 
 - (void)attemptHandshake:(BOOL)force
@@ -128,7 +134,7 @@ static AudioscrobblerController *_sharedController = nil;
 	char *pass = (char *)[passString UTF8String];
 	
 	if (passString == nil) {
-		NSLog(@"Audioscrobbler: Access denied to user password");
+		ITDebugLog(@"Audioscrobbler: Access denied to user password");
 		return;
 	}
 	
@@ -190,6 +196,8 @@ static AudioscrobblerController *_sharedController = nil;
 		[_submitTracks addObject:nextTrack];
 	}
 	
+	ITDebugLog(@"Audioscrobbler: Sending track submission request");
+	
 	//Create and send the request
 	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] mutableCopy];
 	[request setHTTPMethod:@"POST"];
@@ -233,7 +241,7 @@ static AudioscrobblerController *_sharedController = nil;
 	if ([lines count] > 0) {
 		responseAction = [lines objectAtIndex:0];
 	}
-	
+	ITDebugLog(@"Audioscrobbler: Response %@", string);
 	if (_currentStatus == AudioscrobblerRequestingHandshakeStatus) {
 		if ([lines count] < 2) {
 			//We have a protocol error
@@ -248,19 +256,29 @@ static AudioscrobblerController *_sharedController = nil;
 				//We have a protocol error
 			}
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
+			ITDebugLog(@"Audioscrobbler: Handshake failed (%@)", [responseAction substringFromIndex:6]);
 			//We have a error
 		} else if ([responseAction isEqualToString:@"BADUSER"]) {
+			ITDebugLog(@"Audioscrobbler: Bad user name");
 			//We have a bad user
 		} else {
+			ITDebugLog(@"Audioscrobbler: Handshake failed, protocol error");
 			//We have a protocol error
 		}
 	} else if (_currentStatus == AudioscrobblerSubmittingTracksStatus) {
 		if ([responseAction isEqualToString:@"OK"]) {
+			ITDebugLog(@"Audioscrobbler: Submission successful, clearing queue.");
 			[_tracks removeObjectsInArray:_submitTracks];
 			[_submitTracks removeAllObjects];
+			if ([_tracks count] > 0) {
+				ITDebugLog(@"Audioscrobbler: Tracks remaining in queue, submitting remaining tracks");
+				[self performSelector:@selector(submitTracks) withObject:nil afterDelay:2];
+			}
 		} else if ([responseAction isEqualToString:@"BADAUTH"]) {
+			ITDebugLog(@"Audioscrobbler: Bad password");
 			//Bad auth
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
+			ITDebugLog(@"Audioscrobbler: Submission failed (%@)", [responseAction substringFromIndex:6]);
 			//Failed
 		}
 	}

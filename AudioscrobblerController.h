@@ -33,6 +33,7 @@ typedef enum {
 }
 + (AudioscrobblerController *)sharedController;
 
+- (void)attemptHandshake;
 - (void)attemptHandshake:(BOOL)force;
 - (BOOL)handshakeCompleted;
 - (void)submitTrack:(NSString *)title artist:(NSString *)artist album:(NSString *)album length:(int)length;
