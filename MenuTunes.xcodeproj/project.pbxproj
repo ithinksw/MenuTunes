@@ -120,6 +120,34 @@
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
+		7C2A8858092266F7007A4F41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITMac */;
+			remoteInfo = ITMac;
+		};
+		7C2A885A092266FA007A4F41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITFoundation */;
+			remoteInfo = ITFoundation;
+		};
+		7C2A885E09226713007A4F41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITFoundation */;
+			remoteInfo = ITFoundation;
+		};
+		7C2A886009226716007A4F41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITMac */;
+			remoteInfo = ITMac;
+		};
 		7C331FF205A9253F0088905B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -624,6 +652,8 @@
 				WRAPPER_EXTENSION = remote;
 			};
 			dependencies = (
+				7C2A885F09226713007A4F41 /* PBXTargetDependency */,
+				7C2A886109226716007A4F41 /* PBXTargetDependency */,
 				7C331FF305A9253F0088905B /* PBXTargetDependency */,
 			);
 			name = iTunesRemote;
@@ -696,6 +726,8 @@
 				WRAPPER_EXTENSION = app;
 			};
 			dependencies = (
+				7C2A885B092266FA007A4F41 /* PBXTargetDependency */,
+				7C2A8859092266F7007A4F41 /* PBXTargetDependency */,
 				7C505D4F0801F20D00017AF9 /* PBXTargetDependency */,
 				7C331FF505A925550088905B /* PBXTargetDependency */,
 				7C331FF705A9255A0088905B /* PBXTargetDependency */,
@@ -884,6 +916,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7C2A8859092266F7007A4F41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ITMac;
+			targetProxy = 7C2A8858092266F7007A4F41 /* PBXContainerItemProxy */;
+		};
+		7C2A885B092266FA007A4F41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ITFoundation;
+			targetProxy = 7C2A885A092266FA007A4F41 /* PBXContainerItemProxy */;
+		};
+		7C2A885F09226713007A4F41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ITFoundation;
+			targetProxy = 7C2A885E09226713007A4F41 /* PBXContainerItemProxy */;
+		};
+		7C2A886109226716007A4F41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ITMac;
+			targetProxy = 7C2A886009226716007A4F41 /* PBXContainerItemProxy */;
+		};
 		7C331FF305A9253F0088905B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7C331F6705A918EC0088905B /* ITMTRemote */;
