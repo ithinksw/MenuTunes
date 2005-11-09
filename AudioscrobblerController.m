@@ -54,6 +54,7 @@ static AudioscrobblerController *_sharedController = nil;
 		_delayDate = nil;
 		_responseData = nil;
 		_tracks = [[NSMutableArray alloc] init];
+		_submitTracks = [[NSMutableArray alloc] init];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioscrobblerNotification:) name:nil object:self];
 	}
 	return self;
@@ -64,6 +65,7 @@ static AudioscrobblerController *_sharedController = nil;
 	[_md5Challenge release];
 	[_postURL release];
 	[_responseData release];
+	[_submitTracks release];
 	[_tracks release];
 	[super dealloc];
 }
@@ -185,6 +187,7 @@ static AudioscrobblerController *_sharedController = nil;
 		trackString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[NSString stringWithFormat:@"&a[%i]=%@&t[%i]=%@&b[%i]=%@&m[%i]=&l[%i]=%@&i[%i]=%@", i, [nextTrack objectForKey:@"artist"], i, [nextTrack objectForKey:@"title"], i, [nextTrack objectForKey:@"album"], i, i, [nextTrack objectForKey:@"length"], i, [nextTrack objectForKey:@"time"]], NULL, NULL, kCFStringEncodingUTF8);
 		[requestString appendString:trackString];
 		[trackString release];
+		[_submitTracks addObject:nextTrack];
 	}
 	
 	//Create and send the request
@@ -253,6 +256,8 @@ static AudioscrobblerController *_sharedController = nil;
 		}
 	} else if (_currentStatus == AudioscrobblerSubmittingTracksStatus) {
 		if ([responseAction isEqualToString:@"OK"]) {
+			[_tracks removeObjectsInArray:_submitTracks];
+			[_submitTracks removeAllObjects];
 		} else if ([responseAction isEqualToString:@"BADAUTH"]) {
 			//Bad auth
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {

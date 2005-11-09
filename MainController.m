@@ -199,7 +199,9 @@ static MainController *sharedController;
     [statusItem setAlternateImage:[NSImage imageNamed:@"MenuInverted"]];
 
 	if ([df boolForKey:@"audioscrobblerEnabled"]) {
-		[[AudioscrobblerController sharedController] attemptHandshake:NO];
+		if ([PreferencesController getKeychainItemPasswordForUser:[df stringForKey:@"audioscrobblerUser"]] != nil) {
+			[[AudioscrobblerController sharedController] attemptHandshake:NO];
+		}
 	}
 
     [networkController startRemoteServerSearch];

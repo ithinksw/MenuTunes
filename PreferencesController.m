@@ -86,6 +86,10 @@ static PreferencesController *prefs = nil;
 	SecKeychainAttribute attributes[3];
 	SecKeychainAttributeList list;
 
+	if ((user == nil) || ([user length] == 0)) {
+		return nil;
+	}
+
 	ITDebugLog(@"Audioscrobbler: Searching for keychain item for %@.", user);
 	attributes[0].tag = kSecAccountItemAttr;
 	attributes[0].data = (char *)[user UTF8String];
