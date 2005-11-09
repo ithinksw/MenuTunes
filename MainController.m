@@ -198,6 +198,10 @@ static MainController *sharedController;
     [statusItem setImage:[NSImage imageNamed:@"MenuNormal"]];
     [statusItem setAlternateImage:[NSImage imageNamed:@"MenuInverted"]];
 
+	if ([df boolForKey:@"audioscrobblerEnabled"]) {
+		[[AudioscrobblerController sharedController] attemptHandshake:NO];
+	}
+
     [networkController startRemoteServerSearch];
     [NSApp deactivate];
 	[self performSelector:@selector(rawr) withObject:nil afterDelay:1.0];

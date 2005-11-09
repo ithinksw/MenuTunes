@@ -68,8 +68,12 @@ static AudioscrobblerController *_sharedController = nil;
 	[super dealloc];
 }
 
-- (void)attemptHandshake
+- (void)attemptHandshake:(BOOL)force
 {
+	if (_handshakeCompleted && !force) {
+		return;
+	}
+	
 	//Delay if we haven't met the interval time limit
 	NSTimeInterval interval = [_delayDate timeIntervalSinceNow];
 	if (interval > 0) {
@@ -84,7 +88,7 @@ static AudioscrobblerController *_sharedController = nil;
 		
 		_currentStatus = AudioscrobblerRequestingHandshakeStatus;
 		_responseData = [[NSMutableData alloc] init];
-		[NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] delegate:self];
+		[NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] delegate:self];
 	}
 }
 
@@ -114,7 +118,15 @@ static AudioscrobblerController *_sharedController = nil;
 - (void)submitTracks
 {
 	if (!_handshakeCompleted) {
-		[self attemptHandshake];
+		[self attemptHandshake:NO];
+		return;
+	}
+	
+	NSString *user = [[NSUserDefaults standardUserDefaults] stringForKey:@"audioscrobblerUser"], *passString = [PreferencesController getKeychainItemPasswordForUser:user];
+	char *pass = (char *)[passString UTF8String];
+	
+	if (passString == nil) {
+		NSLog(@"Audioscrobbler: Access denied to user password");
 		return;
 	}
 	
@@ -128,8 +140,6 @@ static AudioscrobblerController *_sharedController = nil;
 	int i;
 	NSMutableString *requestString;
 	NSString *authString, *responseHash = @"";
-	NSString *user = [[NSUserDefaults standardUserDefaults] stringForKey:@"audioscrobblerUser"];
-	char *pass = (char *)[[PreferencesController getKeychainItemPasswordForUser:user] UTF8String];
 	unsigned char *buffer;
 	EVP_MD_CTX ctx;
 	
@@ -178,7 +188,7 @@ static AudioscrobblerController *_sharedController = nil;
 	}
 	
 	//Create and send the request
-	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] mutableCopy];
+	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] mutableCopy];
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[requestString dataUsingEncoding:NSUTF8StringEncoding]];
 	_currentStatus = AudioscrobblerSubmittingTracksStatus;
@@ -225,7 +235,7 @@ static AudioscrobblerController *_sharedController = nil;
 		if ([lines count] < 2) {
 			//We have a protocol error
 		}
-		if ([responseAction isEqualToString:@"UPTODATE"]) {
+		if ([responseAction isEqualToString:@"UPTODATE"] || (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"UPDATE"])) {
 			if ([lines count] >= 4) {
 				_md5Challenge = [[lines objectAtIndex:1] retain];
 				_postURL = [[NSURL alloc] initWithString:[lines objectAtIndex:2]];
@@ -234,15 +244,12 @@ static AudioscrobblerController *_sharedController = nil;
 			} else {
 				//We have a protocol error
 			}
-			//Something
-		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"UPDATE"]) {
-			//Something plus update action
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
 			//We have a error
 		} else if ([responseAction isEqualToString:@"BADUSER"]) {
 			//We have a bad user
 		} else {
-			//We have a protocol
+			//We have a protocol error
 		}
 	} else if (_currentStatus == AudioscrobblerSubmittingTracksStatus) {
 		if ([responseAction isEqualToString:@"OK"]) {

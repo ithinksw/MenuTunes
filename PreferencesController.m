@@ -6,6 +6,7 @@
 #import "StatusWindow.h"
 #import "StatusWindowController.h"
 #import "CustomMenuTableView.h"
+#import "AudioscrobblerController.h"
 
 #import <Security/Security.h>
 
@@ -433,6 +434,7 @@ static PreferencesController *prefs = nil;
 				[PreferencesController deleteKeychainItemForUser:currentAccount];
 			}
 			[PreferencesController createKeychainItemForUser:newAccount andPassword:[audioscrobblerPasswordTextField stringValue]];
+			[[AudioscrobblerController sharedController] attemptHandshake:YES];
 		}
 	} else if ( [sender tag ] == 6030) {
 		//Here we set the password for an existing keychain item or we create a new keychain item.
