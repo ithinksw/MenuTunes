@@ -483,7 +483,7 @@ static MainController *sharedController;
 					[_audioscrobblerTimer invalidate];
 				}
 				if (length > 30) {
-					_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length < 240) ? length / 2 : 120) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
+					_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length / 2 < 240) ? length / 2 : 240) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
 				}
 			} else {
 				_audioscrobblerTimer = nil;
@@ -609,7 +609,7 @@ static MainController *sharedController;
 				[_audioscrobblerTimer invalidate];
 			}
 			if (length > 30) {
-				_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length < 240) ? length / 2 : 120) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
+				_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length / 2 < 240) ? length / 2 : 240) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
 			}
 		} else {
 			_audioscrobblerTimer = nil;
