@@ -140,6 +140,8 @@ static MainController *sharedController;
     currentRemote = [self loadRemote];
     [[self currentRemote] begin];
     
+	[[self currentRemote] currentSongElapsed];
+	
     //Turn on network stuff if needed
     networkController = [[NetworkController alloc] init];
     if ([df boolForKey:@"enableSharing"]) {
@@ -410,7 +412,12 @@ static MainController *sharedController;
 
 - (void)timerUpdate
 {
-	NSString *identifier = [[self currentRemote] playerStateUniqueIdentifier];
+	NSString *identifier = nil;
+	NS_DURING
+		identifier = [[self currentRemote] playerStateUniqueIdentifier];
+	NS_HANDLER
+		[self networkError:localException];
+	NS_ENDHANDLER
 	if (refreshTimer && identifier == nil) {
 		if ([statusItem isEnabled]) {
 			[statusItem setToolTip:@"iTunes not responding."];
@@ -1219,9 +1226,9 @@ static MainController *sharedController;
 
 - (void)updateTime:(NSTimer *)timer
 {
-	StatusWindow *sw = [StatusWindow sharedWindow];
+	StatusWindow *sw = (StatusWindow *)[StatusWindow sharedWindow];
 	_timeUpdateCount++;
-	if (_timeUpdateCount < (int)[sw exitDelay] + (int)[[sw exitEffect] effectTime] + (int)[[sw entryEffect] effectTime]) {
+	if ([sw visibilityState] != ITWindowHiddenState) {
 		NSString *time = nil, *length;
 		NS_DURING
 			length = [[self currentRemote] currentSongLength];
@@ -1519,12 +1526,14 @@ static MainController *sharedController;
 			if (refreshTimer) {
 				[refreshTimer invalidate];
 			}
-			refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
-									 target:self
-									 selector:@selector(timerUpdate)
-									 userInfo:nil
-									 repeats:YES] retain];
 		}
+		
+		refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
+								 target:self
+								 selector:@selector(timerUpdate)
+								 userInfo:nil
+								 repeats:YES] retain];
+		
         [self timerUpdate];
         ITDebugLog(@"Connection successful.");
         return 1;
@@ -1549,10 +1558,12 @@ static MainController *sharedController;
     [networkController disconnect];
     
     if ([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
+		refreshTimer = nil;
         [self applicationLaunched:nil];
     } else {
         [self applicationTerminated:nil];
     }
+	
     if (refreshTimer) {
 		[self timerUpdate];
 	};
