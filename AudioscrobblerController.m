@@ -23,15 +23,6 @@ static AudioscrobblerController *_sharedController = nil;
 
 @implementation AudioscrobblerController
 
-/*+ (void)load
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[[AudioscrobblerController sharedController] submitTrack:@"Immigrant Song" artist:@"Led Zeppelin" album:@"How The West Was Won" length:221];
-	[[AudioscrobblerController sharedController] submitTrack:@"Comfortably Numb" artist:@"Pink Floyd" album:@"The Wall" length:384];
-	[[AudioscrobblerController sharedController] submitTracks];
-	[pool release];
-}*/
-
 + (AudioscrobblerController *)sharedController
 {
 	if (!_sharedController) {
@@ -188,11 +179,27 @@ static AudioscrobblerController *_sharedController = nil;
 	//We can only submit ten tracks at a time
 	for (i = 0; (i < [_tracks count]) && (i < 10); i++) {
 		NSDictionary *nextTrack = [_tracks objectAtIndex:i];
-		NSString *trackString;
+		NSString *artistEscaped, *titleEscaped, *albumEscaped, *timeEscaped, *ampersand = @"&";
 		
-		trackString = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[NSString stringWithFormat:@"&a[%i]=%@&t[%i]=%@&b[%i]=%@&m[%i]=&l[%i]=%@&i[%i]=%@", i, [nextTrack objectForKey:@"artist"], i, [nextTrack objectForKey:@"title"], i, [nextTrack objectForKey:@"album"], i, i, [nextTrack objectForKey:@"length"], i, [nextTrack objectForKey:@"time"]], NULL, NULL, kCFStringEncodingUTF8);
-		[requestString appendString:trackString];
-		[trackString release];
+		//Escape each of the individual parameters we're sending
+		artistEscaped = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[nextTrack objectForKey:@"artist"], NULL, (CFStringRef)ampersand, kCFStringEncodingUTF8);
+		titleEscaped = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[nextTrack objectForKey:@"title"], NULL, (CFStringRef)ampersand, kCFStringEncodingUTF8);
+		albumEscaped = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[nextTrack objectForKey:@"album"], NULL, (CFStringRef)ampersand, kCFStringEncodingUTF8);
+		timeEscaped = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)[nextTrack objectForKey:@"time"], NULL, (CFStringRef)ampersand, kCFStringEncodingUTF8);
+		
+		[requestString appendString:[NSString stringWithFormat:@"&a[%i]=%@&t[%i]=%@&b[%i]=%@&m[%i]=&l[%i]=%@&i[%i]=%@", i, artistEscaped,
+																														i, titleEscaped,
+																														i, albumEscaped,
+																														i,
+																														i, [nextTrack objectForKey:@"length"],
+																														i, timeEscaped]];
+		
+		//Release the escaped strings
+		[artistEscaped release];
+		[titleEscaped release];
+		[albumEscaped release];
+		[timeEscaped release];
+		
 		[_submitTracks addObject:nextTrack];
 	}
 	
@@ -200,6 +207,7 @@ static AudioscrobblerController *_sharedController = nil;
 	
 	//Create and send the request
 	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] mutableCopy];
+	NSLog(@"Posting Audioscrobbler URL request: %@", requestString);
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[requestString dataUsingEncoding:NSUTF8StringEncoding]];
 	_currentStatus = AudioscrobblerSubmittingTracksStatus;
@@ -242,6 +250,7 @@ static AudioscrobblerController *_sharedController = nil;
 		responseAction = [lines objectAtIndex:0];
 	}
 	ITDebugLog(@"Audioscrobbler: Response %@", string);
+	NSLog(@"Audioscrobbler: Response %@", string);
 	if (_currentStatus == AudioscrobblerRequestingHandshakeStatus) {
 		if ([lines count] < 2) {
 			//We have a protocol error
