@@ -610,7 +610,7 @@
         if (numSongs > 0) {
             int i;
             for (i = _currentTrack + 1; i <= _currentTrack + numSongsInAdvance && i <= numSongs; i++) {
-				BOOL enabled;
+				BOOL enabled = YES;
 				
 				//Check if the song at this index is enabled for playback. If it isn't, skip over it
 				NS_DURING
