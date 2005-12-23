@@ -23,6 +23,7 @@
                 artistCheckbox = NSButton; 
                 audioscrobblerEnabledCheckbox = NSButton; 
                 audioscrobblerPasswordTextField = NSSecureTextField; 
+                audioscrobblerStatusTextField = NSTextField; 
                 audioscrobblerUseCacheCheckbox = NSButton; 
                 audioscrobblerUserTextField = NSTextField; 
                 backgroundColorPopup = NSPopUpButton; 

@@ -479,11 +479,12 @@ static MainController *sharedController;
 			
 			if ([df boolForKey:@"audioscrobblerEnabled"]) {
 				int length = [[self currentRemote] currentSongDuration];
-				if (_audioscrobblerTimer) {
-					[_audioscrobblerTimer invalidate];
-				}
 				if (length > 30) {
-					_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length / 2 < 240) ? length / 2 : 240) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
+					_audioscrobblerInterval = ((length / 2 < 240) ? length / 2 : 240);
+					[_audioscrobblerTimer invalidate];
+					[_audioscrobblerTimer release];
+					_audioscrobblerTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:_audioscrobblerInterval] interval:nil target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
+					[[NSRunLoop currentRunLoop] addTimer:_audioscrobblerTimer forMode:NSDefaultRunLoopMode];
 				}
 			} else {
 				_audioscrobblerTimer = nil;
@@ -605,11 +606,12 @@ static MainController *sharedController;
 		
 		if ([df boolForKey:@"audioscrobblerEnabled"]) {
 			int length = [[self currentRemote] currentSongDuration];
-			if (_audioscrobblerTimer) {
-				[_audioscrobblerTimer invalidate];
-			}
 			if (length > 30) {
-				_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:((length / 2 < 240) ? length / 2 : 240) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
+				_audioscrobblerInterval = ((length / 2 < 240) ? length / 2 : 240);
+				[_audioscrobblerTimer invalidate];
+				[_audioscrobblerTimer release];
+				_audioscrobblerTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:_audioscrobblerInterval] interval:1.0 target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
+				[[NSRunLoop currentRunLoop] addTimer:_audioscrobblerTimer forMode:NSDefaultRunLoopMode];
 			}
 		} else {
 			_audioscrobblerTimer = nil;
@@ -627,14 +629,12 @@ static MainController *sharedController;
 
 - (void)submitAudioscrobblerTrack:(NSTimer *)timer
 {
-	int interval = [timer timeInterval];
-	[timer invalidate];
-	_audioscrobblerTimer = nil;
 	ITDebugLog(@"Audioscrobbler: Attempting to submit current track");
+	[timer invalidate];
 	if ([df boolForKey:@"audioscrobblerEnabled"]) {
 		NS_DURING
 			int elapsed = [[self currentRemote] currentSongPlayed];
-			if ((abs(elapsed - interval) < 5) && ([[self currentRemote] playerPlayingState] == ITMTRemotePlayerPlaying)) {
+			if ((abs(elapsed - _audioscrobblerInterval) < 5) && ([[self currentRemote] playerPlayingState] == ITMTRemotePlayerPlaying)) {
 				NSString *title = [[self currentRemote] currentSongTitle], *artist = [[self currentRemote] currentSongArtist];
 				if (title && artist) {
 					ITDebugLog(@"Audioscrobbler: Submitting current track");
@@ -643,9 +643,12 @@ static MainController *sharedController;
 																	album:[[self currentRemote] currentSongAlbum]
 																	length:[[self currentRemote] currentSongDuration]];
 				}
-			} else if (interval - elapsed > 0) {
-				ITDebugLog(@"Audioscrobbler: Creating a new timer that will run in %i seconds", interval - elapsed);
-				_audioscrobblerTimer = [NSTimer scheduledTimerWithTimeInterval:(interval - elapsed) target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:YES];
+			} else if (_audioscrobblerInterval - elapsed > 0) {
+				ITDebugLog(@"Audioscrobbler: Creating a new timer that will run in %i seconds", _audioscrobblerInterval - elapsed);
+				_audioscrobblerInterval -= elapsed;
+				[_audioscrobblerTimer release];
+				_audioscrobblerTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:_audioscrobblerInterval] interval:nil target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
+				[[NSRunLoop currentRunLoop] addTimer:_audioscrobblerTimer forMode:NSDefaultRunLoopMode];
 			}
 		NS_HANDLER
 			[self networkError:localException];

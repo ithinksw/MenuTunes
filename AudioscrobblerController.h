@@ -27,12 +27,13 @@ typedef enum {
 	NSMutableArray *_tracks, *_submitTracks;
 	NSDate *_delayDate;
 	
-	NSString *_md5Challenge;
+	NSString *_md5Challenge, *_lastStatus;
 	NSURL *_postURL;
 	NSMutableData *_responseData;
 }
 + (AudioscrobblerController *)sharedController;
 
+- (NSString *)lastStatus;
 - (void)attemptHandshake;
 - (void)attemptHandshake:(BOOL)force;
 - (BOOL)handshakeCompleted;

@@ -26,6 +26,7 @@
     IBOutlet NSButton *artistCheckbox;
 	IBOutlet NSButton *audioscrobblerEnabledCheckbox;
 	IBOutlet NSTextField *audioscrobblerPasswordTextField;
+	IBOutlet NSTextField *audioscrobblerStatusTextField;
 	IBOutlet NSButton *audioscrobblerUseCacheCheckbox;
 	IBOutlet NSTextField *audioscrobblerUserTextField;
     IBOutlet NSPopUpButton *backgroundStylePopup;

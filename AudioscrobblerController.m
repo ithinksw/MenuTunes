@@ -16,7 +16,7 @@
 #import <openssl/evp.h>
 #import <ITFoundation/ITDebug.h>
 
-#define AUDIOSCROBBLER_ID @"tst"
+#define AUDIOSCROBBLER_ID @"mtu"
 #define AUDIOSCROBBLER_VERSION [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]
 
 static AudioscrobblerController *_sharedController = nil;
@@ -46,13 +46,14 @@ static AudioscrobblerController *_sharedController = nil;
 		_responseData = nil;
 		_tracks = [[NSMutableArray alloc] init];
 		_submitTracks = [[NSMutableArray alloc] init];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioscrobblerNotification:) name:nil object:self];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioscrobblerNotification:) name:@"AudioscrobblerHandshakeComplete" object:self];
 	}
 	return self;
 }
 
 - (void)dealloc
 {
+	[_lastStatus release];
 	[_md5Challenge release];
 	[_postURL release];
 	[_responseData release];
@@ -60,6 +61,11 @@ static AudioscrobblerController *_sharedController = nil;
 	[_tracks release];
 	[_delayDate release];
 	[super dealloc];
+}
+
+- (NSString *)lastStatus
+{
+	return _lastStatus;
 }
 
 - (void)attemptHandshake
@@ -221,10 +227,8 @@ static AudioscrobblerController *_sharedController = nil;
 
 - (void)handleAudioscrobblerNotification:(NSNotification *)note
 {
-	if ([[note name] isEqualToString:@"AudioscrobblerHandshakeComplete"]) {
-		if ([_tracks count] > 0) {
-			[self performSelector:@selector(submitTracks) withObject:nil afterDelay:2];
-		}
+	if ([_tracks count] > 0) {
+		[self performSelector:@selector(submitTracks) withObject:nil afterDelay:2];
 	}
 }
 
@@ -232,6 +236,9 @@ static AudioscrobblerController *_sharedController = nil;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+	[_lastStatus release];
+	_lastStatus = [[NSString stringWithFormat:NSLocalizedString(@"audioscrobbler_error", @"Error - %@"), [error localizedDescription]] retain];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:self userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
 	ITDebugLog(@"Audioscrobbler: Connection error \"%@\"", error);
 }
 
@@ -244,7 +251,7 @@ static AudioscrobblerController *_sharedController = nil;
 {
 	NSString *string = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
 	NSArray *lines = [string componentsSeparatedByString:@"\n"];
-	NSString *responseAction = nil;
+	NSString *responseAction = nil, *key = nil, *comment = nil;
 	
 	if ([lines count] > 0) {
 		responseAction = [lines objectAtIndex:0];
@@ -261,33 +268,52 @@ static AudioscrobblerController *_sharedController = nil;
 				_postURL = [[NSURL alloc] initWithString:[lines objectAtIndex:2]];
 				_handshakeCompleted = YES;
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerHandshakeComplete" object:self];
+				key = @"audioscrobbler_handshake_complete";
+				comment = @"Handshake complete";
 			} else {
 				//We have a protocol error
 			}
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
 			ITDebugLog(@"Audioscrobbler: Handshake failed (%@)", [responseAction substringFromIndex:6]);
+			key = @"audioscrobbler_handshake_failed";
+			comment = @"Handshake failed";
 			//We have a error
 		} else if ([responseAction isEqualToString:@"BADUSER"]) {
 			ITDebugLog(@"Audioscrobbler: Bad user name");
+			key = @"audioscrobbler_bad_user";
+			comment = @"Handshake failed - invalid user name";
 			//We have a bad user
 		} else {
 			ITDebugLog(@"Audioscrobbler: Handshake failed, protocol error");
+			key = @"audioscrobbler_protocol_error";
+			comment = @"Internal protocol error";
 			//We have a protocol error
 		}
 	} else if (_currentStatus == AudioscrobblerSubmittingTracksStatus) {
+		//For now we're not going to cache results, as it is less of a headache
+		[_tracks removeObjectsInArray:_submitTracks];
+		[_submitTracks removeAllObjects];
+		
 		if ([responseAction isEqualToString:@"OK"]) {
 			ITDebugLog(@"Audioscrobbler: Submission successful, clearing queue.");
-			[_tracks removeObjectsInArray:_submitTracks];
-			[_submitTracks removeAllObjects];
+			/*[_tracks removeObjectsInArray:_submitTracks];
+			[_submitTracks removeAllObjects];*/
 			if ([_tracks count] > 0) {
 				ITDebugLog(@"Audioscrobbler: Tracks remaining in queue, submitting remaining tracks");
 				[self performSelector:@selector(submitTracks) withObject:nil afterDelay:2];
 			}
+			key = @"audioscrobbler_submission_ok";
+			comment = @"Last track submission successful";
 		} else if ([responseAction isEqualToString:@"BADAUTH"]) {
 			ITDebugLog(@"Audioscrobbler: Bad password");
+			key = @"audioscrobbler_bad_password";
+			comment = @"Last track submission failed - invalid password";
 			//Bad auth
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
 			ITDebugLog(@"Audioscrobbler: Submission failed (%@)", [responseAction substringFromIndex:6]);
+			NSLog(@"Audioscrobbler: Submission failed (%@)", [responseAction substringFromIndex:6]);
+			key = @"audioscrobbler_submission_failed";
+			comment = @"Last track submission failed - see console for error";
 			//Failed
 		}
 	}
@@ -302,7 +328,9 @@ static AudioscrobblerController *_sharedController = nil;
 		ITDebugLog(@"No interval response.");
 		//We have a protocol error
 	}
-	
+	[_lastStatus release];
+	_lastStatus = [NSLocalizedString(key, comment) retain];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:nil userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
 	[string release];
 	[_responseData release];
 }

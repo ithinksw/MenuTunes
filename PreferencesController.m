@@ -272,12 +272,12 @@ static PreferencesController *prefs = nil;
                                                        @"Toggle Loop",
 													   @"Toggle Song Included In Shuffle",
                                                        @"Pop-up status menu",
-                                                       [NSString stringWithUTF8String:"Set Rating: ☆☆☆☆☆"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ★☆☆☆☆"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ★★☆☆☆"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ★★★☆☆"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ★★★★☆"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ★★★★★"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÜ‚òÜ‚òÜ‚òÜ‚òÜ"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÜ‚òÜ‚òÜ‚òÜ"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÜ‚òÜ‚òÜ"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÖ‚òÜ‚òÜ"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÖ‚òÖ‚òÜ"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÖ‚òÖ‚òÖ"],
                                                        nil];
         hotKeysDictionary = [[NSMutableDictionary alloc] init];
         controller = nil;
@@ -426,6 +426,9 @@ static PreferencesController *prefs = nil;
 		[audioscrobblerUseCacheCheckbox setEnabled:SENDER_STATE];
 		[audioscrobblerUserTextField setEnabled:SENDER_STATE];
 		[audioscrobblerPasswordTextField setEnabled:SENDER_STATE];
+		if (SENDER_STATE) {
+			[[AudioscrobblerController sharedController] attemptHandshake:NO];
+		}
 	} else if ( [sender tag ] == 6015) {
 		//Here we create a new keychain item if needed and deletes the keychain item if the field is cleared.
 		NSString *currentAccount = [df stringForKey:@"audioscrobblerUser"], *newAccount = [sender stringValue];
@@ -607,7 +610,7 @@ static PreferencesController *prefs = nil;
 
 - (IBAction)changeStatusWindowSetting:(id)sender
 {
-    StatusWindow *sw = [StatusWindow sharedWindow];
+    StatusWindow *sw = (StatusWindow *)[StatusWindow sharedWindow];
     ITDebugLog(@"Changing status window setting of tag %i", [sender tag]);
     
     if ( [sender tag] == 2010) {
@@ -890,6 +893,11 @@ static PreferencesController *prefs = nil;
 #pragma mark PRIVATE METHOD IMPLEMENTATIONS
 /*************************************************************************/
 
+- (void)audioscrobblerStatusChanged:(NSNotification *)note
+{
+	[audioscrobblerStatusTextField setStringValue:[[note userInfo] objectForKey:@"StatusString"]];
+}
+
 - (void)setupWindow
 {
     ITDebugLog(@"Loading Preferences.nib.");
@@ -974,6 +982,12 @@ static PreferencesController *prefs = nil;
     NSData         *colorData;
     int selectedBGStyle;
     id anItem;
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioscrobblerStatusChanged:) name:@"AudioscrobblerStatusChanged" object:nil];
+	if ([df boolForKey:@"audioscrobblerEnabled"]) {
+		NSString *status = [[AudioscrobblerController sharedController] lastStatus];
+		[audioscrobblerStatusTextField setStringValue:(status == nil) ? @"Idle" : status];
+	}
 	
     [df setInteger:MT_CURRENT_VERSION forKey:@"appVersion"];
     
@@ -1166,7 +1180,7 @@ static PreferencesController *prefs = nil;
 
 - (void)setStatusWindowEntryEffect:(Class)effectClass
 {
-    StatusWindow *sw = [StatusWindow sharedWindow];
+    StatusWindow *sw = (StatusWindow *)[StatusWindow sharedWindow];
     
     float time = ([df floatForKey:@"statusWindowAppearanceSpeed"] ? [df floatForKey:@"statusWindowAppearanceSpeed"] : 0.8);
     [df setObject:NSStringFromClass(effectClass) forKey:@"statusWindowAppearanceEffect"];
@@ -1177,7 +1191,7 @@ static PreferencesController *prefs = nil;
 
 - (void)setStatusWindowExitEffect:(Class)effectClass
 {
-    StatusWindow *sw = [StatusWindow sharedWindow];
+    StatusWindow *sw = (StatusWindow *)[StatusWindow sharedWindow];
     
     float time = ([df floatForKey:@"statusWindowVanishSpeed"] ? [df floatForKey:@"statusWindowVanishSpeed"] : 0.8);
     [df setObject:NSStringFromClass(effectClass) forKey:@"statusWindowVanishEffect"];
