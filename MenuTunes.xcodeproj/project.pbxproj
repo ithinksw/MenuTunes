@@ -124,28 +124,28 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITMac */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITMac;
 		};
 		7C2A885A092266FA007A4F41 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITFoundation */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITFoundation;
 		};
 		7C2A885E09226713007A4F41 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITFoundation */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITFoundation;
 		};
 		7C2A886009226716007A4F41 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216 /* ITMac */;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = ITMac;
 		};
 		7C331FF205A9253F0088905B /* PBXContainerItemProxy */ = {
@@ -757,16 +757,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 7C505D330801F0F000017AF9 /* Products */;
+					ProjectRef = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
+				},
+				{
 					ProductGroup = 7C505D370801F0F000017AF9 /* Products */;
 					ProjectRef = 7C505D250801F0BE00017AF9 /* ITKit.xcodeproj */;
 				},
 				{
 					ProductGroup = 7C505D350801F0F000017AF9 /* Products */;
 					ProjectRef = 7C505D290801F0C700017AF9 /* ITMac.xcodeproj */;
-				},
-				{
-					ProductGroup = 7C505D330801F0F000017AF9 /* Products */;
-					ProjectRef = 7C505D2D0801F0D100017AF9 /* ITFoundation.xcodeproj */;
 				},
 			);
 			targets = (

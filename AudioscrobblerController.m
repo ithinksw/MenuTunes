@@ -222,6 +222,11 @@ static AudioscrobblerController *_sharedController = nil;
 	[requestString release];
 	[request release];
 	
+	//For now we're not going to cache results, as it is less of a headache
+	//[_tracks removeObjectsInArray:_submitTracks];
+	[_tracks removeAllObjects];
+	[_submitTracks removeAllObjects];
+	
 	//If we have tracks left, submit again after the interval seconds
 }
 
@@ -236,6 +241,7 @@ static AudioscrobblerController *_sharedController = nil;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+	[_responseData release];
 	[_lastStatus release];
 	_lastStatus = [[NSString stringWithFormat:NSLocalizedString(@"audioscrobbler_error", @"Error - %@"), [error localizedDescription]] retain];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:self userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
@@ -290,10 +296,6 @@ static AudioscrobblerController *_sharedController = nil;
 			//We have a protocol error
 		}
 	} else if (_currentStatus == AudioscrobblerSubmittingTracksStatus) {
-		//For now we're not going to cache results, as it is less of a headache
-		[_tracks removeObjectsInArray:_submitTracks];
-		[_submitTracks removeAllObjects];
-		
 		if ([responseAction isEqualToString:@"OK"]) {
 			ITDebugLog(@"Audioscrobbler: Submission successful, clearing queue.");
 			/*[_tracks removeObjectsInArray:_submitTracks];
