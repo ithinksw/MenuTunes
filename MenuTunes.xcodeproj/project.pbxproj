@@ -1002,7 +1002,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		7C182AC808A84C6300A098F8 /* Development */ = {
+		7C182AC808A84C6300A098F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1032,9 +1032,9 @@
 				WARNING_CFLAGS = "-Wmost";
 				ZERO_LINK = NO;
 			};
-			name = Development;
+			name = Debug;
 		};
-		7C182AC908A84C6300A098F8 /* Deployment */ = {
+		7C182AC908A84C6300A098F8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1060,7 +1060,7 @@
 				WARNING_CFLAGS = "-Wmost";
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
 		7C182ACA08A84C6300A098F8 /* Default */ = {
 			isa = XCBuildConfiguration;
@@ -1086,7 +1086,7 @@
 			};
 			name = Default;
 		};
-		7C182ACC08A84C6300A098F8 /* Development */ = {
+		7C182ACC08A84C6300A098F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1110,9 +1110,9 @@
 				WRAPPER_EXTENSION = remote;
 				ZERO_LINK = NO;
 			};
-			name = Development;
+			name = Debug;
 		};
-		7C182ACD08A84C6300A098F8 /* Deployment */ = {
+		7C182ACD08A84C6300A098F8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1132,7 +1132,7 @@
 				WRAPPER_EXTENSION = remote;
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
 		7C182ACE08A84C6300A098F8 /* Default */ = {
 			isa = XCBuildConfiguration;
@@ -1152,7 +1152,7 @@
 			};
 			name = Default;
 		};
-		7C182AD008A84C6300A098F8 /* Development */ = {
+		7C182AD008A84C6300A098F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1183,9 +1183,9 @@
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
-			name = Development;
+			name = Debug;
 		};
-		7C182AD108A84C6300A098F8 /* Deployment */ = {
+		7C182AD108A84C6300A098F8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1213,7 +1213,7 @@
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
 		7C182AD208A84C6300A098F8 /* Default */ = {
 			isa = XCBuildConfiguration;
@@ -1242,21 +1242,21 @@
 			};
 			name = Default;
 		};
-		7C182AD408A84C6300A098F8 /* Development */ = {
+		7C182AD408A84C6300A098F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
 			};
-			name = Development;
+			name = Debug;
 		};
-		7C182AD508A84C6300A098F8 /* Deployment */ = {
+		7C182AD508A84C6300A098F8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
 			};
-			name = Deployment;
+			name = Release;
 		};
 		7C182AD608A84C6300A098F8 /* Default */ = {
 			isa = XCBuildConfiguration;
@@ -1272,8 +1272,8 @@
 		7C182AC708A84C6300A098F8 /* Build configuration list for PBXNativeTarget "ITMTRemote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7C182AC808A84C6300A098F8 /* Development */,
-				7C182AC908A84C6300A098F8 /* Deployment */,
+				7C182AC808A84C6300A098F8 /* Debug */,
+				7C182AC908A84C6300A098F8 /* Release */,
 				7C182ACA08A84C6300A098F8 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1282,8 +1282,8 @@
 		7C182ACB08A84C6300A098F8 /* Build configuration list for PBXNativeTarget "iTunesRemote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7C182ACC08A84C6300A098F8 /* Development */,
-				7C182ACD08A84C6300A098F8 /* Deployment */,
+				7C182ACC08A84C6300A098F8 /* Debug */,
+				7C182ACD08A84C6300A098F8 /* Release */,
 				7C182ACE08A84C6300A098F8 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1292,8 +1292,8 @@
 		7C182ACF08A84C6300A098F8 /* Build configuration list for PBXNativeTarget "MenuTunes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7C182AD008A84C6300A098F8 /* Development */,
-				7C182AD108A84C6300A098F8 /* Deployment */,
+				7C182AD008A84C6300A098F8 /* Debug */,
+				7C182AD108A84C6300A098F8 /* Release */,
 				7C182AD208A84C6300A098F8 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1302,8 +1302,8 @@
 		7C182AD308A84C6300A098F8 /* Build configuration list for PBXProject "MenuTunes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7C182AD408A84C6300A098F8 /* Development */,
-				7C182AD508A84C6300A098F8 /* Deployment */,
+				7C182AD408A84C6300A098F8 /* Debug */,
+				7C182AD508A84C6300A098F8 /* Release */,
 				7C182AD608A84C6300A098F8 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
