@@ -631,7 +631,7 @@ static MainController *sharedController;
 {
 	ITDebugLog(@"Audioscrobbler: Attempting to submit current track");
 	[timer invalidate];
-	if ([df boolForKey:@"audioscrobblerEnabled"]) {
+	if ([df boolForKey:@"audioscrobblerEnabled"] && [[AudioscrobblerController sharedController] handshakeCompleted]) {
 		NS_DURING
 			int elapsed = [[self currentRemote] currentSongPlayed], length = [[self currentRemote] currentSongDuration], requiredInterval = ((length / 2 < 240) ? length / 2 : 240);
 			if ((abs(elapsed - requiredInterval) < 5) && ([[self currentRemote] playerPlayingState] == ITMTRemotePlayerPlaying)) {
@@ -983,6 +983,16 @@ static MainController *sharedController;
         [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
     }
     
+	if ([df objectForKey:@"AlbumArt"] != nil) {
+        ITDebugLog(@"Setting up album art hot key.");
+        hotKey = [[ITHotKey alloc] init];
+        [hotKey setName:@"AlbumArt"];
+        [hotKey setKeyCombo:[ITKeyCombo keyComboWithPlistRepresentation:[df objectForKey:@"AlbumArt"]]];
+        [hotKey setTarget:self];
+        [hotKey setAction:@selector(showCurrentAlbumArtHotKey)];
+        [[ITHotKeyCenter sharedCenter] registerHotKey:[hotKey autorelease]];
+    }
+	
     if ([df objectForKey:@"UpcomingSongs"] != nil) {
         ITDebugLog(@"Setting up upcoming songs hot key.");
         hotKey = [[ITHotKey alloc] init];
@@ -1099,6 +1109,57 @@ static MainController *sharedController;
 		return;
 	}
 	[self showCurrentTrackInfo];
+}
+
+- (void)showCurrentAlbumArtHotKey
+{
+	//If we're already visible and the setting says so, vanish instead of displaying again.
+	if ([df boolForKey:@"ToggleTrackInfoWithHotKey"] && [statusWindowController currentStatusWindowType] == StatusWindowAlbumArtType && [[StatusWindow sharedWindow] visibilityState] == ITWindowVisibleState) {
+		ITDebugLog(@"Art window is already visible, hiding track window.");
+		[[StatusWindow sharedWindow] vanish:nil];
+		return;
+	}
+	[self showCurrentAlbumArt];
+}
+
+- (void)showCurrentAlbumArt
+{
+	NSImage *art = nil;
+	NS_DURING
+		art = [[self currentRemote] currentSongAlbumArt];
+	NS_HANDLER
+		[self networkError:localException];
+	NS_ENDHANDLER
+	
+	if (art) {
+		NSSize oldSize = [art size], newSize;
+		if (oldSize.width > 300 && oldSize.height > 300) {
+			if (oldSize.width > oldSize.height) {
+				newSize = NSMakeSize(300, oldSize.height * (300.0f / oldSize.width));
+			} else {
+				newSize = NSMakeSize(oldSize.width * (300.0f / oldSize.height), 300);
+			}
+		} else {
+			newSize = oldSize;
+		}
+		
+		art = [[[[NSImage alloc] initWithData:[art TIFFRepresentation]] autorelease] imageScaledSmoothlyToSize:newSize];
+		
+		[statusWindowController showAlbumArtWindowWithImage:art];
+	} else {
+		NSString *string = nil;
+		NS_DURING
+			if ([[self currentRemote] currentSongTitle]) {
+				string = NSLocalizedString(@"noAlbumArt", @"No art for current song.");
+			} else {
+				string = NSLocalizedString(@"noSongPlaying", @"No song is playing.");
+			}
+		NS_HANDLER
+			[self networkError:localException];
+		NS_ENDHANDLER
+		//Show the no song playing window if there is no album art or no track is playing
+		[statusWindowController showAlbumArtWindowWithErrorText:string];
+	}
 }
 
 - (void)showCurrentTrackInfo
@@ -1235,7 +1296,7 @@ static MainController *sharedController;
 {
 	StatusWindow *sw = (StatusWindow *)[StatusWindow sharedWindow];
 	_timeUpdateCount++;
-	if ([sw visibilityState] != ITWindowHiddenState) {
+	if ([statusWindowController currentStatusWindowType] == StatusWindowTrackInfoType && [sw visibilityState] != ITWindowHiddenState) {
 		NSString *time = nil, *length;
 		NS_DURING
 			length = [[self currentRemote] currentSongLength];

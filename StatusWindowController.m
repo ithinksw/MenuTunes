@@ -199,6 +199,25 @@ static StatusWindowController *sharedController;
 	[text release];
 }
 
+- (void)showAlbumArtWindowWithImage:(NSImage *)image
+{
+	if (image) {
+		_currentType = StatusWindowAlbumArtType;
+		[_window setImage:[NSImage imageNamed:@"Library"]];
+		[_window buildImageWindowWithImage:image];
+		[_window appear:self];
+	}
+}
+
+- (void)showAlbumArtWindowWithErrorText:(NSString *)string
+{
+	if (string && [string length] > 0) {
+		_currentType = StatusWindowAlbumArtType;
+		[_window buildTextWindowWithString:string];
+		[_window appear:self];
+	}
+}
+
 - (void)showUpcomingSongsWindowWithTitles:(NSArray *)titleStrings
 {
 //  NSString *bull = [NSString stringWithUTF8String:"‣ "];

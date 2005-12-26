@@ -26,6 +26,7 @@ typedef enum {
 typedef enum {
 	StatusWindowNoType = -1,
 	StatusWindowTrackInfoType,
+	StatusWindowAlbumArtType,
 	StatusWindowUpcomingSongsType,
 	StatusWindowVolumeType,
 	StatusWindowRatingType,
@@ -62,6 +63,8 @@ typedef enum {
 - (void)showPreferencesUpdateWindow;
 - (void)showDebugModeEnabledWindow;
 
+- (void)showAlbumArtWindowWithImage:(NSImage *)image;
+- (void)showAlbumArtWindowWithErrorText:(NSString *)string;
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
                                title:            (NSString *)title
                                album:            (NSString *)album

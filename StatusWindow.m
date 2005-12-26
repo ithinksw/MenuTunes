@@ -116,7 +116,7 @@
     float        maxHeight     = ( screenHeight - (SW_BORDER * 2) );
     float        excessWidth   = 0.0;
     float        excessHeight  = 0.0;
-    NSPoint      windowOrigin;
+    NSPoint      windowOrigin  = NSZeroPoint;
     ITImageView *imageView;
     BOOL         shouldAnimate = ( ! (([self visibilityState] == ITWindowAppearingState) ||
                                       ([self visibilityState] == ITWindowVanishingState)) );
@@ -135,7 +135,7 @@
     contentHeight = ( ( imageHeight > dataHeight ) ? imageHeight : dataHeight );
 
 //  Setup the Window, and remove all its contentview's subviews.
-    windowWidth  = ( (SW_PAD / divisor) + imageWidth + (SW_SPACE / divisor) + dataWidth + (SW_PAD / divisor) );
+    windowWidth  = ( (SW_PAD / divisor) + imageWidth + ((dataWidth > 0) ? (SW_SPACE / divisor) + dataWidth : 0) + (SW_PAD / divisor) );
     windowHeight = ( (SW_PAD / divisor) + contentHeight + (SW_PAD / divisor) );
     
 //  Constrain size to max limits.  Adjust data sizes accordingly.
@@ -177,7 +177,7 @@
     [[[self contentView] subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
 //  Setup, position, fill, and add the image view to the content view.
-    imageRect = NSMakeRect( (SW_PAD / divisor) + 4,
+    imageRect = NSMakeRect( (SW_PAD / divisor) + ((dataWidth > 0) ? 4 : 0),
                             ((SW_PAD / divisor) + ((contentHeight - imageHeight) / 2)),
                             imageWidth,
                             imageHeight );
@@ -191,6 +191,24 @@
                        ((SW_PAD / divisor) + ((contentHeight - dataHeight) / 2)),
                        dataWidth,
                        dataHeight);
+}
+
+- (void)buildImageWindowWithImage:(NSImage *)image
+{
+	if (!_locked) {
+		float divisor = 1.0;
+		NSRect dataRect;
+		
+		if (_sizing == ITTransientStatusWindowSmall) {
+			divisor = SMALL_DIVISOR;
+		} else if (_sizing == ITTransientStatusWindowMini) {
+			divisor = MINI_DIVISOR;
+		}
+		
+		[self setImage:image];
+		dataRect = [self setupWindowWithDataSize:NSMakeSize(0, 0)]; //We have no text, so there is no data
+		[[self contentView] setNeedsDisplay:YES];
+	}
 }
 
 - (void)buildTextWindowWithString:(id)text

@@ -91,6 +91,10 @@ static AudioscrobblerController *_sharedController = nil;
 	if (!_handshakeCompleted && user) {
 		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://post.audioscrobbler.com/?hs=true&p=1.1&c=%@&v=%@&u=%@", AUDIOSCROBBLER_ID, AUDIOSCROBBLER_VERSION, user]];
 		
+		[_lastStatus release];
+		_lastStatus = [NSLocalizedString(@"audioscrobbler_handshaking", @"Attempting to handshake with server") retain];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:nil userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
+		
 		_currentStatus = AudioscrobblerRequestingHandshakeStatus;
 		_responseData = [[NSMutableData alloc] init];
 		[NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] delegate:self];
@@ -210,6 +214,9 @@ static AudioscrobblerController *_sharedController = nil;
 	}
 	
 	ITDebugLog(@"Audioscrobbler: Sending track submission request");
+	[_lastStatus release];
+	_lastStatus = [NSLocalizedString(@"audioscrobbler_submitting", @"Submitting tracks to server") retain];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:nil userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
 	
 	//Create and send the request
 	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] mutableCopy];
@@ -335,6 +342,12 @@ static AudioscrobblerController *_sharedController = nil;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:nil userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
 	[string release];
 	[_responseData release];
+}
+
+-(NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse *)cachedResponse
+{
+	//Don't cache any Audioscrobbler communication
+	return nil;
 }
 
 @end

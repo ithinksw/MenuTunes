@@ -27,6 +27,7 @@
 - (void)setImage:(NSImage *)newImage;
 - (void)setLocked:(BOOL)flag;
 
+- (void)buildImageWindowWithImage:(NSImage *)image;
 - (void)buildTextWindowWithString:(id)text;
 - (void)buildMeterWindowWithCharacter:(NSString *)character
                                  size:(float)size

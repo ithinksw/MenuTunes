@@ -93,6 +93,7 @@
 - (void)closePreferences;
 - (MenuController *)menuController;
 
+- (void)showCurrentAlbumArt;
 - (void)showCurrentTrackInfo;
 
 @end
