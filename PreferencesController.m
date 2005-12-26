@@ -20,7 +20,7 @@
 #import <ITKit/ITTSWBackgroundView.h>
 
 #define SENDER_STATE (([sender state] == NSOnState) ? YES : NO)
-#define AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) [NSString stringWithFormat:@"Audioscrobbler: %@", user]
+#define AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) [[NSString stringWithFormat:@"Audioscrobbler: %@", user] UTF8String]
 #define AUDIOSCROBBLER_KEYCHAIN_KIND "application password"
 
 /*************************************************************************/
@@ -84,8 +84,8 @@ static PreferencesController *prefs = nil;
 	attributes[1].data = AUDIOSCROBBLER_KEYCHAIN_KIND;
 	attributes[1].length = strlen(AUDIOSCROBBLER_KEYCHAIN_KIND);
 	attributes[2].tag = kSecLabelItemAttr;
-	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE(user);
-	attributes[2].length = [AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) length];
+	attributes[2].data = (char *)AUDIOSCROBBLER_KEYCHAIN_SERVICE(user);
+	attributes[2].length = strlen(AUDIOSCROBBLER_KEYCHAIN_SERVICE(user));
 	list.count = 3;
 	list.attr = attributes;
 
@@ -131,8 +131,8 @@ static PreferencesController *prefs = nil;
 	attributes[1].data = AUDIOSCROBBLER_KEYCHAIN_KIND;
 	attributes[1].length = strlen(AUDIOSCROBBLER_KEYCHAIN_KIND);
 	attributes[2].tag = kSecLabelItemAttr;
-	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE(user);
-	attributes[2].length = [AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) length];
+	attributes[2].data = (char *)AUDIOSCROBBLER_KEYCHAIN_SERVICE(user);
+	attributes[2].length = strlen(AUDIOSCROBBLER_KEYCHAIN_SERVICE(user));
 	list.count = 3;
 	list.attr = attributes;
 
@@ -184,7 +184,7 @@ static PreferencesController *prefs = nil;
 			ITDebugLog(@"Audioscrobbler: Error getting keychain item password: %i", status);
 		} else {
 			NSLog(@"Audioscrobbler: password buffer: \"%s\" \"Length: %i\"", buffer, length);
-			pass = [NSString stringWithUTF8String:buffer];
+			pass = [[NSString alloc] initWithCharacters:(unichar *)buffer length:length];
 		}
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
@@ -192,7 +192,7 @@ static PreferencesController *prefs = nil;
 		CFRelease(item);
 	}
 	NSLog(@"Audioscrobbler: Retrieved password: \"%@\"", pass);
-	return pass;
+	return [pass autorelease];
 }
 
 /*************************************************************************/
