@@ -208,6 +208,7 @@ static PreferencesController *prefs = nil;
 		}
 		CFRelease(item);
 	}
+	NSLog(@"Audioscrobbler: Retrieved password: %@", pass);
 	return pass;
 }
 
