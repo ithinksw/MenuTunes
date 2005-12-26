@@ -631,7 +631,7 @@ static MainController *sharedController;
 {
 	ITDebugLog(@"Audioscrobbler: Attempting to submit current track");
 	[timer invalidate];
-	if ([df boolForKey:@"audioscrobblerEnabled"] && [[AudioscrobblerController sharedController] handshakeCompleted]) {
+	if ([df boolForKey:@"audioscrobblerEnabled"]) {
 		NS_DURING
 			int elapsed = [[self currentRemote] currentSongPlayed], length = [[self currentRemote] currentSongDuration], requiredInterval = ((length / 2 < 240) ? length / 2 : 240);
 			if ((abs(elapsed - requiredInterval) < 5) && ([[self currentRemote] playerPlayingState] == ITMTRemotePlayerPlaying)) {

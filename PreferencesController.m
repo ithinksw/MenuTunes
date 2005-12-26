@@ -16,25 +16,11 @@
 #import <sys/types.h>
 #import <sys/stat.h>
 
-#import <ITKit/ITLoginItem.h>
-
-#import <ITKit/ITHotKeyCenter.h>
-#import <ITKit/ITKeyCombo.h>
-#import <ITKit/ITKeyComboPanel.h>
-#import <ITKit/ITWindowPositioning.h>
-#import <ITKit/ITKeyBroadcaster.h>
-
+#import <ITKit/ITKit.h>
 #import <ITKit/ITTSWBackgroundView.h>
-#import <ITKit/ITWindowEffect.h>
-#import <ITKit/ITCutWindowEffect.h>
-#import <ITKit/ITDissolveWindowEffect.h>
-#import <ITKit/ITSlideHorizontallyWindowEffect.h>
-#import <ITKit/ITSlideVerticallyWindowEffect.h>
-#import <ITKit/ITPivotWindowEffect.h>
-
 
 #define SENDER_STATE (([sender state] == NSOnState) ? YES : NO)
-#define AUDIOSCROBBLER_KEYCHAIN_SERVICE "MenuTunes: Audioscrobbler"
+#define AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) [NSString stringWithFormat:@"Audioscrobbler: %@", user]
 #define AUDIOSCROBBLER_KEYCHAIN_KIND "application password"
 
 /*************************************************************************/
@@ -98,8 +84,8 @@ static PreferencesController *prefs = nil;
 	attributes[1].data = AUDIOSCROBBLER_KEYCHAIN_KIND;
 	attributes[1].length = strlen(AUDIOSCROBBLER_KEYCHAIN_KIND);
 	attributes[2].tag = kSecLabelItemAttr;
-	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE;
-	attributes[2].length = strlen(AUDIOSCROBBLER_KEYCHAIN_SERVICE);
+	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE(user);
+	attributes[2].length = [AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) length];
 	list.count = 3;
 	list.attr = attributes;
 
@@ -145,8 +131,8 @@ static PreferencesController *prefs = nil;
 	attributes[1].data = AUDIOSCROBBLER_KEYCHAIN_KIND;
 	attributes[1].length = strlen(AUDIOSCROBBLER_KEYCHAIN_KIND);
 	attributes[2].tag = kSecLabelItemAttr;
-	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE;
-	attributes[2].length = strlen(AUDIOSCROBBLER_KEYCHAIN_SERVICE);
+	attributes[2].data = AUDIOSCROBBLER_KEYCHAIN_SERVICE(user);
+	attributes[2].length = [AUDIOSCROBBLER_KEYCHAIN_SERVICE(user) length];
 	list.count = 3;
 	list.attr = attributes;
 
@@ -176,7 +162,7 @@ static PreferencesController *prefs = nil;
 	OSStatus status = errSecNotAvailable;
 	SecKeychainItemRef item = [PreferencesController keychainItemForUser:user];
 	if (item != nil) {
-		status = SecKeychainItemModifyContent(item, NULL, [password length], [password cString]);
+		status = SecKeychainItemModifyContent(item, NULL, [password length], [password UTF8String]);
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
 		}
@@ -197,18 +183,15 @@ static PreferencesController *prefs = nil;
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error getting keychain item password: %i", status);
 		} else {
-			if ([NSString respondsToSelector:@selector(stringWithCString:encoding:)]) {
-				pass = [NSString stringWithCString:buffer encoding:NSASCIIStringEncoding];
-			} else {
-				pass = [NSString stringWithCString:buffer];
-			}
+			NSLog(@"Audioscrobbler: password buffer: \"%s\" \"Length: %i\"", buffer, length);
+			pass = [NSString stringWithUTF8String:buffer];
 		}
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
 		}
 		CFRelease(item);
 	}
-	NSLog(@"Audioscrobbler: Retrieved password: %@", pass);
+	NSLog(@"Audioscrobbler: Retrieved password: \"%@\"", pass);
 	return pass;
 }
 
@@ -275,12 +258,12 @@ static PreferencesController *prefs = nil;
                                                        @"Toggle Loop",
 													   @"Toggle Song Included In Shuffle",
                                                        @"Pop-up status menu",
-                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÜ‚òÜ‚òÜ‚òÜ‚òÜ"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÜ‚òÜ‚òÜ‚òÜ"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÜ‚òÜ‚òÜ"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÖ‚òÜ‚òÜ"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÖ‚òÖ‚òÜ"],
-                                                       [NSString stringWithUTF8String:"Set Rating: ‚òÖ‚òÖ‚òÖ‚òÖ‚òÖ"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ☆☆☆☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★☆☆☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★☆☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★★☆☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★★★☆"],
+                                                       [NSString stringWithUTF8String:"Set Rating: ★★★★"],
                                                        nil];
         hotKeysDictionary = [[NSMutableDictionary alloc] init];
         controller = nil;
@@ -421,7 +404,7 @@ static PreferencesController *prefs = nil;
             [showScriptsButton setEnabled:NO];
         }
     } else if ( [sender tag] == 1120) {
-        mkdir([[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] cString], 0744);
+        mkdir([[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"] UTF8String], 0744);
         [[NSWorkspace sharedWorkspace] openFile:[NSHomeDirectory() stringByAppendingPathComponent:@"Library/Application Support/MenuTunes/Scripts"]];
     } else if ( [sender tag] == 6010) {
 		//Toggle the other Audioscrobbler options
