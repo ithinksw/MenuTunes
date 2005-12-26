@@ -184,7 +184,7 @@ static PreferencesController *prefs = nil;
 			ITDebugLog(@"Audioscrobbler: Error getting keychain item password: %i", status);
 		} else {
 			NSLog(@"Audioscrobbler: password buffer: \"%s\" \"Length: %i\"", buffer, length);
-			pass = [[NSString alloc] initWithCharacters:(unichar *)buffer length:length];
+			pass = [[NSString alloc] initWithBytes:buffer length:length encoding:NSUTF8StringEncoding];
 		}
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
