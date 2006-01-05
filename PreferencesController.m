@@ -189,6 +189,7 @@ static PreferencesController *prefs = nil;
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error deleting keychain item: %i", status);
 		}
+		SecKeychainItemFreeContent(NULL, buffer);
 		CFRelease(item);
 	}
 	NSLog(@"Audioscrobbler: Retrieved password: \"%@\"", pass);
