@@ -220,7 +220,6 @@ static AudioscrobblerController *_sharedController = nil;
 	
 	//Create and send the request
 	NSMutableURLRequest *request = [[NSURLRequest requestWithURL:_postURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] mutableCopy];
-	NSLog(@"Posting Audioscrobbler URL request: %@", requestString);
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[requestString dataUsingEncoding:NSUTF8StringEncoding]];
 	_currentStatus = AudioscrobblerSubmittingTracksStatus;
@@ -270,7 +269,6 @@ static AudioscrobblerController *_sharedController = nil;
 		responseAction = [lines objectAtIndex:0];
 	}
 	ITDebugLog(@"Audioscrobbler: Response %@", string);
-	NSLog(@"Audioscrobbler: Response %@", string);
 	if (_currentStatus == AudioscrobblerRequestingHandshakeStatus) {
 		if ([lines count] < 2) {
 			//We have a protocol error
@@ -320,7 +318,6 @@ static AudioscrobblerController *_sharedController = nil;
 			//Bad auth
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
 			ITDebugLog(@"Audioscrobbler: Submission failed (%@)", [responseAction substringFromIndex:6]);
-			NSLog(@"Audioscrobbler: Submission failed (%@)", [responseAction substringFromIndex:6]);
 			key = @"audioscrobbler_submission_failed";
 			comment = @"Last track submission failed - see console for error";
 			//Failed

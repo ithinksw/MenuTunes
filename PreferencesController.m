@@ -183,7 +183,6 @@ static PreferencesController *prefs = nil;
 		if (status != noErr) {
 			ITDebugLog(@"Audioscrobbler: Error getting keychain item password: %i", status);
 		} else {
-			NSLog(@"Audioscrobbler: password buffer: \"%s\" \"Length: %i\"", buffer, length);
 			pass = [[NSString alloc] initWithBytes:buffer length:length encoding:NSUTF8StringEncoding];
 		}
 		if (status != noErr) {
@@ -192,7 +191,6 @@ static PreferencesController *prefs = nil;
 		SecKeychainItemFreeContent(NULL, buffer);
 		CFRelease(item);
 	}
-	NSLog(@"Audioscrobbler: Retrieved password: \"%@\"", pass);
 	return [pass autorelease];
 }
 

@@ -636,7 +636,6 @@ static MainController *sharedController;
 			int elapsed = [[self currentRemote] currentSongPlayed], length = [[self currentRemote] currentSongDuration], requiredInterval = ((length / 2 < 240) ? length / 2 : 240);
 			if ((abs(elapsed - requiredInterval) < 5) && ([[self currentRemote] playerPlayingState] == ITMTRemotePlayerPlaying)) {
 				NSString *title = [[self currentRemote] currentSongTitle], *artist = [[self currentRemote] currentSongArtist];
-				NSLog(@"Audioscrobbler: Submitting");
 				if (title && artist) {
 					ITDebugLog(@"Audioscrobbler: Submitting current track");
 					[[AudioscrobblerController sharedController] submitTrack:title
@@ -647,12 +646,9 @@ static MainController *sharedController;
 			} else if (requiredInterval - elapsed > 0) {
 				_audioscrobblerInterval = requiredInterval - elapsed;
 				[_audioscrobblerTimer release];
-				NSLog(@"Audioscrobbler: Creating a new timer that will run in %i seconds", _audioscrobblerInterval);
 				ITDebugLog(@"Audioscrobbler: Creating a new timer that will run in %i seconds", _audioscrobblerInterval);
 				_audioscrobblerTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:_audioscrobblerInterval] interval:1.0 target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
 				[[NSRunLoop currentRunLoop] addTimer:_audioscrobblerTimer forMode:NSDefaultRunLoopMode];
-			} else {
-				NSLog(@"Audioscrobbler: Skipping submission. %i, %i", requiredInterval, elapsed);
 			}
 		NS_HANDLER
 			[self networkError:localException];
