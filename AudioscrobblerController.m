@@ -43,7 +43,7 @@ static AudioscrobblerController *_sharedController = nil;
 		_postURL = [NSURL URLWithString:@"http://audioscrobbler.com/"];*/
 		
 		_delayDate = [[NSDate date] retain];
-		_responseData = nil;
+		_responseData = [[NSMutableData alloc] init];
 		_tracks = [[NSMutableArray alloc] init];
 		_submitTracks = [[NSMutableArray alloc] init];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioscrobblerNotification:) name:@"AudioscrobblerHandshakeComplete" object:self];
@@ -96,7 +96,7 @@ static AudioscrobblerController *_sharedController = nil;
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:nil userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
 		
 		_currentStatus = AudioscrobblerRequestingHandshakeStatus;
-		_responseData = [[NSMutableData alloc] init];
+		//_responseData = [[NSMutableData alloc] init];
 		[NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15] delegate:self];
 	}
 }
@@ -223,7 +223,8 @@ static AudioscrobblerController *_sharedController = nil;
 	[request setHTTPMethod:@"POST"];
 	[request setHTTPBody:[requestString dataUsingEncoding:NSUTF8StringEncoding]];
 	_currentStatus = AudioscrobblerSubmittingTracksStatus;
-	_responseData = [[NSMutableData alloc] init];
+	//_responseData = [[NSMutableData alloc] init];
+	[_responseData setData:nil];
 	[NSURLConnection connectionWithRequest:request delegate:self];
 	[requestString release];
 	[request release];
@@ -247,7 +248,7 @@ static AudioscrobblerController *_sharedController = nil;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-	[_responseData release];
+	[_responseData setData:nil];
 	[_lastStatus release];
 	_lastStatus = [[NSString stringWithFormat:NSLocalizedString(@"audioscrobbler_error", @"Error - %@"), [error localizedDescription]] retain];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:self userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
@@ -338,7 +339,7 @@ static AudioscrobblerController *_sharedController = nil;
 	_lastStatus = [NSLocalizedString(key, comment) retain];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerStatusChanged" object:nil userInfo:[NSDictionary dictionaryWithObject:_lastStatus forKey:@"StatusString"]];
 	[string release];
-	[_responseData release];
+	[_responseData setData:nil];
 }
 
 -(NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse *)cachedResponse
