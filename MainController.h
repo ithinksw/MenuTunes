@@ -19,7 +19,7 @@
 #import <ITMTRemote/ITMTRemote.h>
 #import "MTBlingController.h"
 
-#define MT_CURRENT_VERSION 1650
+#define MT_CURRENT_VERSION 1700
 
 @class StatusWindowController, MenuController, NetworkController;
 
