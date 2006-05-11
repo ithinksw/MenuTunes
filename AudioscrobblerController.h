@@ -23,6 +23,7 @@ typedef enum {
 
 @interface AudioscrobblerController : NSObject {
 	BOOL _handshakeCompleted;
+	int _handshakeAttempts;
 	AudioscrobblerStatus _currentStatus;
 	NSMutableArray *_tracks, *_submitTracks;
 	NSDate *_delayDate;

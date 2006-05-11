@@ -79,6 +79,26 @@ static AudioscrobblerController *_sharedController = nil;
 		return;
 	}
 	
+	//If we've already tried to handshake three times in a row unsuccessfully, set the attempt count to -3
+	if (_handshakeAttempts > 3) {
+		ITDebugLog(@"Audioscrobbler: Maximum handshake limit reached (3). Retrying when handshake attempts reach zero.");
+		_handshakeAttempts = -3;
+		
+		//Remove any tracks we were trying to submit, just to be safe
+		[_submitTracks removeAllObjects];
+		
+		return;
+	}
+	
+	//Increment the number of times we've tried to handshake
+	_handshakeAttempts++;
+	
+	//We're still on our self-imposed cooldown time.
+	if (_handshakeAttempts < 0) {
+		ITDebugLog(@"Audioscrobbler: Handshake timeout. Retrying when handshake attempts reach zero.");
+		return;
+	}
+	
 	//Delay if we haven't met the interval time limit
 	NSTimeInterval interval = [_delayDate timeIntervalSinceNow];
 	if (interval > 0) {
@@ -131,6 +151,13 @@ static AudioscrobblerController *_sharedController = nil;
 		return;
 	}
 	
+	ITDebugLog(@"Audioscrobbler: Submitting queued tracks");
+	
+	if ([_tracks count] == 0) {
+		ITDebugLog(@"Audioscrobbler: No queued tracks to submit.");
+		return;
+	}
+	
 	NSString *user = [[NSUserDefaults standardUserDefaults] stringForKey:@"audioscrobblerUser"], *passString = [PreferencesController getKeychainItemPasswordForUser:user];
 	char *pass = (char *)[passString UTF8String];
 	
@@ -151,13 +178,6 @@ static AudioscrobblerController *_sharedController = nil;
 	NSString *authString, *responseHash = @"";
 	unsigned char *buffer;
 	EVP_MD_CTX ctx;
-	
-	ITDebugLog(@"Audioscrobbler: Submitting queued tracks");
-	
-	if ([_tracks count] == 0) {
-		ITDebugLog(@"Audioscrobbler: No queued tracks to submit.");
-		return;
-	}
 	
 	//Build the MD5 response string we send along with the request
 	buffer = malloc(EVP_MD_size(EVP_md5()));
@@ -232,7 +252,7 @@ static AudioscrobblerController *_sharedController = nil;
 	//For now we're not going to cache results, as it is less of a headache
 	//[_tracks removeObjectsInArray:_submitTracks];
 	[_tracks removeAllObjects];
-	[_submitTracks removeAllObjects];
+	//[_submitTracks removeAllObjects];
 	
 	//If we have tracks left, submit again after the interval seconds
 }
@@ -282,6 +302,7 @@ static AudioscrobblerController *_sharedController = nil;
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"AudioscrobblerHandshakeComplete" object:self];
 				key = @"audioscrobbler_handshake_complete";
 				comment = @"Handshake complete";
+				_handshakeAttempts = 0;
 			} else {
 				//We have a protocol error
 			}
@@ -295,6 +316,9 @@ static AudioscrobblerController *_sharedController = nil;
 			key = @"audioscrobbler_bad_user";
 			comment = @"Handshake failed - invalid user name";
 			//We have a bad user
+			
+			//Don't count this as a bad handshake attempt
+			_handshakeAttempts = 0;
 		} else {
 			ITDebugLog(@"Audioscrobbler: Handshake failed, protocol error");
 			key = @"audioscrobbler_protocol_error";
@@ -306,6 +330,7 @@ static AudioscrobblerController *_sharedController = nil;
 			ITDebugLog(@"Audioscrobbler: Submission successful, clearing queue.");
 			/*[_tracks removeObjectsInArray:_submitTracks];
 			[_submitTracks removeAllObjects];*/
+			[_submitTracks removeAllObjects];
 			if ([_tracks count] > 0) {
 				ITDebugLog(@"Audioscrobbler: Tracks remaining in queue, submitting remaining tracks");
 				[self performSelector:@selector(submitTracks) withObject:nil afterDelay:2];
@@ -317,11 +342,24 @@ static AudioscrobblerController *_sharedController = nil;
 			key = @"audioscrobbler_bad_password";
 			comment = @"Last track submission failed - invalid password";
 			//Bad auth
+			
+			//Add the tracks we were trying to submit back into the submission queue
+			[_tracks addObjectsFromArray:_submitTracks];
+			
+			_handshakeCompleted = NO;
+			
+			//If we were previously valid with the same login name, try reauthenticating and sending again
+			[self attemptHandshake:YES];
 		} else if (([responseAction length] > 5) && [[responseAction substringToIndex:5] isEqualToString:@"FAILED"]) {
 			ITDebugLog(@"Audioscrobbler: Submission failed (%@)", [responseAction substringFromIndex:6]);
 			key = @"audioscrobbler_submission_failed";
 			comment = @"Last track submission failed - see console for error";
 			//Failed
+			
+			//We got an unknown error. To be safe we're going to remove the tracks we tried to submit
+			[_submitTracks removeAllObjects];
+			
+			_handshakeCompleted = NO;
 		}
 	}
 	
