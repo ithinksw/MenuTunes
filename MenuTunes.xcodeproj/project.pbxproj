@@ -262,6 +262,8 @@
 		7C95A0EF05A92B4800B4F576 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* MenuTunes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuTunes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAB856E20F1CB62800313F82 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		FAB856E30F1CB62800313F82 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,6 +418,8 @@
 				7C331FD405A923190088905B /* Library.tiff */,
 				7C331FD505A923190088905B /* Volume.tiff */,
 				7C331FD605A923190088905B /* MenuNormal.tiff */,
+				FAB856E20F1CB62800313F82 /* COPYING */,
+				FAB856E30F1CB62800313F82 /* LICENSE */,
 			);
 			name = Resources;
 			sourceTree = "<group>";

@@ -1,16 +1,12 @@
 /*
  *	MenuTunes
- *  MainController
- *    App Controller Class
+ *	MainController.h
  *
- *  Original Author : Matthew Judy <mjudy@ithinksw.com>
- *   Responsibility : Matthew Judy <mjudy@ithinksw.com>
+ *	App Controller Class.
  *
- *  Copyright (c) 2002-2003 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2002-2003 iThink Software
  *
  */
-
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>

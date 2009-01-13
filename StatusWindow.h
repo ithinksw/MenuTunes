@@ -1,16 +1,12 @@
 /*
  *	MenuTunes
- *  StatusWindow
- *    ITTransientStatusWindow subclass for MenuTunes
+ *	StatusWindow.h
  *
- *  Original Author : Matthew Judy <mjudy@ithinksw.com>
- *   Responsibility : Matthew Judy <mjudy@ithinksw.com>
+ *	ITTransientStatusWindow subclass for MenuTunes.
  *
- *  Copyright (c) 2003 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2003 iThink Software
  *
  */
-
 
 #import <Cocoa/Cocoa.h>
 #import <ITKit/ITKit.h>

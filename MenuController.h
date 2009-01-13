@@ -1,10 +1,10 @@
-//
-//  MenuController.h
-//  MenuTunes
-//
-//  Created by Joseph Spiros on Wed Apr 30 2003.
-//  Copyright (c) 2003 iThink Software. All rights reserved.
-//
+/*
+ *	MenuTunes
+ *	MenuController.h
+ *
+ *	Copyright (c) 2003 iThink Software
+ *
+ */
 
 #import <Cocoa/Cocoa.h>
 

@@ -1,16 +1,12 @@
 /*
  *	MenuTunes
- *  MenuTunes
- *    MenuTunes Application Subclass
+ *	MenuTunes.h
  *
- *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
- *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
+ *	MenuTunes Application Subclass.
  *
- *  Copyright (c) 2002 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2002 iThink Software
  *
  */
-
 
 #import <Cocoa/Cocoa.h>
 

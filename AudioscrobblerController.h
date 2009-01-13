@@ -1,13 +1,10 @@
 /*
  *	MenuTunes
- *  AudioscrobblerController
- *    Audioscrobbler Support Class
+ *	AudioscrobblerController.h
  *
- *  Original Author : Kent Sutherland <kent.sutherland@ithinksw.com>
- *   Responsibility : Kent Sutherland <kent.sutherland@ithinksw.com>
+ *	Audioscrobbler Support Class.
  *
- *  Copyright (c) 2005 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2005 iThink Software
  *
  */
 

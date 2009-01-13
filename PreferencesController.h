@@ -1,13 +1,10 @@
 /*
  *	MenuTunes
- *  PreferencesController
- *    Preferences window controller
+ *	PreferencesController.h
  *
- *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
- *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
+ *	Preferences window controller.
  *
- *  Copyright (c) 2002 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2002 iThink Software
  *
  */
 

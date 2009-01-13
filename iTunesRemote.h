@@ -1,11 +1,10 @@
-//
-//  iTunesRemoteControl.h
-//  MenuTunes
-//
-//  Created by Matt L. Judy on Sun Jan 05 2003.
-//  Copyright (c) 2003 iThink Software. All rights reserved.
-//
-
+/*
+ *	MenuTunes
+ *	iTunesRemote.h
+ *
+ *	Copyright (c) 2003 iThink Software
+ *
+ */
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>

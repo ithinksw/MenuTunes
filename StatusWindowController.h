@@ -1,16 +1,12 @@
 /*
  *	MenuTunes
- *  StatusWindowController
- *    Abstraction layer between MainController and StatusWindow
+ *	StatusWindowController.h
  *
- *  Original Author : Matthew Judy <mjudy@ithinksw.com>
- *   Responsibility : Matthew Judy <mjudy@ithinksw.com>
+ *	Abstraction layer between MainController and StatusWindow.
  *
- *  Copyright (c) 2003 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2003 iThink Software
  *
  */
-
 
 #import <Cocoa/Cocoa.h>
 #import "ITMTRemote.h"

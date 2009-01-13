@@ -1,16 +1,3 @@
-/*
- *	MenuTunes
- *  AudioscrobblerController
- *    Audioscrobbler Support Class
- *
- *  Original Author : Kent Sutherland <kent.sutherland@ithinksw.com>
- *   Responsibility : Kent Sutherland <kent.sutherland@ithinksw.com>
- *
- *  Copyright (c) 2005 iThink Software.
- *  All Rights Reserved
- *
- */
-
 #import "AudioscrobblerController.h"
 #import "PreferencesController.h"
 #import <openssl/evp.h>

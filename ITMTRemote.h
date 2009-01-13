@@ -1,17 +1,14 @@
 /*
- *  MenuTunes
- *  ITMTRemote
- *    Plugin definition for audio player control via MenuTunes
+ *	MenuTunes
+ *	ITMTRemote.h
  *
- *  Original Author : Matt Judy <mjudy@ithinksw.com>
- *   Responsibility : Matt Judy <mjudy@ithinksw.com>
- *
- *  Copyright (c) 2002 - 2003 iThink Software.
- *  All Rights Reserved
+ *	Plugin definition for audio player control via MenuTunes.
  *
  *	This header defines the Objective-C protocol which all MenuTunes Remote
- *  plugins must implement.  To build a remote, create a subclass of this
- *  object, and implement each method in the @protocol below.
+ *	plugins must implement.  To build a remote, create a subclass of this
+ *	object, and implement each method in the @protocol below.
+ *
+ *	Copyright (c) 2002-2003 iThink Software
  *
  */
 

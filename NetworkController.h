@@ -1,13 +1,10 @@
 /*
  *	MenuTunes
- *  NetworkController
- *    Rendezvous network controller
+ *	NetworkController.h
  *
- *  Original Author : Kent Sutherland <ksuther@ithinksw.com>
- *   Responsibility : Kent Sutherland <ksuther@ithinksw.com>
+ *	Rendezvous network controller.
  *
- *  Copyright (c) 2003 iThink Software.
- *  All Rights Reserved
+ *	Copyright (c) 2003 iThink Software
  *
  */
  

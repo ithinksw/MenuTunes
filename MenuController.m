@@ -1,11 +1,3 @@
-//
-//  MenuController.m
-//  MenuTunes
-//
-//  Created by Joseph Spiros on Wed Apr 30 2003.
-//  Copyright (c) 2003 iThink Software. All rights reserved.
-//
-
 #import "MenuController.h"
 #import "MainController.h"
 #import "NetworkController.h"

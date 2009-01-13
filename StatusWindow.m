@@ -1,11 +1,3 @@
-//
-//  StatusWindow.m
-//  MenuTunes
-//
-//  Created by Matt L. Judy on Sat Feb 22 2003.
-//  Copyright (c) 2003 NibFile.com. All rights reserved.
-//
-
 #import "StatusWindow.h"
 
 
