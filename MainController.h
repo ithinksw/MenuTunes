@@ -17,9 +17,8 @@
 #import <ITKit/ITKit.h>
 #import <ITFoundation/ITFoundation.h>
 #import <ITMTRemote/ITMTRemote.h>
-#import "MTBlingController.h"
 
-#define MT_CURRENT_VERSION 1700
+#define MT_CURRENT_VERSION 1720
 
 @class StatusWindowController, MenuController, NetworkController;
 
@@ -42,10 +41,8 @@
     NetworkController *networkController;
     NSUserDefaults *df;
     
-    MTBlingController *bling;
-    NSTimer *registerTimer, *_statusWindowUpdateTimer, *_audioscrobblerTimer;
+    NSTimer *_statusWindowUpdateTimer, *_audioscrobblerTimer;
     BOOL timerUpdating, _checkingForServer, _popped, _open, _needsPolling;
-    BOOL blinged;
 	int _timeUpdateCount; //Keeps track of how many times the time has been updated in the info status window
 	int _audioscrobblerInterval;
     NSLock *_serverCheckLock;
@@ -53,12 +50,6 @@
 + (MainController *)sharedController;
 
 - (void)menuClicked;
-
-//Methods called from MenuController by menu items
-- (NSDate*)getBlingTime;
-- (void)blingTime;
-- (void)blingNow;
-- (BOOL)blingBling;
 
 - (void)timerUpdate;
 

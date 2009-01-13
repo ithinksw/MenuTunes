@@ -35,8 +35,7 @@ typedef enum {
     MTMenuShowPlayerItem,
     MTMenuPreferencesItem,
 	MTMenuAboutItem,
-    MTMenuQuitItem,
-    MTMenuRegisterItem
+    MTMenuQuitItem
 } MTMenuItemTag;
 
 @interface MenuController : NSObject

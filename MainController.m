@@ -97,7 +97,6 @@ static MainController *sharedController;
         menuController = [[MenuController alloc] init];
         df = [[NSUserDefaults standardUserDefaults] retain];
         timerUpdating = NO;
-        blinged = NO;
     }
     return self;
 }
@@ -176,14 +175,6 @@ static MainController *sharedController;
                 withLength:NSSquareStatusItemLength];
     }
     
-    /*bling = [[MTBlingController alloc] init];
-    [self blingTime];
-    registerTimer = [[NSTimer scheduledTimerWithTimeInterval:10.0
-                             target:self
-                             selector:@selector(blingTime)
-                             userInfo:nil
-                             repeats:YES] retain];*/
-    
     NS_DURING
         if ([[self currentRemote] playerRunningState] == ITMTRemotePlayerRunning) {
             [self applicationLaunched:nil];
@@ -209,14 +200,6 @@ static MainController *sharedController;
     [networkController startRemoteServerSearch];
     [NSApp deactivate];
 	[self performSelector:@selector(rawr) withObject:nil afterDelay:1.0];
-	
-	bling = [[MTBlingController alloc] init];
-    [self blingTime];
-    registerTimer = [[NSTimer scheduledTimerWithTimeInterval:10.0
-                             target:self
-                             selector:@selector(blingTime)
-                             userInfo:nil
-                             repeats:YES] retain];
 }
 
 - (void)rawr
@@ -277,92 +260,6 @@ static MainController *sharedController;
     ITDebugLog(@"Timer started.");
     [pool release];
 }*/
-
-- (void)setBlingTime:(NSDate*)date
-{
-    NSMutableDictionary *globalPrefs;
-    [df synchronize];
-    globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
-    if (date) {
-        [globalPrefs setObject:date forKey:@"ITMTTrialStart"];
-        [globalPrefs setObject:[NSNumber numberWithInt:MT_CURRENT_VERSION] forKey:@"ITMTTrialVers"];
-    } else {
-        [globalPrefs removeObjectForKey:@"ITMTTrialStart"];
-        [globalPrefs removeObjectForKey:@"ITMTTrialVers"];
-    }
-    [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
-    [df synchronize];
-    [globalPrefs release];
-}
-
-- (NSDate*)getBlingTime
-{
-    [df synchronize];
-    return [[df persistentDomainForName:@".GlobalPreferences"] objectForKey:@"ITMTTrialStart"];
-}
-
-- (void)blingTime
-{
-    NSDate *now = [NSDate date];
-    if (![self blingBling]) {
-        if ( (! [self getBlingTime] ) || ([now timeIntervalSinceDate:[self getBlingTime]] < 0) ) {
-            [self setBlingTime:now];
-        } else if ([[[df persistentDomainForName:@".GlobalPreferences"] objectForKey:@"ITMTTrialVers"] intValue] < MT_CURRENT_VERSION) {
-            if ([now timeIntervalSinceDate:[self getBlingTime]] >= 345600) {
-                [self setBlingTime:[now addTimeInterval:-259200]];
-            } else {
-                NSMutableDictionary *globalPrefs;
-                [df synchronize];
-                globalPrefs = [[df persistentDomainForName:@".GlobalPreferences"] mutableCopy];
-                [globalPrefs setObject:[NSNumber numberWithInt:MT_CURRENT_VERSION] forKey:@"ITMTTrialVers"];
-                [df setPersistentDomain:globalPrefs forName:@".GlobalPreferences"];
-                [df synchronize];
-                [globalPrefs release];
-            }
-        }
-        
-        if ( ([now timeIntervalSinceDate:[self getBlingTime]] >= 604800) && (blinged != YES) ) {
-            blinged = YES;
-            [statusItem setEnabled:NO];
-			[[ITHotKeyCenter sharedCenter] setEnabled:NO];
-            if ([refreshTimer isValid]) {
-                [refreshTimer invalidate];
-				[refreshTimer release];
-				refreshTimer = nil;
-            }
-            [statusWindowController showRegistrationQueryWindow];
-        }
-    } else {
-        if (blinged) {
-            [statusItem setEnabled:YES];
-            [[ITHotKeyCenter sharedCenter] setEnabled:YES];
-            if (_needsPolling && ![refreshTimer isValid]) {
-                [refreshTimer release];
-                refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:([networkController isConnectedToServer] ? 10.0 : 0.5)
-                             target:self
-                             selector:@selector(timerUpdate)
-                             userInfo:nil
-                             repeats:YES] retain];
-            }
-            blinged = NO;
-        }
-        [self setBlingTime:nil];
-    }
-}
-
-- (void)blingNow
-{
-    [bling showPanel];
-}
-
-- (BOOL)blingBling
-{
-    if ( ! ([bling checkDone] == 2475) ) {
-        return NO;
-    } else {
-        return YES;
-    }
-}
 
 - (BOOL)songIsPlaying
 {
@@ -1539,24 +1436,6 @@ static MainController *sharedController;
 	}
 }
 
-- (void)registerNowOK
-{
-    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
-    [[StatusWindow sharedWindow] vanish:self];
-    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
-
-    [self blingNow];
-}
-
-- (void)registerNowCancel
-{
-    [(StatusWindow *)[StatusWindow sharedWindow] setLocked:NO];
-    [[StatusWindow sharedWindow] vanish:self];
-    [[StatusWindow sharedWindow] setIgnoresMouseEvents:YES];
-
-    [NSApp terminate:self];
-}
-
 /*************************************************************************/
 #pragma mark -
 #pragma mark NETWORK HANDLERS
@@ -1804,7 +1683,7 @@ static MainController *sharedController;
 - (void)applicationDidBecomeActive:(NSNotification *)note
 {
 	//This appears to not work in 10.4
-	if (_open && !blinged && ![[ITAboutWindowController sharedController] isVisible] && ![NSApp mainWindow] && ([[StatusWindow sharedWindow] exitMode] == ITTransientStatusWindowExitAfterDelay)) {
+	if (_open && ![[ITAboutWindowController sharedController] isVisible] && ![NSApp mainWindow] && ([[StatusWindow sharedWindow] exitMode] == ITTransientStatusWindowExitAfterDelay)) {
 		[[MainController sharedController] showPreferences];
 	}
 }
@@ -1817,7 +1696,6 @@ static MainController *sharedController;
 - (void)dealloc
 {
     [self applicationTerminated:nil];
-    [bling release];
     [statusItem release];
     [statusWindowController release];
     [menuController release];

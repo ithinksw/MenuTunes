@@ -233,12 +233,6 @@
             [tempItem setTag:MTMenuAboutItem];
             [tempItem setTarget:self];
 		} else if ([nextObject isEqualToString:@"quit"]) {
-            if ([[MainController sharedController] blingBling] == NO) {
-                ITDebugLog(@"Add \"Register MenuTunes...\" menu item.");
-                tempItem = [menu addItemWithTitle:NSLocalizedString(@"register", @"Register MenuTunes...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
-                [tempItem setTag:MTMenuRegisterItem];
-                [tempItem setTarget:self];
-            }
             ITDebugLog(@"Add \"Quit\" menu item.");
             tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit")
                     action:@selector(performMainMenuAction:)
@@ -488,12 +482,6 @@
     tempItem = [menu addItemWithTitle:NSLocalizedString(@"preferences", @"Preferences...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
     [tempItem setTag:MTMenuPreferencesItem];
     [tempItem setTarget:self];
-    if ([[MainController sharedController] blingBling] == NO) {
-        ITDebugLog(@"Add \"Register MenuTunes...\" menu item.");
-        tempItem = [menu addItemWithTitle:NSLocalizedString(@"register", @"Register MenuTunes...") action:@selector(performMainMenuAction:) keyEquivalent:@""];
-        [tempItem setTag:MTMenuRegisterItem];
-        [tempItem setTarget:self];
-    }
     ITDebugLog(@"Add \"Quit\" menu item.");
     tempItem = [menu addItemWithTitle:NSLocalizedString(@"quit", @"Quit") action:@selector(performMainMenuAction:) keyEquivalent:@""];
     [tempItem setTag:MTMenuQuitItem];
@@ -919,10 +907,6 @@
         case MTMenuQuitItem:
             ITDebugLog(@"Performing Menu Action: Quit");
             [[MainController sharedController] quitMenuTunes];
-            break;
-        case MTMenuRegisterItem:
-            ITDebugLog(@"Performing Menu Action: Register");
-            [[MainController sharedController] blingNow];
             break;
         default:
             ITDebugLog(@"Performing Menu Action: Unimplemented Menu Item OR Child-bearing Menu Item");

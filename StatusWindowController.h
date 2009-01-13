@@ -34,7 +34,6 @@ typedef enum {
 	StatusWindowShuffleType,
 	StatusWindowShufflabilityType,
 	StatusWindowSetupType,
-	StatusWindowRegistrationType,
 	StatusWindowNetworkType,
 	StatusWindowPreferencesType,
 	StatusWindowDebugType
@@ -57,7 +56,6 @@ typedef enum {
 - (void)showRepeatWindowWithMode:(StatusWindowRepeatMode)mode;
 - (void)showSongShufflabilityWindow:(BOOL)shufflable;
 - (void)showSetupQueryWindow;
-- (void)showRegistrationQueryWindow;
 - (void)showReconnectQueryWindow;
 - (void)showNetworkErrorQueryWindow;
 - (void)showPreferencesUpdateWindow;

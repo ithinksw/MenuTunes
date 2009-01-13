@@ -309,25 +309,6 @@ static StatusWindowController *sharedController;
     [_window setLocked:YES];
 }
 
-
-- (void)showRegistrationQueryWindow
-{
-    NSString *message = NSLocalizedString(@"trialexpired_msg", @"Your 7-day unlimited trial period has elapsed.\nYou must register to continue using MenuTunes.");
-
-    [_window setImage:[NSImage imageNamed:@"Register"]];
-    [_window setSizing:(ITTransientStatusWindowSizing)[df integerForKey:@"statusWindowSizing"]];
-    [_window buildDialogWindowWithMessage:message
-                            defaultButton:NSLocalizedString(@"registernow", @"Register Now")
-                          alternateButton:NSLocalizedString(@"quitmenutunes", @"Quit MenuTunes")
-                                   target:[MainController sharedController]
-                            defaultAction:@selector(registerNowOK)
-                          alternateAction:@selector(registerNowCancel)];
-
-	_currentType = StatusWindowRegistrationType;
-    [_window appear:self];
-    [_window setLocked:YES];
-}
-
 - (void)showReconnectQueryWindow
 {
     NSString *message = NSLocalizedString(@"sharedplayeravailable_msg", @"The selected shared player is available again.\nWould you like to reconnect to it?");
