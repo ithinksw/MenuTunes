@@ -274,7 +274,7 @@ static MainController *sharedController;
 
 - (BOOL)radioIsPlaying
 {
-    ITMTRemotePlayerPlaylistClass class = nil;
+    ITMTRemotePlayerPlaylistClass class = ITMTRemotePlayerLibraryPlaylist;
     NS_DURING
         class = [[self currentRemote] currentPlaylistClass];
     NS_HANDLER
@@ -380,7 +380,7 @@ static MainController *sharedController;
 					_audioscrobblerInterval = ((length / 2 < 240) ? length / 2 : 240);
 					[_audioscrobblerTimer invalidate];
 					[_audioscrobblerTimer release];
-					_audioscrobblerTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:_audioscrobblerInterval] interval:nil target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
+					_audioscrobblerTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:_audioscrobblerInterval] interval:0 target:self selector:@selector(submitAudioscrobblerTrack:) userInfo:nil repeats:NO];
 					[[NSRunLoop currentRunLoop] addTimer:_audioscrobblerTimer forMode:NSDefaultRunLoopMode];
 				}
 			} else {

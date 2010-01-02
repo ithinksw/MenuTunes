@@ -66,12 +66,12 @@
 
 - (ITMTRemotePlayerRunningState)playerRunningState
 {
-    return nil;
+    return ITMTRemotePlayerNotRunning;
 }
 
 - (ITMTRemotePlayerPlayingState)playerPlayingState
 {
-    return nil;
+    return ITMTRemotePlayerStopped;
 }
 
 - (NSArray *)playlists
@@ -91,32 +91,32 @@
 
 - (int)numberOfSources
 {
-    return nil;
+    return -1;
 }
 
 - (int)numberOfSongsInPlaylistAtIndex:(int)index
 {
-    return nil;
+    return -1;
 }
 
 - (ITMTRemotePlayerSource)currentSource
 {
-    return nil;
+    return ITMTRemoteLibrarySource;
 }
 
 - (int)currentSourceIndex
 {
-    return nil;
+    return -1;
 }
 
 - (ITMTRemotePlayerPlaylistClass)currentPlaylistClass
 {
-    return nil;
+    return ITMTRemotePlayerLibraryPlaylist;
 }
 
 - (int)currentPlaylistIndex
 {
-    return nil;
+    return -1;
 }
 
 - (NSString *)songTitleAtIndex:(int)index
@@ -126,17 +126,17 @@
 
 - (BOOL)songEnabledAtIndex:(int)index
 {
-	return nil;
+	return NO;
 }
 
 - (int)currentAlbumTrackCount
 {
-    return nil;
+    return -1;
 }
 
 - (int)currentSongTrack
 {
-    return nil;
+    return -1;
 }
 
 - (NSString *)playerStateUniqueIdentifier
@@ -146,7 +146,7 @@
 
 - (int)currentSongIndex
 {
-    return nil;
+    return -1;
 }
 
 - (NSString *)currentSongTitle
@@ -206,12 +206,12 @@
 
 - (int)currentSongPlayCount
 {
-    return nil;
+    return 0;
 }
 
 - (float)currentSongRating
 {
-    return nil;
+    return 0;
 }
 
 - (BOOL)setCurrentSongRating:(float)rating
@@ -246,12 +246,12 @@
 
 - (int)currentEQPresetIndex
 {
-    return nil;
+    return 0;
 }
 
 - (float)volume
 {
-    return nil;
+    return 0;
 }
 
 - (BOOL)setVolume:(float)volume
