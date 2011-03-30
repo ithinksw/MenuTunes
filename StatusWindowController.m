@@ -98,6 +98,8 @@ static StatusWindowController *sharedController;
         } else {
             [(ITTSWBackgroundView *)[_window contentView] setBackgroundColor:[NSColor blueColor]];
         }
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenParametersChanged:) name:NSApplicationDidChangeScreenParametersNotification object:nil];
     }
     
     return self;
@@ -105,8 +107,21 @@ static StatusWindowController *sharedController;
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     [_window release];
     [super dealloc];
+}
+
+- (void)screenParametersChanged:(NSNotification *)notification
+{
+    NSArray *screens = [NSScreen screens];
+    int screenIndex = [df integerForKey:@"statusWindowScreenIndex"];
+    
+    if (screenIndex >= [screens count]) {
+        screenIndex = 0;
+    }
+    [_window setScreen:[screens objectAtIndex:screenIndex]];
 }
 
 - (void)showSongInfoWindowWithSource:(ITMTRemotePlayerSource)source
